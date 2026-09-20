@@ -11457,9 +11457,16 @@ public class Mission : AMission, IMainMission
 			if (MissionNumber > -1)
 			{
 				setMainMenu(player);
+                twcLogServer(new Player[] { player }, ".", new object[] { });
+                twcLogServer(new Player[] { player }, ".", new object[] { });
+                twcLogServer(new Player[] { player }, "===========================================", new object[] { });
 
 				twcLogServer(new Player[] { player }, "Welcome to " + CAMPAIGN_ID + ", " + player.Name(), new object[] { });
                 showTimeLeft(player: player);
+                twcLogServer(new Player[] { player }, "How to fly: Use chat command <help & read detailed briefing on Map/Flags Page", new object[] { });
+                twcLogServer(new Player[] { player }, "===========================================", new object[] { });
+                twcLogServer(new Player[] { player }, ".", new object[] { });
+                twcLogServer(new Player[] { player }, ".", new object[] { });
 
 				//twcLogServer(null, "Mission loaded.", new object[] { });
 
@@ -11936,6 +11943,14 @@ public class Mission : AMission, IMainMission
             twcLogServer(new Player[] { player }, "Your distance from your front " + playerFrontDistance_m.ToString("N0") + " " + playerFrontDistance2_m.ToString("N0"), null);
 
 
+        }
+        else if (msg.StartsWith("<denton") && admin_privilege_level(player) >= 2)
+        {
+            MissionObjectivesList["DentonHighCommandPost"].areThingsToSave_stillInPlace();
+
+            MissionObjectivesList["WesterhamHighCommandPost"].areThingsToSave_stillInPlace();
+
+            
         }
         else if (msg.StartsWith("<pos") && admin_privilege_level(player) >= 2)
         {
@@ -16316,6 +16331,7 @@ public class Mission : AMission, IMainMission
             foreach (string thing in ThingsToSave.Keys) {
 
                 int numFound = Calcs.CountMatchingGroundObjects(msn.GamePlay, this.Pos, this.radius, matchTitle: thing);
+                if (msn.ON_TESTSERVER) Console.WriteLine("ThingsToSave, checking: {0}  found: {1} needed: {2}", thing, numFound, ThingsToSave[thing]);
                 ret.stillAlive = ret.stillAlive && (numFound >= ThingsToSave[thing]);
                 ret.numNeeded += ThingsToSave[thing];
                 ret.numFound += numFound;
@@ -16323,6 +16339,8 @@ public class Mission : AMission, IMainMission
             }
 
             ThingsToSave_stillAlive = ret.stillAlive;
+
+            if (msn.ON_TESTSERVER) Console.WriteLine("ThingsToSave, returning: alive: {0} numNeeded {1} numFOund: {2}", ret.stillAlive, ret.numNeeded, ret.numFound);
             return ret;
             
         }
@@ -21259,7 +21277,7 @@ added Rouen Flak
     }
 
 	//Fully removes OJB if %>=1 but also partially removes in case %<1
-    public void MO_RemoveObjective(MissionObjective mo, bool immediate = false, double percent = 1, bool addX = false)
+    public void MO_RemoveObjective(MissionObjective mo, bool immediate = false, double percent = 1, bool addX = false, int delay_s = 40, bool destroyObj = true)
     {
         //2021/07 - removing task.run over concerns it might cause server crashes.
         //Task.Run(() =>
@@ -21280,7 +21298,7 @@ added Rouen Flak
             double radiusAdder_m = 400; //we look for AA./artillery in this additional radius
 
             bool destroyObjects = false; //mostly we just "kill" the objects/actors which makes them "dead" but still in the sim
-            if (mo.MOMobileObjectiveType != MO_MobileObjectiveType.None) destroyObjects = true; //for mobile objective types that are actually MOVING though we actually cart.destroy() the items so that they are not on the map or on the ground any more.
+            if (destroyObj && mo.MOMobileObjectiveType != MO_MobileObjectiveType.None) destroyObjects = true; //for mobile objective types that are actually MOVING though we actually cart.destroy() the items so that they are not on the map or on the ground any more.
 
             List<GroundStationary> gs = new List<GroundStationary>(GamePlay.gpGroundStationarys(mo.Pos.x, mo.Pos.y, searchRadius_m + 40).ToList());
             ISectionFile f = GamePlay.gpCreateSectionFile();
@@ -21307,11 +21325,11 @@ added Rouen Flak
                 //For chief type objectives, we only remove items matching the chief
                 //because this type is MOBILE...
                 if (mo.hasChief() && !g.Name.ToLower().Contains(mo.ChiefName.ToLower())) continue;
-                f = MO_HandleGroundThingRemoval(mo, g.Type, groundStationary: g, immediate: immediate, percent: percent, destroyObjects: destroyObjects, sectFile:f);
+                f = MO_HandleGroundThingRemoval(mo, g.Type, groundStationary: g, immediate: immediate, percent: percent, destroyObjects: destroyObjects, sectFile:f, delay_s: delay_s);
             }
             if (!MO_Naval_Vessel_ObjectiveTypes.Contains(mo.MOObjectiveType))
             {
-                Timeout(random.Next(5, 120), () =>
+                Timeout(random.Next(delay_s + 5, delay_s + 120), () =>
                 {
                     GamePlay.gpPostMissionLoad(f);
                     f.save(CLOD_PATH + FILE_PATH + "/sectionfiles" + "/destroy_MO_replaced_objects_" + Calcs.GetSafeFileName(mo.ID) +random.Next(1, 10).ToString());
@@ -21348,12 +21366,12 @@ added Rouen Flak
                             //Or if percent<1 then remove that percentage
                             double dist_m = Calcs.CalculatePointDistance(mo.Pos, (ga as AiActor).Pos());
                             if (dist_m < searchRadius_m || ga.Type() == AiGroundActorType.AAGun || ga.Type() == AiGroundActorType.Artillery)
-                               f2 = MO_HandleGroundThingRemoval(mo, ga.Type(), groundActor: ga, immediate: immediate, percent: pctToRemove, destroyObjects: destroyObjects, sectFile:f2);
+                               f2 = MO_HandleGroundThingRemoval(mo, ga.Type(), groundActor: ga, immediate: immediate, percent: pctToRemove, destroyObjects: destroyObjects, sectFile:f2, delay_s);
                         }
                     }
                     if (!MO_Naval_Vessel_ObjectiveTypes.Contains(mo.MOObjectiveType))
                     {
-                        Timeout(random.Next(5, 120), () =>
+                        Timeout(random.Next(delay_s + 5, delay_s + 120), () =>
                         {
                             GamePlay.gpPostMissionLoad(f2);
                             f2.save(CLOD_PATH + FILE_PATH + "/sectionfiles" + "/destroy_MO_replaced_objects_"+Calcs.GetSafeFileName(mo.ID) + random.Next(1, 10).ToString());
@@ -21372,7 +21390,7 @@ added Rouen Flak
 			
             	MO_PlaceDetritusInObjectArea(mo, searchRadius_m: searchRadius_m, minimum: true); //only smoke &  jerrycan
                 
-                Timeout(40, () =>
+                Timeout(delay_s, () =>
                     {
                         mo.loadDestroyedSubmission();
                     });
@@ -21387,7 +21405,7 @@ added Rouen Flak
 
     }
 
-    public ISectionFile MO_HandleGroundThingRemoval(MissionObjective mo, AiGroundActorType type, AiGroundActor groundActor = null, GroundStationary groundStationary = null, bool immediate = false, double percent = 1, bool destroyObjects = false, ISectionFile sectFile = null)
+    public ISectionFile MO_HandleGroundThingRemoval(MissionObjective mo, AiGroundActorType type, AiGroundActor groundActor = null, GroundStationary groundStationary = null, bool immediate = false, double percent = 1, bool destroyObjects = false, ISectionFile sectFile = null, int delay_s = 40)
     {
         try
         {
@@ -21509,7 +21527,7 @@ added Rouen Flak
             }
             else
             {
-                Timeout(random.Next(delay1, delay2), () =>
+                Timeout(random.Next(delay_s + delay1, delay_s + delay2), () =>
                 {
                     if (movebombtargetmission.getPlainDistanceToNearestLivePilot(mo.Pos, armyToMatch: 0) > 10000)
                     {
@@ -27526,10 +27544,24 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
 
             var ntr = mo.areThingsToSave_stillInPlace();
 
-            if ( mo.ThingsToSave_stillAlive  != saveStillAlive) //just killed the General, or whatever...
+            if (!mo.ThingsToSave_stillAlive && mo.ThingsToSave_stillAlive  != saveStillAlive) //just killed the General, or whatever...
             {
                 twcLogServer(null, mo.ThingsToSave_destroyed_message );                
-                twcLogServer(null,">>>You'll have to try {0} again another day, after it has been reactivated with new troops, supplies, and equipment.");
+                twcLogServer(null,">>>You'll have to try " + mo.Name + " again another day, after it has been reactivated with new troops, supplies, and equipment.");
+
+                //And now it is undestroyed/alldamage repair, for the rest of the mission
+                //And disabled until the end of the mission
+                mo.DestroyedPercent = 0;
+                mo.Destroyed = false;                
+                mo.TimeToUndestroy_UTC = null;                
+                mo.ObjectsDestroyed_num = 0;
+                mo.OrdnanceOnTarget_kg = 0;
+                mo.ActorsDestroyed_num = 0;
+                mo.AirfieldDamagePoints = 0;
+                mo.IsEnabled = false; //set to disabled for the rest of this session
+                MO_RemoveObjective(mo, percent: .25, addX: true, delay_s = 900 );
+
+                return;
             }
 
 
@@ -30365,6 +30397,8 @@ public static class Calcs
 			name = Regex.Replace(name, target, "", RegexOptions.IgnoreCase);
 		}
 
+        if (name.ToLower().Contains("human")) name = "Unidentified soldier";
+
 		// 3. Add spaces before capital letters, but skip successive capitals (acronyms)
         name = Regex.Replace(name, @"(?<=[a-z])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])", " ");
 		
@@ -30963,7 +30997,7 @@ public static class Calcs
     //matchAliveState matches things that have that state - ie, true matches  things that are alive while false matches things that are dead (IsAlive==false)
     //If matchAliveState==null then it will match both alive & dead
     //If antiMatch then it does the opposite, of course
-    public static int CountMatchingGroundObjects(this IGamePlay GamePlay, Point3d location, double radius_m, string matchTitle = null, AiGroundActorType matchType = AiGroundActorType.Unknown, string matchName = null, int matcharmy = 0, bool? matchAliveState = true, bool antiMatch = false)
+    public static int CountMatchingGroundObjects(this IGamePlay GamePlay, Point3d location, double radius_m, string matchTitle = null, AiGroundActorType? matchType = null, string matchName = null, int matcharmy = 0, bool? matchAliveState = true, bool antiMatch = false)
     {
         try
         {
@@ -30974,7 +31008,9 @@ public static class Calcs
             List<GroundStationary> gs = GamePlay.gpGroundStationarys(location.x, location.y, radius_m).ToList();
             foreach (GroundStationary g in gs)
             {
-                //Console.WriteLine("Groundstat " + g.Name + " " + g.country + " " + g.Title + " " + g.Type.ToString());
+                //Console.WriteLine("Groundstat name: " + g.Name + " " + g.country + " title:" + g.Title + " type: " + g.Type.ToString()+ "alive: {0}", g.IsAlive);
+
+                //Console.WriteLine("Groundstat2: title: {0} {1} name: {2} {3} type: {4} {5}",matchTitle != null, matchTitle != null && g.Title.ToLower().Contains(matchTitle.ToLower()), matchName != null, matchName != null && g.Name.ToLower().Contains(matchName.ToLower()), g.Type != null, g.Type != null && g.Type != matchType  );
 
                 if (matcharmy > 0 && g.country != matchstring) continue;
                 if (matchAliveState.HasValue && matchAliveState.Value != g.IsAlive) continue;
@@ -30982,13 +31018,13 @@ public static class Calcs
                 if (antiMatch)
                 {
                     if (matchTitle != null && g.Title.ToLower().Contains(matchTitle.ToLower())) continue;
-                    if (g.Type != AiGroundActorType.Unknown && g.Type == matchType) continue;
+                    if (matchType != null && g.Type == matchType.Value) continue;
                     if (matchName != null && g.Name.ToLower().Contains(matchName.ToLower())) continue;
                 }
                 else
                 {
                     if (matchTitle != null && !g.Title.ToLower().Contains(matchTitle.ToLower())) continue;
-                    if (g.Type != AiGroundActorType.Unknown && g.Type != matchType) continue;
+                    if (matchType != null && g.Type != matchType.Value) continue;
                     if (matchName != null && !g.Name.ToLower().Contains(matchName.ToLower())) continue;
                 }
                 count++;

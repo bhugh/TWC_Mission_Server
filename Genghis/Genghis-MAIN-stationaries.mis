@@ -197,8 +197,8 @@
   Main_Mis_Gen_4071 Stationary.Environment.JerryCan_GER1_1 de 165014.31 49751.93 659.10 
   Main_Mis_Gen_0804 Stationary.Environment.TelegaBallon_UK1 de 162920.17 49844.90 285.00 
   Main_Mis_Gen_4109 Stationary.Environment.JerryCan_GER1_3 de 162926.30 49847.00 659.10 
-  Main_Mis_Gen_0810 Stationary.Environment.TelegaBallon_UK1 de 163040.63 49793.52 285.00 
   Main_Mis_Gen_4112 Stationary.Environment.JerryCan_GER1_1 de 163035.59 49798.05 659.10 
+  Main_Mis_Gen_0810 Stationary.Environment.TelegaBallon_UK1 de 163040.63 49793.52 285.00 
   Main_Mis_Gen_0792 Stationary.Environment.TelegaBallon_UK1 de 163046.83 49804.85 285.00 
   Main_Mis_Gen_0799 Stationary.Environment.TelegaBallon_UK1 de 163151.55 49800.66 285.00 
   Main_Mis_Gen_0798 Stationary.Environment.TelegaBallon_UK1 de 163176.22 49812.00 285.00 
@@ -357,8 +357,8 @@
   Main_Mis_Gen_2224 Stationary.Environment.JerryCan_GER1_1 de 220002.30 59260.79 659.10 
   Main_Mis_Gen_2225 Stationary.Environment.JerryCan_GER1_1 de 220004.73 59261.60 659.10 
   Main_Mis_Gen_2216 Stationary.Environment.JerryCan_GER1_1 de 220006.72 59259.49 659.10 
-  Main_Mis_Gen_2228 Stationary.Environment.JerryCan_GER1_1 de 220013.64 59255.95 659.10 
   Main_Mis_Gen_2226 Stationary.Environment.JerryCan_GER1_1 de 220010.02 59258.52 659.10 
+  Main_Mis_Gen_2228 Stationary.Environment.JerryCan_GER1_1 de 220013.64 59255.95 659.10 
   Main_Mis_Gen_2227 Stationary.Environment.JerryCan_GER1_1 de 220011.64 59259.83 659.10 
   Main_Mis_Gen_2246 Stationary.Airfield.Fuel_Storage nn 220012.61 59259.94 0.00 /hstart -9
   Main_Mis_Gen_2215 Stationary.Environment.JerryCan_GER1_1 de 220014.11 59258.86 659.10 
@@ -471,8 +471,8 @@
   Main_Mis_Gen_5021 Stationary.Environment.JerryCan_GER1_1 de 293832.50 84960.23 659.10 /hstart 2
   Main_Mis_Gen_1891 Stationary.Ford_G917 de 293857.03 84944.10 659.10 
   Main_Mis_Gen_1861 Stationary.Ford_G917 de 293849.03 84957.45 659.10 
-  Main_Mis_Gen_1868 Stationary.Ford_G917 de 293844.59 84964.62 659.10 
   Main_Mis_Gen_3102 Stationary.Environment.JerryCan_GER1_1 de 293845.09 84963.36 659.10 
+  Main_Mis_Gen_1868 Stationary.Ford_G917 de 293844.59 84964.62 659.10 
   Main_Mis_Gen_1893 Stationary.Ford_G917 de 293864.94 84946.41 659.10 
   Main_Mis_Gen_3107 Stationary.Environment.JerryCan_GER1_1 de 293825.03 84990.38 659.10 
   Main_Mis_Gen_1888 Stationary.Ford_G917 de 293855.38 84961.15 659.10 
@@ -503,8 +503,8 @@
   Main_Mis_Gen_3104 Stationary.Environment.JerryCan_GER1_1 de 293853.38 84992.24 659.10 
   Main_Mis_Gen_1881 Stationary.Ford_G917 de 293840.16 85008.01 659.10 
   Main_Mis_Gen_1883 Stationary.SdKfz_9 de 293854.88 84998.24 659.10 
-  Main_Mis_Gen_1895 Stationary.Ford_G917 de 293835.56 85019.53 659.10 
   Main_Mis_Gen_5016 Stationary.Environment.JerryCan_GER1_1 de 293839.19 85015.17 659.10 /hstart 2
+  Main_Mis_Gen_1895 Stationary.Ford_G917 de 293835.56 85019.53 659.10 
   Main_Mis_Gen_1884 Stationary.SdKfz_9 de 293865.13 84992.46 659.10 
   Main_Mis_Gen_1885 Stationary.SdKfz_9 de 293859.13 85000.76 659.10 
   Main_Mis_Gen_3106 Stationary.Environment.JerryCan_GER1_1 de 293854.31 85007.29 659.10 
@@ -1280,8 +1280,8 @@
   Main_Mis_Gen_4571 Stationary.Environment.TelegaBallon_UK1 nn 57128.68 203806.77 0.00 
   Main_Mis_Gen_0763 Stationary.Environment.CamoNetPlane nn 57008.77 203884.11 50.00 
   Main_Mis_Gen_0758 Stationary.SpitfireMkI gb 57010.11 203887.16 -45.00 
-  Main_Mis_Gen_0757 Stationary.SpitfireMkI gb 57014.32 203896.39 -45.00 
   Main_Mis_Gen_0762 Stationary.Environment.CamoNetPlane nn 57014.16 203896.03 50.00 
+  Main_Mis_Gen_0757 Stationary.SpitfireMkI gb 57014.32 203896.39 -45.00 
   Main_Mis_Gen_0755 Stationary.Industrial.Railroad.SmallFactory gb 57076.00 203850.05 -35.00 
   Main_Mis_Gen_0760 Stationary.SpitfireMkI gb 57073.20 203867.31 145.00 
   Main_Mis_Gen_0764 Stationary.Environment.CamoNetPlane nn 57081.39 203863.28 55.00 
@@ -1377,9 +1377,9 @@
   Main_Mis_Gen_1344 Stationary.Environment.JerryCan_GER1_1 gb 222778.69 212278.17 720.00 /hstart -2
   Main_Mis_Gen_1163 Stationary.Environment.JerryCan_GER1_1 gb 222798.94 212253.14 720.00 /hstart -2
   Main_Mis_Gen_1166 Stationary.Environment.JerryCan_GER1_1 gb 222799.44 212257.22 720.00 /hstart -2
+  Main_Mis_Gen_1168 Stationary.Environment.JerryCan_GER1_1 gb 222804.44 212260.97 720.00 /hstart -2
   Main_Mis_Gen_1167 Stationary.Environment.JerryCan_GER1_1 gb 222798.36 212266.53 720.00 /hstart -2
   Main_Mis_Gen_1169 Stationary.Environment.JerryCan_GER1_1 gb 222804.44 212260.97 720.00 /hstart -2
-  Main_Mis_Gen_1168 Stationary.Environment.JerryCan_GER1_1 gb 222804.44 212260.97 720.00 /hstart -2
   Main_Mis_Gen_1171 Stationary.Environment.JerryCan_GER1_1 gb 222804.33 212267.08 720.00 /hstart -2
   Main_Mis_Gen_0008 Stationary.Bf-109E-3B de 280545.78 212311.80 75.00 
   Main_Mis_Gen_2626 Stationary.AEC_Regent_II nn 286166.13 212279.73 659.10 
@@ -1410,8 +1410,8 @@
   Main_Mis_Gen_0107 Stationary.Environment.SandBagWall_Line nn 221201.97 214044.16 -105.00 
   Main_Mis_Gen_0105 Stationary.Environment.SandBagWall_Line nn 221203.78 214043.77 -100.00 
   Main_Mis_Gen_0109 Stationary.Environment.SandBagWall_Line nn 221199.25 214048.67 -15.90 
-  Main_Mis_Gen_0108 Stationary.Environment.SandBagWall_Line nn 221199.69 214050.39 -15.00 
   Main_Mis_Gen_0104 Stationary.Environment.SandBagWall_Line nn 221205.47 214044.13 -60.00 
+  Main_Mis_Gen_0108 Stationary.Environment.SandBagWall_Line nn 221199.69 214050.39 -15.00 
   Main_Mis_Gen_0095 Stationary.Environment.SandBagWall_Line nn 221200.63 214051.72 120.00 
   Main_Mis_Gen_0082 Artillery.SoundLocator_MkIIIV_UK1 gb 221203.89 214048.22 130.00 /timeout 0/radius_hide 700
   Main_Mis_Gen_0103 Stationary.Environment.SandBagWall_Line nn 221207.06 214045.19 -55.00 
@@ -1424,8 +1424,8 @@
   Main_Mis_Gen_0099 Stationary.Environment.SandBagWall_Line nn 221207.05 214051.61 35.00 
   Main_Mis_Gen_0145 Stationary.Environment.SandBagWall_Line nn 221330.91 214076.23 245.00 
   Main_Mis_Gen_0150 Stationary.Environment.SandBagWall_Line nn 221329.75 214077.39 205.00 
-  Main_Mis_Gen_0151 Stationary.Environment.SandBagWall_Line nn 221328.98 214079.16 205.00 
   Main_Mis_Gen_0144 Stationary.Environment.SandBagWall_Line nn 221332.42 214075.52 245.00 
+  Main_Mis_Gen_0151 Stationary.Environment.SandBagWall_Line nn 221328.98 214079.16 205.00 
   Main_Mis_Gen_0160 Stationary.Environment.SandBagWall_Line nn 221334.03 214075.50 110.00 
   Main_Mis_Gen_0161 Stationary.Environment.SandBagWall_Line nn 221335.69 214076.13 109.10 
   Main_Mis_Gen_0162 Stationary.Environment.SandBagWall_Line_4m nn 221338.34 214075.78 69.10 
@@ -1437,8 +1437,8 @@
   Main_Mis_Gen_0114 Stationary.Environment.SandBagWall_Line_4m nn 221199.70 214100.83 -25.90 
   Main_Mis_Gen_0115 Stationary.Environment.SandBagWall_Line_4m nn 221203.03 214099.00 -30.90 
   Main_Mis_Gen_0094 Stationary.Environment.SandBagWall_Line nn 221200.30 214103.42 -345.90 
-  Main_Mis_Gen_0093 Stationary.Environment.SandBagWall_Line nn 221199.83 214105.14 -345.00 
   Main_Mis_Gen_0092 Stationary.Environment.SandBagWall_Line nn 221204.91 214100.88 -75.00 
+  Main_Mis_Gen_0093 Stationary.Environment.SandBagWall_Line nn 221199.83 214105.14 -345.00 
   Main_Mis_Gen_0079 Stationary.Environment.SandBagWall_Line nn 221199.98 214106.75 -210.00 
   Main_Mis_Gen_0091 Stationary.Environment.SandBagWall_Line nn 221206.66 214101.44 -70.00 
   Main_Mis_Gen_0080 Stationary.Environment.SandBagWall_Line nn 221200.83 214108.20 -210.00 
@@ -1490,8 +1490,8 @@
   Main_Mis_Gen_0232 Artillery.SoundLocator_MkIIIV_UK1 gb 221189.19 214174.94 130.00 /timeout 0/radius_hide 700
   Main_Mis_Gen_0222 Stationary.Environment.SandBagWall_Line nn 221192.34 214171.91 -55.00 
   Main_Mis_Gen_0214 Stationary.Environment.SandBagWall_Line nn 221185.92 214178.44 120.00 
-  Main_Mis_Gen_0215 Stationary.Environment.SandBagWall_Line nn 221187.38 214179.27 120.00 
   Main_Mis_Gen_0221 Stationary.Environment.SandBagWall_Line nn 221193.20 214173.25 -15.00 
+  Main_Mis_Gen_0215 Stationary.Environment.SandBagWall_Line nn 221187.38 214179.27 120.00 
   Main_Mis_Gen_0216 Stationary.Environment.SandBagWall_Line nn 221188.98 214179.56 80.00 
   Main_Mis_Gen_0220 Stationary.Environment.SandBagWall_Line nn 221193.63 214175.09 -10.00 
   Main_Mis_Gen_0217 Stationary.Environment.SandBagWall_Line nn 221190.88 214179.17 80.00 
@@ -1506,8 +1506,8 @@
   Main_Mis_Gen_0195 Stationary.Environment.SandBagWall_Line nn 221306.63 214158.19 -70.00 
   Main_Mis_Gen_0200 Stationary.Environment.SandBagWall_Line nn 221301.72 214163.75 -205.00 
   Main_Mis_Gen_0194 Stationary.Environment.SandBagWall_Line nn 221308.45 214158.81 -70.00 
-  Main_Mis_Gen_0201 Stationary.Environment.SandBagWall_Line nn 221302.56 214165.47 -210.00 
   Main_Mis_Gen_0210 Artillery.SoundLocator_MkIIIV_UK1 gb 221305.98 214162.70 -19.10 /timeout 0/radius_hide 700
+  Main_Mis_Gen_0201 Stationary.Environment.SandBagWall_Line nn 221302.56 214165.47 -210.00 
   Main_Mis_Gen_0193 Stationary.Environment.SandBagWall_Line nn 221309.69 214159.86 -30.00 
   Main_Mis_Gen_0202 Stationary.Environment.SandBagWall_Line nn 221303.84 214166.63 -250.00 
   Main_Mis_Gen_0192 Stationary.Environment.SandBagWall_Line nn 221310.53 214161.31 -30.00 
@@ -1554,8 +1554,8 @@
   Main_Mis_Gen_0279 Stationary.Environment.SandBagWall_Line nn 221212.00 214295.39 -165.00 
   Main_Mis_Gen_0275 Stationary.Environment.SandBagWall_Line nn 221217.00 214291.44 -70.00 
   Main_Mis_Gen_0280 Stationary.Environment.SandBagWall_Line nn 221212.09 214297.02 -205.00 
-  Main_Mis_Gen_0274 Stationary.Environment.SandBagWall_Line nn 221218.83 214292.06 -70.00 
   Main_Mis_Gen_0281 Stationary.Environment.SandBagWall_Line nn 221212.94 214298.72 -210.00 
+  Main_Mis_Gen_0274 Stationary.Environment.SandBagWall_Line nn 221218.83 214292.06 -70.00 
   Main_Mis_Gen_0273 Stationary.Environment.SandBagWall_Line nn 221220.06 214293.11 -30.00 
   Main_Mis_Gen_0282 Stationary.Environment.SandBagWall_Line nn 221214.22 214299.88 -250.00 
   Main_Mis_Gen_0272 Stationary.Environment.SandBagWall_Line nn 221220.91 214294.56 -30.00 
@@ -1810,7 +1810,7 @@
   Main_Mis_Gen_5117 Stationary.Environment.JerryCan_GER1_1 gb 194638.11 220880.13 720.00 /hstart 2
   Main_Mis_Gen_0903 Stationary.Radar.Wotan_I de 294187.78 219447.31 65.00 
   Main_Mis_Gen_3286 Stationary.Environment.TelegaBallon_UK1 de 294190.59 219446.30 245.00 
-  Main_Mis_Gen_0901 Stationary.RadioBeacon.GenericLongRangeMast gb 222846.25 220786.31 200.00 /radioFreq 300
+  Main_Mis_Gen_0901 Stationary.RadioBeacon.GenericLongRangeMast nn 222846.25 220786.31 200.00 /radioFreq 300
   Main_Mis_Gen_1617 Stationary.WellingtonMkIc gb 222046.09 221071.80 200.00 
   Main_Mis_Gen_3427 Stationary.AEC_Regent_II nn 26417.00 224149.84 0.00 
   Main_Mis_Gen_0902 Stationary.Airfield.blister_hangar nn 221805.42 221158.89 90.00 
@@ -1863,8 +1863,8 @@
   Main_Mis_Gen_1071 Stationary.Pz_35t de 299483.50 220989.61 270.00 
   Main_Mis_Gen_1184 Stationary.Environment.IF5_MG-Wagen_36 de 299506.66 220967.39 270.00 
   Main_Mis_Gen_1205 Stationary.Environment.CamoNetCrates nn 299507.19 220967.55 539.10 
-  Main_Mis_Gen_1183 Stationary.Environment.IF5_MG-Wagen_36 de 299512.22 220967.63 270.00 
   Main_Mis_Gen_1206 Stationary.Environment.CamoNetCrates nn 299512.75 220967.55 539.10 
+  Main_Mis_Gen_1183 Stationary.Environment.IF5_MG-Wagen_36 de 299512.22 220967.63 270.00 
   Main_Mis_Gen_1068 Stationary.Pz_IVD de 299516.78 220979.88 270.00 
   Main_Mis_Gen_1121 Stationary.Pz_35t de 299505.16 220990.16 270.00 
   Main_Mis_Gen_1195 Stationary.Environment.CamoNetTank nn 299517.63 220979.64 270.00 
@@ -1894,10 +1894,10 @@
   Main_Mis_Gen_1120 Stationary.Pz_35t de 299504.34 220999.63 270.00 
   Main_Mis_Gen_1122 Stationary.SdKfz_9_Crane de 299492.69 221019.13 270.00 
   Main_Mis_Gen_1073 Stationary.Pz_35t de 299500.91 221011.39 270.00 
-  Main_Mis_Gen_1202 Stationary.Environment.CamoNetCrates nn 299482.28 221030.98 539.10 
-  Main_Mis_Gen_1201 Stationary.Environment.CamoNetCrates nn 299501.59 221011.42 539.10 
-  Main_Mis_Gen_0061 Stationary.Pz_IB de 299481.88 221031.05 270.00 
   Main_Mis_Gen_1066 Stationary.Pz_IVD de 299514.91 220998.55 270.00 
+  Main_Mis_Gen_0061 Stationary.Pz_IB de 299481.88 221031.05 270.00 
+  Main_Mis_Gen_1201 Stationary.Environment.CamoNetCrates nn 299501.59 221011.42 539.10 
+  Main_Mis_Gen_1202 Stationary.Environment.CamoNetCrates nn 299482.28 221030.98 539.10 
   Main_Mis_Gen_1197 Stationary.Environment.CamoNetTank nn 299515.13 220998.61 270.00 
   Main_Mis_Gen_1065 Stationary.Pz_IVD de 299513.81 221008.03 270.00 
   Main_Mis_Gen_0062 Stationary.Panzerbefehlswagen_I de 299497.28 221031.86 270.00 
@@ -1927,8 +1927,8 @@
   Main_Mis_Gen_1516 Stationary.Opel_Blitz_fuel de 314878.06 223303.44 659.10 
   Main_Mis_Gen_1518 Stationary.Environment.JerryCan_GER1_1 de 314868.31 223322.47 659.10 
   Main_Mis_Gen_1515 Stationary.Opel_Blitz_fuel de 314861.81 223344.30 659.10 
-  Main_Mis_Gen_1513 Stationary.Environment.JerryCan_GER1_1 de 314911.03 223318.77 659.10 
   Main_Mis_Gen_1517 Stationary.Environment.JerryCan_GER1_1 de 314901.75 223328.97 659.10 
+  Main_Mis_Gen_1513 Stationary.Environment.JerryCan_GER1_1 de 314911.03 223318.77 659.10 
   Main_Mis_Gen_1514 Stationary.Environment.JerryCan_GER1_1 de 314902.69 223346.16 659.10 
   Main_Mis_Gen_3284 Stationary.Opel_Blitz_fuel de 313878.41 223388.25 659.10 
   Main_Mis_Gen_3283 Stationary.Opel_Blitz_fuel de 313880.78 223389.67 659.10 
@@ -2366,8 +2366,8 @@
   Main_Mis_Gen_1437 Stationary.Valentine_I gb 214613.52 235602.02 60.00 
   Main_Mis_Gen_1436 Stationary.Valentine_I gb 214631.02 235593.63 60.00 
   Main_Mis_Gen_1662 Stationary.Beaverette_III gb 214638.22 235592.00 -30.00 
-  Main_Mis_Gen_1430 Stationary.Valentine_I gb 214597.95 235636.61 60.00 
   Main_Mis_Gen_1435 Stationary.Valentine_I gb 214649.95 235584.22 60.00 
+  Main_Mis_Gen_1430 Stationary.Valentine_I gb 214597.95 235636.61 60.00 
   Main_Mis_Gen_1431 Stationary.Valentine_I gb 214611.41 235630.19 60.00 
   Main_Mis_Gen_1432 Stationary.Valentine_I gb 214625.05 235623.80 60.00 
   Main_Mis_Gen_1433 Stationary.Valentine_I gb 214642.98 235615.66 60.00 
@@ -2446,8 +2446,8 @@
   Main_Mis_GenB_460 Stationary.Horch_108_Typ_1A nn 244405.08 235478.81 4.10 
   Main_Mis_GenB_433 Stationary.Bedford_MW_tent nn 244403.72 235485.14 729.10 
   Main_Mis_GenB_424 Stationary.Environment.JerryCan_GER1_1 gb 244436.33 235472.70 659.10 
-  Main_Mis_GenB_456 Stationary.Environment.JerryCan_GER1_1 gb 244460.52 235466.38 659.10 
   Main_Mis_GenB_436 Stationary.Bedford_MW_tent nn 244465.52 235461.27 609.10 
+  Main_Mis_GenB_456 Stationary.Environment.JerryCan_GER1_1 gb 244460.52 235466.38 659.10 
   Main_Mis_GenB_437 Stationary.Bedford_MW_tent nn 244472.86 235459.88 609.10 
   Main_Mis_GenB_430 Stationary.Environment.TelegaBallon_UK1 gb 244417.56 235519.45 584.10 
   Main_Mis_GenB_394 Stationary.Environment.JerryCan_GER1_1 gb 244466.25 235476.77 659.10 
@@ -2461,8 +2461,8 @@
   Main_Mis_GenB_409 Stationary.Environment.JerryCan_GER1_1 gb 244288.27 235539.61 659.10 
   Main_Mis_GenB_407 Stationary.Environment.JerryCan_GER1_1 gb 244320.14 235529.31 659.10 
   Main_Mis_GenB_453 Stationary.Ford_G917 nn 244329.84 235547.36 -115.00 
-  Main_Mis_GenB_461 Stationary.Horch_108_Typ_1A nn 244337.42 235543.30 -120.00 
   Main_Mis_GenB_408 Stationary.Environment.JerryCan_GER1_1 gb 244308.89 235572.28 659.10 
+  Main_Mis_GenB_461 Stationary.Horch_108_Typ_1A nn 244337.42 235543.30 -120.00 
   Main_Mis_GenB_452 Stationary.Ford_G917 nn 244347.80 235539.30 -115.00 
   Main_Mis_GenB_406 Stationary.Environment.JerryCan_GER1_1 gb 244337.14 235556.81 659.10 
   Main_Mis_GenB_462 Stationary.Horch_108_Typ_1A nn 244353.72 235534.89 -105.00 
@@ -2511,8 +2511,8 @@
   Main_Mis_Gen_1728 Stationary.Matilda_2A gb 243836.48 236976.20 0.00 
   Main_Mis_Gen_1729 Stationary.Matilda_2A gb 243887.70 236938.80 0.00 
   Main_Mis_Gen_1732 Stationary.Matilda_2A gb 243920.94 236959.56 0.00 
-  Main_Mis_Gen_1733 Stationary.Matilda_2A gb 243960.83 236935.55 0.00 
   Main_Mis_Gen_2844 Stationary.Environment.JerryCan_GER1_1 gb 243944.08 236951.56 659.10 
+  Main_Mis_Gen_1733 Stationary.Matilda_2A gb 243960.83 236935.55 0.00 
   Main_Mis_Gen_1717 Stationary.Bedford_MW_tank gb 243809.02 236997.14 0.00 
   Main_Mis_Gen_1718 Stationary.Bedford_MW_tank gb 243831.00 237023.31 0.00 
   Main_Mis_Gen_1731 Stationary.Matilda_2A gb 243869.52 237000.92 0.00 
@@ -2903,8 +2903,8 @@
   Main_Mis_GenB_523 Stationary.Opel_Blitz_fuel nn 204294.58 257702.36 238.10 
   Main_Mis_GenB_524 Stationary.Opel_Blitz_fuel nn 204328.22 257686.11 238.10 
   Main_Mis_GenB_167 Stationary.Environment.JerryCan_GER1_1 gb 204307.97 257727.95 659.10 
-  Main_Mis_GenB_210 Stationary.Opel_Blitz_fuel nn 204343.66 257705.31 -11.90 
   Main_Mis_GenB_208 Stationary.Environment.JerryCan_GER1_1 gb 204340.22 257708.63 659.10 
+  Main_Mis_GenB_210 Stationary.Opel_Blitz_fuel nn 204343.66 257705.31 -11.90 
   Main_Mis_GenB_209 Stationary.Opel_Blitz_fuel nn 204344.70 257711.20 -6.90 
   Main_Mis_GenB_526 Stationary.Opel_Blitz_fuel nn 204239.00 257736.13 418.10 
   Main_Mis_GenB_527 Stationary.Opel_Blitz_fuel nn 204241.09 257743.30 418.10 
@@ -2951,8 +2951,8 @@
   Main_Mis_GenB_708 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 252210.19 257930.00 15.00 
   Main_Mis_GenB_634 ShipUnit.MotorBoat2 nn 252221.38 257920.47 100.00 /sleep 1440/skill 2/slowfire 1
   Main_Mis_GenB_694 Stationary.Trenches.Trench_direct_15m nn 252208.17 257934.73 15.00 
-  Main_Mis_GenB_651 Stationary.Trenches.Trench_direct nn 252216.17 257927.39 105.00 
   Main_Mis_GenB_632 Stationary.Bedford_MW_tank nn 252214.39 257929.94 10.00 
+  Main_Mis_GenB_651 Stationary.Trenches.Trench_direct nn 252216.17 257927.39 105.00 
   Main_Mis_GenB_626 Stationary.Environment.CamoNetCars nn 252219.55 257928.38 -75.00 
   Main_Mis_GenB_641 Stationary.Industrial.Smoke_Pipe nn 252215.78 257933.42 100.00 
   Main_Mis_GenB_665 Stationary.Environment.CamoNetCars nn 252222.27 257926.98 -165.00 
@@ -2983,9 +2983,9 @@
   Main_Mis_GenB_667 Stationary.Environment.CamoNetCars nn 252236.36 257930.94 -165.00 
   Main_Mis_GenB_621 Stationary.Environment.CamoNetCars nn 252234.20 257933.16 -75.00 
   Main_Mis_GenB_680 Stationary.Trenches.Trench_direct_15m nn 252235.33 257933.72 105.00 
+  Main_Mis_GenB_684 Stationary.Trenches.Trench_direct_15m nn 252238.83 257931.75 105.00 
   Main_Mis_GenB_660 Stationary.Environment.CamoNetCars nn 252236.56 257933.86 -75.00 
   Main_Mis_GenB_630 Stationary.Bedford_MW_tank nn 252227.97 257942.77 -75.00 
-  Main_Mis_GenB_684 Stationary.Trenches.Trench_direct_15m nn 252238.83 257931.75 105.00 
   Main_Mis_GenB_675 Stationary.Environment.CamoNetCars nn 252235.31 257935.39 -165.00 
   Main_Mis_GenB_620 Stationary.Environment.CamoNetCars nn 252237.16 257934.16 -75.00 
   Main_Mis_GenB_637 ShipUnit.Boat_16ft_Dinghy nn 252244.27 257928.55 100.00 /sleep 1440/skill 2/slowfire 1
@@ -3000,8 +3000,8 @@
   Main_Mis_GenB_627 Stationary.Bedford_MW_tank gb 252235.30 257944.34 -75.00 
   Main_Mis_GenB_617 Stationary.Environment.CamoNetCars nn 252244.39 257936.84 -75.00 
   Main_Mis_GenB_706 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 252236.78 257945.44 15.00 
-  Main_Mis_GenB_673 Stationary.Environment.CamoNetCars nn 252244.11 257938.38 -165.00 
   Main_Mis_GenB_639 ShipUnit.Boat_27ft_Whaler nn 252252.08 257930.22 100.00 /sleep 1440/skill 2/slowfire 1
+  Main_Mis_GenB_673 Stationary.Environment.CamoNetCars nn 252244.11 257938.38 -165.00 
   Main_Mis_GenB_669 Stationary.Environment.CamoNetCars nn 252248.73 257935.47 -165.00 
   Main_Mis_GenB_662 Stationary.Environment.CamoNetCars nn 252246.17 257937.06 -75.00 
   Main_Mis_GenB_645 Stationary.Trenches.Trench_direct_15m nn 252244.95 257941.36 105.00 
@@ -3015,8 +3015,8 @@
   Main_Mis_GenB_664 Stationary.Environment.CamoNetCars nn 252253.36 257938.81 -75.00 
   Main_Mis_GenB_682 Stationary.Trenches.Trench_direct_15m nn 252253.50 257939.47 105.00 
   Main_Mis_GenB_640 ShipUnit.Boat_27ft_Whaler nn 252260.02 257932.55 100.00 /sleep 1440/skill 2/slowfire 1
-  Main_Mis_GenB_710 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 252253.14 257940.72 15.00 
   Main_Mis_GenB_687 Stationary.Industrial.Oxygen_Facility gb 252233.95 257960.67 15.00 
+  Main_Mis_GenB_710 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 252253.14 257940.72 15.00 
   Main_Mis_GenB_671 Stationary.Environment.CamoNetCars nn 252253.34 257941.22 -165.00 
   Main_Mis_GenB_646 Stationary.Trenches.Trench_direct nn 252256.98 257939.77 105.00 
   Main_Mis_GenB_642 Stationary.Industrial.Smoke_Pipe nn 252254.05 257944.36 100.00 
@@ -3076,8 +3076,8 @@
   Main_Mis_GenB_57 Stationary.Environment.JerryCan_GER1_1 gb 251200.33 259059.95 659.10 
   Main_Mis_GenB_70 Stationary.Opel_Blitz_cargo nn 251209.53 259051.78 664.10 
   Main_Mis_GenB_65 Stationary.Bedford_MW_tent nn 251226.19 259059.36 744.10 
-  Main_Mis_GenB_68 Stationary.Opel_Blitz_cargo nn 251222.89 259069.78 744.10 
   Main_Mis_GenB_69 Stationary.Opel_Blitz_cargo gb 251225.31 259066.02 744.10 
+  Main_Mis_GenB_68 Stationary.Opel_Blitz_cargo nn 251222.89 259069.78 744.10 
   Main_Mis_GenB_63 Stationary.Bedford_MW_tent nn 251231.42 259062.63 744.10 
   Main_Mis_GenB_62 Stationary.Bedford_MW_tent nn 251237.36 259066.45 744.10 
   Main_Mis_GenB_64 Stationary.Bedford_MW_tent nn 251242.80 259069.63 744.10 
@@ -3087,8 +3087,8 @@
   Main_Mis_Gen_1708 Stationary.BeaufighterMkINF gb 247418.98 259135.16 0.00 
   Main_Mis_GenB_38 Stationary.Environment.JerryCan_GER1_1 gb 251064.91 259081.19 659.10 
   Main_Mis_GenB_37 Stationary.Environment.JerryCan_GER1_1 gb 251085.20 259094.50 659.10 
-  Main_Mis_GenB_47 Stationary.Environment.JerryCan_GER1_1 gb 251122.61 259077.39 659.10 
   Main_Mis_GenB_46 Stationary.Environment.JerryCan_GER1_1 gb 251108.98 259091.66 659.10 
+  Main_Mis_GenB_47 Stationary.Environment.JerryCan_GER1_1 gb 251122.61 259077.39 659.10 
   Main_Mis_GenB_36 Stationary.Environment.JerryCan_GER1_1 gb 251102.64 259106.88 659.10 
   Main_Mis_GenB_52 Stationary.Environment.JerryCan_GER1_1 nn 251167.64 259082.14 659.10 
   Main_Mis_GenB_53 Stationary.Environment.JerryCan_GER1_1 gb 251191.11 259074.22 659.10 
@@ -3106,11 +3106,18 @@
   Main_Mis_GenB_135 Stationary.Morris_CDSW nn 224994.73 259641.69 654.10 
   Main_Mis_GenB_134 Stationary.Morris_CDSW nn 225001.80 259643.91 654.10 
   Main_Mis_Gen_1714 Stationary.BeaufighterMkINF gb 247522.05 259267.67 0.00 
+  Static50 Stationary.Ford_G917 nn 224973.84 259672.89 574.10 
   Main_Mis_GenB_138 Stationary.Environment.JerryCan_GER1_1 gb 224995.86 259652.36 659.10 
+  Static51 Stationary.Ford_G917 nn 224971.95 259676.17 574.10 
+  Static49 Stationary.Ford_G917 nn 224977.94 259677.66 664.10 
   Main_Mis_GenB_133 Stationary.Morris_CDSW nn 225009.34 259648.59 654.10 
   Main_Mis_GenB_139 Stationary.Environment.JerryCan_GER1_1 gb 224989.16 259669.45 659.10 
+  Static46 Stationary.Ford_G917 nn 224982.61 259678.86 664.10 
+  Static47 Stationary.Ford_G917 nn 224985.59 259680.55 664.10 
   Main_Mis_GenB_132 Stationary.Bedford_MW_tent nn 225016.19 259651.45 654.10 
+  Static48 Stationary.Ford_G917 nn 224990.17 259682.14 664.10 
   Main_Mis_GenB_131 Stationary.Bedford_MW_tent nn 225022.61 259654.88 654.10 
+  Static45 Stationary.Ford_G917 gb 224992.94 259684.58 664.10 
   Main_Mis_GenB_137 Stationary.Environment.JerryCan_GER1_1 gb 225015.84 259662.58 659.10 
   Main_Mis_GenB_120 Stationary.Bedford_MW_tent nn 225010.44 259691.72 649.10 
   Main_Mis_GenB_121 Stationary.Bedford_MW_tent nn 225014.33 259692.75 649.10 
@@ -3172,8 +3179,15 @@
   Main_Mis_Gen_2897 Stationary.AEC_Regent_II nn 138188.34 262487.84 659.10 
   Main_Mis_GenB_12 Stationary.AEC_Regent_II nn 253273.75 260955.75 659.10 
   Main_Mis_GenB_11 Stationary.AEC_Regent_II nn 252797.34 261075.00 659.10 
+  Static27 Stationary.Ford_G917 nn 252846.56 261310.97 564.10 
+  Static26 Stationary.Ford_G917 nn 252843.39 261316.03 564.10 
+  Static25 Stationary.Ford_G917 nn 252841.52 261318.63 564.10 
+  Static12 Stationary.Ford_G917 nn 252853.36 261314.75 564.10 
+  Static11 Stationary.Ford_G917 nn 252850.61 261319.22 564.10 
   Main_Mis_GenB_493 Stationary.Scammell_Pioneer_TRMU30 nn 252826.55 261345.28 -60.00 
+  Static6 Stationary.Scammell_Pioneer_TRMU30 nn 252847.09 261325.61 30.00 
   Main_Mis_GenB_492 Stationary.Scammell_Pioneer_TRMU30 nn 252820.86 261354.16 -55.00 
+  Static5 Stationary.Scammell_Pioneer_TRMU30 nn 252843.64 261334.27 30.00 
   Main_Mis_GenB_491 Stationary.Scammell_Pioneer_TRMU30 nn 252815.30 261364.11 -55.00 
   Main_Mis_GenB_496 Stationary.Scammell_Pioneer_TRMU30 nn 252840.91 261340.88 25.00 
   Main_Mis_GenB_490 Stationary.Scammell_Pioneer_TRMU30 nn 252809.42 261374.56 664.10 
@@ -3183,12 +3197,35 @@
   Main_Mis_Gen_1145 Stationary.Environment.JerryCan_GER1_1 gb 252835.63 261370.42 659.10 
   Main_Mis_Gen_1134 Stationary.Environment.JerryCan_GER1_1 gb 252843.86 261373.94 659.10 
   Main_Mis_Gen_1146 Stationary.Environment.JerryCan_GER1_1 gb 252852.67 261368.66 659.10 
+  Static15 Stationary.Ford_G917 nn 252874.02 261320.13 564.10 
+  Static14 Stationary.Ford_G917 nn 252870.70 261325.75 564.10 
+  Static13 Stationary.Ford_G917 nn 252868.97 261330.66 564.10 
+  Static29 Stationary.Ford_G917 nn 252881.83 261321.83 564.10 
   Main_Mis_GenB_497 Stationary.Scammell_Pioneer_TRMU30 nn 252866.05 261338.05 25.00 
+  Static28 Stationary.Ford_G917 nn 252880.41 261326.31 564.10 
   Main_Mis_GenB_13 Stationary.AEC_Regent_II nn 253554.25 261354.98 659.10 
   Main_Mis_Gen_1130 Stationary.Environment.JerryCan_GER1_1 gb 252823.33 261381.70 659.10 
   Main_Mis_GenB_495 Stationary.Scammell_Pioneer_TRMU30 nn 252813.83 261392.94 30.00 
+  Static0 Stationary.Scammell_Pioneer_TRMU30 nn 252808.97 261399.88 30.00 
   Main_Mis_Gen_1144 Stationary.Environment.JerryCan_GER1_1 gb 252833.28 261378.64 659.10 
+  Static1 Stationary.Scammell_Pioneer_TRMU30 nn 252804.84 261407.14 30.00 
   Main_Mis_GenB_494 Stationary.Scammell_Pioneer_TRMU30 nn 252834.02 261401.78 30.00 
+  Static22 Stationary.Ford_G917 nn 252831.69 261405.03 564.10 
+  Static2 Stationary.Scammell_Pioneer_TRMU30 nn 252830.23 261408.52 30.00 
+  Static3 Stationary.Scammell_Pioneer_TRMU30 nn 252826.58 261415.67 30.00 
+  Static21 Stationary.Ford_G917 nn 252823.67 261419.84 564.10 
+  Static4 Stationary.Scammell_Pioneer_TRMU30 nn 252820.88 261423.98 30.00 
+  Static8 Stationary.Ford_G917 nn 252855.84 261392.16 564.10 
+  Static7 Stationary.Ford_G917 nn 252853.38 261395.64 564.10 
+  Static9 Stationary.Ford_G917 nn 252851.19 261398.70 564.10 
+  Static23 Stationary.Ford_G917 nn 252842.91 261408.31 564.10 
+  Static16 Stationary.Ford_G917 nn 252840.14 261411.81 564.10 
+  Static10 Stationary.Ford_G917 nn 252849.30 261403.64 564.10 
+  Static17 Stationary.Ford_G917 nn 252837.80 261415.31 564.10 
+  Static24 Stationary.Ford_G917 nn 252847.58 261406.70 564.10 
+  Static18 Stationary.Ford_G917 nn 252835.47 261419.83 564.10 
+  Static19 Stationary.Ford_G917 nn 252832.98 261423.03 564.10 
+  Static20 Stationary.Ford_G917 nn 252830.22 261427.13 564.10 
   Main_Mis_GenB_313 Stationary.AEC_Regent_II nn 191393.63 262475.13 659.10 
   Main_Mis_GenB_33 Stationary.AEC_Regent_II nn 243854.84 261822.47 659.10 
   Main_Mis_Gen_2871 Stationary.AEC_Regent_II nn 187119.94 262768.91 659.10 
@@ -3205,8 +3242,8 @@
   Main_Mis_Gen_0360 Stationary.Environment.SandBagWall_Line_4m nn 244720.67 262572.81 -20.90 
   Main_Mis_Gen_0358 Stationary.Environment.SandBagWall_Line_4m nn 244718.33 262577.31 -15.90 
   Main_Mis_Gen_0359 Stationary.Environment.SandBagWall_Line_4m nn 244721.92 262576.09 -20.90 
-  Main_Mis_Gen_0356 Stationary.Environment.SandBagWall_Line nn 244717.69 262581.56 25.00 
   Main_Mis_Gen_0357 Stationary.Environment.SandBagWall_Line nn 244718.44 262580.00 24.10 
+  Main_Mis_Gen_0356 Stationary.Environment.SandBagWall_Line nn 244717.69 262581.56 25.00 
   Main_Mis_Gen_0344 Stationary.Environment.SandBagWall_Line nn 244717.53 262583.22 160.00 
   Main_Mis_Gen_0355 Stationary.Environment.SandBagWall_Line nn 244723.44 262578.28 -65.00 
   Main_Mis_Gen_0345 Stationary.Environment.SandBagWall_Line nn 244718.14 262584.78 160.00 
@@ -3226,8 +3263,8 @@
   Main_Mis_Gen_0860 Stationary.Environment.FuelDrum_UK1_9 gb 244681.94 262649.00 0.00 
   Main_Mis_Gen_0388 Stationary.Environment.SandBagWall_Line nn 244744.97 262605.22 -155.00 
   Main_Mis_Gen_0386 Stationary.Environment.SandBagWall_Line nn 244747.64 262603.31 -115.00 
-  Main_Mis_Gen_0389 Stationary.Environment.SandBagWall_Line nn 244744.19 262606.97 -155.00 
   Main_Mis_Gen_0387 Stationary.Environment.SandBagWall_Line nn 244746.11 262604.06 -115.00 
+  Main_Mis_Gen_0389 Stationary.Environment.SandBagWall_Line nn 244744.19 262606.97 -155.00 
   Main_Mis_Gen_0398 Stationary.Environment.SandBagWall_Line nn 244749.25 262603.31 -250.00 
   Main_Mis_Gen_0390 Stationary.Environment.SandBagWall_Line nn 244744.03 262608.63 -200.00 
   Main_Mis_Gen_0399 Stationary.Environment.SandBagWall_Line nn 244750.89 262603.97 -250.90 
@@ -3239,9 +3276,9 @@
   Main_Mis_Gen_0393 Stationary.Environment.SandBagWall_Line nn 244747.69 262612.28 -250.00 
   Main_Mis_Gen_0397 Stationary.Environment.SandBagWall_Line nn 244753.03 262608.78 -340.00 
   Main_Mis_Gen_0394 Stationary.Environment.SandBagWall_Line nn 244749.28 262612.31 -290.00 
+  Main_Mis_Gen_0396 Stationary.Environment.SandBagWall_Line nn 244752.34 262610.47 -335.00 
   Main_Mis_Gen_0395 Stationary.Environment.SandBagWall_Line nn 244751.08 262611.63 -295.00 
   Main_Mis_Gen_0401 Stationary.Environment.SandBagWall_Line_4m nn 244755.08 262607.06 -295.90 
-  Main_Mis_Gen_0396 Stationary.Environment.SandBagWall_Line nn 244752.34 262610.47 -335.00 
   Main_Mis_Gen_0402 Stationary.Environment.SandBagWall_Line_4m nn 244758.25 262605.53 -295.90 
   Main_Mis_Gen_0409 Stationary.Environment.SandBagWall_Line nn 244799.59 262613.22 -115.00 
   Main_Mis_Gen_0410 Stationary.Environment.SandBagWall_Line nn 244798.45 262614.31 -155.00 
@@ -3257,11 +3294,11 @@
   Main_Mis_Gen_0422 Stationary.Environment.SandBagWall_Line_4m nn 244807.03 262612.75 -290.90 
   Main_Mis_Gen_0425 Stationary.Environment.SandBagWall_Line_4m nn 244810.50 262611.28 -295.90 
   Main_Mis_Gen_0415 Stationary.Environment.SandBagWall_Line nn 244801.17 262621.41 -250.00 
-  Main_Mis_Gen_0419 Stationary.Environment.SandBagWall_Line nn 244806.53 262617.88 -340.00 
   Main_Mis_Gen_0416 Stationary.Environment.SandBagWall_Line nn 244802.78 262621.50 -290.00 
-  Main_Mis_Gen_0423 Stationary.Environment.SandBagWall_Line_4m nn 244808.58 262616.22 -295.90 
+  Main_Mis_Gen_0419 Stationary.Environment.SandBagWall_Line nn 244806.53 262617.88 -340.00 
   Main_Mis_Gen_0418 Stationary.Environment.SandBagWall_Line nn 244805.83 262619.59 -335.00 
   Main_Mis_Gen_0417 Stationary.Environment.SandBagWall_Line nn 244804.56 262620.78 -295.00 
+  Main_Mis_Gen_0423 Stationary.Environment.SandBagWall_Line_4m nn 244808.58 262616.22 -295.90 
   Main_Mis_Gen_0424 Stationary.Environment.SandBagWall_Line_4m nn 244811.73 262614.63 -295.90 
   Main_Mis_Gen_0862 Stationary.Environment.FuelDrum_UK1_9 gb 244840.47 262648.72 0.00 
   Main_Mis_Gen_0325 Stationary.Environment.SandBagWall_Line nn 244855.69 262643.59 -155.00 
@@ -3275,8 +3312,8 @@
   Main_Mis_Gen_0329 Stationary.Environment.SandBagWall_Line nn 244856.67 262649.97 -245.00 
   Main_Mis_Gen_0341 Artillery.SoundLocator_MkIIIV_UK1 gb 244859.36 262646.41 -104.10 /timeout 0/radius_hide 700
   Main_Mis_Gen_0330 Stationary.Environment.SandBagWall_Line nn 244858.39 262650.72 -250.00 
-  Main_Mis_Gen_0334 Stationary.Environment.SandBagWall_Line nn 244863.75 262647.16 -340.00 
   Main_Mis_Gen_0331 Stationary.Environment.SandBagWall_Line nn 244860.03 262650.78 -290.00 
+  Main_Mis_Gen_0334 Stationary.Environment.SandBagWall_Line nn 244863.75 262647.16 -340.00 
   Main_Mis_Gen_0333 Stationary.Environment.SandBagWall_Line nn 244863.06 262648.88 -335.00 
   Main_Mis_Gen_0332 Stationary.Environment.SandBagWall_Line nn 244861.78 262650.06 -295.00 
   Main_Mis_Gen_0337 Stationary.Environment.SandBagWall_Line_4m nn 244864.25 262642.03 -290.90 
@@ -3287,23 +3324,36 @@
   Main_Mis_GenB_100 Stationary.Ford_G917 nn 243509.88 262685.22 634.10 
   Main_Mis_GenB_99 Stationary.Ford_G917 nn 243514.05 262685.41 634.10 
   Main_Mis_GenB_98 Stationary.Ford_G917 nn 243518.06 262685.72 634.10 
+  Static35 Stationary.Ford_G917 nn 243502.63 262707.94 639.10 
+  Static34 Stationary.Ford_G917 nn 243506.81 262708.75 639.10 
+  Static33 Stationary.Ford_G917 nn 243510.36 262709.09 639.10 
+  Static32 Stationary.Ford_G917 nn 243514.06 262709.28 639.10 
+  Static30 Stationary.Ford_G917 nn 243517.28 262708.97 639.10 
   Main_Mis_GenB_102 Stationary.Ford_G917 nn 243526.41 262677.72 634.10 
   Main_Mis_GenB_103 Stationary.Ford_G917 nn 243531.45 262675.19 634.10 
   Main_Mis_GenB_97 Stationary.Ford_G917 nn 243522.08 262685.72 634.10 
   Main_Mis_GenB_91 Stationary.Environment.JerryCan_GER1_1 nn 243533.28 262684.44 659.10 
+  Static39 Stationary.Ford_G917 nn 243542.91 262675.63 639.10 
+  Static40 Stationary.Ford_G917 nn 243547.86 262676.63 639.10 
+  Static31 Stationary.Ford_G917 nn 243520.66 262711.06 639.10 
+  Static36 Stationary.Ford_G917 nn 243523.70 262711.09 639.10 
   Main_Mis_GenB_96 Stationary.Environment.JerryCan_GER1_1 nn 243533.88 262708.53 659.10 
   Main_Mis_GenB_92 Stationary.Environment.JerryCan_GER1_1 nn 243553.80 262689.78 659.10 
+  Static41 Stationary.Ford_G917 nn 243576.09 262679.13 639.10 
+  Static42 Stationary.Ford_G917 nn 243582.92 262680.63 639.10 
   Main_Mis_GenB_95 Stationary.Environment.JerryCan_GER1_1 nn 243549.70 262715.59 659.10 
   Main_Mis_GenB_94 Stationary.Environment.JerryCan_GER1_1 nn 243569.06 262716.78 659.10 
   Main_Mis_GenB_109 Stationary.Ford_G917 nn 243581.63 262717.81 549.10 
+  Static43 Stationary.Ford_G917 nn 243589.72 262681.94 639.10 
+  Static44 Stationary.Ford_G917 gb 243594.09 262682.84 639.10 
   Main_Mis_GenB_93 Stationary.Environment.JerryCan_GER1_1 nn 243587.23 262692.72 659.10 
   Main_Mis_GenB_107 Stationary.Bedford_MW_tent nn 243597.42 262688.56 544.10 
   Main_Mis_GenB_106 Stationary.Bedford_MW_tent nn 243596.84 262692.50 549.10 
   Main_Mis_GenB_105 Stationary.Bedford_MW_tent gb 243595.81 262696.19 539.10 
   Main_Mis_GenB_104 Stationary.Bedford_MW_tent nn 243595.67 262699.81 544.10 
-  Main_Mis_Gen_0312 Stationary.Environment.SandBagWall_Line nn 244675.23 262706.91 -145.00 
-  Main_Mis_Gen_0311 Stationary.Environment.SandBagWall_Line nn 244676.42 262705.47 -140.00 
   Main_Mis_Gen_0310 Stationary.Environment.SandBagWall_Line nn 244677.83 262704.72 -100.00 
+  Main_Mis_Gen_0311 Stationary.Environment.SandBagWall_Line nn 244676.42 262705.47 -140.00 
+  Main_Mis_Gen_0312 Stationary.Environment.SandBagWall_Line nn 244675.23 262706.91 -145.00 
   Main_Mis_Gen_0313 Stationary.Environment.SandBagWall_Line nn 244674.72 262708.56 -185.00 
   Main_Mis_Gen_0309 Stationary.Environment.SandBagWall_Line nn 244679.70 262704.47 -95.00 
   Main_Mis_Gen_0314 Stationary.Environment.SandBagWall_Line nn 244674.95 262710.41 -190.00 
@@ -3313,9 +3363,9 @@
   Main_Mis_Gen_0319 Stationary.Environment.SandBagWall_Line_4m nn 244672.08 262715.81 -145.90 
   Main_Mis_Gen_0307 Stationary.Environment.SandBagWall_Line nn 244682.81 262706.03 -50.00 
   Main_Mis_Gen_0306 Stationary.Environment.SandBagWall_Line nn 244683.53 262707.56 -5.00 
-  Main_Mis_Gen_0320 Stationary.Environment.SandBagWall_Line_4m nn 244674.84 262718.16 -145.90 
-  Main_Mis_Gen_0316 Stationary.Environment.SandBagWall_Line nn 244679.20 262713.53 -100.90 
   Main_Mis_Gen_0305 Stationary.Environment.SandBagWall_Line nn 244683.75 262709.47 -5.00 
+  Main_Mis_Gen_0316 Stationary.Environment.SandBagWall_Line nn 244679.20 262713.53 -100.90 
+  Main_Mis_Gen_0320 Stationary.Environment.SandBagWall_Line_4m nn 244674.84 262718.16 -145.90 
   Main_Mis_Gen_0317 Stationary.Environment.SandBagWall_Line_4m nn 244677.11 262715.13 -140.90 
   Main_Mis_Gen_0315 Stationary.Environment.SandBagWall_Line nn 244680.95 262713.25 -100.00 
   Main_Mis_Gen_0304 Stationary.Environment.SandBagWall_Line nn 244683.33 262711.06 35.00 
@@ -3323,9 +3373,9 @@
   Main_Mis_Gen_0380 Stationary.Environment.SandBagWall_Line_4m nn 244726.50 262715.66 -115.90 
   Main_Mis_Gen_0371 Stationary.Environment.SandBagWall_Line nn 244732.42 262710.75 -155.00 
   Main_Mis_Gen_0369 Stationary.Environment.SandBagWall_Line nn 244733.69 262709.56 -115.00 
-  Main_Mis_Gen_0376 Stationary.Environment.SandBagWall_Line_4m nn 244729.67 262714.13 -115.90 
   Main_Mis_Gen_0367 Stationary.Environment.SandBagWall_Line nn 244735.47 262708.84 -110.00 
   Main_Mis_Gen_0373 Stationary.Environment.SandBagWall_Line nn 244731.70 262712.47 -160.00 
+  Main_Mis_Gen_0376 Stationary.Environment.SandBagWall_Line_4m nn 244729.67 262714.13 -115.90 
   Main_Mis_Gen_0384 Stationary.Environment.SandBagWall_Line_4m nn 244727.73 262719.06 -115.90 
   Main_Mis_Gen_0383 Stationary.Environment.SandBagWall_Line_4m nn 244731.20 262717.59 -110.90 
   Main_Mis_Gen_0379 Stationary.Environment.SandBagWall_Line nn 244733.84 262717.28 -70.90 
@@ -3343,8 +3393,8 @@
   Main_Mis_Gen_0301 Stationary.Radar.EnglishRadar1 gb 244782.03 262676.41 -80.00 
   Main_Mis_Gen_0446 Stationary.Environment.SandBagWall_Line nn 244923.39 262715.25 -155.00 
   Main_Mis_Gen_0445 Stationary.Environment.SandBagWall_Line nn 244924.53 262714.09 -115.00 
-  Main_Mis_Gen_0444 Stationary.Environment.SandBagWall_Line nn 244926.06 262713.34 -115.00 
   Main_Mis_Gen_0447 Stationary.Environment.SandBagWall_Line nn 244922.61 262717.00 -155.00 
+  Main_Mis_Gen_0444 Stationary.Environment.SandBagWall_Line nn 244926.06 262713.34 -115.00 
   Main_Mis_Gen_0448 Stationary.Environment.SandBagWall_Line nn 244922.47 262718.66 -200.00 
   Main_Mis_Gen_0456 Stationary.Environment.SandBagWall_Line nn 244927.67 262713.34 -250.00 
   Main_Mis_Gen_0462 Artillery.SoundLocator_MkIIIV_UK1 gb 244927.03 262718.06 -104.10 /timeout 0/radius_hide 700
@@ -3358,6 +3408,8 @@
   Main_Mis_GenB_115 Stationary.Ford_G917 nn 243532.16 262721.75 459.10 
   Main_Mis_GenB_114 Stationary.Ford_G917 gb 243541.44 262722.22 459.10 
   Main_Mis_GenB_113 Stationary.Ford_G917 nn 243547.00 262723.13 459.10 
+  Static38 Stationary.Ford_G917 nn 243553.30 262723.38 639.10 
+  Static37 Stationary.Ford_G917 nn 243557.77 262723.84 639.10 
   Main_Mis_GenB_112 Stationary.Ford_G917 nn 243563.05 262725.69 459.10 
   Main_Mis_GenB_111 Stationary.Ford_G917 nn 243567.47 262726.06 459.10 
   Main_Mis_GenB_110 Stationary.Ford_G917 nn 243571.88 262726.63 454.10 
@@ -3387,15 +3439,15 @@
   Main_Mis_Gen_0489 Stationary.Environment.SandBagWall_Line nn 244857.36 262736.47 -155.00 
   Main_Mis_Gen_0485 Stationary.Environment.SandBagWall_Line nn 244860.42 262734.56 -110.00 
   Main_Mis_Gen_0491 Stationary.Environment.SandBagWall_Line nn 244856.64 262738.13 -160.00 
-  Main_Mis_Gen_0484 Stationary.Environment.SandBagWall_Line nn 244862.00 262734.59 -70.00 
   Main_Mis_Gen_0502 Stationary.Environment.SandBagWall_Line_4m nn 244852.67 262744.78 -115.90 
+  Main_Mis_Gen_0484 Stationary.Environment.SandBagWall_Line nn 244862.00 262734.59 -70.00 
   Main_Mis_Gen_0486 Stationary.Environment.SandBagWall_Line nn 244863.75 262735.31 -65.00 
   Main_Mis_Gen_0501 Stationary.Environment.SandBagWall_Line_4m nn 244856.14 262743.31 -110.90 
   Main_Mis_Gen_0492 Artillery.SoundLocator_MkIIIV_UK1 gb 244861.08 262738.88 -285.00 /timeout 0/radius_hide 700
   Main_Mis_Gen_0497 Stationary.Environment.SandBagWall_Line nn 244858.78 262742.97 -70.90 
   Main_Mis_Gen_0500 Stationary.Environment.SandBagWall_Line nn 244860.47 262743.56 -70.00 
-  Main_Mis_Gen_0496 Stationary.Environment.SandBagWall_Line nn 244863.59 262742.81 -295.00 
   Main_Mis_Gen_0499 Stationary.Environment.SandBagWall_Line nn 244862.08 262743.56 -295.00 
+  Main_Mis_Gen_0496 Stationary.Environment.SandBagWall_Line nn 244863.59 262742.81 -295.00 
   Main_Mis_Gen_0488 Stationary.Environment.SandBagWall_Line nn 244864.98 262736.59 -25.00 
   Main_Mis_Gen_0490 Stationary.Environment.SandBagWall_Line nn 244865.67 262738.28 -20.00 
   Main_Mis_Gen_0493 Stationary.Environment.SandBagWall_Line nn 244865.53 262739.91 -335.00 
@@ -3614,8 +3666,8 @@
   Main_Mis_GenB_17 Stationary.AEC_Regent_II nn 251005.08 264120.97 659.10 
   Main_Mis_Gen_2405 Stationary.Airfield.Fuel_Storage gb 179997.45 265242.78 340.00 
   Main_Mis_Gen_2476 Stationary.Environment.FuelDrum_UK1_9 gb 180011.09 265240.88 445.00 
-  Main_Mis_Gen_2478 Stationary.Environment.FuelDrum_UK1_9 gb 180013.69 265242.97 445.00 
   Main_Mis_Gen_2477 Stationary.Environment.FuelDrum_UK1_9 gb 180011.52 265244.47 445.00 
+  Main_Mis_Gen_2478 Stationary.Environment.FuelDrum_UK1_9 gb 180013.69 265242.97 445.00 
   Main_Mis_Gen_2479 Stationary.Morris_CDSW gb 180018.48 265252.75 185.00 
   Main_Mis_Gen_2480 tobruk:Stationary.HurricaneMkIIc gb 180028.19 265273.41 310.00 
   Main_Mis_Gen_2481 Stationary.Environment.Chear_UK-GER_1 gb 180556.58 265217.13 445.00 
@@ -3724,8 +3776,8 @@
   Main_Mis_GenB_235 Stationary.Environment.JerryCan_GER1_1 gb 204974.13 265224.50 659.10 
   Main_Mis_GenB_241 Stationary.Environment.TelegaBallon_UK1 gb 204969.58 265230.53 659.10 
   Main_Mis_GenB_543 Stationary.Opel_Blitz_fuel nn 204958.13 265247.63 73.10 
-  Main_Mis_GenB_544 Stationary.Opel_Blitz_fuel nn 204963.09 265244.63 73.10 
   Main_Mis_GenB_545 Stationary.Opel_Blitz_fuel nn 204971.75 265236.41 73.10 
+  Main_Mis_GenB_544 Stationary.Opel_Blitz_fuel nn 204963.09 265244.63 73.10 
   Main_Mis_GenB_546 Stationary.Opel_Blitz_fuel gb 204982.86 265234.97 73.10 
   Main_Mis_GenB_236 Stationary.Environment.JerryCan_GER1_1 gb 204992.17 265220.22 659.10 
   Main_Mis_GenB_548 Stationary.Opel_Blitz_fuel nn 204999.14 265221.47 73.10 
@@ -3798,6 +3850,49 @@
   Main_Mis_GenB_587 Stationary.Opel_Blitz_fuel nn 205098.08 268274.41 128.10 
   Main_Mis_GenB_270 Stationary.Opel_Blitz_fuel nn 204646.64 268337.06 218.10 
   Main_Mis_GenB_269 Stationary.Opel_Blitz_fuel nn 204666.38 268322.13 188.10 
+  Static62 Stationary.Ford_G917 nn 204903.56 268312.09 634.10 
+  Static69 Stationary.Ford_G917 nn 204906.02 268312.47 634.10 
+  Static70 Stationary.Ford_G917 nn 204909.38 268312.25 634.10 
+  Static71 Stationary.Ford_G917 nn 204912.11 268311.75 634.10 
+  Static73 Stationary.Ford_G917 nn 204916.28 268312.34 634.10 
+  Static74 Stationary.Ford_G917 nn 204918.92 268312.34 634.10 
+  Static61 Stationary.Ford_G917 nn 204923.48 268311.81 634.10 
+  Static72 Stationary.Ford_G917 nn 204926.23 268311.94 634.10 
+  Static86 Stationary.Ford_G917 nn 204922.47 268337.66 574.10 
+  Static87 Stationary.Ford_G917 nn 204924.61 268335.31 574.10 
+  Static88 Stationary.Ford_G917 nn 204926.84 268333.69 574.10 
+  Static63 Stationary.Ford_G917 nn 204920.59 268340.75 574.10 
+  Static75 Stationary.Ford_G917 nn 204928.58 268311.53 634.10 
+  Static76 Stationary.Ford_G917 nn 204931.22 268312.06 634.10 
+  Static60 Stationary.Ford_G917 nn 204935.31 268311.34 0.00 
+  Static77 Stationary.Ford_G917 nn 204939.03 268311.94 634.10 
+  Static78 Stationary.Ford_G917 nn 204942.08 268312.25 634.10 
+  Static79 Stationary.Ford_G917 nn 204944.42 268311.75 634.10 
+  Static80 Stationary.Ford_G917 nn 204947.67 268312.06 634.10 
+  Static81 Stationary.Ford_G917 nn 204951.53 268312.34 634.10 
+  Static59 Stationary.Ford_G917 nn 204954.67 268311.34 634.10 
+  Static82 Stationary.Ford_G917 nn 204958.95 268311.53 634.10 
+  Static83 Stationary.Ford_G917 nn 204963.63 268311.84 634.10 
+  Static84 Stationary.Ford_G917 nn 204967.98 268311.75 634.10 
+  Static65 Stationary.Ford_G917 nn 204932.98 268347.72 574.10 
+  Static91 Stationary.Ford_G917 nn 204939.23 268342.53 574.10 
+  Static92 Stationary.Ford_G917 nn 204941.88 268340.19 574.10 
+  Static90 Stationary.Ford_G917 nn 204937.81 268344.47 574.10 
+  Static85 Stationary.Ford_G917 nn 204970.94 268312.06 634.10 
+  Static89 Stationary.Ford_G917 nn 204936.09 268346.19 574.10 
+  Static58 Stationary.Ford_G917 nn 204974.03 268311.34 634.10 
+  Static95 Stationary.Ford_G917 nn 204955.30 268336.53 574.10 
+  Static64 Stationary.Ford_G917 nn 204948.47 268343.09 574.10 
+  Static93 Stationary.Ford_G917 nn 204951.53 268341.00 574.10 
+  Static94 Stationary.Ford_G917 nn 204953.88 268339.38 574.10 
+  Static68 Stationary.Ford_G917 nn 204960.86 268336.88 574.10 
+  Static100 Stationary.Ford_G917 nn 204969.41 268338.97 574.10 
+  Static67 Stationary.Ford_G917 nn 204971.70 268336.13 574.10 
+  Static99 Stationary.Ford_G917 nn 204976.02 268334.31 574.10 
+  Static66 Stationary.Ford_G917 nn 204962.41 268349.28 574.10 
+  Static96 Stationary.Ford_G917 nn 204965.14 268347.09 574.10 
+  Static97 Stationary.Ford_G917 nn 204968.59 268345.56 574.10 
+  Static98 Stationary.Ford_G917 nn 204970.42 268344.25 574.10 
   Main_Mis_Gen_2901 Stationary.AEC_Regent_II nn 147655.88 269210.94 659.10 
   Main_Mis_GenB_272 Stationary.Opel_Blitz_fuel nn 204605.39 268376.53 98.10 
   Main_Mis_GenB_271 Stationary.Opel_Blitz_fuel nn 204633.48 268352.59 158.10 
@@ -3828,6 +3923,9 @@
   Main_Mis_GenB_264 Stationary.Opel_Blitz_fuel nn 205150.58 268467.38 188.10 
   Main_Mis_GenB_595 Stationary.Opel_Blitz_fuel nn 205183.33 268438.88 -6.90 
   Main_Mis_GenB_263 Stationary.Opel_Blitz_fuel nn 205167.33 268470.38 158.10 
+  Static56 Stationary.Ford_G917 nn 204702.20 268494.88 574.10 
+  Static57 Stationary.Ford_G917 nn 204687.50 268511.91 574.10 
+  Static55 Stationary.Ford_G917 nn 204708.41 268490.22 574.10 
   Main_Mis_GenB_258 Stationary.Environment.JerryCan_GER1_3 gb 204855.36 268490.88 0.00 
   Main_Mis_GenB_273 Stationary.Opel_Blitz_fuel gb 204852.88 268530.75 188.10 
   Main_Mis_GenB_586 Stationary.Opel_Blitz_fuel nn 204901.41 268488.47 263.10 
@@ -3839,9 +3937,29 @@
   Main_Mis_Gen_0745 Stationary.Environment.JerryCan_GER1_3 gb 205175.39 268489.63 0.00 
   Main_Mis_Gen_4620 Stationary.Environment.TelegaBallon_UK1 gb 205179.41 268490.50 0.00 
   Main_Mis_Gen_2892 Stationary.AEC_Regent_II nn 138819.16 269596.19 659.10 
-  Main_Mis_GenB_257 Stationary.Environment.JerryCan_GER1_3 gb 204646.78 268659.63 0.00 
+  Static52 Stationary.Ford_G917 nn 204781.97 268570.75 574.10 
+  Static54 Stationary.Ford_G917 nn 204764.94 268590.13 574.10 
+  Static53 Stationary.Ford_G917 nn 204778.09 268585.47 574.10 
+  Main_Mis_GenB_257 Stationary.Environment.JerryCan_GER1_3 gb 204694.53 268637.00 0.00 
   Main_Mis_GenB_262 Stationary.Environment.JerryCan_GER1_3 gb 204691.94 268613.06 0.00 
+  Static109 Stationary.Opel_Blitz_fuel nn 204714.47 268620.03 233.10 
+  Static108 Stationary.Opel_Blitz_fuel nn 204714.94 268626.28 233.10 
+  Static107 Stationary.Opel_Blitz_fuel nn 204713.02 268633.00 233.10 
+  Static106 Stationary.Opel_Blitz_fuel nn 204712.06 268637.81 233.10 
+  Static105 Stationary.Opel_Blitz_fuel nn 204712.06 268641.66 233.10 
+  Static104 Stationary.Opel_Blitz_fuel nn 204712.55 268647.88 233.10 
+  Static103 Stationary.Opel_Blitz_fuel nn 204711.58 268654.63 233.10 
+  Static102 Stationary.Opel_Blitz_fuel nn 204714.94 268659.91 233.10 
+  Static101 Stationary.Opel_Blitz_fuel nn 204719.75 268665.66 233.10 
   Main_Mis_GenB_585 Stationary.Opel_Blitz_fuel gb 204717.31 268678.84 233.10 
+  Static110 Stationary.Environment.JerryCan_GER1_3 gb 204774.02 268694.97 0.00 
+  Static117 Stationary.Opel_Blitz_fuel gb 204607.36 268752.81 233.10 
+  Static116 Stationary.Opel_Blitz_fuel gb 204607.36 268758.25 233.10 
+  Static115 Stationary.Opel_Blitz_fuel gb 204607.36 268765.22 233.10 
+  Static114 Stationary.Opel_Blitz_fuel gb 204606.59 268775.28 233.10 
+  Static112 Stationary.Opel_Blitz_fuel gb 204606.59 268790.78 233.10 
+  Static111 Stationary.Opel_Blitz_fuel gb 204607.36 268798.50 233.10 
+  Static113 Stationary.Opel_Blitz_fuel gb 204608.14 268783.03 233.10 
   Main_Mis_GenB_274 Stationary.Opel_Blitz_fuel nn 204539.64 268805.16 218.10 
   Main_Mis_GenB_275 Stationary.Opel_Blitz_fuel nn 204543.22 268817.09 218.10 
   Main_Mis_GenB_276 Stationary.Opel_Blitz_fuel nn 204539.03 268829.06 218.10 
@@ -3859,8 +3977,8 @@
   Main_Mis_Gen_2809 Stationary.Environment.JerryCan_GER1_1 gb 152976.97 273275.06 659.10 
   Main_Mis_Gen_2810 Stationary.Environment.JerryCan_GER1_1 gb 153008.42 273255.84 659.10 
   Main_Mis_Gen_2883 Stationary.AEC_Regent_II nn 149708.31 273322.13 659.10 
-  Main_Mis_Gen_4601 Stationary.Environment.TelegaBallon_UK1 gb 155048.09 273259.38 659.10 
   Main_Mis_Gen_2806 Stationary.Environment.JerryCan_GER1_1 gb 155050.00 273257.25 659.10 
+  Main_Mis_Gen_4601 Stationary.Environment.TelegaBallon_UK1 gb 155048.09 273259.38 659.10 
   Main_Mis_Gen_2808 Stationary.Environment.JerryCan_GER1_3 gb 155833.08 273220.56 659.10 
   Main_Mis_Gen_2812 Stationary.Environment.JerryCan_GER1_1 gb 153838.22 273478.75 659.10 
   Main_Mis_Gen_2811 Stationary.Environment.JerryCan_GER1_1 gb 153850.20 273475.38 659.10 
@@ -4043,123 +4161,169 @@
   Main_Mis_Gen_2616 Stationary.RadioBeacon.GenericLongRangeMast nn 180099.55 288466.00 659.10 /radioFreq 300
   Main_Mis_Gen_0126 Stationary.Industrial.Railroad.SmallFactory nn 180125.89 288511.53 659.10 
   Main_Mis_Gen_3438 Stationary.AEC_Regent_II nn 64424.88 300597.31 0.00 
-  Static0 Stationary.Scammell_Pioneer_TRMU30 nn 252808.97 261399.88 30.00 
-  Static1 Stationary.Scammell_Pioneer_TRMU30 nn 252804.84 261407.14 30.00 
-  Static2 Stationary.Scammell_Pioneer_TRMU30 nn 252830.23 261408.52 30.00 
-  Static3 Stationary.Scammell_Pioneer_TRMU30 nn 252826.58 261415.67 30.00 
-  Static4 Stationary.Scammell_Pioneer_TRMU30 nn 252820.88 261423.98 30.00 
-  Static5 Stationary.Scammell_Pioneer_TRMU30 nn 252843.64 261334.27 30.00 
-  Static6 Stationary.Scammell_Pioneer_TRMU30 nn 252847.09 261325.61 30.00 
-  Static8 Stationary.Ford_G917 nn 252855.84 261392.16 564.10 
-  Static7 Stationary.Ford_G917 nn 252853.38 261395.64 564.10 
-  Static9 Stationary.Ford_G917 nn 252851.19 261398.70 564.10 
-  Static10 Stationary.Ford_G917 nn 252849.30 261403.64 564.10 
-  Static11 Stationary.Ford_G917 nn 252850.61 261319.22 564.10 
-  Static12 Stationary.Ford_G917 nn 252853.36 261314.75 564.10 
-  Static13 Stationary.Ford_G917 nn 252868.97 261330.66 564.10 
-  Static14 Stationary.Ford_G917 nn 252870.70 261325.75 564.10 
-  Static15 Stationary.Ford_G917 nn 252874.02 261320.13 564.10 
-  Static16 Stationary.Ford_G917 nn 252840.14 261411.81 564.10 
-  Static17 Stationary.Ford_G917 nn 252837.80 261415.31 564.10 
-  Static18 Stationary.Ford_G917 nn 252835.47 261419.83 564.10 
-  Static19 Stationary.Ford_G917 nn 252832.98 261423.03 564.10 
-  Static20 Stationary.Ford_G917 nn 252830.22 261427.13 564.10 
-  Static21 Stationary.Ford_G917 nn 252823.67 261419.84 564.10 
-  Static22 Stationary.Ford_G917 nn 252831.69 261405.03 564.10 
-  Static23 Stationary.Ford_G917 nn 252842.91 261408.31 564.10 
-  Static24 Stationary.Ford_G917 nn 252847.58 261406.70 564.10 
-  Static25 Stationary.Ford_G917 nn 252841.52 261318.63 564.10 
-  Static26 Stationary.Ford_G917 nn 252843.39 261316.03 564.10 
-  Static27 Stationary.Ford_G917 nn 252846.56 261310.97 564.10 
-  Static28 Stationary.Ford_G917 nn 252880.41 261326.31 564.10 
-  Static29 Stationary.Ford_G917 nn 252881.83 261321.83 564.10 
-  Static32 Stationary.Ford_G917 nn 243514.06 262709.28 639.10 
-  Static33 Stationary.Ford_G917 nn 243510.36 262709.09 639.10 
-  Static34 Stationary.Ford_G917 nn 243506.81 262708.75 639.10 
-  Static35 Stationary.Ford_G917 nn 243502.63 262707.94 639.10 
-  Static30 Stationary.Ford_G917 nn 243517.28 262708.97 639.10 
-  Static31 Stationary.Ford_G917 nn 243520.66 262711.06 639.10 
-  Static36 Stationary.Ford_G917 nn 243523.70 262711.09 639.10 
-  Static37 Stationary.Ford_G917 nn 243557.77 262723.84 639.10 
-  Static38 Stationary.Ford_G917 nn 243553.30 262723.38 639.10 
-  Static39 Stationary.Ford_G917 nn 243542.91 262675.63 639.10 
-  Static40 Stationary.Ford_G917 nn 243547.86 262676.63 639.10 
-  Static41 Stationary.Ford_G917 nn 243576.09 262679.13 639.10 
-  Static42 Stationary.Ford_G917 nn 243582.92 262680.63 639.10 
-  Static43 Stationary.Ford_G917 nn 243589.72 262681.94 639.10 
-  Static44 Stationary.Ford_G917 gb 243594.09 262682.84 639.10 
-  Static45 Stationary.Ford_G917 gb 224992.94 259684.58 664.10 
-  Static49 Stationary.Ford_G917 nn 224977.94 259677.66 664.10 
-  Static46 Stationary.Ford_G917 nn 224982.61 259678.86 664.10 
-  Static47 Stationary.Ford_G917 nn 224985.59 259680.55 664.10 
-  Static48 Stationary.Ford_G917 nn 224990.17 259682.14 664.10 
-  Static50 Stationary.Ford_G917 nn 224973.84 259672.89 574.10 
-  Static51 Stationary.Ford_G917 nn 224971.95 259676.17 574.10 
-  Static52 Stationary.Ford_G917 nn 204781.97 268570.75 574.10 
-  Static53 Stationary.Ford_G917 nn 204778.09 268585.47 574.10 
-  Static54 Stationary.Ford_G917 nn 204764.94 268590.13 574.10 
-  Static55 Stationary.Ford_G917 nn 204708.41 268490.22 574.10 
-  Static56 Stationary.Ford_G917 nn 204702.20 268494.88 574.10 
-  Static57 Stationary.Ford_G917 nn 204687.50 268511.91 574.10 
-  Static58 Stationary.Ford_G917 nn 204974.03 268311.34 634.10 
-  Static59 Stationary.Ford_G917 nn 204954.67 268311.34 634.10 
-  Static60 Stationary.Ford_G917 nn 204935.31 268311.34 0.00 
-  Static61 Stationary.Ford_G917 nn 204923.48 268311.81 634.10 
-  Static62 Stationary.Ford_G917 nn 204903.56 268312.09 634.10 
-  Static63 Stationary.Ford_G917 nn 204920.59 268340.75 574.10 
-  Static64 Stationary.Ford_G917 nn 204948.47 268343.09 574.10 
-  Static65 Stationary.Ford_G917 nn 204932.98 268347.72 574.10 
-  Static66 Stationary.Ford_G917 nn 204962.41 268349.28 574.10 
-  Static67 Stationary.Ford_G917 nn 204971.70 268336.13 574.10 
-  Static68 Stationary.Ford_G917 nn 204960.86 268336.88 574.10 
-  Static69 Stationary.Ford_G917 nn 204906.02 268312.47 634.10 
-  Static70 Stationary.Ford_G917 nn 204909.38 268312.25 634.10 
-  Static71 Stationary.Ford_G917 nn 204912.11 268311.75 634.10 
-  Static72 Stationary.Ford_G917 nn 204926.23 268311.94 634.10 
-  Static73 Stationary.Ford_G917 nn 204916.28 268312.34 634.10 
-  Static74 Stationary.Ford_G917 nn 204918.92 268312.34 634.10 
-  Static75 Stationary.Ford_G917 nn 204928.58 268311.53 634.10 
-  Static76 Stationary.Ford_G917 nn 204931.22 268312.06 634.10 
-  Static77 Stationary.Ford_G917 nn 204939.03 268311.94 634.10 
-  Static78 Stationary.Ford_G917 nn 204942.08 268312.25 634.10 
-  Static79 Stationary.Ford_G917 nn 204944.42 268311.75 634.10 
-  Static80 Stationary.Ford_G917 nn 204947.67 268312.06 634.10 
-  Static81 Stationary.Ford_G917 nn 204951.53 268312.34 634.10 
-  Static82 Stationary.Ford_G917 nn 204958.95 268311.53 634.10 
-  Static83 Stationary.Ford_G917 nn 204963.63 268311.84 634.10 
-  Static84 Stationary.Ford_G917 nn 204967.98 268311.75 634.10 
-  Static85 Stationary.Ford_G917 nn 204970.94 268312.06 634.10 
-  Static86 Stationary.Ford_G917 nn 204922.47 268337.66 574.10 
-  Static87 Stationary.Ford_G917 nn 204924.61 268335.31 574.10 
-  Static88 Stationary.Ford_G917 nn 204926.84 268333.69 574.10 
-  Static89 Stationary.Ford_G917 nn 204936.09 268346.19 574.10 
-  Static90 Stationary.Ford_G917 nn 204937.81 268344.47 574.10 
-  Static91 Stationary.Ford_G917 nn 204939.23 268342.53 574.10 
-  Static92 Stationary.Ford_G917 nn 204941.88 268340.19 574.10 
-  Static93 Stationary.Ford_G917 nn 204951.53 268341.00 574.10 
-  Static94 Stationary.Ford_G917 nn 204953.88 268339.38 574.10 
-  Static95 Stationary.Ford_G917 nn 204955.30 268336.53 574.10 
-  Static96 Stationary.Ford_G917 nn 204965.14 268347.09 574.10 
-  Static97 Stationary.Ford_G917 nn 204968.59 268345.56 574.10 
-  Static98 Stationary.Ford_G917 nn 204970.42 268344.25 574.10 
-  Static99 Stationary.Ford_G917 nn 204976.02 268334.31 574.10 
-  Static100 Stationary.Ford_G917 nn 204969.41 268338.97 574.10 
-  Static101 Stationary.Opel_Blitz_fuel nn 204719.75 268665.66 233.10 
-  Static102 Stationary.Opel_Blitz_fuel nn 204714.94 268659.91 233.10 
-  Static103 Stationary.Opel_Blitz_fuel nn 204711.58 268654.63 233.10 
-  Static104 Stationary.Opel_Blitz_fuel nn 204712.55 268647.88 233.10 
-  Static105 Stationary.Opel_Blitz_fuel nn 204712.06 268641.66 233.10 
-  Static106 Stationary.Opel_Blitz_fuel nn 204712.06 268637.81 233.10 
-  Static107 Stationary.Opel_Blitz_fuel nn 204713.02 268633.00 233.10 
-  Static108 Stationary.Opel_Blitz_fuel nn 204714.94 268626.28 233.10 
-  Static109 Stationary.Opel_Blitz_fuel nn 204714.47 268620.03 233.10 
-  Static110 Stationary.Environment.JerryCan_GER1_3 gb 204774.02 268694.97 0.00 
-  Static111 Stationary.Opel_Blitz_fuel gb 204607.36 268798.50 233.10 
-  Static112 Stationary.Opel_Blitz_fuel gb 204606.59 268790.78 233.10 
-  Static113 Stationary.Opel_Blitz_fuel gb 204608.14 268783.03 233.10 
-  Static114 Stationary.Opel_Blitz_fuel gb 204606.59 268775.28 233.10 
-  Static115 Stationary.Opel_Blitz_fuel gb 204607.36 268765.22 233.10 
-  Static116 Stationary.Opel_Blitz_fuel gb 204607.36 268758.25 233.10 
-  Static117 Stationary.Opel_Blitz_fuel gb 204607.36 268752.81 233.10 
+  Static118 Stationary.Ford_G917 gb 247006.83 263354.06 729.10 
+  Static119 Stationary.Ford_G917 nn 247007.89 263350.59 729.10 
+  Static120 Stationary.Ford_G917 nn 246992.98 263365.69 649.10 
+  Static121 Stationary.Ford_G917 nn 246979.56 263363.59 649.10 
+  Static122 Stationary.Ford_G917 nn 246966.00 263360.69 634.10 
+  Static123 Stationary.Ford_G917 nn 246952.14 263358.34 634.10 
+  Static124 Stationary.Ford_G917 nn 246939.36 263356.47 634.10 
+  Static125 Stationary.Ford_G917 nn 246925.47 263353.84 634.10 
+  Static126 Stationary.Ford_G917 nn 246912.77 263351.47 634.10 
+  Static127 Stationary.Environment.JerryCan_GER1_1 nn 246991.30 263353.75 659.10 
+  Static128 Stationary.Environment.JerryCan_GER1_1 nn 246979.39 263348.72 659.10 
+  Static129 Stationary.Environment.JerryCan_GER1_1 nn 246962.00 263345.50 659.10 
+  Static130 Stationary.Environment.JerryCan_GER1_1 nn 247000.91 263375.72 659.10 
+  Static131 Stationary.Environment.JerryCan_GER1_1 nn 246949.69 263367.03 659.10 
+  Static132 Stationary.Environment.JerryCan_GER1_1 nn 246918.98 263356.94 659.10 
+  Static133 Stationary.Morris_CDSW gb 246939.09 263341.91 899.10 
+  Static134 Stationary.Morris_CDSW gb 246939.92 263345.47 899.10 
+  Static135 Stationary.Morris_CDSW gb 246907.08 263356.88 1004.10 
+  Static136 Stationary.Morris_CDSW nn 246903.09 263356.28 1004.10 
+  Static137 Stationary.Morris_CDSW gb 246899.28 263355.47 1004.10 
+  Static138 Stationary.Morris_CDSW nn 247020.95 263378.16 1004.10 
+  Static139 Stationary.Morris_CDSW gb 247024.52 263378.69 1004.10 
+  Static140 Stationary.Morris_CDSW nn 247027.92 263379.63 1004.10 
+  Static141 Stationary.Ford_G917 gb 247032.53 263380.34 644.10 
+  Static142 Stationary.Ford_G917 gb 247036.00 263382.78 644.10 
+  Static143 Stationary.Opel_Blitz_fuel nn 206019.02 213499.20 105.00 
+  Static144 Stationary.Opel_Blitz_fuel nn 206024.58 213499.73 105.00 
+  Static145 Stationary.Opel_Blitz_fuel nn 206029.45 213500.28 105.00 
+  Static146 Stationary.Opel_Blitz_fuel nn 206036.16 213502.23 105.00 
+  Static147 Stationary.Opel_Blitz_fuel gb 206041.45 213503.77 105.00 
+  Static148 Stationary.Opel_Blitz_fuel nn 206046.33 213505.03 105.00 
+  Static149 Stationary.Opel_Blitz_fuel nn 206052.31 213505.03 100.00 
+  Static150 Stationary.Opel_Blitz_fuel nn 206059.42 213506.14 100.00 
+  Static151 Stationary.Opel_Blitz_fuel nn 206065.14 213507.13 100.00 
+  Static152 Stationary.Opel_Blitz_fuel nn 206072.81 213508.23 100.00 
+  Static153 Stationary.Opel_Blitz_fuel nn 206078.09 213508.92 100.00 
+  Static154 Stationary.Opel_Blitz_fuel nn 206087.02 213510.19 100.00 
+  Static155 Stationary.Opel_Blitz_fuel nn 206068.91 213453.17 100.00 
+  Static156 Stationary.Opel_Blitz_fuel nn 206064.58 213452.34 100.00 
+  Static157 Stationary.Opel_Blitz_fuel nn 206059.98 213451.64 100.00 
+  Static158 Stationary.Opel_Blitz_fuel nn 206055.80 213450.81 100.00 
+  Static159 Stationary.Opel_Blitz_fuel nn 206048.69 213449.97 100.00 
+  Static160 Stationary.Opel_Blitz_fuel gb 206074.20 213452.63 100.00 
+  Static161 Stationary.Opel_Blitz_fuel nn 206094.27 213458.33 100.00 
+  Static162 Stationary.Opel_Blitz_fuel gb 206097.61 213458.75 100.00 
+  Static163 Stationary.Environment.JerryCan_GER1_1 gb 206072.77 213495.77 720.00 /hstart 2
+  Static164 Stationary.Environment.JerryCan_GER1_1 gb 206044.47 213491.33 720.00 /hstart 2
+  Static165 Stationary.Environment.JerryCan_GER1_1 gb 206028.63 213469.78 720.00 /hstart 2
+  Static166 Stationary.Environment.JerryCan_GER1_1 gb 206055.66 213466.61 720.00 /hstart 2
+  Static167 Stationary.Environment.JerryCan_GER1_1 gb 206025.67 213422.03 720.00 /hstart 2
+  Static168 Stationary.Environment.JerryCan_GER1_1 gb 206064.95 213430.91 720.00 /hstart 2
+  Static169 Stationary.Environment.JerryCan_GER1_1 gb 206058.41 213410.84 720.00 /hstart 2
+  Static170 Stationary.Environment.JerryCan_GER1_1 gb 206083.97 213400.92 720.00 /hstart 2
+  Static171 Stationary.Environment.JerryCan_GER1_1 gb 206086.72 213504.42 720.00 /hstart 2
+  Static172 Stationary.AEC_Regent_II nn 205689.11 213585.98 0.00 
+  Static173 Stationary.AEC_Regent_II nn 205723.81 213197.42 0.00 
+  Static174 Stationary.AEC_Regent_II nn 204767.45 213194.55 0.00 
+  Static175 Stationary.AEC_Regent_II nn 210151.22 211878.22 0.00 
+  Static176 Stationary.AEC_Regent_II nn 210714.78 211774.13 0.00 
+  Static177 Stationary.AEC_Regent_II nn 218136.66 214043.14 0.00 
+  Static178 Stationary.AEC_Regent_II nn 217524.56 213425.11 0.00 
+  Static179 Stationary.AEC_Regent_II nn 221738.41 216377.73 0.00 
+  Static180 Stationary.AEC_Regent_II nn 222743.38 220570.13 0.00 
+  Static181 Stationary.AEC_Regent_II nn 222826.27 221000.36 0.00 
+  Static182 Stationary.AEC_Regent_II nn 222574.97 220741.17 0.00 
+  Static183 Stationary.AEC_Regent_II nn 222996.00 221070.09 0.00 
+  Static184 Stationary.RadioBeacon.GenericLongRangeMast gb 222867.31 220776.80 200.00 /radioFreq 300
+  Static185 Stationary.Environment.JerryCan_GER1_1 gb 222857.58 220806.39 659.10 
+  Static186 Stationary.Environment.JerryCan_GER1_1 gb 222835.59 220795.05 659.10 
+  Static187 Stationary.Environment.JerryCan_GER1_1 gb 222834.22 220763.78 659.10 
+  Static188 Stationary.Environment.JerryCan_GER1_1 gb 222863.42 220758.97 659.10 
+  Static189 Stationary.Environment.JerryCan_GER1_1 gb 222881.64 220782.69 659.10 
+  Static190 Stationary.Environment.JerryCan_GER1_1 gb 222856.55 220780.63 659.10 
+  Static191 Stationary.Bedford_MW_tank gb 222830.84 220773.58 -122.00 
+  Static192 Stationary.Bedford_MW_tank nn 222835.25 220771.42 -122.00 
+  Static193 Stationary.Bedford_MW_tank gb 222838.73 220768.97 -122.00 
+  Static194 Stationary.Bedford_MW_tank nn 222856.73 220757.86 -152.00 
+  Static195 Stationary.Bedford_MW_tank gb 222858.22 220753.48 -152.00 
+  Static196 Stationary.Bedford_MW_tank gb 222850.52 220810.19 -92.00 
+  Static197 Stationary.Bedford_MW_tank gb 222856.22 220810.48 -92.00 
+  Static198 Stationary.Bedford_MW_tank nn 222861.48 220809.59 -92.00 
+  Static199 Stationary.Environment.TentMedicLarge_UK1 gb 222839.98 220756.02 -299.10 
+  Static200 Stationary.Environment.TentMedicLarge_UK1 gb 222861.22 220795.44 -294.10 
+  Static201 Stationary.Bedford_MW_tank gb 222884.92 220786.81 -197.00 
+  Static202 Stationary.Bedford_MW_tank gb 222884.61 220782.47 -10.00 
+  Static203 Stationary.Bedford_MW_tank gb 222864.39 220744.75 -10.00 
+  Static204 Stationary.Bedford_MW_tank gb 222861.34 220740.75 -35.00 
+  Static205 Stationary.Bedford_MW_tank nn 222109.97 221175.23 -35.00 
+  Static206 Stationary.Bedford_MW_tank nn 222109.55 221168.72 0.00 
+  Static207 Stationary.Bedford_MW_tank gb 222256.58 221178.70 0.00 
+  Static208 Stationary.Bedford_MW_tank nn 222256.52 221175.27 0.00 
+  Static209 Stationary.Bedford_MW_tank nn 222256.44 221171.47 0.00 
+  Static210 Stationary.Bedford_MW_tank nn 222385.75 221180.03 -20.00 
+  Static211 Stationary.Bedford_MW_tank nn 222385.09 221173.59 -30.100 
+  Static212 Stationary.Bedford_MW_tank nn 222550.83 221173.00 -91.00 
+  Static213 Stationary.Bedford_MW_tank nn 222556.38 221173.08 -91.00 
+  Static214 Stationary.Fordson_Sussex_w_ballon gb 222540.80 221156.41 0.00 
+  Static215 Stationary.Fordson_Sussex_w_ballon gb 230012.25 228436.70 30.00 
+  Static216 Stationary.Bedford_MW_tent nn 230795.72 228271.33 699.10 
+  Static217 Stationary.Bedford_MW_tent nn 230793.89 228267.89 699.10 
+  Static218 Stationary.Bedford_MW_tent nn 230792.88 228264.78 699.10 
+  Static219 Stationary.Bedford_MW_tent nn 230777.03 228284.17 579.10 
+  Static220 Stationary.Bedford_MW_tent nn 230780.58 228281.91 579.10 
+  Static221 Stationary.Bedford_MW_tent nn 230783.19 228279.38 579.10 
+  Static222 Stationary.Bedford_MW_tent nn 230786.73 228277.22 579.10 
+  Static223 Stationary.Environment.JerryCan_GER1_1 gb 230779.67 228284.23 659.10 
+  Static224 Stationary.Environment.JerryCan_GER1_1 gb 230787.30 228280.44 659.10 
+  Static225 Stationary.Environment.JerryCan_GER1_1 gb 230791.44 228270.55 659.10 
+  Static226 Stationary.Environment.JerryCan_GER1_1 gb 230789.61 228266.34 659.10 
+  Static227 Stationary.Environment.JerryCan_GER1_1 gb 230785.28 228257.81 659.10 
+  Static228 Stationary.Environment.JerryCan_GER1_1 gb 230801.27 228246.88 659.10 
+  Static229 Stationary.Environment.JerryCan_GER1_1 gb 230824.25 228255.53 659.10 
+  Static230 Stationary.Environment.JerryCan_GER1_1 gb 230818.70 228280.20 659.10 
+  Static231 Stationary.Environment.JerryCan_GER1_1 gb 230803.06 228279.75 659.10 
+  Static232 Stationary.Fordson_Sussex_w_ballon nn 230773.28 228272.05 -105.00 
+  Static233 Stationary.Fordson_Sussex_w_ballon gb 230777.64 228268.72 -105.00 
+  Static234 Stationary.Fordson_Sussex_w_ballon nn 230764.67 228276.20 -105.00 
+  Static235 Stationary.Fordson_Sussex_w_ballon gb 230768.73 228274.02 -105.00 
+  Static236 Stationary.AEC_Regent_II nn 229768.42 227422.16 659.10 
+  Static237 Stationary.AEC_Regent_II nn 230294.52 227997.16 659.10 
+  Static238 Stationary.Environment.JerryCan_GER1_1 gb 204178.95 244519.67 659.10 
+  Static239 Stationary.Environment.JerryCan_GER1_1 gb 204175.55 244508.19 659.10 
+  Static240 Stationary.Environment.JerryCan_GER1_1 gb 204191.39 244503.67 659.10 
+  Static241 Stationary.Environment.JerryCan_GER1_1 gb 204194.08 244515.38 659.10 
+  Static242 Stationary.Environment.JerryCan_GER1_1 gb 250130.34 243510.08 659.10 
+  Static243 Stationary.Environment.JerryCan_GER1_1 gb 250115.28 243487.80 659.10 
+  Static244 Stationary.Environment.JerryCan_GER1_1 gb 250100.84 243465.39 659.10 
+  Static245 Stationary.Ford_G917 nn 250140.61 243505.08 319.10 
+  Static246 Stationary.Ford_G917 nn 250137.75 243501.55 319.10 
+  Static247 Stationary.Ford_G917 nn 250135.16 243497.53 319.10 
+  Static248 Stationary.Ford_G917 nn 250132.58 243493.56 319.10 
+  Static249 Stationary.Ford_G917 nn 250144.47 243508.16 319.10 
+  Static250 Stationary.Ford_G917 nn 250133.86 243520.20 424.10 
+  Static251 Stationary.Ford_G917 gb 250136.88 243517.92 424.10 
+  Static252 Stationary.Ford_G917 gb 250113.39 243461.67 334.10 
+  Static253 Stationary.Ford_G917 gb 250110.16 243459.06 334.10 
+  Static254 Stationary.Ford_G917 gb 250108.09 243454.98 334.10 
+  Static255 Stationary.Ford_G917 gb 250106.17 243450.75 334.10 
+  Static256 Stationary.Ford_G917 nn 250095.25 243459.80 229.10 
+  Static257 Stationary.Ford_G917 nn 250098.59 243457.91 229.10 
+  Static258 Stationary.Ford_G917 nn 250096.78 243494.97 139.10 
+  Static259 Stationary.Ford_G917 nn 250092.09 243490.98 139.10 
+  Static260 Stationary.Ford_G917 nn 250089.00 243485.23 139.10 
+  Static261 Stationary.Ford_G917 nn 250087.61 243479.78 139.10 
+  Static262 Stationary.Ford_G917 nn 250100.86 243497.81 139.10 
+  Static263 Stationary.Ford_G917 nn 250114.94 243513.80 139.10 
+  Static264 Stationary.Ford_G917 nn 250117.52 243519.38 139.10 
+  Static265 Stationary.Environment.JerryCan_GER1_1 gb 231043.27 232336.16 659.10 
+  Static266 Stationary.Environment.JerryCan_GER1_1 gb 231038.84 232327.55 659.10 
+  Static267 Stationary.Environment.JerryCan_GER1_1 gb 231050.53 232322.80 659.10 
+  Static268 Stationary.Environment.JerryCan_GER1_1 gb 231055.14 232331.52 659.10 
+  Static269 Stationary.Environment.JerryCan_GER1_1 gb 185275.88 219349.73 659.10 
+  Static270 Stationary.Environment.JerryCan_GER1_1 gb 185269.47 219341.89 659.10 
+  Static271 Stationary.Environment.JerryCan_GER1_1 gb 185280.53 219331.97 659.10 
+  Static272 Stationary.Environment.JerryCan_GER1_1 gb 185287.50 219338.94 659.10 
 [Buildings]
+  0_bld buildings.House$Oil_Bunker-Small 1 191089.23 261563.01 644.10
+  1_bld buildings.House$Oil_Bunker-Small 1 191063.09 261545.77 644.10
+  2_bld buildings.House$Oil_Bunker-Small 1 191094.36 261521.10 644.10
+  3_bld buildings.House$Oil_Bunker-Small 1 204694.43 268659.73 644.10
+  4_bld buildings.House$Oil_Bunker-Small 1 204589.19 268772.51 233.10
+  5_bld buildings.House$Oil_Bunker-Small 1 250117.30 243486.56 139.10
+  6_bld buildings.House$Oil_Bunker-Small 1 242944.56 236887.84 139.10
+  7_bld buildings.House$Oil_Bunker-Small 1 242901.04 236900.95 139.10
+  8_bld buildings.House$Oil_Bunker-Small 1 239545.23 241432.16 139.10
 [BuildingsLinks]

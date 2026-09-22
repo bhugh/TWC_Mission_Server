@@ -10259,7 +10259,7 @@ public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
                 //If landing in water, you chance of rescue goes up 25% if home waters, down 25% if enemy water
                 //Would be cool to change chances if near land, near ASR, or whatever, vs far from them, but maybe next time . .. 
 
-                bool hasASR = Calcs.IsAsrActive(this, player.Army()); //helps both water & other rescues.				
+                bool hasASR = Calcs.isAsrActive(this, player.Army()); //helps both water & other rescues.				
 				
                 if (GamePlay.gpLandType(actor.Pos().x, actor.Pos().y) == LandTypes.WATER) // crash-landed in water
                 {

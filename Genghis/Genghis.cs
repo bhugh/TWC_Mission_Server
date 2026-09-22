@@ -8383,7 +8383,7 @@ public class Mission : AMission, IMainMission
                                 bigMess += (netBlue) + Environment.NewLine;
                                 bigMess += (netRed) + Environment.NewLine;
 
-                                //Console.WriteLine("RADAR WRITE 4");
+                                Console.WriteLine("RADAR WRITE 4");
 
                                 if (TWCSupplyMission != null)
                                 {
@@ -16529,6 +16529,11 @@ public class Mission : AMission, IMainMission
                     // 4️⃣ Minimal lock only for the state update
                     lock (msn.AutoFlak_locations_lock)
                     {
+                         if (msn.AutoFlak_locations == null ||
+                        !msn.AutoFlak_locations.Keys.Contains(ID) ||
+                        msn.AutoFlak_locations[ID] == null)
+                        continue;
+
                         // Re‑check inside the lock in case another thread already updated this entry
                         if (!msn.AutoFlak_locations[ID].Contains(afl) || afl.dead) continue;
 
@@ -17954,7 +17959,7 @@ public class Mission : AMission, IMainMission
 			addPointArea(MO_ObjectiveType.Naval_Dock_Area, "Boulogne Kriegsmarine Docks Area East", "Boul", "Genghis-LOADONCALL-boulogne-naval-docks-objective-EAST.mis", 2, 8, "BTargBoulogneNavyDocksE", 265930, 189887, 250, 200, 18000, 60, 0, 160, 222, true, true, 2, 8, "", add, canBeDisabled: false);
 
 
-            addPointArea(MO_ObjectiveType.ObservationDeck, "Boulogne Cathedral Observation Deck", "", "Genghis-LOADONCALL-BoulogneCathedral.mis", 2, 8, "BoulogneCathedralObservationDeck", 267829.81, 190638.78, 10, 10, 0, 40, 0, 150, 96, false, true, 2, 1, "No Bombs; strafing only", add, canBeDisabled: false, destroyedSub: "Genghis-LOADONCALL-BoulogneCathedral-destroyed.mis", mo_trigger_type: MO_TriggerType.NoBombs, explanation: "Major cultural monument - NO BOMBS! Pinpoint accuracy with strafing!");		
+            addPointArea(MO_ObjectiveType.ObservationDeck, "Boulogne Cathedral Observation Deck (NO BOMBS!)", "", "Genghis-LOADONCALL-BoulogneCathedral.mis", 2, 8, "BoulogneCathedralObservationDeck", 267829.81, 190638.78, 10, 10, 0, 40, 0, 150, 96, false, true, 2, 1, "No Bombs; strafing only", add, canBeDisabled: false, destroyedSub: "Genghis-LOADONCALL-BoulogneCathedral-destroyed.mis", mo_trigger_type: MO_TriggerType.NoBombs, explanation: "Major cultural monument - NO BOMBS! Pinpoint accuracy with strafing!");		
 			
 			
             addTrigger(MO_ObjectiveType.MilitaryFuelStorage, "Luftwaffe Hauptbenzinlager Arras", "Arra", "", "", 2, 4, "RTarget16", "TGroundDestroyed", 50, 350605, 142047, 100, false, 2, 600, "", add);  //g
@@ -18016,10 +18021,10 @@ public class Mission : AMission, IMainMission
 
             //Genghis-LOADONCALL-Havre-Castle.mis
 
-            addPointArea(MO_ObjectiveType.ObservationDeck, "Le Havre Castle Observation Deck", "", "Genghis-LOADONCALL-LeHavre-Castle.mis", 2, 8, "LeHavreCastleObservationDeck", 161290.64, 56590.56, 10, 10, 0, 40, 0, 100, 96, false, true, 2, 2, "No Bombs; strafing only", addNewOnly: false, canBeDisabled: false, destroyedSub: "Genghis-LOADONCALL-LeHavre-Castle-destroyed.mis", mo_trigger_type: MO_TriggerType.NoBombs, explanation: "Major cultural monument & civilian area - NO BOMBS! Pinpoint accuracy with strafing!");		
+            addPointArea(MO_ObjectiveType.ObservationDeck, "Le Havre Castle Observation Deck (NO BOMBS!)", "", "Genghis-LOADONCALL-LeHavre-Castle.mis", 2, 8, "LeHavreCastleObservationDeck", 161290.64, 56590.56, 10, 10, 0, 40, 0, 100, 96, false, true, 2, 2, "No Bombs; strafing only", addNewOnly: false, canBeDisabled: false, destroyedSub: "Genghis-LOADONCALL-LeHavre-Castle-destroyed.mis", mo_trigger_type: MO_TriggerType.NoBombs, explanation: "Major cultural monument & civilian area - NO BOMBS! Pinpoint accuracy with strafing!");		
 
             
-            addPointArea(MO_ObjectiveType.ObservationDeck, "Canterbury Cathedral Observation Deck", "", "Genghis-LOADONCALL-CanterburyCathedral.mis", 1, 8, "CanterburyCathedralObservationDeck", 229550.25, 251544.72, 10, 10, 0, 50, 0, 150, 96, false, true, 2, 1, "No Bombs; strafing only", add, canBeDisabled: false, destroyedSub: "Genghis-LOADONCALL-CanterburyCathedral-destroyed.mis", mo_trigger_type: MO_TriggerType.NoBombs, explanation: "Major cultural monument & civilian area - NO BOMBS! Pinpoint accuracy with strafing!");		
+            addPointArea(MO_ObjectiveType.ObservationDeck, "Canterbury Cathedral Observation Deck (NO BOMBS!)", "", "Genghis-LOADONCALL-CanterburyCathedral.mis", 1, 8, "CanterburyCathedralObservationDeck", 229550.25, 251544.72, 10, 10, 0, 50, 0, 150, 96, false, true, 2, 1, "No Bombs; strafing only", add, canBeDisabled: false, destroyedSub: "Genghis-LOADONCALL-CanterburyCathedral-destroyed.mis", mo_trigger_type: MO_TriggerType.NoBombs, explanation: "Major cultural monument & civilian area - NO BOMBS! Pinpoint accuracy with strafing!");		
 			
 			
             addTrigger(MO_ObjectiveType.MilitaryHeadquarters, "Estree Secret Facility", "Estr", "", "", 2, 6, "Estree_Secret", "TGroundDestroyed", 61, 279623, 163613, 50, false, 90, 200, "", add);  //g
@@ -18107,7 +18112,7 @@ public class Mission : AMission, IMainMission
             addPointArea(MO_ObjectiveType.Naval_Dock_Area, "Poole South Navy Port Area", "Pool", "", 1, 8, "BTargPooleSouthIndustrialPortArea", 13734, 183493, 550, 400, 8000, 8, 0, 10, 410, true, true, 3, 6, "", add, canBeDisabled: false);
             addPointArea(MO_ObjectiveType.MilitaryHeadquarters, "Crowborough Air High Command Bunker", "", "Genghis-LOADONCALL-crowborough-bunker-objective.mis", 1, 6, "CrowboroughBunker", 167289, 224222, 70, 50, 4000, 20, 0, 120, 210, true, true, 2, 10, "", add);
 
-            addPointArea(MO_ObjectiveType.ObservationDeck, "Hastings Cathedral Observation Deck", "", "Genghis-LOADONCALL-HastingsCathedral.mis", 1, 8, "HastingsCathedralObservationDeck", 196393.67, 202506.45, 10, 10, 0, 40, 0, 150, 96, false, true, 2, 1, "No Bombs; strafing only", add, canBeDisabled: false, destroyedSub: "Genghis-LOADONCALL-CanterburyCathedral-destroyed.mis", mo_trigger_type: MO_TriggerType.NoBombs, explanation: "Major cultural monument & civilian area - NO BOMBS! Pinpoint accuracy with strafing!");		
+            addPointArea(MO_ObjectiveType.ObservationDeck, "Hastings Cathedral Observation Deck (NO BOMBS!)", "", "Genghis-LOADONCALL-HastingsCathedral.mis", 1, 8, "HastingsCathedralObservationDeck", 196393.67, 202506.45, 10, 10, 0, 40, 0, 150, 96, false, true, 2, 1, "No Bombs; strafing only", add, canBeDisabled: false, destroyedSub: "Genghis-LOADONCALL-CanterburyCathedral-destroyed.mis", mo_trigger_type: MO_TriggerType.NoBombs, explanation: "Major cultural monument & civilian area - NO BOMBS! Pinpoint accuracy with strafing!");		
             
             addPointArea(MO_ObjectiveType.MilitaryArea, "Hastings Local Auxiliary Bunker", "", "Genghis-LOADONCALL-hastings-bunker-objective.mis", 1, 6, "HastingsBunker", 196108, 205853, 70, 50, 4000, 20, 0, 120, 222, true, true, 2, 8, "", add);
 
@@ -18290,9 +18295,9 @@ public class Mission : AMission, IMainMission
             addMobile(MO_ObjectiveType.MilitaryHeadquarters, "Canterbury Mobile Secret Resistance Training Center", "", 1, 5, "BCanterburyCamoGroup", 245118, 253057, 250, 200, 4000, 15, 0, 160, 450, true, true, 1, 10, MO_MobileObjectiveType.CamoGroup, 80, 228118, 240057, 247785, 256399, 1, 9, MO_ProducerOrStorageType.None, "", add);
 
 
-            addMobile(MO_ObjectiveType.HighCommandPost, "Westerham Mobile High Command Post", "", 1, 5, "WesterhamHighCommandPost", 162033, 232000, 50, 50, 0, 30, 0, 170, 330, false, true, 2, 4, MO_MobileObjectiveType.HighCommandPost, 24, 153000, 246000, 175000, 222000, 1, 8, MO_ProducerOrStorageType.None, "No bombs, must kill outer defense while leaving center untouched", add, mo_trigger_type: MO_TriggerType.NoBombs, things_to_save: new Dictionary<string,int> () {{"MG_TA", 2}, {"humans", 8}, {"tent", 2}}, log_message: "{army} captured Westerham High Command general staff! Valuable intel gathered!", hud_message: "{army} captured Westerham High Command Staff!", thingstosave_destroyed_message: ">>>The Westerham High Command General Staff was KILLED instead of CAPTURED! Objective not achieved; no intelligence gathered!", explanation: "Neutralize the general staff escorts and guard on the periphery, but preserve the General Staff in the center for capture by our agents. NO BOMBS! Pinpoint accurate strafing!");
+            addMobile(MO_ObjectiveType.HighCommandPost, "Westerham Mobile High Command Post (NO BOMBS!)", "", 1, 5, "WesterhamHighCommandPost", 162033, 232000, 50, 50, 0, 30, 0, 170, 330, false, true, 2, 4, MO_MobileObjectiveType.HighCommandPost, 24, 153000, 246000, 175000, 222000, 1, 8, MO_ProducerOrStorageType.None, "No bombs, must kill outer defense while leaving center untouched", add, mo_trigger_type: MO_TriggerType.NoBombs, things_to_save: new Dictionary<string,int> () {{"MG_TA", 2}, {"humans", 8}, {"tent", 2}}, log_message: "{army} captured Westerham High Command general staff! Valuable intel gathered!", hud_message: "{army} captured Westerham High Command Staff!", thingstosave_destroyed_message: ">>>The Westerham High Command General Staff was KILLED instead of CAPTURED! Objective not achieved; no intelligence gathered!", explanation: "Neutralize the general staff escorts and guard on the periphery, but preserve the General Staff in the center for capture by our agents. NO BOMBS! Pinpoint accurate strafing!");
 
-            addMobile(MO_ObjectiveType.HighCommandPost, "Denton Mobile High Command Post", "", 1, 5, "DentonHighCommandPost", 232033, 239000, 50, 50, 0, 30, 0, 170, 330, false, true, 2, 4, MO_MobileObjectiveType.HighCommandPost, 24, 223210, 247340, 249319, 236309, 1, 8, MO_ProducerOrStorageType.None, "No bombs, must kill outer defense while leaving center untouched", add, mo_trigger_type: MO_TriggerType.NoBombs,things_to_save: new Dictionary<string,int> () {{"MG_TA", 2}, {"humans", 8}, {"tent", 2}}, log_message: "{army} captured Westerham High Command general staff! Valuable intel gathered!", hud_message: "{army} captured Westerham High Command Staff!", thingstosave_destroyed_message: ">>>The Westerham High Command General Staff was KILLED instead of CAPTURED! Objective not achieved; no intelligence gathered!", explanation: "Neutralize the general staff escorts and guard on the periphery, but preserve the General Staff in the center for capture by our agents. NO BOMBS! Pinpoint accurate strafing!");
+            addMobile(MO_ObjectiveType.HighCommandPost, "Denton Mobile High Command Post (NO BOMBS!)", "", 1, 5, "DentonHighCommandPost", 232033, 239000, 50, 50, 0, 30, 0, 170, 330, false, true, 2, 4, MO_MobileObjectiveType.HighCommandPost, 24, 223210, 247340, 249319, 236309, 1, 8, MO_ProducerOrStorageType.None, "No bombs, must kill outer defense while leaving center untouched", add, mo_trigger_type: MO_TriggerType.NoBombs,things_to_save: new Dictionary<string,int> () {{"MG_TA", 2}, {"humans", 8}, {"tent", 2}}, log_message: "{army} captured Westerham High Command general staff! Valuable intel gathered!", hud_message: "{army} captured Westerham High Command Staff!", thingstosave_destroyed_message: ">>>The Westerham High Command General Staff was KILLED instead of CAPTURED! Objective not achieved; no intelligence gathered!", explanation: "Neutralize the general staff escorts and guard on the periphery, but preserve the General Staff in the center for capture by our agents. NO BOMBS! Pinpoint accurate strafing!");
 
        
 
@@ -20618,13 +20623,13 @@ added Rouen Flak
          { MO_MobileObjectiveType.SecretAirbaseGB,
             new Dictionary<MO_MobileObjectiveThings, MO_ThingsTypeNumberRadius>() {
 
-                { MO_MobileObjectiveThings.Humans, new MO_ThingsTypeNumberRadius( MO_Humans, 7, 55, 50) },
+                { MO_MobileObjectiveThings.Humans, new MO_ThingsTypeNumberRadius( MO_Humans, 1, 55, 50) },
                 { MO_MobileObjectiveThings.Buildings, new MO_ThingsTypeNumberRadius( MO_Buildings, 2, 20, 17 ) },
                 { MO_MobileObjectiveThings.GBFighters, new MO_ThingsTypeNumberRadius( MO_GBFighters, 2, 62, 20 ) },
                 { MO_MobileObjectiveThings.GBBombers, new MO_ThingsTypeNumberRadius( MO_GBBombers, 3, 102, 20) },
                 { MO_MobileObjectiveThings.Sentry, new MO_ThingsTypeNumberRadius(MO_Sentry, 7, 150, 1) },
-                { MO_MobileObjectiveThings.Trenches, new MO_ThingsTypeNumberRadius(MO_Sandbags, 25, 175, 0.25) },
-                { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 80, 180, 0.2, 0.75) },
+                { MO_MobileObjectiveThings.Trenches, new MO_ThingsTypeNumberRadius(MO_Sandbags, 110, 175, 0.25) },
+                { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 10, 180, 0.2, 0.75) },
                 { MO_MobileObjectiveThings.Small_Radar, new MO_ThingsTypeNumberRadius(MO_Small_Radar, 2, 200, 20) },
 
 
@@ -20639,8 +20644,8 @@ added Rouen Flak
                 { MO_MobileObjectiveThings.DEFighters, new MO_ThingsTypeNumberRadius( MO_DEFighters, 3, 65, 20) },
                 { MO_MobileObjectiveThings.DEBombers, new MO_ThingsTypeNumberRadius( MO_DEBombers, 3, 95, 20) },
                 { MO_MobileObjectiveThings.Sentry, new MO_ThingsTypeNumberRadius(MO_Sentry, 7, 150, 1) },
-                { MO_MobileObjectiveThings.Sandbags, new MO_ThingsTypeNumberRadius(MO_Sandbags, 25, 175, 0.25) },
-                { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 80, 179, 0.2, 0.75) },
+                { MO_MobileObjectiveThings.Sandbags, new MO_ThingsTypeNumberRadius(MO_Sandbags, 10, 175, 0.25) },
+                { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 12, 179, 0.2, 0.75) },
                 { MO_MobileObjectiveThings.Small_Radar, new MO_ThingsTypeNumberRadius(MO_Small_Radar, 2, 200, 20) },
 
             }
@@ -20655,8 +20660,8 @@ added Rouen Flak
                 { MO_MobileObjectiveThings.DEFighters, new MO_ThingsTypeNumberRadius( MO_DEFighters, 3, 65, 20) },
                 { MO_MobileObjectiveThings.DEBombers, new MO_ThingsTypeNumberRadius( MO_DEBombers, 4, 85, 20) },
                 { MO_MobileObjectiveThings.Sentry, new MO_ThingsTypeNumberRadius(MO_Sentry, 7, 135, 1) },
-                { MO_MobileObjectiveThings.Sandbags, new MO_ThingsTypeNumberRadius(MO_Sandbags, 35, 155, 0.25) },
-                { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, true, 10, 70, 162, 3) },
+                { MO_MobileObjectiveThings.Sandbags, new MO_ThingsTypeNumberRadius(MO_Sandbags, 8, 155, 0.25) },
+                { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, true, 5, 70, 162, 3) },
                 { MO_MobileObjectiveThings.Small_Radar, new MO_ThingsTypeNumberRadius(MO_Small_Radar,true, 1, 5, 200, 20) },
 
             }
@@ -20670,8 +20675,8 @@ added Rouen Flak
                 { MO_MobileObjectiveThings.GBFighters, new MO_ThingsTypeNumberRadius( MO_GBFighters, 3, 60, 20) },
                 { MO_MobileObjectiveThings.GBBombers, new MO_ThingsTypeNumberRadius( MO_GBBombers, 4, 80, 20) },
                 { MO_MobileObjectiveThings.Sentry, new MO_ThingsTypeNumberRadius(MO_Sentry, 7, 135, 1) },
-                { MO_MobileObjectiveThings.Sandbags, new MO_ThingsTypeNumberRadius(MO_Sandbags, 35, 155, 0.25) },
-                { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs,true, 10, 70, 161, 2) },
+                { MO_MobileObjectiveThings.Sandbags, new MO_ThingsTypeNumberRadius(MO_Sandbags, 10, 155, 0.25) },
+                { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs,true, 5, 70, 161, 2) },
                 { MO_MobileObjectiveThings.Small_Radar, new MO_ThingsTypeNumberRadius(MO_Small_Radar, true, 1, 7, 200, 20) },
 
             }
@@ -20680,13 +20685,13 @@ added Rouen Flak
         { MO_MobileObjectiveType.ArmyEncampment,
             new Dictionary<MO_MobileObjectiveThings, MO_ThingsTypeNumberRadius>() {
 
-                { MO_MobileObjectiveThings.Humans, new MO_ThingsTypeNumberRadius( MO_Humans, 5, 15, 12) },
-                { MO_MobileObjectiveThings.Tables, new MO_ThingsTypeNumberRadius( MO_Tables, 5, 10, 8) },
+                { MO_MobileObjectiveThings.Humans, new MO_ThingsTypeNumberRadius( MO_Humans, 1, 15, 12) },
+                { MO_MobileObjectiveThings.Tables, new MO_ThingsTypeNumberRadius( MO_Tables, 1, 10, 8) },
                 { MO_MobileObjectiveThings.Tents, new MO_ThingsTypeNumberRadius(MO_Tents, true, 2, 15, 25, 10, shps: tentShapes) },
                 { MO_MobileObjectiveThings.Trucks, new MO_ThingsTypeNumberRadius(MO_Trucks, 7, 35, 5, shps: truckShapes) },
                 { MO_MobileObjectiveThings.Sentry, new MO_ThingsTypeNumberRadius(MO_Sentry, 5, 50, 2) },
-                { MO_MobileObjectiveThings.Trenches, new MO_ThingsTypeNumberRadius(MO_Trenches, 12, 50, 0.2) },
-                { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, true, 10, 40, 53, 2) },
+                { MO_MobileObjectiveThings.Trenches, new MO_ThingsTypeNumberRadius(MO_Trenches, 6, 50, 0.2) },
+                { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, true, 5, 40, 53, 2) },
                 { MO_MobileObjectiveThings.Small_Radar, new MO_ThingsTypeNumberRadius(MO_Small_Radar, 2, 80, 20) },
 
             }
@@ -20695,13 +20700,13 @@ added Rouen Flak
         { MO_MobileObjectiveType.SmallArmourGroup,
             new Dictionary<MO_MobileObjectiveThings, MO_ThingsTypeNumberRadius>() {
 
-                { MO_MobileObjectiveThings.Humans, new MO_ThingsTypeNumberRadius( MO_Humans, 5, 10, 8) },
-                { MO_MobileObjectiveThings.Tents, new MO_ThingsTypeNumberRadius(MO_Tents, 4, 15, 10, shps: tentShapes) },
+                { MO_MobileObjectiveThings.Humans, new MO_ThingsTypeNumberRadius( MO_Humans, 1, 10, 8) },
+                { MO_MobileObjectiveThings.Tents, new MO_ThingsTypeNumberRadius(MO_Tents, 1, 15, 10, shps: tentShapes) },
                 { MO_MobileObjectiveThings.Armor_Tanks, new MO_ThingsTypeNumberRadius(MO_Armor_Tanks, true, 5, 12, 30, 5, shps: truckShapes) },
-                { MO_MobileObjectiveThings.Camo, new MO_ThingsTypeNumberRadius(MO_Camo, 10, 30, 25) },
+                { MO_MobileObjectiveThings.Camo, new MO_ThingsTypeNumberRadius(MO_Camo, 6, 30, 25) },
                 { MO_MobileObjectiveThings.Misc, new MO_ThingsTypeNumberRadius(MO_Misc, 7, 22, 18) },
-                { MO_MobileObjectiveThings.Sandbags, new MO_ThingsTypeNumberRadius(MO_Sandbags, 12, 45, 0.5) },
-                { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 15, 53, 4) },
+                { MO_MobileObjectiveThings.Sandbags, new MO_ThingsTypeNumberRadius(MO_Sandbags, 6, 45, 0.5) },
+                { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 7, 53, 4) },
                 { MO_MobileObjectiveThings.Small_Radar, new MO_ThingsTypeNumberRadius(MO_Small_Radar, 2, 100, 30) },
 
             }
@@ -20710,12 +20715,12 @@ added Rouen Flak
             { MO_MobileObjectiveType.LargeArmourGroup,
                 new Dictionary<MO_MobileObjectiveThings, MO_ThingsTypeNumberRadius>() {
 
-                    { MO_MobileObjectiveThings.Humans, new MO_ThingsTypeNumberRadius( MO_Humans, 15, 10, 8) },
+                    { MO_MobileObjectiveThings.Humans, new MO_ThingsTypeNumberRadius( MO_Humans, 1, 10, 8) },
                     { MO_MobileObjectiveThings.Tents, new MO_ThingsTypeNumberRadius(MO_Tents, 8, 20, 15, 0.6, shps: tentShapes) },
                     { MO_MobileObjectiveThings.Armor_Tanks, new MO_ThingsTypeNumberRadius(MO_Armor_Tanks, true, 12, 21, 40, 5, shps: truckShapes) },
-                    { MO_MobileObjectiveThings.Misc, new MO_ThingsTypeNumberRadius(MO_Misc, 14, 25, 20) },
-                    { MO_MobileObjectiveThings.Sandbags, new MO_ThingsTypeNumberRadius(MO_Sandbags, 22, 60, 0.2) },
-                    { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 32, 67, 3 ) },
+                    { MO_MobileObjectiveThings.Misc, new MO_ThingsTypeNumberRadius(MO_Misc, 4, 25, 20) },
+                    { MO_MobileObjectiveThings.Sandbags, new MO_ThingsTypeNumberRadius(MO_Sandbags, 1, 60, 0.2) },
+                    { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 12, 67, 3 ) },
                     { MO_MobileObjectiveThings.Small_Radar, new MO_ThingsTypeNumberRadius(MO_Small_Radar, 2, 120, 30) },
                 }
             },
@@ -20743,13 +20748,13 @@ added Rouen Flak
             { MO_MobileObjectiveType.CamoGroup,
                 new Dictionary<MO_MobileObjectiveThings, MO_ThingsTypeNumberRadius>() {
 
-                    { MO_MobileObjectiveThings.Humans, new MO_ThingsTypeNumberRadius( MO_Humans, 10, 15, 12) },
+                    { MO_MobileObjectiveThings.Humans, new MO_ThingsTypeNumberRadius( MO_Humans, 1, 15, 12) },
                     { MO_MobileObjectiveThings.Tents, new MO_ThingsTypeNumberRadius(MO_Tents, 4, 17, 12, shps: tentShapes) },
                     { MO_MobileObjectiveThings.Camo, new MO_ThingsTypeNumberRadius(MO_Camo, 8, 40, 25, shps: tentShapes) },
-                    { MO_MobileObjectiveThings.Misc, new MO_ThingsTypeNumberRadius(MO_Misc, 12, 40, 35) },
+                    { MO_MobileObjectiveThings.Misc, new MO_ThingsTypeNumberRadius(MO_Misc, 2, 40, 35) },
                     { MO_MobileObjectiveThings.Sentry, new MO_ThingsTypeNumberRadius(MO_Sentry, 4, 70, 2) },
-                    { MO_MobileObjectiveThings.Sandbags, new MO_ThingsTypeNumberRadius(MO_Sandbags, 16, 75, 0.1) },
-                    { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 32, 83, 5) },
+                    { MO_MobileObjectiveThings.Sandbags, new MO_ThingsTypeNumberRadius(MO_Sandbags, 6, 75, 0.1) },
+                    { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 8, 83, 5) },
                     { MO_MobileObjectiveThings.Small_Radar, new MO_ThingsTypeNumberRadius(MO_Small_Radar, 2, 140, 30) },
                 }
             },
@@ -20762,8 +20767,8 @@ added Rouen Flak
                     { MO_MobileObjectiveThings.Camo, new MO_ThingsTypeNumberRadius(MO_Camo, 4, 30, 17) },
                     { MO_MobileObjectiveThings.Misc, new MO_ThingsTypeNumberRadius(MO_Misc, 8, 30, 17) },
                     { MO_MobileObjectiveThings.Sentry, new MO_ThingsTypeNumberRadius(MO_Sentry, 2, 50, 2) },
-                    { MO_MobileObjectiveThings.Sandbags, new MO_ThingsTypeNumberRadius(MO_Sandbags, 12, 45, 0.1) },
-                    { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 15, 60, 5) },
+                    { MO_MobileObjectiveThings.Sandbags, new MO_ThingsTypeNumberRadius(MO_Sandbags, 6, 45, 0.1) },
+                    { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 6, 60, 5) },
                 }
             },
             { MO_MobileObjectiveType.HighCommandPost,
@@ -20787,21 +20792,21 @@ added Rouen Flak
                     { MO_MobileObjectiveThings.Tables, new MO_ThingsTypeNumberRadius(MO_Tables, 5, 15, 7 )},
                     { MO_MobileObjectiveThings.Radar, new MO_ThingsTypeNumberRadius(MO_Radar, 2, 15, 10 )},
                     { MO_MobileObjectiveThings.Camo, new MO_ThingsTypeNumberRadius(MO_Camo, 2, 15, 13) },
-                    { MO_MobileObjectiveThings.Sandbags, new MO_ThingsTypeNumberRadius(MO_Sandbags, 22, 65, 0.3) },
-                    { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 44, 71, 3) },
+                    { MO_MobileObjectiveThings.Sandbags, new MO_ThingsTypeNumberRadius(MO_Sandbags, 8, 65, 0.3) },
+                    { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 6, 71, 3) },
 
                 }
             },
                     { MO_MobileObjectiveType.MobileRadar2,
                     new Dictionary<MO_MobileObjectiveThings, MO_ThingsTypeNumberRadius>(){
                     { MO_MobileObjectiveThings.Buildings, new MO_ThingsTypeNumberRadius(MO_Buildings, 1, 3, 3 )},
-                    { MO_MobileObjectiveThings.Humans, new MO_ThingsTypeNumberRadius(MO_Humans,8, 25, 20 )},
+                    { MO_MobileObjectiveThings.Humans, new MO_ThingsTypeNumberRadius(MO_Humans,1, 25, 20 )},
                     { MO_MobileObjectiveThings.Trucks, new MO_ThingsTypeNumberRadius(MO_Trucks,3, 50, 20, shps: truckShapes )},
                     { MO_MobileObjectiveThings.Tables, new MO_ThingsTypeNumberRadius(MO_Tables, 3, 25, 20 )},
                     { MO_MobileObjectiveThings.Camo, new MO_ThingsTypeNumberRadius(MO_Camo, 2, 30, 25) },
                     { MO_MobileObjectiveThings.Radar, new MO_ThingsTypeNumberRadius(MO_Radar, 3, 30, 20 )},
-                    { MO_MobileObjectiveThings.Sandbags, new MO_ThingsTypeNumberRadius(MO_Sandbags, 22, 75, 0.2) },
-                    { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 44, 85, 7) },
+                    { MO_MobileObjectiveThings.Sandbags, new MO_ThingsTypeNumberRadius(MO_Sandbags, 8, 75, 0.2) },
+                    { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 7, 85, 7) },
 
                 }
             },
@@ -20972,10 +20977,10 @@ added Rouen Flak
                     //{ MO_MobileObjectiveThings.MO_Military_Ships_DE, new MO_ThingsTypeNumberRadius(MO_Military_Ships_DE, 1, 2100, 400 )},
                     { MO_MobileObjectiveThings.Buildings, new MO_ThingsTypeNumberRadius(MO_Buildings, 4, 20, 18 )},
 
-                    { MO_MobileObjectiveThings.MO_FuelStorage, new MO_ThingsTypeNumberRadius(MO_FuelDump, 19, 50, 20 )},
+                    { MO_MobileObjectiveThings.MO_FuelStorage, new MO_ThingsTypeNumberRadius(MO_FuelDump, 12, 50, 20 )},
                     //MO_Jerrycan71
                     //{ MO_MobileObjectiveThings.Jerrycans, new MO_ThingsTypeNumberRadius(MO_Jerrycan71, 25, 30, 10 )},
-                    { MO_MobileObjectiveThings.ExplodeyThings, new MO_ThingsTypeNumberRadius(MO_ExplodeyThings, 10, 9, 7 )},
+                    { MO_MobileObjectiveThings.ExplodeyThings, new MO_ThingsTypeNumberRadius(MO_ExplodeyThings, 5, 9, 7 )},
                     //MO_Trucks
                     //{ MO_MobileObjectiveThings.Trucks, new MO_ThingsTypeNumberRadius(MO_Trucks, 5, 70, 50) },
 
@@ -20989,11 +20994,11 @@ added Rouen Flak
             { MO_MobileObjectiveType.AASite,
                     new Dictionary<MO_MobileObjectiveThings, MO_ThingsTypeNumberRadius>(){
                     
-                    { MO_MobileObjectiveThings.AntiAirGuns, new MO_ThingsTypeNumberRadius(MO_AntiAirGuns, 8, 20, 18 )},
+                    { MO_MobileObjectiveThings.AntiAirGuns, new MO_ThingsTypeNumberRadius(MO_AntiAirGuns, 6, 20, 18 )},
                     { MO_MobileObjectiveThings.AntiAirNets, new MO_ThingsTypeNumberRadius(MO_AntiAirNets, 3, 20, 18 )},
-                    { MO_MobileObjectiveThings.AntiAirMisc, new MO_ThingsTypeNumberRadius(MO_AntiAirMisc, 8, 20, 18 )},
+                    { MO_MobileObjectiveThings.AntiAirMisc, new MO_ThingsTypeNumberRadius(MO_AntiAirMisc, 3, 20, 18 )},
                     { MO_MobileObjectiveThings.AntiAirVehicles, new MO_ThingsTypeNumberRadius(MO_AntiAirVehicles, 5, 30, 10 )},
-                    { MO_MobileObjectiveThings.AntiAirAmmo, new MO_ThingsTypeNumberRadius(MO_AntiAirAmmo, 8, 20, 18 )},
+                    { MO_MobileObjectiveThings.AntiAirAmmo, new MO_ThingsTypeNumberRadius(MO_AntiAirAmmo, 4, 20, 18 )},
                     
 
                 }
@@ -22175,9 +22180,9 @@ added Rouen Flak
     //max deployed is roughly 8 X tempflaktoAllocatePerRound = 180 (for 22 allocated)
     //So in theory would easily do 50 instead of 22
     //int tempflaktoAllocatePerRound = 22; //number to hand out each time tempFlakPlacement runs. Was 28/2022-01-05
-    int tempflaktoAllocatePerRound = 50; //number to hand out each time tempFlakPlacement runs. Was 28/2022-01-05, 22/before 2026/09
+    int tempflaktoAllocatePerRound = 32; //number to hand out each time tempFlakPlacement runs. Was 28/2022-01-05, 22/before 2026/09, 50 - 2026/09
     //int minTempflaktoAllocatePerRound = 14; //we don't have to cut the # of flak so much bec we cut the frequency loaded, # of files loaded, etc.  Was 16 2022-01-05
-    int minTempflaktoAllocatePerRound = 30; //we don't have to cut the # of flak so much bec we cut the frequency loaded, # of files loaded, etc.  Was 16 2022-01-05; 14/prior to 2026-09
+    int minTempflaktoAllocatePerRound = 14; //we don't have to cut the # of flak so much bec we cut the frequency loaded, # of files loaded, etc.  Was 16 2022-01-05; 14/prior to 2026-09
     double maxACAltitudeforTempflak = 2500;
     double minRatingForFlak = 25;
     int maxSectionFiles = 16;
@@ -24062,144 +24067,151 @@ added Rouen Flak
 
     public string MO_ListScoutedObjectives(Player player = null, int army = 1, int numToDisplay = -1, double delay = 0.2, bool forEnemy = false, double long_delay = 3.5) //num to display less than 1 means display all
     {
-
-        int numDisplayed = 0;
-        double totDelay = 0;
-        
-
         string retmsg = "";
-        string msg = "Scouted " + ArmiesL[army] + " Targets with Coordinates:";
-        if (forEnemy) msg = "The enemy has been observed scouting these possible objectives within the " + ArmiesL[3-army] + " front lines:";
+        try {
 
-        if (player != null) twcLogServer(new Player[] { player }, msg, new object[] { });
-        retmsg += msg + Environment.NewLine;
+            int numDisplayed = 0;
+            double totDelay = 0;
+            
 
-        foreach (KeyValuePair<string, MissionObjective> entry in MissionObjectivesList)
-        //foreach (var key in MissionObjectives[(ArmiesE)army])
-        {
-            //mo.AttackingArmy == army
-            if (numToDisplay > 0 && numDisplayed >= numToDisplay) break;
-            MissionObjective mo = entry.Value;
+            
+            string msg = "Scouted " + ArmiesL[army] + " Targets with Coordinates:";
+            if (forEnemy) msg = "The enemy has been observed scouting these possible objectives within the " + ArmiesL[3-army] + " front lines:";
 
-
-            if (mo.AttackingArmy == army && mo.Scouted)
-            {
-                totDelay += delay;
-                //print out the radar contacts in reverse sort order, which puts closest distance/intercept @ end of the list              
-
-                
-                // + " (" + mo.Pos.x + "," + mo.Pos.y + ")"
-                string msg6 = "";
-                if (!forEnemy) //the bad guys only know the scouted position of an asset (which might have MOVED etc in the meanwhile
-                {
-                    
-                    msg6 = mo.lastScoutedSector + " " + mo.Name;
-
-                    string zpos_string = mo.lastScoutedPos.z.ToString("F0") + "m";
-                    if (army == 1) zpos_string = Calcs.meters2feet(mo.lastScoutedPos.z).ToString("F0") + "ft";
-
-                    if (!Calcs.Point3dEqual(mo.lastScoutedPos, new Point3d(-1, -1, -1))) //set to (-1,-1,-1) means the objective was previously scouted by not is disabled/removed
-                        msg6 += " [" + mo.lastScoutedPos.x.ToString("F0") + ", " + mo.lastScoutedPos.y.ToString("F0") + ", " + zpos_string + "]";
-                } else //each side knows the ACTUAL position of their assets, not just the scouted position
-                {
-                    
-
-                    msg6 = mo.Sector + " " + mo.Name;
-                    if (mo.IsEnabled)
-                    { //set to (-1,-1,-1) means the objective was previously scouted by not is disabled/removed
-                        Point3d point1 = mo.returnCurrentPosWithChief();
-                        string zpos_string = point1.z.ToString("F0") + "m";
-                        if (army == 2) zpos_string = Calcs.meters2feet(point1.z).ToString("F0") + "ft";
-                        msg6 += " [" + point1.x.ToString("F0") + ", " + point1.y.ToString("F0") + ", " + zpos_string + "]";
-                    }
-
-                }
-                if (!mo.IsEnabled) msg6 += "!!No longer there!!";
-                //if (mo.Destroyed) msg6 += " (destroyed)";
-                //else if (mo.IsPrimaryTarget) msg6 += " (primary objective)";
-                if (mo.lastTimeScouted_dt.HasValue) {
-                    TimeSpan diff = DateTime.UtcNow - mo.lastTimeScouted_dt.Value;
-                    msg6 += " ";
-                    if (mo.numTimesScouted > 1) msg6 += mo.numTimesScouted.ToString("F0") + "X, ";
-                    //This is cool but soooo long
-                    //msg6 += (mo.lastTimeScouted_hist_dt.Value).ToString("d'.'MM'.'yy' 'HH':'mm)");
-                    msg6 += (Math.Round(diff.TotalHours * 2.0) / 2.0).ToString("F1") + "hr";
-                }
-
-                string rd = " R" + mo.radius.ToString("F0") + "m";
-                if (army==1) rd = " R" + Calcs.meters2feet(mo.radius).ToString("F0") + "ft";
-
-                string dl = ", L" + mo.Points.ToString();
-
-                string pc = "";
-                if (mo.DestroyedPercent != 0) pc = ", " + (Math.Floor(mo.DestroyedPercent * 100.0)).ToString("F0") + "%";
-
-                int ndf = mo.numDefenseUnits();
-                string ndfmsg = "";
-                if (ndf > 0) ndfmsg = String.Format(" ({0} DUs, {1:f1}X)", ndf, mo.defenseUnitsHelpFactor());
-
-                msg6 += rd + dl + pc + ndfmsg;
-
-                if (mo.Explanation.Length > 0) msg6 += " **Special Orders: " + mo.Explanation;
-
-                retmsg += msg6 + Environment.NewLine;
-                numDisplayed++;
-                if (numDisplayed % 10 == 0) totDelay += 3.5;
-                Timeout(totDelay, () =>
-                {
-                    if (player != null) twcLogServer(new Player[] { player }, msg6, new object[] { });
-                });//timeout
-
-                if (mo.hasGeneralStaff && !forEnemy)
-                {
-
-                    var gsl = GeneralStaffLocations[(ArmiesE)army];
-                    string af = "general";
-                    if (mo.OwnerArmy == 1) af = "RAF";
-                    else if (mo.OwnerArmy == 2) af = "Luftwaffe";
-                    int timeLeft_min = calcTimeLeft_min();
-                    string msg7 = ">>>Recon has identified a possible group of high-ranking " + af + " officers in sector " + gsl.sector + " near " + mo.Name;
-                    if (timeLeft_min < MISSION_LENGTH_HRS * 60.0 / 2 || mo.numTimesScouted > 1) msg7 = ">>>Additional reconnaissance has determined that " + gsl.staffGroupName + " are in sector " + gsl.sectorKeypad + " near " + mo.Name;
-                    if (timeLeft_min < MISSION_LENGTH_HRS * 60.0 / 4 || mo.numTimesScouted > 2) msg7 = ">>>Additional reconnaissance has determined that " + gsl.staffGroupName + " are in sector " + gsl.sectorDoublekeypad + " near " + mo.Name;
-                    if (mo.numTimesScouted > 3) msg7 = ">>>Additional reconnaissance has determined that " + gsl.staffGroupName + " are in sector " + gsl.sectorDoublekeypad + " near (" + (gsl.pos.x + random.Next(1000) - 500).ToString("F0") + "," + (gsl.pos.y + random.Next(1000) - 500).ToString("F0") + ") in the area of " + mo.Name;
-                    if (mo.numTimesScouted > 4) msg7 = ">>>Several additional reconnaissance flights have narrowed down the location of " + gsl.staffGroupName + " within less than 1 km, in sector " + gsl.sectorDoublekeypad + " near (" + (gsl.pos.x + random.Next(1000) - 500).ToString("F0") + "," + (gsl.pos.y + random.Next(1000) - 500).ToString("F0") + ") in the area of " + mo.Name;
-                    if (mo.numTimesScouted > 5) msg7 = ">>>Several additional reconnaissance flights have narrowed down the location of " + gsl.staffGroupName + " to sector " + gsl.sectorDoublekeypad + " within a few hundred meters of (" + (gsl.pos.x + random.Next(1000) - 200).ToString("F0") + "," + (gsl.pos.y + random.Next(1000) - 200).ToString("F0") + ") in the area of " + mo.Name;
-                    //if (timeLeft_min < END_MISSION_TICK / 2000 / 8) msg7 = ">>>" + gsl.staffGroupName + " may have been spotted in sector " + gsl.sectorDoublekeypad + " near " + mo.Name;
-                    retmsg += msg7 + Environment.NewLine;
-                    totDelay += delay;
-                    Timeout(totDelay, () =>
-                    {
-                        if (player != null) twcLogServer(new Player[] { player }, msg7, new object[] { });
-                    });//timeout
-
-                }
-
-
-            }
-        }
-        if (numDisplayed == 0)
-        {
-            msg = ">>>>> No objectives scouted yet <<<<<";
             if (player != null) twcLogServer(new Player[] { player }, msg, new object[] { });
             retmsg += msg + Environment.NewLine;
+
+            foreach (KeyValuePair<string, MissionObjective> entry in MissionObjectivesList)
+            //foreach (var key in MissionObjectives[(ArmiesE)army])
+            {
+                //mo.AttackingArmy == army
+                if (numToDisplay > 0 && numDisplayed >= numToDisplay) break;
+                MissionObjective mo = entry.Value;
+
+
+                if (mo.AttackingArmy == army && mo.Scouted)
+                {
+                    totDelay += delay;
+                    //print out the radar contacts in reverse sort order, which puts closest distance/intercept @ end of the list              
+
+                    
+                    // + " (" + mo.Pos.x + "," + mo.Pos.y + ")"
+                    string msg6 = "";
+                    if (!forEnemy) //the bad guys only know the scouted position of an asset (which might have MOVED etc in the meanwhile
+                    {
+                        
+                        msg6 = mo.lastScoutedSector + " " + mo.Name;
+
+                        string zpos_string = mo.lastScoutedPos.z.ToString("F0") + "m";
+                        if (army == 1) zpos_string = Calcs.meters2feet(mo.lastScoutedPos.z).ToString("F0") + "ft";
+
+                        if (!Calcs.Point3dEqual(mo.lastScoutedPos, new Point3d(-1, -1, -1))) //set to (-1,-1,-1) means the objective was previously scouted by not is disabled/removed
+                            msg6 += " [" + mo.lastScoutedPos.x.ToString("F0") + ", " + mo.lastScoutedPos.y.ToString("F0") + ", " + zpos_string + "]";
+                    } else //each side knows the ACTUAL position of their assets, not just the scouted position
+                    {
+                        
+
+                        msg6 = mo.Sector + " " + mo.Name;
+                        if (mo.IsEnabled)
+                        { //set to (-1,-1,-1) means the objective was previously scouted by not is disabled/removed
+                            Point3d point1 = mo.returnCurrentPosWithChief();
+                            string zpos_string = point1.z.ToString("F0") + "m";
+                            if (army == 2) zpos_string = Calcs.meters2feet(point1.z).ToString("F0") + "ft";
+                            msg6 += " [" + point1.x.ToString("F0") + ", " + point1.y.ToString("F0") + ", " + zpos_string + "]";
+                        }
+
+                    }
+                    if (!mo.IsEnabled) msg6 += "!!No longer there!!";
+                    //if (mo.Destroyed) msg6 += " (destroyed)";
+                    //else if (mo.IsPrimaryTarget) msg6 += " (primary objective)";
+                    if (mo.lastTimeScouted_dt.HasValue) {
+                        TimeSpan diff = DateTime.UtcNow - mo.lastTimeScouted_dt.Value;
+                        msg6 += " ";
+                        if (mo.numTimesScouted > 1) msg6 += mo.numTimesScouted.ToString("F0") + "X, ";
+                        //This is cool but soooo long
+                        //msg6 += (mo.lastTimeScouted_hist_dt.Value).ToString("d'.'MM'.'yy' 'HH':'mm)");
+                        msg6 += (Math.Round(diff.TotalHours * 2.0) / 2.0).ToString("F1") + "hr";
+                    }
+
+                    string rd = " R" + mo.radius.ToString("F0") + "m";
+                    if (army==1) rd = " R" + Calcs.meters2feet(mo.radius).ToString("F0") + "ft";
+
+                    string dl = ", L" + mo.Points.ToString();
+
+                    string pc = "";
+                    if (mo.DestroyedPercent != 0) pc = ", " + (Math.Floor(mo.DestroyedPercent * 100.0)).ToString("F0") + "%";
+
+                    int ndf = mo.numDefenseUnits();
+                    string ndfmsg = "";
+                    if (ndf > 0) ndfmsg = String.Format(" ({0} DUs, {1:f1}X)", ndf, mo.defenseUnitsHelpFactor());
+
+                    msg6 += rd + dl + pc + ndfmsg;
+
+                    if (mo.Explanation != null && mo.Explanation.Length > 0) msg6 += " **Special Orders: " + mo.Explanation;
+
+                    retmsg += msg6 + Environment.NewLine;
+                    numDisplayed++;
+                    if (numDisplayed % 10 == 0) totDelay += 3.5;
+                    Timeout(totDelay, () =>
+                    {
+                        if (player != null) twcLogServer(new Player[] { player }, msg6, new object[] { });
+                    });//timeout
+
+                    if (mo.hasGeneralStaff && !forEnemy)
+                    {
+
+                        var gsl = GeneralStaffLocations[(ArmiesE)army];
+                        string af = "general";
+                        if (mo.OwnerArmy == 1) af = "RAF";
+                        else if (mo.OwnerArmy == 2) af = "Luftwaffe";
+                        int timeLeft_min = calcTimeLeft_min();
+                        string msg7 = ">>>Recon has identified a possible group of high-ranking " + af + " officers in sector " + gsl.sector + " near " + mo.Name;
+                        if (timeLeft_min < MISSION_LENGTH_HRS * 60.0 / 2 || mo.numTimesScouted > 1) msg7 = ">>>Additional reconnaissance has determined that " + gsl.staffGroupName + " are in sector " + gsl.sectorKeypad + " near " + mo.Name;
+                        if (timeLeft_min < MISSION_LENGTH_HRS * 60.0 / 4 || mo.numTimesScouted > 2) msg7 = ">>>Additional reconnaissance has determined that " + gsl.staffGroupName + " are in sector " + gsl.sectorDoublekeypad + " near " + mo.Name;
+                        if (mo.numTimesScouted > 3) msg7 = ">>>Additional reconnaissance has determined that " + gsl.staffGroupName + " are in sector " + gsl.sectorDoublekeypad + " near (" + (gsl.pos.x + random.Next(1000) - 500).ToString("F0") + "," + (gsl.pos.y + random.Next(1000) - 500).ToString("F0") + ") in the area of " + mo.Name;
+                        if (mo.numTimesScouted > 4) msg7 = ">>>Several additional reconnaissance flights have narrowed down the location of " + gsl.staffGroupName + " within less than 1 km, in sector " + gsl.sectorDoublekeypad + " near (" + (gsl.pos.x + random.Next(1000) - 500).ToString("F0") + "," + (gsl.pos.y + random.Next(1000) - 500).ToString("F0") + ") in the area of " + mo.Name;
+                        if (mo.numTimesScouted > 5) msg7 = ">>>Several additional reconnaissance flights have narrowed down the location of " + gsl.staffGroupName + " to sector " + gsl.sectorDoublekeypad + " within a few hundred meters of (" + (gsl.pos.x + random.Next(1000) - 200).ToString("F0") + "," + (gsl.pos.y + random.Next(1000) - 200).ToString("F0") + ") in the area of " + mo.Name;
+                        //if (timeLeft_min < END_MISSION_TICK / 2000 / 8) msg7 = ">>>" + gsl.staffGroupName + " may have been spotted in sector " + gsl.sectorDoublekeypad + " near " + mo.Name;
+                        retmsg += msg7 + Environment.NewLine;
+                        totDelay += delay;
+                        Timeout(totDelay, () =>
+                        {
+                            if (player != null) twcLogServer(new Player[] { player }, msg7, new object[] { });
+                        });//timeout
+
+                    }
+
+
+                }
+            }
+            if (numDisplayed == 0)
+            {
+                msg = ">>>>> No objectives scouted yet <<<<<";
+                if (player != null) twcLogServer(new Player[] { player }, msg, new object[] { });
+                retmsg += msg + Environment.NewLine;
+            }
+            Timeout(totDelay + 2, () =>
+            {
+            //Tobruk: 10Kft / 3km
+                if (player != null) twcLogServer(new Player[] { player }, ">>> To scout objectives, fly 20000ft/6000m or higher in an aircraft with no bombs on board and record a reconnaissance photo of the area via Tab-4-9.", new object[] { });
+                Timeout(2, () =>
+                {
+                    if (player != null) twcLogServer(new Player[] { player }, ">>> Return the photos to base, land safely, and use chat command <record to transfer the photos to headquarters.", new object[] { });
+                });
+                Timeout(4, () =>
+                {
+                    if (player != null) twcLogServer(new Player[] { player }, ">>> The photos allow headquarters to determine precise coordinates of all potential objectives in that area.", new object[] { });
+                });
+                //twcLogServer(new Player[] { player }, ">>>>> The higher you fly the larger the area your photo will capture.", new object[] { });
+
+            });
+
+            return retmsg;
         }
-        Timeout(totDelay + 2, () =>
-        {
-        //Tobruk: 10Kft / 3km
-            if (player != null) twcLogServer(new Player[] { player }, ">>> To scout objectives, fly 20000ft/6000m or higher in an aircraft with no bombs on board and record a reconnaissance photo of the area via Tab-4-9.", new object[] { });
-            Timeout(2, () =>
-            {
-                if (player != null) twcLogServer(new Player[] { player }, ">>> Return the photos to base, land safely, and use chat command <record to transfer the photos to headquarters.", new object[] { });
-            });
-            Timeout(4, () =>
-            {
-                if (player != null) twcLogServer(new Player[] { player }, ">>> The photos allow headquarters to determine precise coordinates of all potential objectives in that area.", new object[] { });
-            });
-            //twcLogServer(new Player[] { player }, ">>>>> The higher you fly the larger the area your photo will capture.", new object[] { });
-
-        });
-
-        return retmsg;
+        catch (Exception ex) {
+            Console.WriteLine("MO_ListScoutedObjectives ERROR: {0}", ex);
+            return retmsg;
+        }
     }
 
     /*
@@ -30619,7 +30631,50 @@ public static class Calcs
         //2022-07-31 - added all Hurri types with boms to list, also hurri iid
         if (acType.Contains("He-115") || acType.Contains("Walrus")) ret = true;
         return ret;
-    }	
+    }
+
+    //Whether that army has at least 1 ASR aircraft flying at the moment; 0 checks both
+    public static bool isAsrActive(AMission msn, int desiredArmy) {	
+
+        var arms = new List<int> () {1,2};
+        try {
+    			if (msn.GamePlay != null) foreach (int army in arms)
+				{
+                    if (desiredArmy !=0 && army != desiredArmy) continue;
+
+					var airGroups = msn.GamePlay.gpAirGroups(army);
+
+					if (airGroups != null && airGroups.Length > 0)
+						foreach (AiAirGroup airGroup in airGroups)
+						{
+
+							//if (DEBUG) DebugAndLog ("DEBUG: Army, # in airgroup:" + army.ToString() + " " + airGroup.GetItems().Length.ToString());            
+							if (airGroup != null && airGroup.GetItems() != null && airGroup.GetItems().Length > 0)
+								foreach (AiActor actor in airGroup.GetItems())
+								{
+									if (actor != null && actor is AiAircraft)
+									{
+										AiAircraft a = actor as AiAircraft;
+										
+										
+										if (a != null && a.IsAirborne() && isAsrAC(a)) {
+											return true;
+										}
+                                    }
+                                }
+                        }
+                }
+                return false;
+        } catch (Exception ex) { 
+            Console.WriteLine ("Calcs isAsrActive ERROR: {0}", ex); 
+            return false;
+        }
+
+            
+
+    }
+
+
 	
 	
     /// <summary>
@@ -30981,6 +31036,7 @@ public static class Calcs
         try {
             foreach (GroundStationary g in gs)
             {
+                if (g == null) continue;
                 if (matchAliveState.HasValue && matchAliveState.Value != g.IsAlive) continue;
 
                 if (matchName != null && !g.Name.ToLower().Contains(matchName.ToLower())) continue;
@@ -31014,6 +31070,7 @@ public static class Calcs
                 //Console.WriteLine("Groundstat name: " + g.Name + " " + g.country + " title:" + g.Title + " type: " + g.Type.ToString()+ "alive: {0}", g.IsAlive);
 
                 //Console.WriteLine("Groundstat2: title: {0} {1} name: {2} {3} type: {4} {5}",matchTitle != null, matchTitle != null && g.Title.ToLower().Contains(matchTitle.ToLower()), matchName != null, matchName != null && g.Name.ToLower().Contains(matchName.ToLower()), g.Type != null, g.Type != null && g.Type != matchType  );
+                if (g != null) continue;
 
                 if (matcharmy > 0 && g.country != matchstring) continue;
                 if (matchAliveState.HasValue && matchAliveState.Value != g.IsAlive) continue;

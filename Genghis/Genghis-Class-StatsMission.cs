@@ -321,8 +321,8 @@ public class StatsMission : AMission, IStatsMission
     public readonly string[] stb_LANDED_NEUTRAL_MSG = { ">>>{0} landed in neutral territory - and not near a friendly airport. ", ">>>{0} landed in no man's land - with no friendlies nearby. " };
     public readonly string[] stb_ASR_FAIL_DROWNED = { ">>>{0} drowned! ", ">>>{0} tried to swim for shore, but drowned! ", ">>>{0} drowned when the life raft deflated! " , ">>>{0} was unable to exit the damaged plane, and drowned. ", ">>>{0} was knocked unconcious during the landing, and drowned. ", ">>>{0} drowned when the life raft deflated! ", ">>>{0} survived the landing but soon succumbed to hypothermia. " };
     public readonly string[] stb_ASR_RESCUE_MSG = { ">>>{0} was rescued by local fishermen! ", ">>>{0} was rescued by friendly fishermen!", ">>>{0} was rescued by ASR ", ">>>{0} was rescued by a passing ship! ", ">>>{0} was rescued after hanging onto a life raft for 28 hours! ", ">>>{0} was rescued. Now {0} can join the Goldfish Club! ", ">>>{0} got a ride home in a seaplane! " };
-    public readonly string[] stb_ASR_CAPTURE_MSG = { ">>>{0} was captured by enemy forces! ", ">>>{0} was captured. ", ">>>{0} was captured and sent to a POW camp. " };
-    public readonly string[] stb_CAPTURED_MSG = { ">>>{0} was captured. ", ">>>{0} was captured by enemy forces! ", ">>>{0} was captured and sent to a POW camp. ", };
+    public readonly string[] stb_ASR_CAPTURE_MSG = { ">>>{0} was captured by enemy forces! ", ">>>{0} was captured. ", ">>>{0} was captured and sent to a POW camp. ", ">>>{0} was captured by enemy ASR. ", ">>>{0} was picked up by an enemy cargo ship and spent the remainder of the war in prison. " };
+    public readonly string[] stb_CAPTURED_MSG = { ">>>{0} was captured. ", ">>>{0} was captured by enemy forces! ", ">>>{0} was captured by nearby troops! ", ">>>{0} was captured and sent to a POW camp. ", };
     public readonly string[] stb_CAPTURED_NEUTRAL_MSG = { ">>>{0} was captured while trying to return home across neutral territory. ", ">>>{0} was captured by enemy forces who were patrolling the neutral zone! ", ">>>{0} was captured by an enemy patrol in the neutral zone, and sent to a POW camp. ", ">>>{0} got lost while trying to find a way home across neutral territory, and was captured by an enemy patrol. ", };
     public readonly string[] stb_FINAL_CAPTURED_MSG = { "", "", ">>>{0} tried to escape, but was captured again and shot.", ">>>{0} was shot while attempting escape.", ">>>{0} became CO of the prisoners in the POW camp and was released at the end of the war.", "", "", "", ">>>{0} led a POW escape attempt but was caught in the act and shot on sight.", ">>>{0} led a POW escape attempt but it was unsuccessful.", "", "", "", "", "", "",
 	">>>{0} later wrote a best-selling book about his experiences as a POW."	}; //COMES AFTER THE CAPTURED_MSG in cases where the pilot DID NOT escape.  Can just be blank.
@@ -358,6 +358,8 @@ public class StatsMission : AMission, IStatsMission
     double stb_ASR_RescueChanceBlue = 0.90;     // probability (0-1) of LW pilot being air-sea rescued after landing in water
     double stb_ASR_RescueChanceFriendly = 1.06;     //multiplier for ASR_RescueChance if landing in friendly waters
     double stb_ASR_RescueChanceEnemy = .9;      //multiplier for ASR_RescueChance if landing in hostile waters
+
+    double stb_ASR_RescueChanceASRBoost = 1.1;      //multiplier for rescue change if ASR is active for that side at the moment
     double stb_ParachuteFailureRecoveryChance = .99; //If CloD decides your "parachute failed" what is your chance of being able to deploy your reserve chute? 
                                                      //CloD does something like 20-50% parachute failure rate. Wherease US AF in training in WWII found one main chute failure PER WEEK in a large training facility, so that is one per hundreds of jumps.  And that is the main chute. The reserve shoot fails maybe 1% of the time or less also.  So even .99 here is probably too LOW, certainly not too high.
                                                      //In reality in combat it might have been somewhat less than that, but still . . . 
@@ -10255,7 +10257,9 @@ public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
                 //if (GamePlay.gpFrontArmy(aircraft.Pos().x, aircraft.Pos().y) == 0 &&
                 //       GamePlay.gpLandType(aircraft.Pos().x, aircraft.Pos().y) == LandTypes.WATER) // crash-landed in neutral water
                 //If landing in water, you chance of rescue goes up 25% if home waters, down 25% if enemy water
-                //Would be cool to change chances if near land, near ASR, or whatever, vs far from them, but maybe next time . .. 				
+                //Would be cool to change chances if near land, near ASR, or whatever, vs far from them, but maybe next time . .. 
+
+                bool hasASR = Calcs.IsAsrActive(this, player.Army()); //helps both water & other rescues.				
 				
                 if (GamePlay.gpLandType(actor.Pos().x, actor.Pos().y) == LandTypes.WATER) // crash-landed in water
                 {
@@ -10274,6 +10278,8 @@ public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
                     if (player.Army() == GamePlay.gpFrontArmy(actor.Pos().x, actor.Pos().y))
                         RescueChance = stb_ASR_RescueChanceFriendly * RescueChance;
                     else RescueChance = stb_ASR_RescueChanceEnemy * RescueChance;
+
+                    if (hasASR) RescueChance *= stb_ASR_RescueChanceASRBoost;                                            
 
                     if (Luck < RescueChance)
                     {   // ASR success
@@ -10323,6 +10329,8 @@ public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
                         double Luck = stb_random.NextDouble();
                         double EscapeChance = stb_POW_EscapeChanceRed;
                         if (player.Army() == 2) EscapeChance = stb_POW_EscapeChanceBlue;
+
+                        if (hasASR) EscapeChance *= stb_ASR_RescueChanceASRBoost;
 
                         if (Luck > (1 - EscapeChance))
                         {   // player escaped capture

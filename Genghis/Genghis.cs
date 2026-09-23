@@ -16330,7 +16330,8 @@ public class Mission : AMission, IMainMission
                         
             foreach (string thing in ThingsToSave.Keys) {
 
-                int numFound = Calcs.CountMatchingGroundObjects(msn.GamePlay, this.Pos, this.radius, matchTitle: thing);
+                //int numFound = Calcs.CountMatchingGroundObjects(msn.GamePlay, this.Pos, this.radius, matchTitle: thing);
+                int numFound = Calcs.CountMatchingGroundObjects(msn.GamePlay, matchTitle: thing, matchName: this.ID);
                 if (msn.ON_TESTSERVER) Console.WriteLine("ThingsToSave, checking: {0}  found: {1} needed: {2}", thing, numFound, ThingsToSave[thing]);
                 ret.stillAlive = ret.stillAlive && (numFound >= ThingsToSave[thing]);
                 ret.numNeeded += ThingsToSave[thing];
@@ -18295,9 +18296,9 @@ public class Mission : AMission, IMainMission
             addMobile(MO_ObjectiveType.MilitaryHeadquarters, "Canterbury Mobile Secret Resistance Training Center", "", 1, 5, "BCanterburyCamoGroup", 245118, 253057, 250, 200, 4000, 15, 0, 160, 450, true, true, 1, 10, MO_MobileObjectiveType.CamoGroup, 80, 228118, 240057, 247785, 256399, 1, 9, MO_ProducerOrStorageType.None, "", add);
 
 
-            addMobile(MO_ObjectiveType.HighCommandPost, "Westerham Mobile High Command Post (NO BOMBS!)", "", 1, 5, "WesterhamHighCommandPost", 162033, 232000, 40, 40, 0, 30, 0, 170, 330, false, false, 1, 2, MO_MobileObjectiveType.HighCommandPost, 36, 153000, 246000, 175000, 222000, 1, 8, MO_ProducerOrStorageType.None, "No bombs, must kill outer defense while leaving center untouched", addNewOnly: false, mo_trigger_type: MO_TriggerType.NoBombs, things_to_save: new Dictionary<string,int> () {{"MG_TA", 2}, {"humans", 8}, {"tent", 2}}, log_message: "{army} captured Westerham High Command general staff! Valuable intel gathered!", hud_message: "{army} captured Westerham High Command Staff!", thingstosave_destroyed_message: ">>>The Westerham High Command General Staff was KILLED instead of CAPTURED! Objective not achieved; no intelligence gathered!", explanation: "Neutralize the general staff escorts and guard on the periphery, but preserve the General Staff in the center for capture by our agents. NO BOMBS! Pinpoint accurate strafing!", canbedisabled: false);
+            addMobile(MO_ObjectiveType.HighCommandPost, "Westerham Mobile High Command Post (NO BOMBS!)", "", 1, 5, "WesterhamHighCommandPost", 162033, 232000, 45, 45, 0, 30, 0, 170, 330, false, false, 1, 2, MO_MobileObjectiveType.HighCommandPost, 36, 153000, 246000, 175000, 222000, 1, 8, MO_ProducerOrStorageType.None, "No bombs, must kill outer defense while leaving center untouched", addNewOnly: false, mo_trigger_type: MO_TriggerType.NoBombs, things_to_save: new Dictionary<string,int> () {{"MG_TA", 2}, {"humans", 8}, {"tent", 2}}, log_message: "{army} captured Westerham High Command general staff! Valuable intel gathered!", hud_message: "{army} captured Westerham High Command Staff!", thingstosave_destroyed_message: ">>>The Westerham High Command General Staff was KILLED instead of CAPTURED! Objective not achieved; no intelligence gathered!", explanation: "Neutralize the general staff escorts and guard on the periphery, but preserve the General Staff in the center for capture by our agents. NO BOMBS! Pinpoint accurate strafing!", canbedisabled: false);
 
-            addMobile(MO_ObjectiveType.HighCommandPost, "Denton Mobile High Command Post (NO BOMBS!)", "", 1, 5, "DentonHighCommandPost", 232033, 239000, 40, 40, 0, 30, 0, 170, 330, false, false, 1, 2, MO_MobileObjectiveType.HighCommandPost, 36, 223210, 247340, 249319, 236309, 1, 8, MO_ProducerOrStorageType.None, "No bombs, must kill outer defense while leaving center untouched", addNewOnly:false, mo_trigger_type: MO_TriggerType.NoBombs,things_to_save: new Dictionary<string,int> () {{"MG_TA", 2}, {"humans", 8}, {"tent", 2}}, log_message: "{army} captured Denton High Command general staff! Valuable intel gathered!", hud_message: "{army} captured Denton High Command Staff!", thingstosave_destroyed_message: ">>>The Denton High Command General Staff was KILLED instead of CAPTURED! Objective not achieved; no intelligence gathered!", explanation: "Neutralize the general staff escorts and guard on the periphery, but preserve the General Staff in the center for capture by our agents. NO BOMBS! Pinpoint accurate strafing!", canbedisabled: false);
+            addMobile(MO_ObjectiveType.HighCommandPost, "Denton Mobile High Command Post (NO BOMBS!)", "", 1, 5, "DentonHighCommandPost", 232033, 239000, 45, 45, 0, 30, 0, 170, 330, false, false, 1, 2, MO_MobileObjectiveType.HighCommandPost, 36, 223210, 247340, 249319, 236309, 1, 8, MO_ProducerOrStorageType.None, "No bombs, must kill outer defense while leaving center untouched", addNewOnly:false, mo_trigger_type: MO_TriggerType.NoBombs,things_to_save: new Dictionary<string,int> () {{"MG_TA", 2}, {"humans", 8}, {"tent", 2}}, log_message: "{army} captured Denton High Command general staff! Valuable intel gathered!", hud_message: "{army} captured Denton High Command Staff!", thingstosave_destroyed_message: ">>>The Denton High Command General Staff was KILLED instead of CAPTURED! Objective not achieved; no intelligence gathered!", explanation: "Neutralize the general staff escorts and guard on the periphery, but preserve the General Staff in the center for capture by our agents. NO BOMBS! Pinpoint accurate strafing!", canbedisabled: false);
 
        
 
@@ -20779,11 +20780,11 @@ added Rouen Flak
                     { MO_MobileObjectiveThings.Humans, new MO_ThingsTypeNumberRadius( MO_Humans, 8, 3, 2, randomizeHowMany: false) },
                     { MO_MobileObjectiveThings.Tents, new MO_ThingsTypeNumberRadius(MO_StaffTents, 2, 3, 2,shps: tentShapes, randomizeHowMany: false) },
                     { MO_MobileObjectiveThings.HQCars, new MO_ThingsTypeNumberRadius(MO_HQCars, 2, 3, 3, randomizeHowMany: false ) },
-                    { MO_MobileObjectiveThings.Camo, new MO_ThingsTypeNumberRadius(MO_Camo_small, 8, 25, 5) },
-                    //{ MO_MobileObjectiveThings.Misc, new MO_ThingsTypeNumberRadius(MO_Misc, 8, 30, 5) },
-                    { MO_MobileObjectiveThings.Sentry, new MO_ThingsTypeNumberRadius(MO_Sentry, 4, 33, 5) },
-                    { MO_MobileObjectiveThings.Trucks, new MO_ThingsTypeNumberRadius(MO_Trucks, 8, 24, 3) },
-                    { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 8, 32.5, 1) },
+                    { MO_MobileObjectiveThings.Camo, new MO_ThingsTypeNumberRadius(MO_Camo_small, 8, 26, 5) },
+                    //{ MO_MobileObjectiveThings.Misc, new MO_ThingsTypeNumberRadius(MO_Misc, 8, 31, 5) },
+                    { MO_MobileObjectiveThings.Sentry, new MO_ThingsTypeNumberRadius(MO_Sentry, 4, 34, 5) },
+                    { MO_MobileObjectiveThings.Trucks, new MO_ThingsTypeNumberRadius(MO_Trucks, 8, 25, 3) },
+                    { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 8, 33.5, 1) },
                 }
             },
             { MO_MobileObjectiveType.MobileRadar1,
@@ -25278,11 +25279,14 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
 				if (!submarineObjective && !landingGroundObjective && onEnemyTerritory) //this objective has switched sides.  So... (including ships but NOT submarines and NOT landingroundobjectives)
 				{
 					Console.WriteLine("MO_InitializeAllObjectives(): Objective " + mo.Name + " has changed sides to " + terr.ToString() + " at " + DateTime.UtcNow.ToString());
+                    /*
+                    //This seemed like a good idea but on trying it, not really.  Best to just leave things enabled.
 					if (mo.CanBeDisabled) {
 						mo.IsEnabled = false; //When first switching sides it is disabled, for that first session
 						Timeout(65, () => { MO_RemoveObjective(mo, immediate: false, addX: false); }); //This doesn't get initialized until 20-30 seconds after startup
 						RemoveSuggestedObjective(mo);
 					}
+                    */
 					mo.OwnerArmy = terr;
 					mo.AttackingArmy = 3 - terr;
 					mo.Destroyed = false;
@@ -31078,7 +31082,8 @@ public static class Calcs
     //matchAliveState matches things that have that state - ie, true matches  things that are alive while false matches things that are dead (IsAlive==false)
     //If matchAliveState==null then it will match both alive & dead
     //If antiMatch then it does the opposite, of course
-    public static int CountMatchingGroundObjects(this IGamePlay GamePlay, Point3d location, double radius_m, string matchTitle = null, AiGroundActorType? matchType = null, string matchName = null, int matcharmy = 0, bool? matchAliveState = true, bool antiMatch = false)
+    //public static Point3d nullPoint = new Point3d (-1,-1,-1);
+    public static int CountMatchingGroundObjects(this IGamePlay GamePlay, Point3d? location_null = null, double radius_m = 0, string matchTitle = null, AiGroundActorType? matchType = null, string matchName = null, int matcharmy = 0, bool? matchAliveState = true, bool antiMatch = false)
     {
         try
         {
@@ -31086,13 +31091,21 @@ public static class Calcs
             string matchstring = "gb";
             if (matcharmy == 2) matchstring = "de";
 
-            List<GroundStationary> gs = GamePlay.gpGroundStationarys(location.x, location.y, radius_m).ToList();
+            Point3d location = new Point3d (-1,-1,-1);
+            if (location_null.HasValue) location = location_null.Value; 
+
+            List<GroundStationary> gs = new List<GroundStationary>();
+
+            if (radius_m>0) gs = GamePlay.gpGroundStationarys(location.x, location.y, radius_m).ToList();
+            else  gs = GamePlay.gpGroundStationarys().ToList();
+
             foreach (GroundStationary g in gs)
             {
-                //Console.WriteLine("Groundstat name: " + g.Name + " " + g.country + " title:" + g.Title + " type: " + g.Type.ToString()+ "alive: {0}", g.IsAlive);
+                //Console.WriteLine("Groundstat name: " + g.Name + " " + g.country + " title:" + g.Title + " type: " + g.Type.ToString()+ " alive: {0}", g.IsAlive);
 
                 //Console.WriteLine("Groundstat2: title: {0} {1} name: {2} {3} type: {4} {5}",matchTitle != null, matchTitle != null && g.Title.ToLower().Contains(matchTitle.ToLower()), matchName != null, matchName != null && g.Name.ToLower().Contains(matchName.ToLower()), g.Type != null, g.Type != null && g.Type != matchType  );
-                if (g != null) continue;
+                
+                if (g == null) continue;
 
                 if (matcharmy > 0 && g.country != matchstring) continue;
                 if (matchAliveState.HasValue && matchAliveState.Value != g.IsAlive) continue;

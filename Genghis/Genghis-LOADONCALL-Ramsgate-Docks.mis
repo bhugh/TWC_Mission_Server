@@ -39,11 +39,9 @@
   Ramsgate_DocksB_678 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251318.30 257236.38 -160.00 /hstart 20
   Ramsgate_DocksB_699 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251294.00 257266.50 -160.00 /hstart 18
   Ramsgate_DocksB_681 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251315.67 257245.05 -160.00 /hstart 20
-  Ramsgate_DocksB_696 Stationary.Environment.JerryCan_GER1_1 nn 251307.55 257256.27 -10.00 
   Ramsgate_DocksB_684 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251312.23 257254.06 -160.00 /hstart 20
   Ramsgate_DocksB_706 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251291.38 257275.17 -160.00 /hstart 18
   Ramsgate_DocksB_690 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251309.61 257262.75 -160.00 /hstart 20
-  Ramsgate_DocksB_691 Stationary.Weapons_.Torpedo_T_F5 nn 251305.41 257272.22 -75.00 
   Ramsgate_DocksB_693 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251307.33 257271.73 -160.00 /hstart 20
   Ramsgate_DocksB_679 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251325.80 257279.14 -160.00 /hstart 20
   Ramsgate_DocksB_673 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251336.77 257243.75 -160.00 /hstart 20
@@ -54,14 +52,12 @@
   Ramsgate_DocksB_677 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251328.08 257270.14 -160.00 /hstart 20
   Ramsgate_DocksB_662 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251364.53 257253.67 -160.00 /hstart 20
   Ramsgate_DocksB_663 tobruk:Stationary.Environment.50meterStonewall nn 251365.63 257256.48 -75.00 
-  Ramsgate_DocksB_664 Stationary.Environment.PortCrane1_FRA1 nn 251365.72 257256.83 -80.00 
   Ramsgate_DocksB_665 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251361.91 257262.33 -160.00 /hstart 20
   Ramsgate_DocksB_666 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251358.47 257271.36 -160.00 /hstart 20
   Ramsgate_DocksB_362 ShipUnit.Boat_42ft_SailingLaunch nn 251383.84 257243.06 -70.00 /sleep 0/skill 2/slowfire 1
   Ramsgate_DocksB_658 tobruk:Stationary.Environment.50meterStonewall nn 251391.58 257268.55 -75.00 
   Ramsgate_DocksB_659 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251389.80 257272.80 -160.00 /hstart 20
   Ramsgate_DocksB_656 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251392.42 257264.13 -160.00 /hstart 20
-  Ramsgate_DocksB_657 Stationary.Environment.PortCrane1_FRA1 nn 251392.09 257266.00 -50.00 
   Ramsgate_DocksB_652 Stationary.Environment.PortCrane1_FRA1 nn 251419.86 257272.14 -35.00 
   Ramsgate_DocksB_654 tobruk:Stationary.Environment.50meterStonewall nn 251417.05 257276.39 -75.00 
   Ramsgate_DocksB_653 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251420.83 257274.20 -160.00 /hstart 20
@@ -76,12 +72,10 @@
   Ramsgate_DocksB_708 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251285.03 257292.86 -160.00 /hstart 18
   Ramsgate_DocksB_692 tobruk:Stationary.Airfield.LawsHangerGravesend nn 251299.83 257281.72 110.00 
   Ramsgate_DocksB_714 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251281.61 257301.89 -160.00 /hstart 18
-  Ramsgate_DocksB_710 Stationary.Environment.JerryCan_GER1_1 nn 251284.13 257299.94 -10.00 
   Ramsgate_DocksB_694 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251304.70 257280.41 -160.00 /hstart 20
   Ramsgate_DocksB_715 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251278.98 257310.55 -160.00 /hstart 18
   Ramsgate_DocksB_695 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251300.98 257289.41 -160.00 /hstart 20
   Ramsgate_DocksB_645 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251276.69 257319.56 -160.00 /hstart 18
-  Ramsgate_DocksB_647 Stationary.Weapons_.Torpedo_T_F5 nn 251282.73 257313.53 -75.00 
   Ramsgate_DocksB_700 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251298.36 257298.09 -160.00 /hstart 20
   Ramsgate_DocksB_709 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251294.94 257307.13 -160.00 /hstart 20
   Ramsgate_DocksB_641 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251274.08 257328.23 -160.00 /hstart 18
@@ -100,15 +94,13 @@
   Ramsgate_DocksB_639 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251310.78 257323.19 -160.00 /hstart 20
   Ramsgate_DocksB_632 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251308.50 257332.17 -160.00 /hstart 20
   Ramsgate_DocksB_630 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251305.84 257340.88 -160.00 /hstart 20
-  Ramsgate_DocksB_631 Stationary.Environment.JerryCan_GER1_1 nn 251320.86 257332.09 -10.00 
-  Ramsgate_DocksB_675 Stationary.Environment.JerryCan_GER1_1 nn 251339.08 257287.72 -10.00 
+
   Ramsgate_DocksB_668 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251355.86 257280.05 -160.00 /hstart 20
   Ramsgate_DocksB_670 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251353.56 257289.03 -160.00 /hstart 20
   Ramsgate_DocksB_671 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251350.94 257297.70 -160.00 /hstart 20
   Ramsgate_DocksB_533 tobruk:Stationary.Airfield.LawsHangerGravesend nn 251350.92 257300.13 110.00 
   Ramsgate_DocksB_527 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251347.22 257306.70 -160.00 /hstart 20
-  Ramsgate_DocksB_667 Stationary.Weapons_.Torpedo_T_F5 nn 251363.08 257290.73 -75.00 
-  Ramsgate_DocksB_633 Stationary.Weapons_.Torpedo_T_F5 nn 251329.27 257327.39 -75.00 
+
   Ramsgate_DocksB_518 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251344.61 257315.39 -160.00 /hstart 20
   Ramsgate_DocksB_525 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251341.17 257324.41 -160.00 /hstart 20
   Ramsgate_DocksB_660 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251386.38 257281.83 -160.00 /hstart 20
@@ -118,39 +110,32 @@
   Ramsgate_DocksB_511 tobruk:Stationary.Environment.Misc.FuelDrum_UK1WR_9 nn 251354.86 257325.75 -75.00 
   Ramsgate_DocksB_528 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251381.47 257299.50 -160.00 /hstart 20
   Ramsgate_DocksB_477 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251378.80 257308.19 -160.00 /hstart 20
-  Ramsgate_DocksB_487 Stationary.Environment.JerryCan_GER1_1 nn 251379.20 257310.03 -10.00 
   Ramsgate_DocksB_478 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251375.13 257317.17 -160.00 /hstart 20
   Ramsgate_DocksB_490 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251372.50 257325.86 -160.00 /hstart 20
   Ramsgate_DocksB_497 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251369.08 257334.88 -160.00 /hstart 20
   Ramsgate_DocksB_502 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251366.44 257343.56 -160.00 /hstart 20
-  Ramsgate_DocksB_476 Stationary.Environment.JerryCan_GER1_1 nn 251384.70 257327.94 100.00 
   Ramsgate_DocksB_655 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251418.19 257282.88 -160.00 /hstart 20
   Ramsgate_DocksB_530 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251414.77 257291.91 -160.00 /hstart 20
   Ramsgate_DocksB_495 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251412.14 257300.58 -160.00 /hstart 20
   Ramsgate_DocksB_448 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251409.86 257309.58 -160.00 /hstart 20
   Ramsgate_DocksB_450 tobruk:Stationary.Airfield.LawsHangerGravesend nn 251400.92 257318.48 110.00 
-  Ramsgate_DocksB_651 Stationary.Environment.PortCrane1_FRA1 nn 251443.61 257281.58 -65.00 
   Ramsgate_DocksB_441 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251407.23 257318.27 -160.00 /hstart 20
   Ramsgate_DocksB_531 tobruk:Stationary.Environment.50meterStonewall nn 251441.75 257286.11 -75.00 
   Ramsgate_DocksB_451 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251403.53 257327.27 -160.00 /hstart 20
-  Ramsgate_DocksB_442 Stationary.Weapons_.Torpedo_T_F5 nn 251420.91 257312.33 -75.00 
   Ramsgate_DocksB_532 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251449.11 257284.36 -160.00 /hstart 20
   Ramsgate_DocksB_459 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251400.89 257335.94 -160.00 /hstart 20
   Ramsgate_DocksB_501 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251446.45 257293.03 -160.00 /hstart 20
   Ramsgate_DocksB_458 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251443.06 257302.06 -160.00 /hstart 20
-  Ramsgate_DocksB_430 Stationary.Environment.JerryCan_GER1_1 nn 251427.83 257323.33 -10.00 
   Ramsgate_DocksB_436 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251440.41 257310.75 -160.00 /hstart 20
   Ramsgate_DocksB_422 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251438.11 257319.73 -160.00 /hstart 20
   Ramsgate_DocksB_407 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251435.50 257328.42 -160.00 /hstart 20
   Ramsgate_DocksB_408 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251431.81 257337.41 -160.00 /hstart 20
   Ramsgate_DocksB_391 tobruk:Stationary.Airfield.LawsHangerGravesend nn 251446.98 257335.31 110.00 
-  Ramsgate_DocksB_496 Stationary.Environment.PortCrane1_FRA1 nn 251469.47 257290.41 -80.00 
   Ramsgate_DocksB_449 tobruk:Stationary.Environment.50meterStonewall nn 251468.81 257301.41 -75.00 
   Ramsgate_DocksB_466 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251477.23 257294.64 -160.00 /hstart 19
   Ramsgate_DocksB_360 ShipUnit.Boat_42ft_SailingLaunch gb 251485.81 257289.48 -70.00 /sleep 0/skill 2/slowfire 1
   Ramsgate_DocksB_443 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251474.58 257303.33 -160.00 /hstart 19
   Ramsgate_DocksB_423 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251471.17 257312.34 -160.00 /hstart 19
-  Ramsgate_DocksB_402 Stationary.Weapons_.Torpedo_T_F5 nn 251462.36 257324.22 -75.00 
   Ramsgate_DocksB_409 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251468.55 257321.02 -160.00 /hstart 19
   Ramsgate_DocksB_392 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251466.23 257330.00 -160.00 /hstart 19
   Ramsgate_DocksB_377 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251463.61 257338.69 -160.00 /hstart 19
@@ -163,7 +148,6 @@
   Ramsgate_DocksB_371 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251494.23 257340.52 -160.00 /hstart 18
   Ramsgate_DocksB_380 Stationary.Environment.PortCrane1_FRA1 nn 251508.70 257329.88 25.00 
   Ramsgate_DocksB_359 ShipUnit.Boat_42ft_SailingLaunch gb 251503.20 257340.41 -340.00 /sleep 0/skill 2/slowfire 1
-  Ramsgate_DocksB_342 Stationary.Environment.PortCrane1_FRA1 gb 251527.00 257312.36 -80.00 
   Ramsgate_DocksB_338 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251533.36 257314.95 -160.00 /hstart 18
   Ramsgate_DocksB_343 tobruk:Stationary.Environment.50meterStonewall nn 251526.98 257325.66 -75.00 
   Ramsgate_DocksB_339 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251530.73 257323.63 -160.00 /hstart 18
@@ -171,7 +155,6 @@
   Ramsgate_DocksB_345 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251524.67 257341.34 -160.00 /hstart 18
   Ramsgate_DocksB_327 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251548.72 257319.80 -160.00 /hstart 18
   Ramsgate_DocksB_328 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251546.09 257328.47 -160.00 /hstart 18
-  Ramsgate_DocksB_321 Stationary.Environment.PortCrane1_FRA1 nn 251556.75 257320.00 -120.00 
   Ramsgate_DocksB_329 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251542.66 257337.48 -160.00 /hstart 18
   Ramsgate_DocksB_324 tobruk:Stationary.Environment.50meterStonewall nn 251553.31 257331.52 -75.00 
   Ramsgate_DocksB_319 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251562.05 257325.03 -160.00 /hstart 20
@@ -198,18 +181,15 @@
   Ramsgate_DocksB_597 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251254.23 257387.42 -160.00 /hstart 18
   Ramsgate_DocksB_602 tobruk:Stationary.Airfield.LawsHangerGravesend nn 251263.89 257380.44 110.00 
   Ramsgate_DocksB_590 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251253.20 257390.64 -160.00 /hstart 18
-  Ramsgate_DocksB_587 Stationary.Environment.JerryCan_GER1_1 nn 251244.16 257401.88 -10.00 
   Ramsgate_DocksB_579 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251251.61 257396.11 -160.00 /hstart 18
   Ramsgate_DocksB_580 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251248.19 257405.13 -160.00 /hstart 18
   Ramsgate_DocksB_572 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251253.72 257402.36 -160.00 /hstart 20
   Ramsgate_DocksB_627 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251268.75 257346.11 -160.00 /hstart 18
   Ramsgate_DocksB_622 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251265.33 257355.13 -160.00 /hstart 18
-  Ramsgate_DocksB_624 Stationary.Environment.JerryCan_GER1_1 nn 251270.66 257356.91 -10.00 
   Ramsgate_DocksB_620 tobruk:Stationary.Environment.Misc.FuelDrum_UK1WR_9 nn 251267.78 257359.31 -75.00 
   Ramsgate_DocksB_629 Stationary.Airfield.Fuel_Storage nn 251281.36 257349.27 -75.00 
   Ramsgate_DocksB_625 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251282.08 257351.36 -160.00 /hstart 20
   Ramsgate_DocksB_617 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251278.66 257360.36 -160.00 /hstart 20
-  Ramsgate_DocksB_618 Stationary.Weapons_.Torpedo_T_F5 nn 251281.61 257361.69 -75.00 
   Ramsgate_DocksB_610 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251276.03 257369.05 -160.00 /hstart 20
   Ramsgate_DocksB_603 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251273.75 257378.03 -160.00 /hstart 20
   Ramsgate_DocksB_623 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251303.17 257350.06 -160.00 /hstart 20
@@ -224,7 +204,6 @@
   Ramsgate_DocksB_583 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251289.56 257394.13 -160.00 /hstart 20
   Ramsgate_DocksB_576 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251286.03 257400.05 -160.00 /hstart 20
   Ramsgate_DocksB_568 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251284.98 257403.27 -160.00 /hstart 20
-  Ramsgate_DocksB_586 Stationary.Environment.JerryCan_GER1_1 nn 251300.58 257388.58 -10.00 
   Ramsgate_DocksB_588 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251324.89 257377.66 -160.00 /hstart 20
   Ramsgate_DocksB_577 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251322.27 257386.34 -160.00 /hstart 20
   Ramsgate_DocksB_578 tobruk:Stationary.Environment.Misc.FuelDrum_UK1WR_9 nn 251324.23 257385.81 -75.00 
@@ -238,14 +217,10 @@
   Ramsgate_DocksB_598 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251328.33 257368.64 -160.00 /hstart 20
   Ramsgate_DocksB_535 Stationary.Airfield.Fuel_Storage nn 251343.44 257364.20 -75.00 
   Ramsgate_DocksB_507 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251364.16 257352.55 -160.00 /hstart 20
-  Ramsgate_DocksB_493 Stationary.Environment.JerryCan_GER1_1 nn 251374.98 257348.59 -10.00 
   Ramsgate_DocksB_512 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251361.50 257361.23 -160.00 /hstart 20
-  Ramsgate_DocksB_503 Stationary.Weapons_.Torpedo_T_F5 nn 251366.53 257359.17 -75.00 
   Ramsgate_DocksB_514 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251358.84 257370.42 -160.00 /hstart 20
-  Ramsgate_DocksB_542 Stationary.Weapons_.Torpedo_T_F5 nn 251342.45 257391.23 -75.00 
   Ramsgate_DocksB_519 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251356.19 257379.11 -160.00 /hstart 20
   Ramsgate_DocksB_526 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251352.78 257388.14 -160.00 /hstart 20
-  Ramsgate_DocksB_537 Stationary.Environment.JerryCan_GER1_1 nn 251349.17 257392.61 -10.00 
   Ramsgate_DocksB_536 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251350.16 257396.80 -160.00 /hstart 20
   Ramsgate_DocksB_480 Stationary.Industrial.Oxygen_Facility nn 251387.70 257364.16 -75.00 
   Ramsgate_DocksB_479 tobruk:Stationary.Airfield.LawsHangerGravesend nn 251383.06 257369.34 110.00 
@@ -253,23 +228,19 @@
   Ramsgate_DocksB_481 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251389.92 257371.30 -160.00 /hstart 20
   Ramsgate_DocksB_482 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251387.23 257380.52 -160.00 /hstart 20
   Ramsgate_DocksB_504 tobruk:Stationary.Environment.Misc.FuelDrum_UK1WR_9 nn 251377.09 257391.84 -75.00 
-  Ramsgate_DocksB_486 Stationary.Environment.JerryCan_GER1_1 nn 251391.73 257380.14 -10.00 
   Ramsgate_DocksB_491 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251384.61 257389.19 -160.00 /hstart 20
   Ramsgate_DocksB_498 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251381.19 257398.22 -160.00 /hstart 20
   Ramsgate_DocksB_505 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251378.56 257406.89 -160.00 /hstart 20
   Ramsgate_DocksB_467 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251397.47 257344.95 -160.00 /hstart 20
   Ramsgate_DocksB_468 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251394.84 257353.64 -160.00 /hstart 20
-  Ramsgate_DocksB_455 tobruk:Stationary.Environment.Misc.FuelDrum_UK1WR_9 nn 251404.58 257344.95 -75.00 
   Ramsgate_DocksB_469 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251392.56 257362.63 -160.00 /hstart 20
   Ramsgate_DocksB_420 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251429.16 257346.09 -160.00 /hstart 20
   Ramsgate_DocksB_421 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251425.77 257355.13 -160.00 /hstart 20
   Ramsgate_DocksB_434 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251423.09 257363.78 -160.00 /hstart 20
   Ramsgate_DocksB_435 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251420.81 257372.80 -160.00 /hstart 20
   Ramsgate_DocksB_444 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251418.20 257381.48 -160.00 /hstart 20
-  Ramsgate_DocksB_470 Stationary.Weapons_.Torpedo_T_F5 nn 251399.23 257401.56 -75.00 
-  Ramsgate_DocksB_393 tobruk:Stationary.Environment.Misc.FuelDrum_UK1WR_9 nn 251449.42 257354.33 -75.00 
+
   Ramsgate_DocksB_452 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251415.50 257390.67 -160.00 /hstart 20
-  Ramsgate_DocksB_414 Stationary.Weapons_.Torpedo_T_F5 nn 251436.86 257369.98 -75.00 
   Ramsgate_DocksB_453 Stationary.Airfield.Fuel_Storage nn 251416.67 257391.77 -75.00 
   Ramsgate_DocksB_460 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251412.88 257399.34 -160.00 /hstart 20
   Ramsgate_DocksB_425 tobruk:Stationary.Airfield.LawsHangerGravesend nn 251428.59 257385.20 110.00 
@@ -281,14 +252,11 @@
   Ramsgate_DocksB_412 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251443.64 257400.94 -160.00 /hstart 19
   Ramsgate_DocksB_378 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251459.94 257347.69 -160.00 /hstart 19
   Ramsgate_DocksB_394 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251457.27 257356.38 -160.00 /hstart 19
-  Ramsgate_DocksB_386 Stationary.Environment.JerryCan_GER1_1 nn 251468.17 257370.86 -10.00 
   Ramsgate_DocksB_366 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251491.47 257348.61 -160.00 /hstart 18
   Ramsgate_DocksB_367 tobruk:Stationary.Environment.50meterStonewall nn 251493.36 257348.91 -160.00 
   Ramsgate_DocksB_368 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251487.89 257358.19 -160.00 /hstart 18
   Ramsgate_DocksB_369 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251485.17 257366.30 -160.00 /hstart 18
-  Ramsgate_DocksB_365 Stationary.Environment.PortCrane1_FRA1 nn 251501.47 257354.53 25.00 
   Ramsgate_DocksB_372 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251481.84 257375.88 -160.00 /hstart 18
-  Ramsgate_DocksB_374 Stationary.Environment.PortCrane1_FRA1 gb 251484.08 257378.81 25.00 
   Ramsgate_DocksB_373 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251479.13 257384.00 -160.00 /hstart 18
   Ramsgate_DocksB_370 tobruk:Stationary.Environment.50meterStonewall nn 251490.09 257378.19 -160.00 
   Ramsgate_DocksB_381 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251476.94 257393.58 -160.00 /hstart 18
@@ -304,34 +272,27 @@
   Ramsgate_DocksB_346 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251522.39 257350.33 -160.00 /hstart 18
   Ramsgate_DocksB_330 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251540.05 257346.17 -160.00 /hstart 18
   Ramsgate_DocksB_340 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251537.75 257355.16 -160.00 /hstart 18
-  Ramsgate_DocksB_337 Stationary.Environment.JerryCan_GER1_1 nn 251551.30 257344.92 -10.00 
   Ramsgate_DocksB_347 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251535.13 257363.84 -160.00 /hstart 18
   Ramsgate_DocksB_348 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251531.41 257372.84 -160.00 /hstart 18
   Ramsgate_DocksB_331 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251553.36 257351.41 -160.00 /hstart 20
-  Ramsgate_DocksB_332 Stationary.Weapons_.Torpedo_T_F5 nn 251549.16 257360.89 -75.00 
   Ramsgate_DocksB_349 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251528.78 257381.53 -160.00 /hstart 18
   Ramsgate_DocksB_334 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251551.08 257360.39 -160.00 /hstart 20
   Ramsgate_DocksB_333 tobruk:Stationary.Airfield.LawsHangerGravesend nn 251543.58 257370.38 110.00 
-  Ramsgate_DocksB_351 Stationary.Environment.JerryCan_GER1_1 nn 251527.88 257388.61 -10.00 
   Ramsgate_DocksB_355 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251525.36 257390.55 -160.00 /hstart 18
   Ramsgate_DocksB_335 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251548.45 257369.08 -160.00 /hstart 20
   Ramsgate_DocksB_356 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251522.73 257399.22 -160.00 /hstart 18
   Ramsgate_DocksB_336 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251544.73 257378.08 -160.00 /hstart 20
   Ramsgate_DocksB_317 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251574.45 257350.13 -160.00 /hstart 20
-  Ramsgate_DocksB_288 Stationary.Weapons_.Torpedo_T_F5 nn 251526.50 257402.20 -75.00 
   Ramsgate_DocksB_341 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251542.13 257386.75 -160.00 /hstart 20
   Ramsgate_DocksB_318 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251571.83 257358.80 -160.00 /hstart 20
   Ramsgate_DocksB_350 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251538.69 257395.78 -160.00 /hstart 20
   Ramsgate_DocksB_320 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251569.55 257367.80 -160.00 /hstart 20
-  Ramsgate_DocksB_289 tobruk:Stationary.Environment.Misc.FuelDrum_UK1WR_9 nn 251540.28 257398.83 -75.00 
   Ramsgate_DocksB_287 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251536.06 257404.47 -160.00 /hstart 20
   Ramsgate_DocksB_323 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251566.89 257376.47 -160.00 /hstart 20
   Ramsgate_DocksB_326 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251563.22 257385.48 -160.00 /hstart 20
   Ramsgate_DocksB_290 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251560.58 257394.16 -160.00 /hstart 20
-  Ramsgate_DocksB_316 Stationary.Environment.JerryCan_GER1_1 nn 251582.84 257376.39 -10.00 
   Ramsgate_DocksB_284 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251557.16 257403.19 -160.00 /hstart 20
   Ramsgate_DocksB_304 tobruk:Stationary.Environment.50meterStonewall nn 251609.38 257345.16 -75.00 
-  Ramsgate_DocksB_305 Stationary.Environment.PortCrane1_FRA1 nn 251609.48 257345.50 -80.00 
   Ramsgate_DocksB_306 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251605.66 257351.00 -160.00 /hstart 20
   Ramsgate_DocksB_307 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251602.23 257360.02 -160.00 /hstart 20
   Ramsgate_DocksB_309 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251599.61 257368.70 -160.00 /hstart 20
@@ -339,9 +300,7 @@
   Ramsgate_DocksB_312 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251594.69 257386.38 -160.00 /hstart 20
   Ramsgate_DocksB_174 tobruk:Stationary.Airfield.LawsHangerGravesend nn 251594.67 257388.78 110.00 
   Ramsgate_DocksB_168 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251590.97 257395.38 -160.00 /hstart 20
-  Ramsgate_DocksB_308 Stationary.Weapons_.Torpedo_T_F5 nn 251606.83 257379.41 -75.00 
   Ramsgate_DocksB_297 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251636.17 257352.78 -160.00 /hstart 20
-  Ramsgate_DocksB_298 Stationary.Environment.PortCrane1_FRA1 nn 251635.84 257354.67 -50.00 
   Ramsgate_DocksB_299 tobruk:Stationary.Environment.50meterStonewall nn 251635.33 257357.22 -75.00 
   Ramsgate_DocksB_159 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251588.36 257404.06 -160.00 /hstart 20
   Ramsgate_DocksB_300 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251633.55 257361.47 -160.00 /hstart 20
@@ -349,10 +308,8 @@
   Ramsgate_DocksB_302 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251627.50 257379.16 -160.00 /hstart 20
   Ramsgate_DocksB_169 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251625.22 257388.17 -160.00 /hstart 20
   Ramsgate_DocksB_118 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251622.55 257396.84 -160.00 /hstart 20
-  Ramsgate_DocksB_128 Stationary.Environment.JerryCan_GER1_1 nn 251622.95 257398.70 -10.00 
   Ramsgate_DocksB_119 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251618.88 257405.84 -160.00 /hstart 20
   Ramsgate_DocksB_91 tobruk:Stationary.Airfield.LawsHangerGravesend nn 251644.67 257407.16 110.00 
-  Ramsgate_DocksB_293 Stationary.Environment.PortCrane1_FRA1 nn 251663.61 257360.81 -35.00 
   Ramsgate_DocksB_295 tobruk:Stationary.Environment.50meterStonewall nn 251660.80 257365.05 -75.00 
   Ramsgate_DocksB_294 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251664.58 257362.86 -160.00 /hstart 20
   Ramsgate_DocksB_296 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251661.95 257371.55 -160.00 /hstart 20
@@ -362,12 +319,10 @@
   Ramsgate_DocksB_82 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251650.98 257406.92 -160.00 /hstart 20
   Ramsgate_DocksB_292 Stationary.Environment.PortCrane1_FRA1 nn 251687.36 257370.23 -65.00 
   Ramsgate_DocksB_172 tobruk:Stationary.Environment.50meterStonewall nn 251685.50 257374.78 -75.00 
-  Ramsgate_DocksB_83 Stationary.Weapons_.Torpedo_T_F5 nn 251664.66 257400.98 -75.00 
   Ramsgate_DocksB_173 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251692.86 257373.03 -160.00 /hstart 20
   Ramsgate_DocksB_142 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251690.20 257381.70 -160.00 /hstart 20
   Ramsgate_DocksB_99 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251686.81 257390.73 -160.00 /hstart 20
   Ramsgate_DocksB_77 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251684.16 257399.41 -160.00 /hstart 20
-  Ramsgate_DocksB_137 Stationary.Environment.PortCrane1_FRA1 nn 251713.22 257379.08 -80.00 
   Ramsgate_DocksB_90 tobruk:Stationary.Environment.50meterStonewall nn 251712.56 257390.06 -75.00 
   Ramsgate_DocksB_107 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251720.98 257383.30 -160.00 /hstart 19
   Ramsgate_DocksB_1 ShipUnit.Boat_42ft_SailingLaunch gb 251729.56 257378.16 -70.00 /sleep 0/skill 2/slowfire 1
@@ -376,7 +331,6 @@
   Ramsgate_DocksB_65 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251748.94 257393.81 -160.00 /hstart 18
   Ramsgate_DocksB_56 tobruk:Stationary.Environment.50meterStonewall nn 251740.22 257401.66 -75.00 
   Ramsgate_DocksB_51 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251746.22 257401.91 -160.00 /hstart 18
-  Ramsgate_DocksA_69 Stationary.Environment.PortCrane1_FRA1 gb 251770.63 257402.63 -80.00 
   Ramsgate_DocksA_278 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251776.98 257405.22 -160.00 /hstart 18
   Ramsgate_DocksB_605 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251230.20 257408.97 -160.00 /hstart 18
   Ramsgate_DocksB_606 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251227.92 257417.97 -160.00 /hstart 18
@@ -405,7 +359,6 @@
   Ramsgate_DocksB_543 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251345.22 257414.48 -160.00 /hstart 20
   Ramsgate_DocksB_545 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251341.69 257420.41 -160.00 /hstart 20
   Ramsgate_DocksB_546 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251340.64 257423.63 -160.00 /hstart 20
-  Ramsgate_DocksB_552 Stationary.Environment.JerryCan_GER1_1 nn 251336.47 257430.13 -10.00 
   Ramsgate_DocksB_547 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251339.08 257429.09 -160.00 /hstart 20
   Ramsgate_DocksB_548 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251337.78 257432.81 -160.00 /hstart 20
   Ramsgate_DocksB_549 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251335.64 257438.13 -160.00 /hstart 20
@@ -420,7 +373,6 @@
   Ramsgate_DocksB_521 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251367.47 257439.17 -160.00 /hstart 20
   Ramsgate_DocksB_522 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251366.08 257442.97 -160.00 /hstart 20
   Ramsgate_DocksB_524 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251364.05 257448.20 -160.00 /hstart 20
-  Ramsgate_DocksB_508 Stationary.Environment.JerryCan_GER1_1 nn 251378.67 257435.39 -10.00 
   Ramsgate_DocksB_529 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251361.42 257456.88 -160.00 /hstart 20
   Ramsgate_DocksB_538 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251359.14 257465.88 -160.00 /hstart 20
   Ramsgate_DocksB_513 tobruk:Stationary.Environment.50meterStonewall nn 251375.86 257467.30 -75.00 
@@ -428,23 +380,19 @@
   Ramsgate_DocksB_461 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251409.48 257408.38 -160.00 /hstart 20
   Ramsgate_DocksB_471 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251406.83 257417.05 -160.00 /hstart 20
   Ramsgate_DocksB_472 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251404.53 257426.03 -160.00 /hstart 20
-  Ramsgate_DocksB_462 tobruk:Stationary.Environment.Misc.FuelDrum_UK1WR_9 nn 251415.20 257416.02 -75.00 
-  Ramsgate_DocksB_492 Stationary.Environment.JerryCan_GER1_1 nn 251394.09 257441.30 100.00 
+
   Ramsgate_DocksB_484 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251401.92 257434.72 -160.00 /hstart 20
   Ramsgate_DocksB_483 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251398.39 257440.66 -160.00 /hstart 20
   Ramsgate_DocksB_485 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251397.33 257443.88 -160.00 /hstart 20
   Ramsgate_DocksB_489 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251395.77 257449.33 -160.00 /hstart 20
   Ramsgate_DocksB_473 tobruk:Stationary.Airfield.LawsHangerGravesend nn 251410.80 257435.25 110.00 
   Ramsgate_DocksB_488 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251394.19 257453.23 -160.00 /hstart 19
-  Ramsgate_DocksB_427 Stationary.Weapons_.Torpedo_T_F5 nn 251438.47 257411.92 -75.00 
   Ramsgate_DocksB_428 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251440.98 257409.63 -160.00 /hstart 19
   Ramsgate_DocksB_494 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251392.33 257458.36 -160.00 /hstart 20
   Ramsgate_DocksB_429 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251437.59 257418.64 -160.00 /hstart 19
   Ramsgate_DocksB_437 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251434.94 257427.33 -160.00 /hstart 19
   Ramsgate_DocksB_438 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251432.66 257436.31 -160.00 /hstart 19
-  Ramsgate_DocksB_463 Stationary.Environment.PortCrane1_FRA1 nn 251410.48 257465.20 115.00 
   Ramsgate_DocksB_439 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251430.03 257445.00 -160.00 /hstart 19
-  Ramsgate_DocksB_413 Stationary.Environment.JerryCan_GER1_1 nn 251450.19 257426.14 -10.00 
   Ramsgate_DocksB_445 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251426.50 257450.94 -160.00 /hstart 19
   Ramsgate_DocksB_446 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251425.45 257454.14 -160.00 /hstart 19
   Ramsgate_DocksB_454 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251423.88 257459.61 -160.00 /hstart 19
@@ -464,7 +412,6 @@
   Ramsgate_DocksB_404 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251457.89 257454.94 -160.00 /hstart 18
   Ramsgate_DocksB_285 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251502.47 257412.06 -160.00 /hstart 18
   Ramsgate_DocksB_281 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251499.78 257421.27 -160.00 /hstart 18
-  Ramsgate_DocksB_389 Stationary.Environment.PortCrane1_FRA1 nn 251467.50 257456.00 25.00 
   Ramsgate_DocksB_390 tobruk:Stationary.Environment.50meterStonewall nn 251467.47 257458.06 -160.00 
   Ramsgate_DocksB_275 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251497.14 257429.94 -160.00 /hstart 18
   Ramsgate_DocksB_267 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251493.73 257438.97 -160.00 /hstart 18
@@ -476,9 +423,7 @@
   Ramsgate_DocksB_249 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251486.19 257465.31 -160.00 /hstart 18
   Ramsgate_DocksB_263 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251509.08 257443.80 -160.00 /hstart 18
   Ramsgate_DocksB_240 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251482.64 257471.27 -160.00 /hstart 18
-  Ramsgate_DocksB_261 tobruk:Stationary.Environment.Misc.FuelDrum_UK1WR_9 nn 251511.53 257447.98 -75.00 
   Ramsgate_DocksB_257 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251506.45 257452.48 -160.00 /hstart 18
-  Ramsgate_DocksB_265 Stationary.Environment.JerryCan_GER1_1 nn 251514.41 257445.56 -10.00 
   Ramsgate_DocksB_250 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251504.17 257461.47 -160.00 /hstart 18
   Ramsgate_DocksB_242 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251501.55 257470.14 -160.00 /hstart 18
   Ramsgate_DocksB_251 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251519.78 257457.70 -160.00 /hstart 20
@@ -495,11 +440,8 @@
   Ramsgate_DocksB_266 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251525.83 257440.02 -160.00 /hstart 20
   Ramsgate_DocksB_258 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251522.41 257449.03 -160.00 /hstart 20
   Ramsgate_DocksB_273 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251552.25 257420.84 -160.00 /hstart 20
-  Ramsgate_DocksB_259 Stationary.Weapons_.Torpedo_T_F5 nn 251525.36 257450.34 -75.00 
   Ramsgate_DocksB_271 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251549.59 257429.53 -160.00 /hstart 20
-  Ramsgate_DocksB_272 Stationary.Environment.JerryCan_GER1_1 nn 251564.61 257420.77 -10.00 
   Ramsgate_DocksB_264 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251546.92 257438.73 -160.00 /hstart 20
-  Ramsgate_DocksB_274 Stationary.Weapons_.Torpedo_T_F5 nn 251573.02 257416.05 -75.00 
   Ramsgate_DocksB_260 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251544.30 257447.41 -160.00 /hstart 20
   Ramsgate_DocksB_252 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251540.88 257456.44 -160.00 /hstart 20
   Ramsgate_DocksB_245 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251538.25 257465.11 -160.00 /hstart 20
@@ -511,17 +453,14 @@
   Ramsgate_DocksB_239 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251572.08 257457.30 -160.00 /hstart 20
   Ramsgate_DocksB_229 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251568.66 257466.33 -160.00 /hstart 20
   Ramsgate_DocksB_166 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251584.92 257413.06 -160.00 /hstart 20
-  Ramsgate_DocksB_152 tobruk:Stationary.Environment.Misc.FuelDrum_UK1WR_9 nn 251598.63 257414.41 -75.00 
   Ramsgate_DocksB_164 Stationary.Industrial.Oxygen_Facility nn 251590.14 257437.02 -75.00 
   Ramsgate_DocksB_131 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251616.25 257414.52 -160.00 /hstart 20
   Ramsgate_DocksB_138 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251612.83 257423.53 -160.00 /hstart 20
   Ramsgate_DocksB_176 Stationary.Airfield.Fuel_Storage nn 251587.19 257452.88 -75.00 
   Ramsgate_DocksB_143 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251610.20 257432.22 -160.00 /hstart 20
-  Ramsgate_DocksB_117 Stationary.Environment.JerryCan_GER1_1 nn 251628.45 257416.59 100.00 
   Ramsgate_DocksB_148 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251607.91 257441.20 -160.00 /hstart 20
   Ramsgate_DocksB_153 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251605.25 257449.91 -160.00 /hstart 20
-  Ramsgate_DocksB_134 Stationary.Environment.JerryCan_GER1_1 nn 251618.73 257437.25 -10.00 
-  Ramsgate_DocksB_144 Stationary.Weapons_.Torpedo_T_F5 nn 251610.30 257447.83 -75.00 
+
   Ramsgate_DocksB_155 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251602.59 257459.09 -160.00 /hstart 20
   Ramsgate_DocksB_92 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251647.28 257415.92 -160.00 /hstart 20
   Ramsgate_DocksB_160 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251599.94 257467.78 -160.00 /hstart 20
@@ -533,9 +472,7 @@
   Ramsgate_DocksB_110 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251636.31 257451.28 -160.00 /hstart 20
   Ramsgate_DocksB_122 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251633.69 257459.97 -160.00 /hstart 20
   Ramsgate_DocksB_123 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251630.98 257469.17 -160.00 /hstart 20
-  Ramsgate_DocksB_127 Stationary.Environment.JerryCan_GER1_1 nn 251635.50 257468.80 -10.00 
-  Ramsgate_DocksB_96 tobruk:Stationary.Environment.Misc.FuelDrum_UK1WR_9 nn 251648.33 257433.63 -75.00 
-  Ramsgate_DocksB_71 Stationary.Environment.JerryCan_GER1_1 nn 251671.59 257411.98 -10.00 
+
   Ramsgate_DocksB_63 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251681.88 257408.39 -160.00 /hstart 20
   Ramsgate_DocksB_48 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251679.25 257417.08 -160.00 /hstart 20
   Ramsgate_DocksB_49 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251675.56 257426.08 -160.00 /hstart 20
@@ -543,25 +480,21 @@
   Ramsgate_DocksB_62 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251669.52 257443.78 -160.00 /hstart 20
   Ramsgate_DocksB_32 tobruk:Stationary.Airfield.LawsHangerGravesend nn 251690.73 257423.98 110.00 
   Ramsgate_DocksB_75 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251666.84 257452.45 -160.00 /hstart 20
-  Ramsgate_DocksB_43 Stationary.Weapons_.Torpedo_T_F5 nn 251706.11 257412.89 -75.00 
   Ramsgate_DocksB_76 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251664.56 257461.45 -160.00 /hstart 20
   Ramsgate_DocksB_33 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251709.98 257418.67 -160.00 /hstart 19
   Ramsgate_DocksB_85 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251661.95 257470.14 -160.00 /hstart 20
   Ramsgate_DocksB_18 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251707.36 257427.36 -160.00 /hstart 19
-  Ramsgate_DocksB_34 tobruk:Stationary.Environment.Misc.FuelDrum_UK1WR_9 nn 251693.17 257442.98 -75.00 
-  Ramsgate_DocksB_55 Stationary.Weapons_.Torpedo_T_F5 nn 251680.61 257458.64 -75.00 
+
   Ramsgate_DocksB_19 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251703.69 257436.34 -160.00 /hstart 19
   Ramsgate_DocksB_35 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251701.02 257445.03 -160.00 /hstart 19
   Ramsgate_DocksB_36 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251697.63 257454.06 -160.00 /hstart 19
   Ramsgate_DocksB_39 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251695.00 257462.73 -160.00 /hstart 19
   Ramsgate_DocksB_40 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251692.72 257471.72 -160.00 /hstart 19
-  Ramsgate_DocksB_27 Stationary.Environment.JerryCan_GER1_1 nn 251711.92 257459.52 -10.00 
   Ramsgate_DocksB_50 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251712.30 257409.67 -160.00 /hstart 19
   Ramsgate_DocksB_37 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251742.89 257411.50 -160.00 /hstart 18
   Ramsgate_DocksB_38 tobruk:Stationary.Environment.50meterStonewall nn 251742.45 257413.81 -160.00 
   Ramsgate_DocksB_20 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251740.17 257419.59 -160.00 /hstart 18
   Ramsgate_DocksB_12 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251737.98 257429.17 -160.00 /hstart 18
-  Ramsgate_DocksB_21 Stationary.Environment.PortCrane1_FRA1 nn 251752.45 257418.55 25.00 
   Ramsgate_DocksB_7 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251735.22 257437.28 -160.00 /hstart 18
   Ramsgate_DocksB_8 tobruk:Stationary.Environment.50meterStonewall nn 251737.11 257437.58 -160.00 
   Ramsgate_DocksB_0 ShipUnit.Boat_42ft_SailingLaunch gb 251746.95 257429.08 -340.00 /sleep 0/skill 2/slowfire 1
@@ -572,7 +505,6 @@
   Ramsgate_DocksB_6 Stationary.Environment.PortCrane1_FRA1 nn 251745.22 257443.19 25.00 
   Ramsgate_DocksB_13 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251725.59 257464.55 -160.00 /hstart 18
   Ramsgate_DocksA_259 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251770.94 257422.94 -160.00 /hstart 18
-  Ramsgate_DocksB_15 Stationary.Environment.PortCrane1_FRA1 gb 251727.83 257467.47 25.00 
   Ramsgate_DocksB_11 tobruk:Stationary.Environment.50meterStonewall nn 251733.84 257466.86 -160.00 
   Ramsgate_DocksA_261 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251768.31 257431.61 -160.00 /hstart 18
   Ramsgate_DocksA_243 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251766.02 257440.61 -160.00 /hstart 18
@@ -583,31 +515,26 @@
   Ramsgate_DocksA_212 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251772.42 257471.80 -160.00 /hstart 18
   Ramsgate_DocksA_277 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251792.34 257410.08 -160.00 /hstart 18
   Ramsgate_DocksA_272 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251789.72 257418.73 -160.00 /hstart 18
-  Ramsgate_DocksA_23 Stationary.Environment.PortCrane1_FRA1 nn 251800.38 257410.27 -120.00 
   Ramsgate_DocksA_260 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251786.30 257427.77 -160.00 /hstart 18
   Ramsgate_DocksA_0 tobruk:Stationary.Environment.50meterStonewall nn 251796.94 257421.78 -75.00 
   Ramsgate_DocksA_257 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251783.67 257436.45 -160.00 /hstart 18
   Ramsgate_DocksA_281 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251805.67 257415.31 -160.00 /hstart 20
   Ramsgate_DocksA_276 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251803.05 257423.98 -160.00 /hstart 20
   Ramsgate_DocksA_242 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251781.38 257445.44 -160.00 /hstart 18
-  Ramsgate_DocksA_358 Stationary.Environment.JerryCan_GER1_1 nn 251794.94 257435.19 -10.00 
   Ramsgate_DocksA_258 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251799.63 257433.00 -160.00 /hstart 20
   Ramsgate_DocksA_236 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251778.75 257454.11 -160.00 /hstart 18
   Ramsgate_DocksA_253 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251796.98 257441.69 -160.00 /hstart 20
-  Ramsgate_DocksA_75 Stationary.Weapons_.Torpedo_T_F5 nn 251792.80 257451.16 -75.00 
   Ramsgate_DocksA_248 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251794.70 257450.67 -160.00 /hstart 20
   Ramsgate_DocksA_280 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251824.14 257422.69 -160.00 /hstart 20
   Ramsgate_DocksA_57 tobruk:Stationary.Airfield.LawsHangerGravesend nn 251787.20 257460.66 110.00 
   Ramsgate_DocksA_241 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251792.08 257459.34 -160.00 /hstart 20
   Ramsgate_DocksA_275 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251821.52 257431.38 -160.00 /hstart 20
-  Ramsgate_DocksA_24 Stationary.Environment.PortCrane1_FRA1 nn 251830.56 257422.72 -50.00 
   Ramsgate_DocksA_72 tobruk:Stationary.Environment.50meterStonewall nn 251828.00 257426.89 -75.00 
   Ramsgate_DocksA_221 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251788.38 257468.34 -160.00 /hstart 20
   Ramsgate_DocksA_255 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251818.09 257440.41 -160.00 /hstart 20
   Ramsgate_DocksA_252 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251815.47 257449.08 -160.00 /hstart 20
   Ramsgate_DocksA_247 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251813.19 257458.08 -160.00 /hstart 20
   Ramsgate_DocksA_240 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251810.52 257466.75 -160.00 /hstart 20
-  Ramsgate_DocksA_352 Stationary.Environment.JerryCan_GER1_1 nn 251826.47 257466.66 -10.00 
   Ramsgate_DocksA_279 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251851.91 257432.61 -160.00 /hstart 20
   Ramsgate_DocksA_25 Stationary.Environment.PortCrane1_FRA1 nn 251853.11 257435.77 -80.00 
   Ramsgate_DocksA_1 tobruk:Stationary.Environment.50meterStonewall nn 251853.00 257435.42 -75.00 
@@ -616,15 +543,12 @@
   Ramsgate_DocksA_251 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251843.23 257458.98 -160.00 /hstart 20
   Ramsgate_DocksA_22 ShipUnit.Boat_42ft_SailingLaunch nn 251873.61 257424.38 -70.00 /sleep 1440/skill 2/slowfire 100
   Ramsgate_DocksA_246 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251840.94 257467.97 -160.00 /hstart 20
-  Ramsgate_DocksA_74 Stationary.Weapons_.Torpedo_T_F5 nn 251850.45 257469.67 -75.00 
   Ramsgate_DocksA_271 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251879.81 257443.06 -160.00 /hstart 20
-  Ramsgate_DocksA_26 Stationary.Environment.PortCrane1_FRA1 nn 251879.47 257444.94 -50.00 
   Ramsgate_DocksA_2 tobruk:Stationary.Environment.50meterStonewall nn 251878.97 257447.48 -75.00 
   Ramsgate_DocksA_269 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251877.17 257451.73 -160.00 /hstart 20
   Ramsgate_DocksA_250 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251873.77 257460.77 -160.00 /hstart 20
   Ramsgate_DocksA_249 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251871.13 257469.44 -160.00 /hstart 20
   Ramsgate_DocksA_235 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251902.16 257470.84 -160.00 /hstart 20
-  Ramsgate_DocksA_27 Stationary.Environment.PortCrane1_FRA1 nn 251907.23 257451.08 -35.00 
   Ramsgate_DocksA_3 tobruk:Stationary.Environment.50meterStonewall nn 251904.44 257455.33 -75.00 
   Ramsgate_DocksA_270 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251908.20 257453.14 -160.00 /hstart 20
   Ramsgate_DocksA_268 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251905.58 257461.81 -160.00 /hstart 20
@@ -632,17 +556,14 @@
   Ramsgate_DocksA_4 tobruk:Stationary.Environment.50meterStonewall nn 251929.13 257465.05 -75.00 
   Ramsgate_DocksA_267 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251936.50 257463.30 -160.00 /hstart 20
   Ramsgate_DocksA_266 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251933.83 257471.97 -160.00 /hstart 20
-  Ramsgate_DocksA_29 Stationary.Environment.PortCrane1_FRA1 nn 251956.86 257469.34 -80.00 
   Ramsgate_DocksA_19 ShipUnit.Boat_42ft_SailingLaunch gb 251973.19 257468.42 -70.00 /sleep 1440/skill 0/slowfire 100
   Ramsgate_DocksB_541 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251356.52 257474.55 -160.00 /hstart 20
-  Ramsgate_DocksB_517 Stationary.Environment.PortCrane1_FRA1 nn 251371.84 257475.31 115.00 
   Ramsgate_DocksB_500 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251387.42 257476.02 -160.00 /hstart 20
   Ramsgate_DocksB_509 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251384.41 257484.97 -160.00 /hstart 20
   Ramsgate_DocksB_364 ShipUnit.Boat_42ft_SailingLaunch nn 251204.45 257364.84 -250.00 /sleep 0/skill 2/slowfire 1
   Ramsgate_DocksB_474 tobruk:Stationary.Environment.50meterStonewall nn 251407.36 257477.66 -75.00 
   Ramsgate_DocksB_464 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251417.83 257477.31 -160.00 /hstart 19
   Ramsgate_DocksB_465 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251415.53 257486.30 -160.00 /hstart 19
-  Ramsgate_DocksB_447 Stationary.Environment.JerryCan_GER1_1 nn 251429.11 257473.58 -10.00 
   Ramsgate_DocksB_475 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251412.92 257494.98 -160.00 /hstart 19
   Ramsgate_DocksB_363 ShipUnit.Boat_42ft_SailingLaunch nn 251184.05 257362.70 -250.00 /sleep 0/skill 2/slowfire 1
   Ramsgate_DocksB_417 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251450.48 257474.31 -160.00 /hstart 18
@@ -660,7 +581,6 @@
   Ramsgate_DocksB_246 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251473.95 257497.64 -160.00 /hstart 18
   Ramsgate_DocksB_238 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251497.98 257476.09 -160.00 /hstart 18
   Ramsgate_DocksB_231 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251496.97 257479.30 -160.00 /hstart 18
-  Ramsgate_DocksB_228 Stationary.Environment.JerryCan_GER1_1 nn 251487.91 257490.55 -10.00 
   Ramsgate_DocksB_247 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251471.67 257506.63 -160.00 /hstart 18
   Ramsgate_DocksB_220 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251495.36 257484.77 -160.00 /hstart 18
   Ramsgate_DocksB_253 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251469.05 257515.31 -160.00 /hstart 18
@@ -683,13 +603,11 @@
   Ramsgate_DocksB_224 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251533.31 257482.78 -160.00 /hstart 20
   Ramsgate_DocksB_217 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251529.78 257488.72 -160.00 /hstart 20
   Ramsgate_DocksB_209 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251528.73 257491.92 -160.00 /hstart 20
-  Ramsgate_DocksB_227 Stationary.Environment.JerryCan_GER1_1 nn 251544.33 257477.25 -10.00 
   Ramsgate_DocksB_205 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251527.16 257497.39 -160.00 /hstart 20
   Ramsgate_DocksB_201 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251525.25 257500.92 -160.00 /hstart 20
   Ramsgate_DocksB_202 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251523.73 257506.42 -160.00 /hstart 20
   Ramsgate_DocksB_206 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251521.11 257515.09 -160.00 /hstart 20
   Ramsgate_DocksB_218 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251566.02 257475.02 -160.00 /hstart 20
-  Ramsgate_DocksB_219 tobruk:Stationary.Environment.Misc.FuelDrum_UK1WR_9 nn 251568.00 257474.47 -75.00 
   Ramsgate_DocksB_207 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251563.73 257484.00 -160.00 /hstart 20
   Ramsgate_DocksB_212 tobruk:Stationary.Airfield.LawsHangerGravesend nn 251558.36 257490.17 110.00 
   Ramsgate_DocksB_204 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251561.11 257492.67 -160.00 /hstart 20
@@ -700,33 +618,27 @@
   Ramsgate_DocksB_195 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251551.53 257516.31 -160.00 /hstart 20
   Ramsgate_DocksB_198 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251548.91 257525.00 -160.00 /hstart 20
   Ramsgate_DocksB_199 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251546.59 257533.98 -160.00 /hstart 20
-  Ramsgate_DocksB_193 Stationary.Environment.JerryCan_GER1_1 nn 251580.22 257518.80 -10.00 
   Ramsgate_DocksB_188 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251582.83 257517.75 -160.00 /hstart 20
   Ramsgate_DocksB_189 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251581.55 257521.47 -160.00 /hstart 20
   Ramsgate_DocksB_190 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251579.41 257526.78 -160.00 /hstart 20
   Ramsgate_DocksB_191 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251576.78 257535.45 -160.00 /hstart 20
-  Ramsgate_DocksB_183 Stationary.Weapons_.Torpedo_T_F5 nn 251586.22 257479.89 -75.00 
   Ramsgate_DocksB_167 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251596.55 257476.80 -160.00 /hstart 20
-  Ramsgate_DocksB_178 Stationary.Environment.JerryCan_GER1_1 nn 251592.92 257481.28 -10.00 
   Ramsgate_DocksB_177 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251593.92 257485.47 -160.00 /hstart 20
   Ramsgate_DocksB_181 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251591.64 257494.47 -160.00 /hstart 20
   Ramsgate_DocksB_184 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251588.97 257503.16 -160.00 /hstart 20
   Ramsgate_DocksB_186 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251585.45 257509.08 -160.00 /hstart 20
   Ramsgate_DocksB_187 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251584.41 257512.28 -160.00 /hstart 20
-  Ramsgate_DocksB_145 tobruk:Stationary.Environment.Misc.FuelDrum_UK1WR_9 nn 251620.84 257480.50 -75.00 
   Ramsgate_DocksB_132 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251628.36 257477.84 -160.00 /hstart 20
   Ramsgate_DocksB_139 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251624.94 257486.88 -160.00 /hstart 20
   Ramsgate_DocksB_161 tobruk:Stationary.Airfield.LawsHangerGravesend nn 251607.91 257507.61 110.00 
   Ramsgate_DocksB_146 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251622.31 257495.55 -160.00 /hstart 20
   Ramsgate_DocksB_147 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251620.03 257504.55 -160.00 /hstart 20
   Ramsgate_DocksB_151 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251617.38 257513.23 -160.00 /hstart 20
-  Ramsgate_DocksB_111 Stationary.Weapons_.Torpedo_T_F5 nn 251642.98 257490.22 -75.00 
   Ramsgate_DocksB_156 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251613.84 257519.16 -160.00 /hstart 20
   Ramsgate_DocksB_157 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251612.83 257522.36 -160.00 /hstart 20
   Ramsgate_DocksB_162 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251611.23 257527.83 -160.00 /hstart 20
   Ramsgate_DocksB_163 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251609.83 257531.63 -160.00 /hstart 20
-  Ramsgate_DocksB_149 Stationary.Environment.JerryCan_GER1_1 nn 251622.44 257524.05 -10.00 
-  Ramsgate_DocksB_133 Stationary.Environment.JerryCan_GER1_1 nn 251637.84 257529.97 100.00 
+
   Ramsgate_DocksB_125 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251645.67 257523.39 -160.00 /hstart 20
   Ramsgate_DocksB_124 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251642.14 257529.31 -160.00 /hstart 20
   Ramsgate_DocksB_126 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251641.08 257532.53 -160.00 /hstart 20
@@ -738,17 +650,14 @@
   Ramsgate_DocksB_102 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251653.23 257497.03 -160.00 /hstart 20
   Ramsgate_DocksB_112 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251650.58 257505.72 -160.00 /hstart 20
   Ramsgate_DocksB_113 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251648.28 257514.70 -160.00 /hstart 20
-  Ramsgate_DocksB_103 tobruk:Stationary.Environment.Misc.FuelDrum_UK1WR_9 nn 251658.97 257504.69 -75.00 
   Ramsgate_DocksB_52 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251690.06 257480.42 -160.00 /hstart 19
   Ramsgate_DocksB_53 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251687.39 257489.61 -160.00 /hstart 19
   Ramsgate_DocksB_114 tobruk:Stationary.Airfield.LawsHangerGravesend nn 251654.55 257523.92 110.00 
-  Ramsgate_DocksB_68 Stationary.Weapons_.Torpedo_T_F5 nn 251682.22 257500.58 -75.00 
   Ramsgate_DocksB_69 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251684.75 257498.30 -160.00 /hstart 19
   Ramsgate_DocksB_70 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251681.34 257507.31 -160.00 /hstart 19
   Ramsgate_DocksB_78 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251678.69 257515.98 -160.00 /hstart 19
   Ramsgate_DocksB_79 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251676.41 257524.97 -160.00 /hstart 19
   Ramsgate_DocksB_80 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251673.78 257533.66 -160.00 /hstart 19
-  Ramsgate_DocksB_54 Stationary.Environment.JerryCan_GER1_1 nn 251693.94 257514.80 -10.00 
   Ramsgate_DocksB_42 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251709.31 257517.81 -160.00 /hstart 18
   Ramsgate_DocksB_28 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251706.59 257525.91 -160.00 /hstart 18
   Ramsgate_DocksB_29 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251704.38 257535.48 -160.00 /hstart 18
@@ -756,22 +665,18 @@
   Ramsgate_DocksB_22 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251720.69 257482.23 -160.00 /hstart 18
   Ramsgate_DocksB_23 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251717.92 257490.34 -160.00 /hstart 18
   Ramsgate_DocksB_24 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251715.36 257500.11 -160.00 /hstart 18
-  Ramsgate_DocksB_25 Stationary.Environment.PortCrane1_FRA1 nn 251722.36 257493.30 25.00 
   Ramsgate_DocksB_41 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251712.61 257508.22 -160.00 /hstart 18
   Ramsgate_DocksB_16 tobruk:Stationary.Environment.50meterStonewall nn 251726.88 257495.22 -160.00 
   Ramsgate_DocksB_2 ShipUnit.Boat_42ft_SailingLaunch gb 251721.92 257506.69 -340.00 /sleep 0/skill 2/slowfire 1
   Ramsgate_DocksA_199 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251753.64 257475.98 -160.00 /hstart 18
   Ramsgate_DocksA_201 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251751.00 257484.67 -160.00 /hstart 18
-  Ramsgate_DocksB_26 Stationary.Environment.PortCrane1_FRA1 nn 251717.45 257518.59 25.00 
   Ramsgate_DocksB_17 tobruk:Stationary.Environment.50meterStonewall nn 251717.31 257520.47 -160.00 
   Ramsgate_DocksA_183 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251748.72 257493.64 -160.00 /hstart 18
   Ramsgate_DocksA_200 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251768.98 257480.83 -160.00 /hstart 18
   Ramsgate_DocksA_177 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251746.09 257502.33 -160.00 /hstart 18
-  Ramsgate_DocksA_357 Stationary.Environment.JerryCan_GER1_1 nn 251771.50 257478.88 -10.00 
   Ramsgate_DocksA_158 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251743.41 257511.53 -160.00 /hstart 18
   Ramsgate_DocksA_197 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251766.36 257489.48 -160.00 /hstart 18
   Ramsgate_DocksA_153 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251740.77 257520.22 -160.00 /hstart 18
-  Ramsgate_DocksA_76 Stationary.Weapons_.Torpedo_T_F5 nn 251770.13 257492.47 -75.00 
   Ramsgate_DocksA_182 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251764.08 257498.50 -160.00 /hstart 18
   Ramsgate_DocksA_138 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251737.36 257529.23 -160.00 /hstart 18
   Ramsgate_DocksA_176 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251761.45 257507.17 -160.00 /hstart 18
@@ -781,12 +686,10 @@
   Ramsgate_DocksA_181 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251774.78 257512.41 -160.00 /hstart 20
   Ramsgate_DocksA_137 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251752.70 257534.06 -160.00 /hstart 18
   Ramsgate_DocksA_161 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251772.09 257521.61 -160.00 /hstart 20
-  Ramsgate_DocksA_356 Stationary.Environment.JerryCan_GER1_1 nn 251758.03 257535.84 -10.00 
   Ramsgate_DocksA_80 Stationary.Airfield.Fuel_Storage nn 251768.75 257528.19 -75.00 
   Ramsgate_DocksA_156 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251769.45 257530.30 -160.00 /hstart 20
   Ramsgate_DocksA_216 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251785.75 257477.03 -160.00 /hstart 20
   Ramsgate_DocksA_198 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251782.33 257486.06 -160.00 /hstart 20
-  Ramsgate_DocksA_50 tobruk:Stationary.Environment.Misc.FuelDrum_UK1WR_9 nn 251783.91 257489.09 -75.00 
   Ramsgate_DocksA_193 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251779.69 257494.75 -160.00 /hstart 20
   Ramsgate_DocksA_188 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251777.41 257503.73 -160.00 /hstart 20
   Ramsgate_DocksA_220 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251806.84 257475.75 -160.00 /hstart 20
@@ -798,10 +701,8 @@
   Ramsgate_DocksA_180 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251793.22 257519.81 -160.00 /hstart 20
   Ramsgate_DocksA_239 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251838.31 257476.64 -160.00 /hstart 20
   Ramsgate_DocksA_58 tobruk:Stationary.Airfield.LawsHangerGravesend nn 251838.30 257479.06 110.00 
-  Ramsgate_DocksA_353 Stationary.Environment.JerryCan_GER1_1 nn 251808.25 257511.03 -10.00 
   Ramsgate_DocksA_160 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251790.55 257529.00 -160.00 /hstart 20
   Ramsgate_DocksA_219 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251834.61 257485.64 -160.00 /hstart 20
-  Ramsgate_DocksA_77 Stationary.Weapons_.Torpedo_T_F5 nn 251816.64 257506.33 -75.00 
   Ramsgate_DocksA_214 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251831.98 257494.33 -160.00 /hstart 20
   Ramsgate_DocksA_194 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251828.56 257503.34 -160.00 /hstart 20
   Ramsgate_DocksA_191 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251825.94 257512.02 -160.00 /hstart 20
@@ -809,30 +710,23 @@
   Ramsgate_DocksA_62 tobruk:Stationary.Airfield.LawsHangerGravesend nn 251820.11 257529.42 110.00 
   Ramsgate_DocksA_179 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251821.02 257529.69 -160.00 /hstart 20
   Ramsgate_DocksA_40 Stationary.Industrial.Oxygen_Facility nn 251833.77 257527.28 -75.00 
-  Ramsgate_DocksA_49 tobruk:Stationary.Environment.Misc.FuelDrum_UK1WR_9 nn 251842.25 257504.69 -75.00 
   Ramsgate_DocksA_245 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251868.84 257478.44 -160.00 /hstart 20
   Ramsgate_DocksA_238 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251866.19 257487.13 -160.00 /hstart 20
-  Ramsgate_DocksA_351 Stationary.Environment.JerryCan_GER1_1 nn 251866.58 257488.97 -10.00 
   Ramsgate_DocksA_211 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251862.50 257496.11 -160.00 /hstart 20
   Ramsgate_DocksA_209 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251859.88 257504.80 -160.00 /hstart 20
   Ramsgate_DocksA_190 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251856.45 257513.81 -160.00 /hstart 20
   Ramsgate_DocksA_189 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251853.83 257522.50 -160.00 /hstart 20
-  Ramsgate_DocksA_71 Stationary.Environment.JerryCan_GER1_1 nn 251872.08 257506.86 100.00 
   Ramsgate_DocksA_256 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251899.53 257479.52 -160.00 /hstart 20
   Ramsgate_DocksA_185 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251851.55 257531.48 -160.00 /hstart 20
   Ramsgate_DocksA_59 tobruk:Stationary.Airfield.LawsHangerGravesend nn 251888.31 257497.42 110.00 
   Ramsgate_DocksA_244 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251897.25 257488.52 -160.00 /hstart 20
-  Ramsgate_DocksA_350 Stationary.Environment.JerryCan_GER1_1 nn 251862.36 257527.53 -10.00 
   Ramsgate_DocksA_234 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251894.61 257497.20 -160.00 /hstart 20
   Ramsgate_DocksA_210 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251890.91 257506.20 -160.00 /hstart 20
   Ramsgate_DocksA_208 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251888.28 257514.88 -160.00 /hstart 20
   Ramsgate_DocksA_175 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251884.84 257523.89 -160.00 /hstart 20
-  Ramsgate_DocksA_48 tobruk:Stationary.Environment.Misc.FuelDrum_UK1WR_9 nn 251891.95 257523.89 -75.00 
   Ramsgate_DocksA_196 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251882.23 257532.58 -160.00 /hstart 20
-  Ramsgate_DocksA_56 Stationary.Weapons_.Torpedo_T_F5 nn 251908.30 257491.27 -75.00 
   Ramsgate_DocksA_232 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251930.44 257481.00 -160.00 /hstart 20
   Ramsgate_DocksA_233 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251927.78 257489.69 -160.00 /hstart 20
-  Ramsgate_DocksA_345 Stationary.Environment.JerryCan_GER1_1 nn 251915.22 257502.25 -10.00 
   Ramsgate_DocksA_223 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251925.50 257498.67 -160.00 /hstart 20
   Ramsgate_DocksA_227 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251922.88 257507.36 -160.00 /hstart 20
   Ramsgate_DocksA_207 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251919.19 257516.34 -160.00 /hstart 20
@@ -843,11 +737,9 @@
   Ramsgate_DocksA_172 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251913.14 257534.06 -160.00 /hstart 20
   Ramsgate_DocksA_60 tobruk:Stationary.Airfield.LawsHangerGravesend nn 251934.38 257514.25 110.00 
   Ramsgate_DocksA_230 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251958.56 257491.28 -160.00 /hstart 19
-  Ramsgate_DocksA_55 Stationary.Weapons_.Torpedo_T_F5 nn 251949.73 257503.16 -75.00 
   Ramsgate_DocksA_231 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251955.94 257499.95 -160.00 /hstart 19
   Ramsgate_DocksA_225 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251953.63 257508.94 -160.00 /hstart 19
   Ramsgate_DocksA_226 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251950.98 257517.63 -160.00 /hstart 19
-  Ramsgate_DocksA_47 tobruk:Stationary.Environment.Misc.FuelDrum_UK1WR_9 nn 251936.81 257533.27 -75.00 
   Ramsgate_DocksA_204 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251947.31 257526.63 -160.00 /hstart 19
   Ramsgate_DocksA_205 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251944.66 257535.31 -160.00 /hstart 19
   Ramsgate_DocksA_6 tobruk:Stationary.Environment.50meterStonewall nn 251983.84 257491.92 -75.00 
@@ -857,7 +749,6 @@
   Ramsgate_DocksA_7 tobruk:Stationary.Environment.50meterStonewall nn 251986.08 257504.08 -160.00 
   Ramsgate_DocksA_228 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251983.80 257509.88 -160.00 /hstart 18
   Ramsgate_DocksA_224 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251981.63 257519.45 -160.00 /hstart 18
-  Ramsgate_DocksA_30 Stationary.Environment.PortCrane1_FRA1 nn 251996.08 257508.81 25.00 
   Ramsgate_DocksA_222 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251978.86 257527.55 -160.00 /hstart 18
   Ramsgate_DocksA_8 tobruk:Stationary.Environment.50meterStonewall nn 251980.75 257527.84 -160.00 
   Ramsgate_DocksA_21 ShipUnit.Boat_42ft_SailingLaunch gb 251990.58 257519.34 -340.00 /sleep 1440/skill 0/slowfire 100
@@ -871,13 +762,11 @@
   Ramsgate_DocksB_182 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251600.27 257563.22 -160.00 /hstart 20
   Ramsgate_DocksB_154 tobruk:Stationary.Environment.50meterStonewall nn 251619.61 257555.97 -75.00 
   Ramsgate_DocksB_130 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251639.52 257538.00 -160.00 /hstart 20
-  Ramsgate_DocksB_158 Stationary.Environment.PortCrane1_FRA1 nn 251615.59 257563.97 115.00 
   Ramsgate_DocksB_129 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251637.94 257541.91 -160.00 /hstart 19
   Ramsgate_DocksB_135 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251636.08 257547.02 -160.00 /hstart 20
   Ramsgate_DocksB_140 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251633.47 257555.70 -160.00 /hstart 20
   Ramsgate_DocksB_141 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251631.17 257564.69 -160.00 /hstart 20
   Ramsgate_DocksB_150 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251628.55 257573.38 -160.00 /hstart 20
-  Ramsgate_DocksB_104 Stationary.Environment.PortCrane1_FRA1 nn 251654.23 257553.86 115.00 
   Ramsgate_DocksB_86 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251670.25 257539.59 -160.00 /hstart 19
   Ramsgate_DocksB_87 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251669.20 257542.81 -160.00 /hstart 19
   Ramsgate_DocksB_95 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251667.63 257548.27 -160.00 /hstart 19
@@ -886,19 +775,16 @@
   Ramsgate_DocksB_98 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251664.20 257557.30 -160.00 /hstart 19
   Ramsgate_DocksB_105 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251661.58 257565.97 -160.00 /hstart 19
   Ramsgate_DocksB_106 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251659.30 257574.95 -160.00 /hstart 19
-  Ramsgate_DocksB_88 Stationary.Environment.JerryCan_GER1_1 nn 251672.86 257562.23 -10.00 
   Ramsgate_DocksB_116 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251656.67 257583.64 -160.00 /hstart 19
   Ramsgate_DocksB_45 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251701.64 257543.59 -160.00 /hstart 18
   Ramsgate_DocksB_44 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251698.22 257550.09 -160.00 /hstart 18
   Ramsgate_DocksB_46 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251697.86 257553.78 -160.00 /hstart 18
   Ramsgate_DocksB_57 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251695.50 257558.19 -160.00 /hstart 18
-  Ramsgate_DocksB_30 Stationary.Environment.PortCrane1_FRA1 nn 251711.27 257544.66 25.00 
   Ramsgate_DocksB_58 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251694.23 257562.97 -160.00 /hstart 18
   Ramsgate_DocksB_31 tobruk:Stationary.Environment.50meterStonewall nn 251711.22 257546.72 -160.00 
   Ramsgate_DocksB_59 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251692.17 257567.80 -160.00 /hstart 18
   Ramsgate_DocksB_73 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251689.45 257575.89 -160.00 /hstart 18
   Ramsgate_DocksB_72 tobruk:Stationary.Environment.50meterStonewall nn 251686.47 257578.28 -75.00 
-  Ramsgate_DocksB_60 Stationary.Environment.PortCrane1_FRA1 gb 251697.33 257571.45 25.00 
   Ramsgate_DocksB_47 tobruk:Stationary.Environment.50meterStonewall nn 251701.27 257569.47 -160.00 
   Ramsgate_DocksB_74 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251687.27 257585.47 -160.00 /hstart 18
   Ramsgate_DocksB_81 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251684.53 257593.58 -160.00 /hstart 18
@@ -908,7 +794,6 @@
   Ramsgate_DocksA_338 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251726.27 257561.53 -160.00 /hstart 18
   Ramsgate_DocksA_101 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251725.23 257564.75 -160.00 /hstart 18
   Ramsgate_DocksA_132 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251750.08 257542.75 -160.00 /hstart 18
-  Ramsgate_DocksA_43 tobruk:Stationary.Environment.Misc.FuelDrum_UK1WR_9 nn 251755.17 257538.25 -75.00 
   Ramsgate_DocksA_333 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251723.63 257570.20 -160.00 /hstart 18
   Ramsgate_DocksA_90 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251722.64 257573.89 -160.00 /hstart 20
   Ramsgate_DocksA_112 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251747.80 257551.73 -160.00 /hstart 18
@@ -917,11 +802,9 @@
   Ramsgate_DocksA_141 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251766.05 257539.30 -160.00 /hstart 20
   Ramsgate_DocksA_102 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251745.17 257560.42 -160.00 /hstart 18
   Ramsgate_DocksA_337 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251741.63 257566.36 -160.00 /hstart 18
-  Ramsgate_DocksA_51 Stationary.Weapons_.Torpedo_T_F5 nn 251769.00 257540.63 -75.00 
   Ramsgate_DocksA_100 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251740.59 257569.58 -160.00 /hstart 18
   Ramsgate_DocksA_136 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251763.41 257547.98 -160.00 /hstart 20
   Ramsgate_DocksA_65 tobruk:Stationary.Airfield.LawsHangerGravesend nn 251751.27 257559.38 110.00 
-  Ramsgate_DocksA_355 Stationary.Environment.JerryCan_GER1_1 nn 251731.53 257580.81 -10.00 
   Ramsgate_DocksA_303 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251715.30 257596.91 -160.00 /hstart 18
   Ramsgate_DocksA_332 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251738.98 257575.05 -160.00 /hstart 18
   Ramsgate_DocksA_121 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251761.13 257556.97 -160.00 /hstart 20
@@ -944,27 +827,23 @@
   Ramsgate_DocksA_135 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251781.89 257555.38 -160.00 /hstart 20
   Ramsgate_DocksA_120 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251779.61 257564.38 -160.00 /hstart 20
   Ramsgate_DocksA_110 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251776.94 257573.05 -160.00 /hstart 20
-  Ramsgate_DocksA_354 Stationary.Environment.JerryCan_GER1_1 nn 251787.95 257567.52 -10.00 
   Ramsgate_DocksA_159 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251818.33 257538.91 -160.00 /hstart 20
   Ramsgate_DocksA_154 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251815.70 257547.58 -160.00 /hstart 20
   Ramsgate_DocksA_139 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251812.28 257556.59 -160.00 /hstart 20
   Ramsgate_DocksA_81 Stationary.Airfield.Fuel_Storage nn 251830.81 257543.14 -75.00 
   Ramsgate_DocksA_134 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251809.64 257565.28 -160.00 /hstart 20
-  Ramsgate_DocksA_44 tobruk:Stationary.Environment.Misc.FuelDrum_UK1WR_9 nn 251811.63 257564.75 -75.00 
   Ramsgate_DocksA_66 tobruk:Stationary.Airfield.LawsHangerGravesend nn 251801.98 257580.44 110.00 
   Ramsgate_DocksA_119 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251807.36 257574.27 -160.00 /hstart 20
   Ramsgate_DocksA_109 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251804.73 257582.95 -160.00 /hstart 20
   Ramsgate_DocksA_339 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251801.22 257588.89 -160.00 /hstart 20
   Ramsgate_DocksA_96 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251800.16 257592.09 -160.00 /hstart 20
   Ramsgate_DocksA_334 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251798.55 257597.56 -160.00 /hstart 20
-  Ramsgate_DocksA_52 Stationary.Weapons_.Torpedo_T_F5 nn 251829.84 257570.16 -75.00 
-  Ramsgate_DocksA_349 Stationary.Environment.JerryCan_GER1_1 nn 251836.55 257571.55 -10.00 
+
   Ramsgate_DocksA_129 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251837.55 257575.73 -160.00 /hstart 20
   Ramsgate_DocksA_118 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251835.27 257584.75 -160.00 /hstart 20
   Ramsgate_DocksA_108 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251832.59 257593.42 -160.00 /hstart 20
   Ramsgate_DocksA_331 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251829.08 257599.34 -160.00 /hstart 20
   Ramsgate_DocksA_178 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251848.88 257540.17 -160.00 /hstart 20
-  Ramsgate_DocksA_78 Stationary.Weapons_.Torpedo_T_F5 nn 251853.92 257538.11 -75.00 
   Ramsgate_DocksA_151 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251846.22 257549.36 -160.00 /hstart 20
   Ramsgate_DocksA_149 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251843.56 257558.05 -160.00 /hstart 20
   Ramsgate_DocksA_131 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251840.17 257567.08 -160.00 /hstart 20
@@ -973,23 +852,19 @@
   Ramsgate_DocksA_184 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251879.94 257541.56 -160.00 /hstart 20
   Ramsgate_DocksA_174 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251877.31 257550.23 -160.00 /hstart 20
   Ramsgate_DocksA_150 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251874.63 257559.44 -160.00 /hstart 20
-  Ramsgate_DocksA_45 tobruk:Stationary.Environment.Misc.FuelDrum_UK1WR_9 nn 251864.47 257570.78 -75.00 
-  Ramsgate_DocksA_346 Stationary.Environment.JerryCan_GER1_1 nn 251879.13 257559.08 -10.00 
+
   Ramsgate_DocksA_148 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251872.00 257568.13 -160.00 /hstart 20
   Ramsgate_DocksA_130 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251868.58 257577.16 -160.00 /hstart 20
   Ramsgate_DocksA_67 tobruk:Stationary.Airfield.LawsHangerGravesend nn 251851.55 257597.88 110.00 
   Ramsgate_DocksA_128 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251865.95 257585.83 -160.00 /hstart 20
   Ramsgate_DocksA_117 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251863.67 257594.83 -160.00 /hstart 20
-  Ramsgate_DocksA_53 Stationary.Weapons_.Torpedo_T_F5 nn 251886.61 257580.48 -75.00 
   Ramsgate_DocksA_143 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251902.89 257569.61 -160.00 /hstart 20
   Ramsgate_DocksA_147 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251900.25 257578.28 -160.00 /hstart 20
   Ramsgate_DocksA_123 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251896.86 257587.31 -160.00 /hstart 20
   Ramsgate_DocksA_127 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251894.20 257595.98 -160.00 /hstart 20
-  Ramsgate_DocksA_46 tobruk:Stationary.Environment.Misc.FuelDrum_UK1WR_9 nn 251902.59 257594.95 -75.00 
   Ramsgate_DocksA_173 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251910.48 257542.72 -160.00 /hstart 20
   Ramsgate_DocksA_163 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251908.20 257551.73 -160.00 /hstart 20
   Ramsgate_DocksA_167 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251905.58 257560.41 -160.00 /hstart 20
-  Ramsgate_DocksA_79 Stationary.Weapons_.Torpedo_T_F5 nn 251924.23 257548.92 -75.00 
   Ramsgate_DocksA_82 Stationary.Airfield.Fuel_Storage nn 251904.06 257570.70 -75.00 
   Ramsgate_DocksA_64 tobruk:Stationary.Airfield.LawsHangerGravesend nn 251915.97 257564.14 110.00 
   Ramsgate_DocksA_42 Stationary.Industrial.Oxygen_Facility nn 251919.08 257563.25 -75.00 
@@ -997,9 +872,7 @@
   Ramsgate_DocksA_171 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251938.64 257553.02 -160.00 /hstart 19
   Ramsgate_DocksA_165 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251936.34 257562.00 -160.00 /hstart 19
   Ramsgate_DocksA_166 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251933.69 257570.69 -160.00 /hstart 19
-  Ramsgate_DocksA_344 Stationary.Environment.JerryCan_GER1_1 nn 251955.55 257549.80 -10.00 
   Ramsgate_DocksA_145 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251931.03 257579.88 -160.00 /hstart 19
-  Ramsgate_DocksA_54 Stationary.Weapons_.Torpedo_T_F5 nn 251925.84 257590.86 -75.00 
   Ramsgate_DocksA_146 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251928.38 257588.56 -160.00 /hstart 19
   Ramsgate_DocksA_125 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251924.97 257597.58 -160.00 /hstart 19
   Ramsgate_DocksA_168 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251966.50 257562.94 -160.00 /hstart 18
@@ -1012,7 +885,6 @@
   Ramsgate_DocksA_203 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251975.27 257537.13 -160.00 /hstart 18
   Ramsgate_DocksA_202 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251972.55 257545.23 -160.00 /hstart 18
   Ramsgate_DocksA_169 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251969.22 257554.81 -160.00 /hstart 18
-  Ramsgate_DocksA_32 Stationary.Environment.PortCrane1_FRA1 gb 251971.45 257557.75 25.00 
   Ramsgate_DocksA_9 tobruk:Stationary.Environment.50meterStonewall nn 251977.47 257557.13 -160.00 
   Ramsgate_DocksA_10 tobruk:Stationary.Environment.50meterStonewall nn 251970.50 257585.48 -160.00 
   Ramsgate_DocksA_297 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251712.67 257605.58 -160.00 /hstart 18
@@ -1029,7 +901,6 @@
   Ramsgate_DocksA_306 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251790.22 257624.25 -160.00 /hstart 20
   Ramsgate_DocksA_299 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251787.59 257632.94 -160.00 /hstart 20
   Ramsgate_DocksA_95 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251828.03 257602.56 -160.00 /hstart 20
-  Ramsgate_DocksA_348 Stationary.Environment.JerryCan_GER1_1 nn 251823.84 257609.06 -10.00 
   Ramsgate_DocksA_329 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251826.45 257608.03 -160.00 /hstart 20
   Ramsgate_DocksA_86 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251825.17 257611.75 -160.00 /hstart 20
   Ramsgate_DocksA_310 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251823.03 257617.06 -160.00 /hstart 20
@@ -1042,12 +913,10 @@
   Ramsgate_DocksA_328 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251854.86 257618.11 -160.00 /hstart 20
   Ramsgate_DocksA_83 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251853.47 257621.89 -160.00 /hstart 20
   Ramsgate_DocksA_295 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251851.44 257627.14 -160.00 /hstart 20
-  Ramsgate_DocksA_347 Stationary.Environment.JerryCan_GER1_1 nn 251866.06 257614.33 -10.00 
   Ramsgate_DocksA_316 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251848.81 257635.81 -160.00 /hstart 20
   Ramsgate_DocksA_304 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251846.52 257644.81 -160.00 /hstart 20
   Ramsgate_DocksA_114 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251891.92 257604.97 -160.00 /hstart 20
   Ramsgate_DocksA_294 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251843.89 257653.48 -160.00 /hstart 20
-  Ramsgate_DocksA_70 Stationary.Environment.JerryCan_GER1_1 nn 251881.47 257620.23 100.00 
   Ramsgate_DocksA_104 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251889.30 257613.66 -160.00 /hstart 20
   Ramsgate_DocksA_327 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251885.77 257619.59 -160.00 /hstart 20
   Ramsgate_DocksA_93 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251884.72 257622.80 -160.00 /hstart 20
@@ -1055,17 +924,14 @@
   Ramsgate_DocksA_326 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251883.14 257628.27 -160.00 /hstart 20
   Ramsgate_DocksA_68 tobruk:Stationary.Airfield.LawsHangerGravesend nn 251898.17 257614.19 110.00 
   Ramsgate_DocksA_84 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251881.58 257632.17 -160.00 /hstart 19
-  Ramsgate_DocksA_38 Stationary.Environment.PortCrane1_FRA1 nn 251859.23 257654.25 115.00 
   Ramsgate_DocksA_292 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251879.72 257637.30 -160.00 /hstart 20
   Ramsgate_DocksA_293 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251877.09 257645.97 -160.00 /hstart 20
   Ramsgate_DocksA_283 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251874.81 257654.95 -160.00 /hstart 20
   Ramsgate_DocksA_287 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251872.17 257663.64 -160.00 /hstart 20
-  Ramsgate_DocksA_37 Stationary.Environment.PortCrane1_FRA1 nn 251897.88 257644.14 115.00 
   Ramsgate_DocksA_15 tobruk:Stationary.Environment.50meterStonewall nn 251894.73 257656.59 -75.00 
   Ramsgate_DocksA_126 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251922.33 257606.27 -160.00 /hstart 19
   Ramsgate_DocksA_116 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251920.03 257615.25 -160.00 /hstart 19
   Ramsgate_DocksA_106 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251917.41 257623.94 -160.00 /hstart 19
-  Ramsgate_DocksA_343 Stationary.Environment.JerryCan_GER1_1 nn 251937.56 257605.08 -10.00 
   Ramsgate_DocksA_324 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251913.89 257629.86 -160.00 /hstart 19
   Ramsgate_DocksA_92 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251912.83 257633.08 -160.00 /hstart 19
   Ramsgate_DocksA_325 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251911.27 257638.55 -160.00 /hstart 19
@@ -1074,7 +940,6 @@
   Ramsgate_DocksA_124 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251952.94 257608.08 -160.00 /hstart 18
   Ramsgate_DocksA_291 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251905.22 257656.25 -160.00 /hstart 19
   Ramsgate_DocksA_122 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251950.22 257616.17 -160.00 /hstart 18
-  Ramsgate_DocksA_342 Stationary.Environment.JerryCan_GER1_1 nn 251916.48 257652.52 -10.00 
   Ramsgate_DocksA_34 Stationary.Environment.PortCrane1_FRA1 nn 251961.08 257608.88 25.00 
   Ramsgate_DocksA_11 tobruk:Stationary.Environment.50meterStonewall nn 251960.94 257610.73 -160.00 
   Ramsgate_DocksA_115 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251948.00 257625.77 -160.00 /hstart 18
@@ -1082,7 +947,6 @@
   Ramsgate_DocksA_323 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251941.86 257640.38 -160.00 /hstart 18
   Ramsgate_DocksA_91 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251941.48 257644.06 -160.00 /hstart 18
   Ramsgate_DocksA_322 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251939.13 257648.47 -160.00 /hstart 18
-  Ramsgate_DocksA_35 Stationary.Environment.PortCrane1_FRA1 nn 251954.89 257634.94 25.00 
   Ramsgate_DocksA_99 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251937.88 257653.25 -160.00 /hstart 18
   Ramsgate_DocksA_12 tobruk:Stationary.Environment.50meterStonewall nn 251954.84 257637.00 -160.00 
   Ramsgate_DocksA_289 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251935.80 257658.06 -160.00 /hstart 18
@@ -1094,16 +958,6 @@
   Ramsgate_DocksA_288 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251933.08 257666.17 -160.00 /hstart 18
   Ramsgate_DocksA_284 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251930.89 257675.73 -160.00 /hstart 18
   Ramsgate_DocksA_282 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251928.16 257683.84 -160.00 /hstart 18
-  Ramsgate_DocksC_0 ShipUnit.Boat_42ft_SailingLaunch gb 251192.66 257369.19 -250.00 /sleep 0/skill 2/slowfire 1
-  Ramsgate_DocksC_1 ShipUnit.Boat_42ft_SailingLaunch gb 251215.92 257369.92 -250.00 /sleep 0/skill 2/slowfire 1
-  Ramsgate_DocksC_2 ShipUnit.Boat_42ft_SailingLaunch gb 251170.05 257364.45 -250.00 /sleep 0/skill 2/slowfire 1
-  Ramsgate_DocksC_3 ShipUnit.Boat_42ft_SailingLaunch gb 251973.33 257690.94 -245.00 /sleep 0/skill 2/slowfire 1
-  Ramsgate_DocksC_4 ShipUnit.Boat_42ft_SailingLaunch gb 251979.09 257697.95 -250.00 /sleep 0/skill 2/slowfire 1
-  Ramsgate_DocksC_5 ShipUnit.Boat_42ft_SailingLaunch gb 251987.97 257704.94 -235.00 /sleep 0/skill 2/slowfire 1
-  Ramsgate_DocksC_6 ShipUnit.Boat_42ft_SailingLaunch gb 251996.06 257714.30 -235.00 /sleep 0/skill 2/slowfire 1
-  Ramsgate_DocksC_7 ShipUnit.Boat_42ft_SailingLaunch gb 252003.67 257719.06 -250.00 /sleep 0/skill 2/slowfire 1
-  Ramsgate_DocksC_8 ShipUnit.Boat_42ft_SailingLaunch gb 252012.09 257726.98 -250.00 /sleep 0/skill 2/slowfire 1
-  Ramsgate_DocksC_9 ShipUnit.Boat_42ft_SailingLaunch gb 251962.58 257683.83 -255.00 /sleep 0/skill 2/slowfire 1
   Ramsgate_DocksC_10 ShipUnit.Boat_42ft_SailingLaunch gb 251334.72 257224.47 -70.00 /sleep 0/skill 2/slowfire 1
   Ramsgate_DocksC_11 ShipUnit.Boat_42ft_SailingLaunch gb 251294.19 257202.41 -70.00 /sleep 0/skill 2/slowfire 1
 [Buildings]

@@ -2689,7 +2689,7 @@ public class Mission : AMission, IMainMission
 
                     if (ON_TESTSERVER) Console.WriteLine("BombExpl, airfield1: score {0:F4}, total AF damage pts {1:F2}, final damage percent {2:f3}, points reduction factor {3:f3}, prev_percent {4:f3}, individualscore {5:f4}, pointstoknockout {6:f1}", score, PointsTaken, percent, points_reduction_factor, prev_percent, individualscore, PointsToKnockOut);
 
-                    if (ON_TESTSERVER) Console.WriteLine("BombExpl, airfield2: {0:N0} {1:N0} {2:N0} radius: {4:N0} distance: {5:N0}", pos.x, pos.y, pos.z, radius, distFromCenter);
+                    if (ON_TESTSERVER) Console.WriteLine("BombExpl, airfield2: {0:N0} {1:N0} {2:N0} radius: {3:N0} distance: {4:N0}", pos.x, pos.y, pos.z, radius, distFromCenter);
 
                     DateTime lastBombHit = DateTime.UtcNow;
                     if (mo.LastHitTime_UTC.HasValue) lastBombHit = mo.LastHitTime_UTC.Value;
@@ -17852,7 +17852,7 @@ public class Mission : AMission, IMainMission
 
             addPointArea(MO_ObjectiveType.MilitaryArea, "Ramsgate Military Train Station", "Mans", "", 1, 4, "RamsgateTrainStation", 251133, 259045, 175, 175, 5500, 15, 0, 125, 240, false, true, 2, 2, "", add, canBeDisabled:false);
 
-            addPointArea(MO_ObjectiveType.Naval_Dock_Area, "Ramsgate Naval Docks", "Mans", "", 1, 15, "RamsgateNavalDocks", 251622, 258457, 420, 420, 35000, 100, 0, 165, 360, false, true, 3, 2, "", add, canBeDisabled:false);
+            addPointArea(MO_ObjectiveType.Naval_Dock_Area, "Ramsgate Naval Docks", "Mans", "Genghis-LOADONCALL-Ramsgate-Docks.mis", 1, 15, "RamsgateNavalDocks", 251622, 258457, 420, 420, 35000, 100, 0, 165, 360, false, true, 3, 2, "", add, canBeDisabled:false);
 
             addPointArea(MO_ObjectiveType.Naval_Dock_Area, "HMS Fervent Naval Station & Fortified Cave Complex", "Mans", "", 1, 15, "RamsgateHMSFervent", 252233, 257951, 80, 80, 30000, 40, 0, 145, 240, false, true, 2, 2, "", add, canBeDisabled:false);
 
@@ -18295,9 +18295,9 @@ public class Mission : AMission, IMainMission
             addMobile(MO_ObjectiveType.MilitaryHeadquarters, "Canterbury Mobile Secret Resistance Training Center", "", 1, 5, "BCanterburyCamoGroup", 245118, 253057, 250, 200, 4000, 15, 0, 160, 450, true, true, 1, 10, MO_MobileObjectiveType.CamoGroup, 80, 228118, 240057, 247785, 256399, 1, 9, MO_ProducerOrStorageType.None, "", add);
 
 
-            addMobile(MO_ObjectiveType.HighCommandPost, "Westerham Mobile High Command Post (NO BOMBS!)", "", 1, 5, "WesterhamHighCommandPost", 162033, 232000, 50, 50, 0, 30, 0, 170, 330, false, true, 2, 4, MO_MobileObjectiveType.HighCommandPost, 24, 153000, 246000, 175000, 222000, 1, 8, MO_ProducerOrStorageType.None, "No bombs, must kill outer defense while leaving center untouched", add, mo_trigger_type: MO_TriggerType.NoBombs, things_to_save: new Dictionary<string,int> () {{"MG_TA", 2}, {"humans", 8}, {"tent", 2}}, log_message: "{army} captured Westerham High Command general staff! Valuable intel gathered!", hud_message: "{army} captured Westerham High Command Staff!", thingstosave_destroyed_message: ">>>The Westerham High Command General Staff was KILLED instead of CAPTURED! Objective not achieved; no intelligence gathered!", explanation: "Neutralize the general staff escorts and guard on the periphery, but preserve the General Staff in the center for capture by our agents. NO BOMBS! Pinpoint accurate strafing!");
+            addMobile(MO_ObjectiveType.HighCommandPost, "Westerham Mobile High Command Post (NO BOMBS!)", "", 1, 5, "WesterhamHighCommandPost", 162033, 232000, 40, 40, 0, 30, 0, 170, 330, false, false, 1, 2, MO_MobileObjectiveType.HighCommandPost, 36, 153000, 246000, 175000, 222000, 1, 8, MO_ProducerOrStorageType.None, "No bombs, must kill outer defense while leaving center untouched", addNewOnly: false, mo_trigger_type: MO_TriggerType.NoBombs, things_to_save: new Dictionary<string,int> () {{"MG_TA", 2}, {"humans", 8}, {"tent", 2}}, log_message: "{army} captured Westerham High Command general staff! Valuable intel gathered!", hud_message: "{army} captured Westerham High Command Staff!", thingstosave_destroyed_message: ">>>The Westerham High Command General Staff was KILLED instead of CAPTURED! Objective not achieved; no intelligence gathered!", explanation: "Neutralize the general staff escorts and guard on the periphery, but preserve the General Staff in the center for capture by our agents. NO BOMBS! Pinpoint accurate strafing!", canbedisabled: false);
 
-            addMobile(MO_ObjectiveType.HighCommandPost, "Denton Mobile High Command Post (NO BOMBS!)", "", 1, 5, "DentonHighCommandPost", 232033, 239000, 50, 50, 0, 30, 0, 170, 330, false, true, 2, 4, MO_MobileObjectiveType.HighCommandPost, 24, 223210, 247340, 249319, 236309, 1, 8, MO_ProducerOrStorageType.None, "No bombs, must kill outer defense while leaving center untouched", add, mo_trigger_type: MO_TriggerType.NoBombs,things_to_save: new Dictionary<string,int> () {{"MG_TA", 2}, {"humans", 8}, {"tent", 2}}, log_message: "{army} captured Westerham High Command general staff! Valuable intel gathered!", hud_message: "{army} captured Westerham High Command Staff!", thingstosave_destroyed_message: ">>>The Westerham High Command General Staff was KILLED instead of CAPTURED! Objective not achieved; no intelligence gathered!", explanation: "Neutralize the general staff escorts and guard on the periphery, but preserve the General Staff in the center for capture by our agents. NO BOMBS! Pinpoint accurate strafing!");
+            addMobile(MO_ObjectiveType.HighCommandPost, "Denton Mobile High Command Post (NO BOMBS!)", "", 1, 5, "DentonHighCommandPost", 232033, 239000, 40, 40, 0, 30, 0, 170, 330, false, false, 1, 2, MO_MobileObjectiveType.HighCommandPost, 36, 223210, 247340, 249319, 236309, 1, 8, MO_ProducerOrStorageType.None, "No bombs, must kill outer defense while leaving center untouched", addNewOnly:false, mo_trigger_type: MO_TriggerType.NoBombs,things_to_save: new Dictionary<string,int> () {{"MG_TA", 2}, {"humans", 8}, {"tent", 2}}, log_message: "{army} captured Denton High Command general staff! Valuable intel gathered!", hud_message: "{army} captured Denton High Command Staff!", thingstosave_destroyed_message: ">>>The Denton High Command General Staff was KILLED instead of CAPTURED! Objective not achieved; no intelligence gathered!", explanation: "Neutralize the general staff escorts and guard on the periphery, but preserve the General Staff in the center for capture by our agents. NO BOMBS! Pinpoint accurate strafing!", canbedisabled: false);
 
        
 
@@ -19625,7 +19625,7 @@ added Rouen Flak
         return total;
     }
 
-    //If dist_m_orig is given, the point is that OR the OBJ radius, whichever is LARGER
+    //If dist_m_orig is given, the point is that PLUS the OBJ radius.  So zero is same as OBJ radius
     public bool MO_PointNearNoBombObjective(Point3d p, double dist_m_orig = 0)
     {
         int total = 0;
@@ -19634,7 +19634,9 @@ added Rouen Flak
         {
             MissionObjective mo = MissionObjectivesList[key];
             if (mo.MOTriggerType != MO_TriggerType.NoBombs) continue;
-            double dist_m = dist_m_orig < mo.radius ? mo.radius : dist_m_orig;
+            //double dist_m = dist_m_orig < mo.radius ? mo.radius : dist_m_orig;
+
+            double dist_m = dist_m_orig + mo.radius;
             
             double d_m = Calcs.CalculatePointDistance(mo.Pos, p);
             if (ON_TESTSERVER && dist_m < 10000 ) Console.WriteLine("Near NoBomb: {0} {1:n0} {2:n0}", mo.ID, dist_m, d_m);
@@ -22324,6 +22326,12 @@ added Rouen Flak
             //this should make the server more responsive when many breathers online
             int numToDistribute = tempflaktoAllocatePerRound;
             int minDistribution = minTempflaktoAllocatePerRound;
+
+            if (ON_TESTSERVER)
+            {
+                numToDistribute = tempflaktoAllocatePerRound/6;
+                minDistribution = minTempflaktoAllocatePerRound/6;                
+            }
             int variableNumToDistribute = numToDistribute - minDistribution;
             if (variableNumToDistribute < 0) variableNumToDistribute = 0;
 
@@ -22813,6 +22821,9 @@ added Rouen Flak
 
                 }
 
+                //max # for nobombs type is 2 ; otherwise  they're  too hard
+                if (num_aa_forobj > 2 && mo.MOTriggerType == MO_TriggerType.NoBombs) num_aa_forobj = 2;
+
 
                 numDistributed += num_aa_forobj;
 
@@ -23023,6 +23034,12 @@ added Rouen Flak
                     {
                         nfb = 1;
                         nib = 1;
+					}
+            } else {
+                if (ON_TESTSERVER)
+                    {
+                        nfb = 0;
+                        nib = 0;
 					}
             }
 
@@ -23254,6 +23271,8 @@ added Rouen Flak
             else if (mo.radius >=1000) no_to_find = 5;
             else if (mo.radius >=2000) no_to_find = 6;
 
+            if (mo.MOTriggerType == MO_TriggerType.NoBombs) no_to_find = 1;
+
             //var MO_AutoFlak_locations = new List<Point3d>();
             if (ON_TESTSERVER) Console.WriteLine("AutoFlak_selectLocation: Finding autoflak location for {0} pos=({1:n0},{2:n0})", mo.ID, mo.Pos.x, mo.Pos.y);
             if (dbug) Console.WriteLine("MASL 1");
@@ -23268,8 +23287,10 @@ added Rouen Flak
 			//For AA/artillery these are concentrated at the center rather than being out beyond the perimeter
 			if (mo.MOObjectiveType == MO_ObjectiveType.Artillery_and_AA) batteryRadius = 3;
             if (mo.MOObjectiveType == MO_ObjectiveType.Radar && mo.OwnerArmy == 2) batteryRadius += 65;  //For Blue radars, the exact location of flak can help locate the radar position, which we don't want. So we spread the batteries out a fair bit more.
-            if (airfieldTypes.Contains(mo.MOObjectiveType) )  batteryRadius = (mo.radius * .6666).Clamp(600,2000); //for airfields, trying to keep it in a bit closer, yet still off runway etc
+            if (airfieldTypes.Contains(mo.MOObjectiveType) )  batteryRadius = (mo.radius * .85).Clamp(600,2200); //for airfields, trying to keep it in a bit closer, yet still off runway etc
                 
+            //keep the flack a good distance from the nobombs OBJ so the flack can be bombed    
+            if (mo.MOTriggerType == MO_TriggerType.NoBombs) batteryRadius = mo.radius + 300 < 350 ? 350 : mo.radius + 300;
 
             if (dbug) Console.WriteLine("MASL 2");
             List <AutoFlak_location> MO_AutoFlak_locations = mo.get_AutoFlak_locations();
@@ -25106,6 +25127,7 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
 	//Places jerrycans by default OR other objects as requested, so there are objects to bomb & strafe
     public void MO_PlaceSomeJerrycans(MissionObjective mo, List<string> things = null, int numi = 0, double searchRadius_m = 0, double variance_m = 0, double stretchA = 1, shapeType shape =  shapeType.StretchedCircle, int wait = 200, string staticprefix = "PlaceSomeJerryCans" )
     {
+        return;
         Point3d jcPos = mo.Pos;
         jcPos.z = -2;
         if (MO_ObjectiveIsNavalVessel(mo)) jcPos.z = -50;

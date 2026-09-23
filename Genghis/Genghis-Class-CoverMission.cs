@@ -107,6 +107,9 @@ public class CoverMission : AMission, ICoverMission
     public int maximumCheckoutsAllowedAtOnce_BomberPilots { get; set; }
     public int maximumAircraftAllowedPerMission_FighterPilots { get; set; }
     public int maximumCheckoutsAllowedAtOnce_FighterPilots { get; set; }
+
+    public int maximumAircraftAllowedPerMission_FighterPilots_wing { get; set; }
+    public int maximumCheckoutsAllowedAtOnce_FighterPilots_wing { get; set; }
     public int maximumAircraftAllowedPerMission_RepairMission { get; set; }
     public int maximumCheckoutsAllowedAtOnce_RepairMission { get; set; }
     public int maximumCheckoutsAllowedAtOnce_FerryMission { get; set; }
@@ -181,6 +184,10 @@ public class CoverMission : AMission, ICoverMission
             maximumAircraftAllowedPerMission_FighterPilots = 10; //For fighter pilots, bombers allowed.  was 8 when msn was 6 hrs, 6/2021 changing to 14
                                                                  //maximumAircraftAllowedPerMission_FighterPilots = 136; //for testing        
             maximumCheckoutsAllowedAtOnce_FighterPilots = 4;    //this was flights when flights were set to 2, but now is aircraft (the # of a/c per flight can be set per user)
+
+            maximumAircraftAllowedPerMission_FighterPilots_wing = 5; //For fighter pilots, bombers allowed.  was 8 when msn was 6 hrs, 6/2021 changing to 14
+                                                                 //maximumAircraftAllowedPerMission_FighterPilots = 136; //for testing        
+            maximumCheckoutsAllowedAtOnce_FighterPilots_wing = 1;    //this was flights when flights were set to 2, but now is aircraft (the # of a/c per flight can be set per user)
 
             maximumAircraftAllowedPerMission_RepairMission = 70;
 
@@ -1373,9 +1380,9 @@ public class CoverMission : AMission, ICoverMission
 
 			if (mainmission.ON_TESTSERVER) Console.WriteLine("LCA #2");
             //So if the player crashes (no longer in plane) we still keep their updates going as best we can; also avoids object reference errors
-            if ((playerPlaceAircraft != null && !isHeavyBomber(playerPlace as AiAircraft) && !isDiveBomber(playerPlace as AiAircraft) && !isFighterAllowedCover(playerPlace as AiAircraft) && !Calcs.isStrikeAC(player) && !isOnRepairMission(player)) && admin_privilege_level(player) < 1)
+            if ((playerPlaceAircraft != null && !isHeavyBomber(playerPlace as AiAircraft) && !isDiveBomber(playerPlace as AiAircraft) && !isFighterAllowedCover(playerPlace as AiAircraft) && !isFighterAllowedCover_wing(playerPlace as AiAircraft) && !Calcs.isStrikeAC(player) && !isOnRepairMission(player)) && admin_privilege_level(player) < 1)
             {
-                string m = "****No Cover info - Cover provided for heavy bombers, dive bombers, sturmovik/strike fighter-bombers, a few selected fighters, & repair/restock missions only!****";
+                string m = "****No Cover info - Cover provided for heavy bombers, dive bombers, sturmovik/strike fighter-bombers, selected fighters, & repair/restock missions only!****";
                 GamePlay.gpLogServer(new Player[] { player }, m, new object[] { });
 				turnOffRegularDisplay_listPositionCurrentCoverAircraft(player); //bhugh 10/2023 - 
                 return m;
@@ -1623,7 +1630,7 @@ public class CoverMission : AMission, ICoverMission
 		//		&& !(Calcs.isStrikeAC(aircraft))))
 		// && !(Calcs.isStrikeAC(aircraft) && Calcs.playerHasBombs(player))))
 		if (aircraft == null || (!isBomberAllowedCover(aircraft) && !isFighterAllowedCover(aircraft) 
-				&& !(Calcs.isStrikeAC(aircraft))))
+                && !isFighterAllowedCover_wing(aircraft) && !(Calcs.isStrikeAC(aircraft))))
         {
             string m = "****No Cover info - Cover provided for heavy bombers, dive bombers, fighter-bombers/strike aircraft, a few select fighters, and repair/restock missions only!****";
             if (display && player != null) GamePlay.gpLogServer(new Player[] { player }, m, new object[] { });
@@ -1654,7 +1661,7 @@ public class CoverMission : AMission, ICoverMission
 
                 retmsg += smsg + nl;
 
-                string smsg2 = "ID# - Aircraft - Number remaining in supply - Bomb default" + a.ToString();
+                string smsg2 = "ID# - Aircraft - Number remaining in supply - Bomb default (" + a.ToString() + ")";
                 Timeout(0.04, () =>
                 {
                     if (display && player != null) GamePlay.gpLogServer(new Player[] { player }, smsg2, null);
@@ -1728,7 +1735,8 @@ public class CoverMission : AMission, ICoverMission
         string typeOfACexpl = " flying a fighter";
         if (aircraft == null) typeOfACexpl = " not in an aircraft";
         if (isBomberAllowedCover(aircraft)) typeOfACexpl = " flying a heavy bomber";
-        if (isFighterAllowedCover(aircraft)) typeOfACexpl = " flying a fighter";
+        if (isFighterAllowedCover(aircraft)) typeOfACexpl = " flying an early fighter";
+        if (isFighterAllowedCover_wing(aircraft)) typeOfACexpl = " flying a late fighter";
         if (Calcs.isStrikeAC(aircraft)) typeOfACexpl = " flying a " + mainmission.statsmission.stb_StrikeName + " aircraft";
         if (isOnRepairMission(player))
         {
@@ -1756,6 +1764,7 @@ public class CoverMission : AMission, ICoverMission
 		*/
 		if (isBomberAllowedCover(aircraft)) maximumAircraftAllowedPerMission = maximumAircraftAllowedPerMission_BomberPilots;
         else if ((isFighterAllowedCover(aircraft) && !Calcs.isStrikeAC(aircraft)) || (Calcs.isStrikeAC(aircraft))) maximumAircraftAllowedPerMission = maximumAircraftAllowedPerMission_FighterPilots;
+        else if (isFighterAllowedCover_wing(aircraft)) maximumAircraftAllowedPerMission = maximumAircraftAllowedPerMission_FighterPilots_wing;
 		
         if (isOnRepairMission(player)) maximumAircraftAllowedPerMission = maximumAircraftAllowedPerMission_RepairMission;
 
@@ -1820,6 +1829,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
         if (isBomberAllowedCover(player)) maximumCheckoutsAllowedAtOnce = maximumCheckoutsAllowedAtOnce_BomberPilots;
         //else if ((isFighterAllowedCover(aircraft) && !Calcs.isStrikeAC(aircraft)) || (Calcs.isStrikeAC(aircraft) && Calcs.playerHasBombs(player))) maximumCheckoutsAllowedAtOnce = maximumCheckoutsAllowedAtOnce_FighterPilots;
 		else if ((isFighterAllowedCover(aircraft) && !Calcs.isStrikeAC(aircraft)) || Calcs.isStrikeAC(aircraft)) maximumCheckoutsAllowedAtOnce = maximumCheckoutsAllowedAtOnce_FighterPilots;
+        else if (isFighterAllowedCover_wing(aircraft)) maximumCheckoutsAllowedAtOnce = maximumCheckoutsAllowedAtOnce_FighterPilots_wing;
 		
         if (isOnRepairMission(player)) maximumCheckoutsAllowedAtOnce = maximumCheckoutsAllowedAtOnce_RepairMission;
         if (isOnFerryMission(player)) maximumCheckoutsAllowedAtOnce = maximumCheckoutsAllowedAtOnce_FerryMission;
@@ -1869,9 +1879,11 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 		
 		//StrikeAC can only take other StrikeAC
 		if (Calcs.isStrikeAC(player) && !Calcs.isStrikeAC(key)) return false;
+
+        if (isFighterAllowedCover_wing(player) && !isFighterAllowedFor_fighterwing(key)) return false;
 		
 		//Fighters who are NOT StrikeAC can only take Heavy Bombers
-		if ((isFighterAllowedCover(player) && !Calcs.isStrikeAC(player) && !isHeavyBomber(key))) return false;
+		if ((isFighterAllowedCover(player) && !Calcs.isStrikeAC(player) && !isFighterAllowedCover_wing(player) && !isHeavyBomber(key))) return false;
 		
 		//Bombers can take anything
         return true;
@@ -2992,11 +3004,74 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
         bool ret = false;
         //all strike/sturmovik fighters except JU-87, because it is grouped in with regular bombers so can take out
         //even more a/c than the fighter-bombers
-        if (acType.Contains("HurricaneMkI_") || acType.Equals("SpitfireMkI") ||  acType.Contains("Bf-109E") 
+        if (acType.Equals("HurricaneMkI") || acType.Contains("HurricaneMkI_") || acType.Equals("SpitfireMkI") ||  acType.Contains("Bf-109E") 
 			|| acType.Contains("Bf-109E-3B") || acType.Contains("Bf-109E-4B") 
-		|| acType.Contains("Macchi") || acType.Contains("G50") || acType.Contains("BlenheimMkIVF") || acType.Contains("BlenheimMkIVNF") || acType.Contains("Martlet") || acType.Contains("Tomahawk") || acType.Contains("Kittyhawk") || acType.Contains("CR42")) ret = true;
+		|| acType.Contains("G50") || acType.Contains("BlenheimMkIVF") || acType.Contains("BlenheimMkIVNF") || acType.Contains("CR42")) ret = true;
         return ret;
     }
+
+    private bool isFighterAllowedCover_wing(Player player)
+    {
+        if (player == null) return false;
+        if (player.Place() == null) return false;
+        if (player.Place() as AiAircraft == null) return false;        
+        return isFighterAllowedCover_wing(player.Place() as AiAircraft);
+    }
+    private bool isFighterAllowedCover_wing (AiAircraft aircraft)
+    {
+        if (aircraft == null) return false;
+        string acType = CoverCalcs.GetAircraftType(aircraft);
+        return isFighterAllowedCover_wing(acType);
+    }
+    private bool isFighterAllowedCover_wing(AiAirGroup airGroup)
+    {
+        AiAircraft aircraft = null;
+        if (airGroup != null && airGroup.GetItems().Length > 0 && (airGroup.GetItems()[0] as AiAircraft) != null) aircraft = airGroup.GetItems()[0] as AiAircraft;
+        return isFighterAllowedCover_wing(aircraft);
+
+    }
+    private bool isFighterAllowedCover_wing(string acType)
+    {
+        if (acType == "") return false;
+        bool ret = false;
+        //all strike/sturmovik fighters except JU-87, because it is grouped in with regular bombers so can take out
+        //even more a/c than the fighter-bombers
+        if (acType.Contains("HurricaneMkII") || acType.Contains("SpitfireMkV") ||  acType.Contains("Bf-109F") 
+		|| acType.Contains("Macchi") || acType.Contains("Martlet") || acType.Contains("Tomahawk") || acType.Contains("Kittyhawk"))  ret = true;
+        return ret;
+    }
+
+    private bool isFighterAllowedFor_fighterwing(Player player)
+    {
+        if (player == null) return false;
+        if (player.Place() == null) return false;
+        if (player.Place() as AiAircraft == null) return false;        
+        return isFighterAllowedFor_fighterwing(player.Place() as AiAircraft);
+    }
+    private bool isFighterAllowedFor_fighterwing (AiAircraft aircraft)
+    {
+        if (aircraft == null) return false;
+        string acType = CoverCalcs.GetAircraftType(aircraft);
+        return isFighterAllowedFor_fighterwing(acType);
+    }
+    private bool isFighterAllowedFor_fighterwing(AiAirGroup airGroup)
+    {
+        AiAircraft aircraft = null;
+        if (airGroup != null && airGroup.GetItems().Length > 0 && (airGroup.GetItems()[0] as AiAircraft) != null) aircraft = airGroup.GetItems()[0] as AiAircraft;
+        return isFighterAllowedFor_fighterwing(aircraft);
+
+    }
+    private bool isFighterAllowedFor_fighterwing(string acType)
+    {
+        if (acType == "") return false;
+        bool ret = false;
+        //all strike/sturmovik fighters except JU-87, because it is grouped in with regular bombers so can take out
+        //even more a/c than the fighter-bombers
+        if (acType.Contains("Hurricane") || acType.Contains("Spitfire") ||  acType.Contains("Bf-109") 
+		|| acType.Contains("Macchi") || acType.Contains("Martlet") || acType.Contains("Tomahawk") || acType.Contains("Kittyhawk"))  ret = true;
+        return ret;
+    }
+
     private bool isBomberAllowedCover(Player player)
     {
         if (player == null) return false;
@@ -3409,6 +3484,9 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 
 			//StrikeAC must take bombs themselves & their <cover ac just take bombs also
 			if (Calcs.isStrikeAC(player) && fighterbomber == "f") fighterbomber = "b";
+
+            //By contrast, fighter wingmen CAN'T take bombs
+            if (isFighterAllowedCover_wing(player) && fighterbomber == "b") fighterbomber = "f";
 			
             string fbVersion = "";
             if (fighterbomber != "")
@@ -3509,7 +3587,11 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 
                 //if (spawnGroup == 0 && (!isBomberAllowedCover(aircraft) && !(isFighterAllowedCover(aircraft) && !Calcs.isStrikeAC(aircraft)) && !(Calcs.isStrikeAC(aircraft) && Calcs.playerHasBombs(player)) && !isOnRepairMission(player))) { GamePlay.gpLogServer(new Player[] { player }, "Can't cover you! Cover provided for heavy bombers, dive bombers, fighter-bombers WITH BOMBS, and certain fighters (Hurricane, Beaufighter, U.S. Planes, Bf110, G50, Macchis), for bombing raids - and for repair/restock missions", new object[] { }); return; }
 				
-				if (spawnGroup == 0 && (!isBomberAllowedCover(aircraft) && !isFighterAllowedCover(aircraft)) && !Calcs.isStrikeAC(aircraft) && !isOnRepairMission(player)) { GamePlay.gpLogServer(new Player[] { player }, "Can't cover you! Cover provided for heavy bombers, dive bombers, fighter-bombers, and certain fighters (Hurricane, Beaufighter, U.S. Planes, Bf110, G50, Macchis), for bombing raids - and for repair/restock missions", new object[] { }); return; }
+				if (spawnGroup == 0 && !isBomberAllowedCover(aircraft) && !isFighterAllowedCover(aircraft) &&!isFighterAllowedCover_wing(aircraft) && !Calcs.isStrikeAC(aircraft) && !isOnRepairMission(player)) { 
+                    GamePlay.gpLogServer(new Player[] { player }, ">>>Can't cover you! Cover provided for heavy bombers, dive bombers, fighter-bombers, certain fighters (early Hurricane, early Spitfire, early 109s, Beaufighter, U.S. Planes, Bf110, G50)", new object[] { }); return; 
+
+                    GamePlay.gpLogServer(new Player[] { player }, ">>>for ground support/bombing raids, and certain fighters (later Hurricanes, Spitfires, 109s, U.S. planes, Macchi) as wingmen - and for repair/restock missions", new object[] { }); return; 
+                }
 
                 /* int maximumCheckoutsAllowedAtOnce = maximumCheckoutsAllowedAtOnce_BomberPilots;
                 if (isFighterAllowedCover(aircraft)) maximumCheckoutsAllowedAtOnce = maximumCheckoutsAllowedAtOnce_FighterPilots; */
@@ -3954,7 +4036,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             if (heavyBomber && orders == CoverAGOrders.attack && (oldTargetPoint.x != -1 || oldTargetPoint.y != -1) && (player == null || player.Place() == null || (player.Place() as AiAircraft).AirGroup() == null)) bombersContinuingFinalRun = true;
 
             bool aircraftChangeDisband = false;
-            if (((!isBomberAllowedCover(player) && !isFighterAllowedCover(player)) && !Calcs.isStrikeAC(player) && !isOnRepairMission(player)) && !bombersContinuingFinalRun)
+            if (!isBomberAllowedCover(player) && !isFighterAllowedCover(player) && !isFighterAllowedCover_wing(player) && !Calcs.isStrikeAC(player) && !isOnRepairMission(player) && !bombersContinuingFinalRun)
             {
                 // Could use this to allow people ot jump in a/c & defend their planes, later in the mission.  Maybe. : Tuple<int, string, string, DateTime> item = supplymission.aircraftCheckedOutInfo[actor];
                 //This could be made tighter . . . right now they can still jump in a bomber, grab cover, then switch to fighter-bomber to fly them.
@@ -4031,7 +4113,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 				//But if it is a strike AC flying with other strike AC then no, it is more like flying
 				//with a bomber formation @ the same altitude
 				//| ((isPlayerStrikeAC && !isDiveBomber(player)) && !isStrikeAC))
-                if (player != null && isFighterAllowedCover(player)  && !(isPlayerStrikeAC && isStrikeAC))
+                if (player != null && isFighterAllowedCover(player)  && !(isPlayerStrikeAC && isStrikeAC) && !isFighterAllowedCover_wing(player))
                 {
                     AltDiffPassed_m = AltDiffPlayerEscort_m;
                     AltDiffPassed_range_m = AltDiffPlayerEscort_range_m;
@@ -6418,7 +6500,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 //Point3d playerAirGroupPos = airGroup.Pos();
                 //if (playerAirGroup != null) playerAirGroupPos = playerAirGroup.Pos();
 
-                if (isBomberAllowedCover(playerAirGroup) || (Calcs.isStrikeAC(playerAirGroup) && Calcs.isStrikeAC(airGroup))) newPos.z = playerAirGroupPos.z; //if leader is a bomber, OR both leader & AI are strike aircraft, they fly same alt as the lead plane
+                if (isBomberAllowedCover(playerAirGroup) || (Calcs.isStrikeAC(playerAirGroup) && Calcs.isStrikeAC(airGroup)) || isFighterAllowedCover_wing(player)) newPos.z = playerAirGroupPos.z; //if leader is a bomber, OR both leader & AI are strike aircraft, OR if it is a fighter with a wingman they fly same alt as the lead plane
                 //if (isFighterAllowedCover(playerAirGroup))
                 else
                 {

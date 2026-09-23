@@ -7152,7 +7152,7 @@ struct
              * 
              ***************************/
             //Give penalties to players if they bomb civilian areas or within/near a NOBOMB objective
-            if (!ai && mainmission.MO_PointNearNoBombObjective(pos, 500)) { ot_HandleCivilianBombings(initiator.Player, pos, initiator, mass_kg, isNoBombObj: true ); if (mainmission.ON_TESTSERVER)  Console.WriteLine("CivilianBombing-NOBOMBOBJ"); return; }
+            if (!ai && mainmission.MO_PointNearNoBombObjective(pos, 50)) { ot_HandleCivilianBombings(initiator.Player, pos, initiator, mass_kg, isNoBombObj: true ); if (mainmission.ON_TESTSERVER)  Console.WriteLine("CivilianBombing-NOBOMBOBJ"); return; }
 
             if (!ai & !groundActorsFound) foreach (GroundStationary sta in GamePlay.gpGroundStationarys(pos.x, pos.y, 500))
                 {

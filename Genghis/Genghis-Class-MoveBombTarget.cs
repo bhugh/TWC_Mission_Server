@@ -1753,6 +1753,10 @@ public class MoveBombTargetMission : AMission
                                     double zChangeFinal = zChangeAbs;
                                     if (changeL.alt_percent / 100.0 * zSave > changeL.alt_m) zChangeFinal = zChangePerc;  //if (potential max) perc change is larger then abs change then we go with perc change
                                     if (zSave * (1 - changeL.alt_percent / 100) > zChangeAbs) zChangeFinal = zChangePerc; //if actual abs change is less than min possible perc change than we go with perc change (to prevent setting altitude unreasonably low)
+
+                                    //bias it somewhat towards lower altitudes  2026/09
+                                    if (zChangeFinal > 0 && zChangeFinal + pos.z > 5000 && ran.Next(0,2) == 1) zChangeFinal = -zChangeFinal;
+
                                     altDiff_m = zChangeFinal;
                                 }
 
@@ -3540,7 +3544,7 @@ public class MoveBombTargetMission : AMission
 
             if (TestGroup != null)
             {
-                Console.WriteLine( "Nächste Airgroup: {0}", new object[] { TestGroup.Name() });
+                Console.WriteLine( "Nï¿½chste Airgroup: {0}", new object[] { TestGroup.Name() });
             }
 
             if (getDistanceToNearestEnemyAirgroup(airGroup).HasValue)

@@ -1857,7 +1857,7 @@ public class Parachute
         if ((currTime.Subtract(lastParachuteTime_dt)).TotalMinutes < 0.01) return 0;
         double nump = (double)Calcs.gpNumberOfPlayers(msn.GamePlay);
         
-        if (nump > 50) return 0;        
+        if (nump > 75) return 0;        
 
         lastParachuteTime_dt = currTime;
         double spawnAlt = pos.z + z_add_m;

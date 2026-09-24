@@ -110,6 +110,10 @@ using System.Timers;
 
 /*****************************************************************************
  * TODO  / Ideas
+ * 
+ * Make <cover recognize "nobomb" targets and not target them, but only the surrounding
+ *
+ *
  *
  * Make a system where people can report updates to radar by typing <contact AV23 etc.  It would
  * add all contacts they can see from that location to the radar screen for a while.
@@ -127,8 +131,18 @@ using System.Timers;
  *   - Faster/Slower by 1-2% per notch
  *   - Hold/Follow (hold alt & speed vs follow the breather's lead)
  *   - Attack/follow (escort/attack nearby fighters vs follow the main ac
- *   - Wide/compact spread (double the inter-aircraft spread, or back to normal, or maybe 3 options, normal, wide, extra wide)  This could apply to vertical distance or perhaps lead/follow distance when on a bombing run
+ *   - XXXX Wide/compact spread (double the inter-aircraft spread, or back to normal, or maybe 3 options, normal, wide, extra wide)  This could apply to vertical distance or perhaps lead/follow distance when on a bombing run
+
+  * - also "drop when I drop" (calculate target point as soon as pilot drops rather than waiting for bombs to hit)
+
+ ** OR***
+    - <cloiter 3 4 5 to loiter those in your current spot
+    - <ccover 2 4 for those to escort you .ESCORT instead of .FOLLOW or .COVER
+    - <creserve 1 2 they will just follow
+    - <attack 3 5 they will attack as directed by Tab-4
  * 
+ * - keep each exact aircraft and location in db, also condition maybe.  So ferrying, production, etc all linked to this.
+
  * RECON PHOTOS: When player aircraft is damaged, crash landing, etc, the photos are spoiled depending on amount of damage.  Maybe some % is spoiled and more if more damage happens to player a/c.
  * 
  * X RECON PHOTOS: Give the player a hint when interesting objectives are found/photo taken & suggest they try to find that objectives & take an actual recon photo to help bombers etc.  So maybe primary objectives, maybe all mobile objectives, etc.  Can just say something like "potentially interesting objective found at BA14.2.3 - please visually find the objective in that area & take a screen shot/photo of that area to help bomber pilots." type of thing.
@@ -18296,9 +18310,9 @@ public class Mission : AMission, IMainMission
             addMobile(MO_ObjectiveType.MilitaryHeadquarters, "Canterbury Mobile Secret Resistance Training Center", "", 1, 5, "BCanterburyCamoGroup", 245118, 253057, 250, 200, 4000, 15, 0, 160, 450, true, true, 1, 10, MO_MobileObjectiveType.CamoGroup, 80, 228118, 240057, 247785, 256399, 1, 9, MO_ProducerOrStorageType.None, "", add);
 
 
-            addMobile(MO_ObjectiveType.HighCommandPost, "Westerham Mobile High Command Post (NO BOMBS!)", "", 1, 5, "WesterhamHighCommandPost", 162033, 232000, 45, 45, 0, 30, 0, 170, 330, false, false, 1, 2, MO_MobileObjectiveType.HighCommandPost, 36, 153000, 246000, 175000, 222000, 1, 8, MO_ProducerOrStorageType.None, "No bombs, must kill outer defense while leaving center untouched", addNewOnly: false, mo_trigger_type: MO_TriggerType.NoBombs, things_to_save: new Dictionary<string,int> () {{"MG_TA", 2}, {"humans", 8}, {"tent", 2}}, log_message: "{army} captured Westerham High Command general staff! Valuable intel gathered!", hud_message: "{army} captured Westerham High Command Staff!", thingstosave_destroyed_message: ">>>The Westerham High Command General Staff was KILLED instead of CAPTURED! Objective not achieved; no intelligence gathered!", explanation: "Neutralize the general staff escorts and guard on the periphery, but preserve the General Staff in the center for capture by our agents. NO BOMBS! Pinpoint accurate strafing!", canbedisabled: false);
+            addMobile(MO_ObjectiveType.HighCommandPost, "Westerham Mobile High Command Post (NO BOMBS!)", "", 1, 12, "WesterhamHighCommandPost", 162033, 232000, 45, 45, 0, 30, 0, 170, 330, false, false, 1, 2, MO_MobileObjectiveType.HighCommandPost, 36, 153000, 246000, 175000, 222000, 1, 8, MO_ProducerOrStorageType.None, "No bombs, must kill outer defense while leaving center untouched", addNewOnly: false, mo_trigger_type: MO_TriggerType.NoBombs, things_to_save: new Dictionary<string,int> () {{"MG_TA", 2}, {"humans", 8}, {"tent", 2}}, log_message: "{army} captured Westerham High Command general staff! Valuable intel gathered!", hud_message: "{army} captured Westerham High Command Staff!", thingstosave_destroyed_message: ">>>The Westerham High Command General Staff was KILLED instead of CAPTURED! Objective not achieved; no intelligence gathered!", explanation: "Neutralize the general staff escorts and guard on the periphery, but preserve the General Staff in the center for capture by our agents. NO BOMBS! Pinpoint accurate strafing!", canbedisabled: false);
 
-            addMobile(MO_ObjectiveType.HighCommandPost, "Denton Mobile High Command Post (NO BOMBS!)", "", 1, 5, "DentonHighCommandPost", 232033, 239000, 45, 45, 0, 30, 0, 170, 330, false, false, 1, 2, MO_MobileObjectiveType.HighCommandPost, 36, 223210, 247340, 249319, 236309, 1, 8, MO_ProducerOrStorageType.None, "No bombs, must kill outer defense while leaving center untouched", addNewOnly:false, mo_trigger_type: MO_TriggerType.NoBombs,things_to_save: new Dictionary<string,int> () {{"MG_TA", 2}, {"humans", 8}, {"tent", 2}}, log_message: "{army} captured Denton High Command general staff! Valuable intel gathered!", hud_message: "{army} captured Denton High Command Staff!", thingstosave_destroyed_message: ">>>The Denton High Command General Staff was KILLED instead of CAPTURED! Objective not achieved; no intelligence gathered!", explanation: "Neutralize the general staff escorts and guard on the periphery, but preserve the General Staff in the center for capture by our agents. NO BOMBS! Pinpoint accurate strafing!", canbedisabled: false);
+            addMobile(MO_ObjectiveType.HighCommandPost, "Denton Mobile High Command Post (NO BOMBS!)", "", 1, 12, "DentonHighCommandPost", 232033, 239000, 45, 45, 0, 30, 0, 170, 330, false, false, 1, 2, MO_MobileObjectiveType.HighCommandPost, 36, 223210, 247340, 249319, 236309, 1, 8, MO_ProducerOrStorageType.None, "No bombs, must kill outer defense while leaving center untouched", addNewOnly:false, mo_trigger_type: MO_TriggerType.NoBombs,things_to_save: new Dictionary<string,int> () {{"MG_TA", 2}, {"humans", 8}, {"tent", 2}}, log_message: "{army} captured Denton High Command general staff! Valuable intel gathered!", hud_message: "{army} captured Denton High Command Staff!", thingstosave_destroyed_message: ">>>The Denton High Command General Staff was KILLED instead of CAPTURED! Objective not achieved; no intelligence gathered!", explanation: "Neutralize the general staff escorts and guard on the periphery, but preserve the General Staff in the center for capture by our agents. NO BOMBS! Pinpoint accurate strafing!", canbedisabled: false);
 
        
 
@@ -22250,7 +22264,7 @@ added Rouen Flak
             tempFlak_currentArmy = currentArmy;
             sinceLastTempFlakCalledCount[tempFlak_currentArmy]++;
 
-            int nump = Calcs.gpNumberOfPlayers(GamePlay);
+            int nump = Calcs.gpNumberOfPlayersActive(GamePlay);
             if (testTempFlakNumPilots > 0 && testTempFlakNumPilots > nump) nump = testTempFlakNumPilots;
             //if (nump > 50) return;
 
@@ -30746,15 +30760,22 @@ public static class Calcs
         }
         return null;
     }
-    public static int gpNumberOfPlayers(this IGamePlay GamePlay)
+    
+    //Now only counts active players (in a "position/place") (2026/09)
+    public static int gpNumberOfPlayers(this IGamePlay GamePlay, int army = 0)
     {   // Purpose: Returns the number of human players in the game.
         // Use: GamePlay.NumberOfPlayers(); 
         int result = 0;
 
+        var gpRP = GamePlay.gpRemotePlayers();
         //multiplayer
-        if (GamePlay.gpRemotePlayers() != null || GamePlay.gpRemotePlayers().Length > 0)
+        if (gpRP != null || gpRP.Length > 0)
         {
-            return GamePlay.gpRemotePlayers().ToList().Count;
+            foreach (Player player in gpRP)
+            {
+                if (player!=null && (army == 0 || player.Army() == army ) && player.Place() != null) result ++;
+            }
+            //return GamePlay.gpRemotePlayers().ToList().Count;
         }
         //singleplayer
         else if (GamePlay.gpPlayer() != null)
@@ -30763,6 +30784,9 @@ public static class Calcs
         }
         return result;
     }
+
+    /*
+    //This is now handled above, and also only counts active players (in a "position/place")
     public static int gpNumberOfPlayers(this IGamePlay GamePlay, int army)
     {   // Purpose: Returns the number of human players in the game in the 
         //          specified army.
@@ -30784,6 +30808,7 @@ public static class Calcs
         }
         return result;
     }
+    */
 
     public static int gpNumberOfPlayersActive(this IGamePlay GamePlay, int army)
     {   // Purpose: Returns the number of human players in the game in the 

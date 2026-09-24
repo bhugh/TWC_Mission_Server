@@ -4236,6 +4236,8 @@ public static class MoveBombCalcs
         return strings[clc_random.Next(strings.Length)];
     }
 
+    /*
+    //ONLY IN CALCS now, for consistency 2026/09
     public static int gpNumberOfPlayers(this IGamePlay GamePlay)
     {   // Purpose: Returns the number of human players in the game.
         // Use: GamePlay.NumberOfPlayers(); 
@@ -4253,7 +4255,7 @@ public static class MoveBombCalcs
         }
         return result;
     }
-
+    
     public static int gpNumberOfPlayers(this IGamePlay GamePlay, int army)
     {   // Purpose: Returns the number of human players in the game in the 
         //          specified army.
@@ -4275,6 +4277,7 @@ public static class MoveBombCalcs
         }
         return result;
     }
+    */
     public static int gpNumberOfPlayersActive(this IGamePlay GamePlay, int army)
     {   // Purpose: Returns the number of human players in the game in the 
         //          specified army, who are in planes and in the air.

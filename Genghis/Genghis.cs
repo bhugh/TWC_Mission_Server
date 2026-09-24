@@ -22197,7 +22197,7 @@ added Rouen Flak
     //max deployed is roughly 8 X tempflaktoAllocatePerRound = 180 (for 22 allocated)
     //So in theory would easily do 50 instead of 22
     //int tempflaktoAllocatePerRound = 22; //number to hand out each time tempFlakPlacement runs. Was 28/2022-01-05
-    int tempflaktoAllocatePerRound = 32; //number to hand out each time tempFlakPlacement runs. Was 28/2022-01-05, 22/before 2026/09, 50 - 2026/09
+    int tempflaktoAllocatePerRound = 28; //number to hand out each time tempFlakPlacement runs. Was 28/2022-01-05, 22/before 2026/09, 50 - 2026/09, then 32, now 28
     //int minTempflaktoAllocatePerRound = 14; //we don't have to cut the # of flak so much bec we cut the frequency loaded, # of files loaded, etc.  Was 16 2022-01-05
     int minTempflaktoAllocatePerRound = 14; //we don't have to cut the # of flak so much bec we cut the frequency loaded, # of files loaded, etc.  Was 16 2022-01-05; 14/prior to 2026-09
     double maxACAltitudeforTempflak = 2500;
@@ -30810,7 +30810,7 @@ public static class Calcs
     }
     */
 
-    public static int gpNumberOfPlayersActive(this IGamePlay GamePlay, int army)
+    public static int gpNumberOfPlayersActive(this IGamePlay GamePlay, int army = 0)
     {   // Purpose: Returns the number of human players in the game in the 
         //          specified army, who are in planes and in the air.
         // Use: GamePlay.NumberOfPlayersActive(GamePlay, army); 
@@ -30818,13 +30818,13 @@ public static class Calcs
         if (GamePlay.gpRemotePlayers() != null || GamePlay.gpRemotePlayers().Length > 0)
         {
             List<Player> players = new List<Player>(GamePlay.gpRemotePlayers());
-            for (int i = 0; i < players.Count; i++)
+            foreach (Player player in players)
             {
-                if (players[i].Army() == army)
+                if (player != null && (army == 0 || player.Army() == army))
                 {
-                    if (players[i].Place() == null) continue;
-                    if (players[i].Place() as AiAircraft == null) continue;
-                    AiAircraft aircraft = players[i].Place() as AiAircraft;
+                    if (player.Place() == null) continue;
+                    if (player.Place() as AiAircraft == null) continue;
+                    AiAircraft aircraft = player.Place() as AiAircraft;
                     double altAGL_m = aircraft.getParameter(part.ParameterTypes.Z_AltitudeAGL, 0);
                     if (altAGL_m > 5) result += 1;  //only count players in plane & off the ground/in flight
                 }

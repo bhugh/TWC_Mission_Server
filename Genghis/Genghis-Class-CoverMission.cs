@@ -3352,6 +3352,8 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
     {
         checkoutCoverAircraft(player, selectString, recurs_call: 0);
     }
+
+    public int minFrontDistance_km = 2; //was 15km, to prevent ppl from just sitting @ the front line & directing cover bombers.  But now trying 2 since they also have to be flying (different from previous where they could just sit at an airport close to the front lines & direct things).
     
 
     public void checkoutCoverAircraft(Player player, string selectString, int recurs_call = 0)
@@ -3653,7 +3655,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 
 
 				double playerFrontDistance_m = GamePlay.gpFrontDistance(3 - player.Army(), actor.Pos().x, actor.Pos().y);
-				public static int minFrontDistance_km = 2; //was 15km, to prevent ppl from just sitting @ the front line & directing cover bombers.  But now trying 2 since they also have to be flying (different from previous where they could just sit at an airport close to the front lines & direct things).
+		
 				
 				
 				if (spawnGroup == 0 && playerFrontDistance_m < minFrontDistance_km*1000 && !mainmission.ON_TESTSERVER)

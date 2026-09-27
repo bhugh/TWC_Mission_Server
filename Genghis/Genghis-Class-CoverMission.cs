@@ -143,7 +143,15 @@ public class CoverMission : AMission, ICoverMission
     public int numPlayersToReduceCheckouts { get; set; } //2020-01; was 6 //Above this number of players online in players' army, the number of allowed cover per mission will be reduced gradually until 0 at maxPlayersToAllowCover;  Should be equal or less than maxPlayersToAllowCover or else ##errors##
     public int numPlayersToReduceCheckoutsMore { get; set; } //2020-01; was 6 //Above this number of players online in players' army, the number of allowed cover per mission will be reduced gradually until 0 at maxPlayersToAllowCover;  Should be equal or less than maxPlayersToAllowCover or else ##errors##
     public int numPlayersToReduceCheckoutsEvenMore { get; set; } //2020-01; was 6 //Above this number of players online in players' army, the number of allowed cover per mission will be reduced gradually until 0 at maxPlayersToAllowCover;  Should be equal or less than maxPlayersToAllowCover or else ##errors##
-    public enum CoverAGOrders {none, follow, attack };
+    //The orders a player can give to their cover airgroups, via chat command (see setCoverAircraftAirGroupsOrders)
+    //  normal - the usual behavior: bombers/sturmoviks stay in formation except when ground attacking, cover
+    //           stays in place unless directly attacking/defending (this is the default behavior)
+    //  follow - hold fire & stay in reserve, joined with the player (no attacking & no bombing)
+    //  attack - air attack anything reasonably nearby, plus any bombing the player has ordered
+    //  strict - ignore all else & just fly in formation with the player
+    //  escort - CLoD's ESCORT behavior for all a/c types: stay with & defend the player (no ground bombing)
+    //  loiter - stay in one place, circling
+    public enum CoverAGOrders {none, follow, attack, normal, strict, escort, loiter };
 
     public Dictionary<Player, int> numberCoverAircraftActorsCheckedOutWholeMission = new Dictionary<Player, int>();
     public Dictionary<AiActor, Player> coverAircraftActorsCheckedOut = new Dictionary<AiActor, Player>();
@@ -1555,7 +1563,11 @@ public class CoverMission : AMission, ICoverMission
                 }
 
                 bool ordersAreFollow = (coverAircraftAirGroupsOrders.ContainsKey(airGroup) && coverAircraftAirGroupsOrders[airGroup] == CoverAGOrders.follow);
-                bool ordersAreAttack = (coverAircraftAirGroupsOrders.ContainsKey(airGroup) && coverAircraftAirGroupsOrders[airGroup] == CoverAGOrders.attack);
+                bool ordersAreAttack = (coverAircraftAirGroupsOrders.ContainsKey(airGroup) && (coverAircraftAirGroupsOrders[airGroup] == CoverAGOrders.attack || coverAircraftAirGroupsOrders[airGroup] == CoverAGOrders.normal));
+                bool ordersAreStrict = (coverAircraftAirGroupsOrders.ContainsKey(airGroup) && coverAircraftAirGroupsOrders[airGroup] == CoverAGOrders.strict);
+                bool ordersAreEscort = (coverAircraftAirGroupsOrders.ContainsKey(airGroup) && coverAircraftAirGroupsOrders[airGroup] == CoverAGOrders.escort);
+                bool ordersAreLoiter = (coverAircraftAirGroupsOrders.ContainsKey(airGroup) && coverAircraftAirGroupsOrders[airGroup] == CoverAGOrders.loiter);
+                bool ordersAreHoldFire = (coverAircraftAirGroupsOrders.ContainsKey(airGroup) && ordersHoldFire(coverAircraftAirGroupsOrders[airGroup]));
                 double distToTarget_m = CoverCalcs.CalculatePointDistance(p, aircraft.Pos());
 				
 				if (mainmission.ON_TESTSERVER) Console.WriteLine("LCA #14");
@@ -1574,7 +1586,7 @@ public class CoverMission : AMission, ICoverMission
                 //In cases where the pilot has set a target point and type of "nearest enemy" but the a/c has not found
                 //a ground actor/stationary as a target. Only when FOLLOW AND BAM is nearest enemy
                 //AND armed AND not set on RESERVE/FOLLOW
-                else if ((action.Contains("FOLLOW") || action.Contains("NORMFLY")) && BAM_isNearestEnemy(player) && isBomberArmed(airGroup) && !ordersAreFollow)
+                else if ((action.Contains("FOLLOW") || action.Contains("NORMFLY")) && BAM_isNearestEnemy(player) && isBomberArmed(airGroup) && !ordersAreHoldFire)
                 {
 
                     if (distToTarget_m < 15000)
@@ -1620,6 +1632,9 @@ public class CoverMission : AMission, ICoverMission
                 if (displayHealth) msg += " (" + healthString + ")";
                 if (ordersAreFollow) msg += " [[[JOIN]]]";
                 if (ordersAreAttack) msg += " [[[ATTACK]]]";
+                if (ordersAreStrict) msg += " [[[STRICT]]]";
+                if (ordersAreEscort) msg += " [[[ESCORT]]]";
+                if (ordersAreLoiter) msg += " [[[LOITER]]]";
                 delay += 0.08; //was .06 but that seemed to cause stuttering?  Maybe needs 0.1 or even more
                 Timeout(delay, () =>
                 {
@@ -2387,99 +2402,34 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 
         }
         else if (msg.StartsWith("<cr") || msg.StartsWith("<cj"))
-        { //follow - force the AG to follow continuously & not attack
-            string newmsg = msg.Replace("<creserve", "").Replace("<cres", "").Replace("<cr", "").Replace("<cjoin", "").Replace("<cj", "").Replace(",", " ").Replace("(", " ").Replace(")", " ").Replace("[", " ").Replace("]", " ").Replace("  ", " ").Replace("  ", " ").Replace("  ", " ").Trim(); // remove the comma, parentheses etc
-
-            //var agIndex = new Dictionary<int, AiAirGroup>();
-            //if (coverAircraftAirGroupsIndexes.ContainsKey(player)) agIndex = coverAircraftAirGroupsIndexes[player];
-            int count = 0;
-            string[] words = newmsg.Split(' ');
-            var indxs = new List<int>();
-            string foundIndxs = "";
-            int numFoundIndxs = 0;
-
-            foreach (string word in words)
-            {
-                int indx = -1;
-                try { if (word.Length > 0) indx = Convert.ToInt32(word); }
-                catch (Exception ex) { }
-                if (indx != -1) indxs.Add(indx);
-
-            }
-
-
-            foreach (AiAirGroup airGroup in coverAircraftAirGroupsActive.Keys)
-            {
-                if (airGroup == null) continue;
-                if (coverAircraftAirGroupsActive[airGroup] != player) continue;
-                if (airGroup.GetItems().Length == 0) continue;
-                AiAircraft aircraft1 = airGroup.GetItems()[0] as AiAircraft;
-                if (aircraft1 == null) continue;
-                count++;
-                CoverACInfo acInfo = new CoverACInfo();
-                if (coverACInfo.ContainsKey(airGroup)) acInfo = coverACInfo[airGroup];
-
-                if (indxs.Contains(count) || indxs.Count == 0)
-                { 
-                    //These types are the only ones it make sense to put into reserve
-                    //Also...they only types for which it is implemented
-                    //if (acInfo.IsHeavyBomber || acInfo.IsDiveBomber || (acInfo.IsStrikeAC && acInfo.IsPlayerStrikeAC))
-                    {
-                        coverAircraftAirGroupsOrders[airGroup] = CoverAGOrders.follow;
-                        foundIndxs += count.ToString() + " ";
-                        numFoundIndxs++;
-                    }
-                }
-
-            }
-
-            GamePlay.gpLogServer(new Player[] { player }, numFoundIndxs.ToString() + " groups of cover aircraft were ordered to hold fire and stay in RESERVE. (#{0})", new object[] { String.Join(" #", foundIndxs.Trim()
-                ) });
+        { //reserve - hold fire, force the AG to follow continuously & not attack (<creserve, <cres, <cr, <cjoin, <cj)
+            setCoverAircraftAirGroupsOrders(player, msg, CoverAGOrders.follow, "were ordered to hold fire and stay in RESERVE.");
 
         }
         else if (msg.StartsWith("<ca"))
-        { //attack - the AG can resume attacking
-            string newmsg = msg.Replace("<cattack", "").Replace("<catt", "").Replace("<ca", "").Replace(",", " ").Replace("(", " ").Replace(")", " ").Replace("  ", " ").Replace("  ", " ").Replace("  ", " ").Trim(); // remove the comma, parentheses etc
+        { //attack - the AG can attack again, as ordered by the player's bomb aim mode (<cattack, <catt, <ca)
+            setCoverAircraftAirGroupsOrders(player, msg, CoverAGOrders.attack, "were instructed to ATTACK as ordered.");
 
-            //var agIndex = new Dictionary<int, AiAirGroup>();
-            //if (coverAircraftAirGroupsIndexes.ContainsKey(player)) agIndex = coverAircraftAirGroupsIndexes[player];
-            int count = 0;
-            string[] words = newmsg.Split(' ');
-            var indxs = new List<int>();
-            string foundIndxs = "";
-            int numFoundIndxs = 0;
+        }
+        else if (msg.StartsWith("<cnormal") || msg.StartsWith("<cnor") || msg.StartsWith("<cn"))
+        { //normal - the usual behavior: bombers/sturmoviks stay in formation except when ground attacking, cover fighters stay in place unless directly attacking/defending (<cnormal, <cnor, <cn)
+            setCoverAircraftAirGroupsOrders(player, msg, CoverAGOrders.normal, "were ordered to return to their NORMAL behavior (attack nearby air enemies & bomb as directed).");
 
-            foreach (string word in words)
-            {
-                int indx = -1;
-                try { if (word.Length > 0) indx = Convert.ToInt32(word); }
-                catch (Exception ex) { }
-                if (indx != -1) indxs.Add(indx);
+        }
+        else if (msg.StartsWith("<cstrict") || msg.StartsWith("<cstr") || msg.StartsWith("<cst") || msg.StartsWith("<cs"))
+        { //strict - ignore all else & just fly in formation with the player (<cstrict, <cstr, <cst)
+            setCoverAircraftAirGroupsOrders(player, msg, CoverAGOrders.strict, "were ordered to fly in STRICT formation with you & ignore all other action.");
 
-            }
+        }
+        else if (msg.StartsWith("<cescort") || msg.StartsWith("<ces") || msg.StartsWith("<ce"))
+        { //escort - CLoD's ESCORT behavior for all a/c types: stay with & defend the player (<cescort, <ces, <ce)
+            setCoverAircraftAirGroupsOrders(player, msg, CoverAGOrders.escort, "were ordered to ESCORT you, defending you from enemy aircraft.");
 
-
-            foreach (AiAirGroup airGroup in coverAircraftAirGroupsActive.Keys)
-            {
-                if (airGroup == null) continue;
-                if (coverAircraftAirGroupsActive[airGroup] != player) continue;
-                if (airGroup.GetItems().Length == 0) continue;
-                AiAircraft aircraft1 = airGroup.GetItems()[0] as AiAircraft;
-                if (aircraft1 == null) continue;
-                count++;
-                if (indxs.Contains(count) || indxs.Count == 0)
-                {
-                    //Here we can put ALL a/c into "attack" mode without worrying about bomber
-                    //vs fighter cover, because fighters cover is always on attack mode regardless
-                    coverAircraftAirGroupsOrders[airGroup] = CoverAGOrders.attack;
-                    foundIndxs += count.ToString() + " ";
-                    numFoundIndxs++;
-                }
-
-            }
-
-            GamePlay.gpLogServer(new Player[] { player }, numFoundIndxs.ToString() + " groups of cover aircraft were instructed to ATTACK as ordered. (#{0})", new object[] { String.Join(" #", foundIndxs.Trim()
-                ) });
+        }
+        else if (msg.StartsWith("<cloiter") || msg.StartsWith("<cloi") || msg.StartsWith("<clo"))
+        { //loiter - stay in one place, circling (<cloiter, <cloi, <clo)
+            List<AiAirGroup> loiterGroups = setCoverAircraftAirGroupsOrders(player, msg, CoverAGOrders.loiter, "were ordered to LOITER in place, circling.");
+            setLoiterPoints(loiterGroups); //circle around wherever they are right now, at the moment the order is given
 
         }
         else if (msg.StartsWith("<flare"))
@@ -2635,6 +2585,12 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
             msg42 = "<creserve 1 4 OR <cr 1 4 - instruct squadrons #1 and #4 to stay in reserve, joined with you, and not join the current attack. <cr (alone, no numbers) puts all squadrons on reserve.";
             GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
+            msg42 = "<cnormal 2 3 OR <cn 2 3 - squadrons #2 & #3 return to their NORMAL behavior (attack nearby air enemies & bomb as you direct). <cn (alone, no numbers) puts all squadrons on normal.";
+            GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
+            msg42 = "<cstrict 2 OR <cst 2 - squadron #2 flies in STRICT formation with you & ignores all other action. <cescort / <ce - squadrons ESCORT you & defend you from enemy aircraft.";
+            GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
+            msg42 = "<cloiter 1 OR <clo 1 - squadron #1 LOITERS in place, circling.";
+            GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
             msg42 = "<cattack 2 3 5 OR <ca 2 3 5 - instruct squadrons #2, #3, and #5 to participate in the current attack (as ordered by Tab-4-4-4-4-7). <ca (alone, no numbers) puts all squadrons into attack mode";
             GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
             msg42 = "<chelp5 for more...";
@@ -2695,7 +2651,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
             msg42 = "Tab-4-4-4-4-7 set cover aircraft attack mode/target";
             GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
-            msg42 = "<creserve 1 4 and <cattack 1 3 to set specific squadrons to stay in reserve OR participate in the attack";
+            msg42 = "<cnormal, <cstrict, <cescort, <cattack, <creserve & <cloiter 1 3 give standing orders to your squadrons (try <chelp4)";
             GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
             msg42 = "Tab-4 menu OR command <cland - release cover fighters to land (IMPORTANT!)";
             GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
@@ -3356,6 +3312,172 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             //Console.WriteLine("LCA #10");
         }
         catch (Exception ex) { Console.WriteLine("COVER: landCoverAircraft (final) ERROR! " + ex.ToString()); }
+    }
+
+    /*************************************************************
+    //COVER AIRGROUP ORDERS - <cnormal, <cstrict, <cescort, <cattack, <creserve, <cloiter
+    //
+    //The player can give standing orders to the individual cover/bomber airgroups that are
+    //flying with them.  Each order can be given for all of the player's airgroups (no #'s at
+    //all) or just for the ones they name, ie "<cstrict 1 4".
+    //
+    //  <cnormal / <cn   - the usual behavior: bombers/sturmoviks stay in formation except when
+    //                     ground attacking, cover stays in place unless directly attacking/defending
+    //  <cstrict / <cst  - ignore all else & just fly in formation with the player
+    //  <cescort / <ce   - CLoD's ESCORT behavior for all a/c types: stay with & defend the player
+    //  <cattack / <ca   - air attack anything reasonably nearby, plus any bombing the player has ordered
+    //  <creserve / <cr  - hold fire & stay in reserve, joined with the player
+    //  <cloiter / <clo  - stay in one place, circling
+    ***************************************************************/
+
+    //Do these orders mean the airgroup should hold its fire (no ground bombing & no air attacks)?
+    public bool ordersHoldFire(CoverAGOrders orders)
+    {
+        return orders == CoverAGOrders.follow || orders == CoverAGOrders.strict || orders == CoverAGOrders.loiter;
+    }
+
+    //Do these orders mean the airgroup should engage nearby enemy aircraft?
+    public bool ordersEngageAir(CoverAGOrders orders)
+    {
+        return orders == CoverAGOrders.attack || orders == CoverAGOrders.normal || orders == CoverAGOrders.escort;
+    }
+
+    //Do these orders mean the airgroup should still run ground/naval bombing attacks on the target
+    //point the player has given it (Knickebein point, bomb drop point, flare point, etc)?
+    public bool ordersBombGround(CoverAGOrders orders)
+    {
+        return orders == CoverAGOrders.attack || orders == CoverAGOrders.normal;
+    }
+
+    //Shared logic for all of the player's airgroup order commands (<cnormal, <cstrict, <cescort,
+    //<cattack, <creserve & <cloiter).  Parses any airgroup #'s out of the command - no #'s at all
+    //means ALL of the player's cover airgroups - & applies the given order to each of them.
+    //Returns the list of airgroups the order was applied to.
+    //Note that the command word(s) themselves need not be stripped out of the message, because
+    //anything that isn't a # is simply ignored when the airgroup #'s are parsed out.
+    public List<AiAirGroup> setCoverAircraftAirGroupsOrders(Player player, string msg, CoverAGOrders order, string orderDescription)
+    {
+        List<AiAirGroup> ret = new List<AiAirGroup>();
+        try
+        {
+            if (player == null || GamePlay == null) return ret;
+
+            string newmsg = msg.Replace(",", " ").Replace("(", " ").Replace(")", " ").Replace("[", " ").Replace("]", " ").Replace("  ", " ").Replace("  ", " ").Replace("  ", " ").Trim(); // remove the comma, parentheses etc
+
+            var indxs = new List<int>();
+            foreach (string word in newmsg.Split(' '))
+            {
+                int indx = -1;
+                try { if (word.Length > 0) indx = Convert.ToInt32(word); }
+                catch (Exception ex) { }
+                if (indx != -1) indxs.Add(indx);
+            }
+
+            int count = 0;
+            string foundIndxs = "";
+            int numFoundIndxs = 0;
+
+            List<AiAirGroup> saveCAAGA = new List<AiAirGroup>(coverAircraftAirGroupsActive.Keys); //copy the keys, so the list can safely change while we set orders
+            foreach (AiAirGroup airGroup in saveCAAGA)
+            {
+                if (airGroup == null) continue;
+                if (!coverAircraftAirGroupsActive.ContainsKey(airGroup)) continue;
+                if (coverAircraftAirGroupsActive[airGroup] != player) continue;
+                if (airGroup.GetItems().Length == 0) continue;
+                AiAircraft aircraft1 = airGroup.GetItems()[0] as AiAircraft;
+                if (aircraft1 == null) continue;
+                count++;
+                if (indxs.Contains(count) || indxs.Count == 0)
+                {
+                    coverAircraftAirGroupsOrders[airGroup] = order;
+                    ret.Add(airGroup);
+                    foundIndxs += count.ToString() + " ";
+                    numFoundIndxs++;
+                }
+            }
+
+            GamePlay.gpLogServer(new Player[] { player }, numFoundIndxs.ToString() + " groups of cover aircraft " + orderDescription + " (#{0})", new object[] { String.Join(" #", foundIndxs.Trim()) });
+        }
+        catch (Exception ex) { Console.WriteLine("Cover setCoverAircraftAirGroupsOrders ERROR: " + ex.ToString()); }
+        return ret;
+    }
+
+    //<cloiter - remember the point each loitering airgroup circles around.  The circling itself is
+    //done by keepAircraftLoitering(), which is called from keepAircraftOnTask_recurs().
+    public Dictionary<AiAirGroup, Point3d> coverAircraftAirGroupsLoiterPoint = new Dictionary<AiAirGroup, Point3d>();
+
+    //Set (or re-set) the point the given airgroups will circle around, to where those a/c are right now.
+    //Called when the <cloiter (<clo) command is given.
+    public void setLoiterPoints(List<AiAirGroup> airGroups)
+    {
+        try
+        {
+            if (airGroups == null) return;
+            foreach (AiAirGroup airGroup in airGroups)
+            {
+                if (airGroup == null) continue;
+                Point3d pos = airGroup.Pos();
+                pos.z = CoverCalcs.checkMinAGL(pos.z, pos);
+                coverAircraftAirGroupsLoiterPoint[airGroup] = pos;
+                Console.WriteLine("Cover: <cloiter - airgroup {0} will loiter around {1:n0} {2:n0}", airGroup.Name(), pos.x, pos.y);
+            }
+        }
+        catch (Exception ex) { Console.WriteLine("Cover setLoiterPoints ERROR: " + ex.ToString()); }
+    }
+
+    //<cloiter - keep the airgroup circling around its loiter point (see setLoiterPoints, above).
+    //A flight plan of 4 points on a circle is laid out, starting from wherever the a/c are now and
+    //turning whichever way the a/c are already turning, so it looks natural & they don't get lost.
+    public void keepAircraftLoitering(Player player, AiAirGroup airGroup)
+    {
+        try
+        {
+            if (airGroup == null || airGroup.GetItems() == null || airGroup.GetItems().Length == 0) return;
+
+            float shiftFactor = getShiftFactor(player);
+            double radius_m = 900 * shiftFactor;   //<cdist adjusts how wide the circle is
+            if (radius_m < 400) radius_m = 400;
+            if (radius_m > 6000) radius_m = 6000;
+
+            Point3d center = airGroup.Pos();
+            if (coverAircraftAirGroupsLoiterPoint.ContainsKey(airGroup)) center = coverAircraftAirGroupsLoiterPoint[airGroup];
+
+            //If the a/c have wandered well away from where they are supposed to be circling - or if there
+            //is no loiter point for them yet - then circle wherever they are now instead
+            if (!coverAircraftAirGroupsLoiterPoint.ContainsKey(airGroup) || CoverCalcs.CalculatePointDistance(airGroup.Pos(), center) > radius_m * 3)
+            {
+                center = airGroup.Pos();
+                center.z = CoverCalcs.checkMinAGL(center.z, center);
+                coverAircraftAirGroupsLoiterPoint[airGroup] = center;
+            }
+
+            //Where are the a/c on the circle?  And are they already turning clockwise or counter-clockwise?
+            //(That is the cross product of the radius vector with the aircraft's velocity vector.)
+            double ang_rad = Math.Atan2(airGroup.Pos().y - center.y, airGroup.Pos().x - center.x);
+            Vector3d vwld = airGroup.Vwld();
+            double cross = (airGroup.Pos().x - center.x) * vwld.y - (airGroup.Pos().y - center.y) * vwld.x;
+            double dir = (cross >= 0) ? 1 : -1;  //+1 = counter-clockwise, -1 = clockwise
+
+            double vel_mps = CoverCalcs.CalculatePointDistance(vwld);
+            if (vel_mps < 55) vel_mps = 55;
+            if (vel_mps > 160) vel_mps = 160;
+            double z_m = CoverCalcs.checkMinAGL(airGroup.Pos().z, airGroup.Pos());
+
+            List<AiAirWayPoint> NewWaypoints = new List<AiAirWayPoint>();
+            for (int leg = 1; leg <= 4; leg++) //4 points, 90 degrees apart, all the way around the circle
+            {
+                double leg_ang_rad = ang_rad + dir * leg * Math.PI / 2;
+                Point3d legPos = new Point3d(center.x + Math.Cos(leg_ang_rad) * radius_m, center.y + Math.Sin(leg_ang_rad) * radius_m, z_m);
+                AiAirWayPoint legWP = new AiAirWayPoint(ref legPos, vel_mps);
+                (legWP as AiAirWayPoint).Action = AiAirWayPointType.NORMFLY;
+                NewWaypoints.Add(legWP);
+            }
+            airGroup.SetWay(NewWaypoints.ToArray());
+            airGroup.setTask(AiAirGroupTask.FLY_WAYPOINT, null); //otherwise the a/c may just ignore the flight plan & keep doing whatever they were doing before
+
+            if (mainmission.ON_TESTSERVER) Console.WriteLine("Cover: <cloiter - {0} circling {1:n0} {2:n0} at radius {3:n0}m", airGroup.Name(), center.x, center.y, radius_m);
+        }
+        catch (Exception ex) { Console.WriteLine("Cover keepAircraftLoitering ERROR: " + ex.ToString()); }
     }
 
     Dictionary<Player, DateTime> lastCheckoutTime_dt = new Dictionary<Player, DateTime>();
@@ -4077,7 +4199,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
         //There is another issue, where we might want bombers on their final run-in do not change/move but maybe we'll have to handle that separately somehow?
         bool coverACContinuingFinalRun = false;
             //if (heavyBomber && orders == CoverAGOrders.attack && (oldTargetPoint.x != -1 || oldTargetPoint.y != -1) && (player == null || player.Place() == null || (player.Place() as AiAircraft).AirGroup() == null)) coverACContinuingFinalRun = true;
-            if (orders == CoverAGOrders.attack && (oldTargetPoint.x != -1 || oldTargetPoint.y != -1) && (player == null || player.Place() == null || (player.Place() as AiAircraft).AirGroup() == null)) coverACContinuingFinalRun = true;
+            if (ordersBombGround(orders) && (oldTargetPoint.x != -1 || oldTargetPoint.y != -1) && (player == null || player.Place() == null || (player.Place() as AiAircraft).AirGroup() == null)) coverACContinuingFinalRun = true;
 
             bool aircraftChangeDisband = false;
             if (!isBomberAllowedCover(player) && !isFighterAllowedCover(player) && !isFighterAllowedCover_wing(player) && !Calcs.isStrikeAC(player) && !isOnRepairMission(player) && !coverACContinuingFinalRun)
@@ -4197,7 +4319,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 
                 //This turns off bombing for the a/c if the player turns it off via the menu
                 BAM_BombAimMode bam = BAM_getplayerBombAimMode_enum(player);
-                if (bam == BAM_BombAimMode.None || orders == CoverAGOrders.follow )
+                if (bam == BAM_BombAimMode.None || !ordersBombGround(orders) )  //no bombing, unless the orders are attack or normal (so <creserve, <cstrict, <cescort & <cloiter all hold their bombs)
                 {
                     bombing = false;
                     newTargetPoint = new Point3d(-1, -1, -1);
@@ -4282,7 +4404,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             AiAirGroup attackingAirGroup = getRandomNearbyEnemyAirGroup(playerAirGroup, 4000, 1000, 2000); //escorts are supposed to be 1000m above the escorted bomber, so definitely need to attack things 1000-2000 feet (333-666m) below those bombers.  Above, add 1000m fighter altitude ot bomber alt. 
 
             //OK, HERE is where we can make the aircraft more follow or more defend the player etc
-            if (attackingAirGroup != null && !isOnRepairMission(player) && orders != CoverAGOrders.follow )
+            if (attackingAirGroup != null && !isOnRepairMission(player) && ordersEngageAir(orders) )  //<cattack/<ca, <cnormal/<cn & <cescort/<ce engage enemy a/c; <creserve/<cr, <cstrict/<cst & <cloiter/<clo hold their fire
             {
                 //Console.WriteLine("3ChangeGoalTarget: {0} " + airGroup.Name() + " to " + player.Name(), airGroup.getTask());
                 //if a heavy bomber with bombs, then don't go on the 
@@ -4397,6 +4519,34 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             }
 
             //Console.WriteLine("Going to Escort Update Waypoints");
+            //The <cstrict, <cescort & <cloiter orders change the way the airgroup flies with the leader.
+            //(Repair/restock missions always fly the simple, fixed config set just above, so they are skipped.)
+            if (!isOnRepairMission(player))
+            {
+                //<cstrict - ignore everything else & just fly in formation with the player
+                if (orders == CoverAGOrders.strict)
+                {
+                    aawpt = AiAirWayPointType.FOLLOW;
+                    task = AiAirGroupTask.DO_NOTHING;
+                    tasktarget = null;
+                    AltDiffPassed_m = -5;   //fly in formation - right at the leader's altitude, plus/minus just a couple of meters
+                    AltDiff_range_m = 2;
+                }
+                //<cloiter - circle around the loiter point that was set when the player gave the order.  This
+                //sets its own flight plan, so there is nothing more to do with this airgroup this time around.
+                else if (orders == CoverAGOrders.loiter)
+                {
+                    keepAircraftLoitering(player, airGroup);
+                    return;
+                }
+                //<cescort - CLoD's ESCORT behavior for all types of cover a/c: stay with & defend the player.
+                //(If an enemy airgroup was nearby, an ATTACK_AIR or DEFENDING task was already set for that, above.)
+                else if (orders == CoverAGOrders.escort && task == AiAirGroupTask.DO_NOTHING)
+                {
+                    aawpt = AiAirWayPointType.ESCORT;
+                }
+            }
+
             EscortUpdateWaypoints(player, airGroup, (player.Place() as AiAircraft).AirGroup(), aawpt, altDiff_m: AltDiffPassed_m, AltDiff_range_m: AltDiffPassed_range_m, nodupe: true);
 
             //only change task if we have specifically indicated something above

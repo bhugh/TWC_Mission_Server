@@ -56,6 +56,8 @@ public class CoverACInfo
     public bool HasTorpedos { get; set; }
     public bool HasDepthCharges { get; set; }
     public bool HasBombs { get; set; }
+    public bool StartedWithCannons { get; set; }
+    public bool HasCannons { get; set; }
     public bool IsHeavyBomber { get; set; }
     public bool IsStrikeAC { get; set; } //fighter-bomber, sturmovik
     public bool IsPlayerStrikeAC { get; set; }
@@ -70,6 +72,8 @@ public class CoverACInfo
         HasTorpedos = false;
         HasDepthCharges = false;
         HasBombs = false;
+        StartedWithCannons = false;
+        HasCannons = false;
         IsHeavyBomber = false;
         IsStrikeAC = false;
         IsPlayerStrikeAC = false;
@@ -78,12 +82,14 @@ public class CoverACInfo
         PlaneType = "";
     }
     public CoverACInfo(double minattackalt_m = 0, bool heavy = false, bool isdivebomber = false,
-         bool hasdepthcharges = false, bool hasbombs = false, bool isheavybomber = false, bool issturmovik = false, bool isplayersturmovik = false, bool isfighter = false){
+         bool hasdepthcharges = false, bool hasbombs = false, bool startedwithcannons = false, bool hascannons = false, bool isheavybomber = false, bool issturmovik = false, bool isplayersturmovik = false, bool isfighter = false){
         MinAttackAlt_m = minattackalt_m;
         Heavy = heavy;
         IsDiveBomber = isdivebomber;
         HasDepthCharges = hasdepthcharges;
         HasBombs = hasbombs;
+        StartedWithCannons = startedwithcannons;
+        HasCannons = hascannons;
         IsHeavyBomber = isheavybomber;
         IsStrikeAC = issturmovik;
         IsPlayerStrikeAC = isplayersturmovik;
@@ -437,7 +443,7 @@ public class CoverMission : AMission, ICoverMission
     {
         if (player == null) return "(none)";
         BAM_BombAimMode bam = BAM_getplayerBombAimMode_enum(player);
-        if (bam == BAM_BombAimMode.None) return "(none; follow you)";
+        if (bam == BAM_BombAimMode.None) return "(no ground target)";
         else return (bam.ToString().Replace('_', ' '));
     }
 
@@ -1165,7 +1171,7 @@ public class CoverMission : AMission, ICoverMission
     public float setShiftFactor(Player player, float shiftFactor)
     {
         if (shiftFactor < 10) shiftFactor = 10;
-        if (shiftFactor > 3000) shiftFactor = 3000;
+        if (shiftFactor > 5000) shiftFactor = 5000;
         if (player != null && player.Name() != null) playerShiftFactor_pct[player.Name()] = shiftFactor;
         return shiftFactor;
     }
@@ -1463,12 +1469,22 @@ public class CoverMission : AMission, ICoverMission
                 int currWay = airGroup.GetCurrentWayPoint();
                 string bomb = " No bombs ";
                 if (isBomberArmed(airGroup)) bomb = " Has bombs ";
+                string cannons = "";
+                if (cannonsEmpty(airGroup)) cannons = " Cannon empty ";
                 string action = "";
                 string targetname = "";
                 string targettype = "";
                 Point3d p = new Point3d(0, 0, 0);
                 if (CurrentWaypoints != null && CurrentWaypoints.Length > 0 && CurrentWaypoints.Length > currWay)
                 {
+                    if  (mainmission.ON_TESTSERVER) foreach (AiWayPoint wp in CurrentWaypoints)
+                    {
+                        string nm = "";
+                        if ((wp as AiAirWayPoint).Target != null) nm = (wp as AiAirWayPoint).Target.Name();
+
+                        Console.WriteLine("ListCoverPosition - all waypoints: currway: {7} currtask: {8} {0} ({1:n0} {2:n0} {3:n0}) {4:n0}, target: {5}, name: {6}", (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z, (wp as AiAirWayPoint).Target, nm, currWay, airGroup.getTask());                        
+
+                    }
                     //If the next waypoint is more interesting than the current one, display that one instead (usually it is "GATTACK_POINT" or such instead of "FOLLOW" or "ESCORT"
 					if (mainmission.ON_TESTSERVER) Console.WriteLine("LCA #10");
                     if (CurrentWaypoints.Length > currWay + 1 && (CurrentWaypoints[currWay + 1] as AiAirWayPoint).Action.ToString().ToUpper().Contains("ATTACK")) currWay++;
@@ -1496,7 +1512,7 @@ public class CoverMission : AMission, ICoverMission
                 action = action.Replace("_", " ");
                 if (action.StartsWith("G")) action = "GND-" + action.Substring(1);
                 if (action.StartsWith("AA")) action = "AIR-" + action.Substring(1);
-                msg += bomb + action;
+                msg += bomb + cannons + action;
 
                 //action for ground attack is either "GND-ATTACK POINT" or "GND-ATTACK TARG"
                 //prior to the re-writing above it was GATTACK_POINT GATTACK_TARG, AATTACK_TARG etc.
@@ -1527,6 +1543,7 @@ public class CoverMission : AMission, ICoverMission
                 }
 
                 bool ordersAreFollow = (coverAircraftAirGroupsOrders.ContainsKey(airGroup) && coverAircraftAirGroupsOrders[airGroup] == CoverAGOrders.follow);
+                bool ordersAreAttack = (coverAircraftAirGroupsOrders.ContainsKey(airGroup) && coverAircraftAirGroupsOrders[airGroup] == CoverAGOrders.attack);
                 double distToTarget_m = CoverCalcs.CalculatePointDistance(p, aircraft.Pos());
 				
 				if (mainmission.ON_TESTSERVER) Console.WriteLine("LCA #14");
@@ -1589,7 +1606,8 @@ public class CoverMission : AMission, ICoverMission
 				if (mainmission.ON_TESTSERVER) Console.WriteLine("LCA #17");
                 //Display some info about aircraft health
                 if (displayHealth) msg += " (" + healthString + ")";
-                if (ordersAreFollow) msg += " [[[RESERVE]]]";
+                if (ordersAreFollow) msg += " [[[JOIN]]]";
+                if (ordersAreAttack) msg += " [[[ATTACK]]]";
                 delay += 0.08; //was .06 but that seemed to cause stuttering?  Maybe needs 0.1 or even more
                 Timeout(delay, () =>
                 {
@@ -2356,9 +2374,9 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             GamePlay.gpLogServer(new Player[] { player }, ">>>Spread factor for your cover aircraft set to " + shiftFactor.ToString("F0") + "%", null);
 
         }
-        else if (msg.StartsWith("<cr"))
+        else if (msg.StartsWith("<cr") || msg.StartsWith("<cj"))
         { //follow - force the AG to follow continuously & not attack
-            string newmsg = msg.Replace("<creserve", "").Replace("<cres", "").Replace("<cr", "").Replace(",", " ").Replace("(", " ").Replace(")", " ").Replace("[", " ").Replace("]", " ").Replace("  ", " ").Replace("  ", " ").Replace("  ", " ").Trim(); // remove the comma, parentheses etc
+            string newmsg = msg.Replace("<creserve", "").Replace("<cres", "").Replace("<cr", "").Replace("<cjoin", "").Replace("<cj", "").Replace(",", " ").Replace("(", " ").Replace(")", " ").Replace("[", " ").Replace("]", " ").Replace("  ", " ").Replace("  ", " ").Replace("  ", " ").Trim(); // remove the comma, parentheses etc
 
             //var agIndex = new Dictionary<int, AiAirGroup>();
             //if (coverAircraftAirGroupsIndexes.ContainsKey(player)) agIndex = coverAircraftAirGroupsIndexes[player];
@@ -2391,9 +2409,9 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 
                 if (indxs.Contains(count) || indxs.Count == 0)
                 { 
-                    //These types are the only ones it make sense to put into reserver
+                    //These types are the only ones it make sense to put into reserve
                     //Also...they only types for which it is implemented
-                    if (acInfo.IsHeavyBomber || acInfo.IsDiveBomber || (acInfo.IsStrikeAC && acInfo.IsPlayerStrikeAC))
+                    //if (acInfo.IsHeavyBomber || acInfo.IsDiveBomber || (acInfo.IsStrikeAC && acInfo.IsPlayerStrikeAC))
                     {
                         coverAircraftAirGroupsOrders[airGroup] = CoverAGOrders.follow;
                         foundIndxs += count.ToString() + " ";
@@ -3186,6 +3204,14 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
     }
 	
 	    //Armed meaning, has bombs, torpedos, or whatever else it can drop (not guns/cannons to shoot, that's different)
+
+    public bool cannonsEmpty(AiAirGroup airGroup)
+    {
+        if (airGroup == null) return false;
+        if (!coverACInfo.ContainsKey(airGroup)) return false;
+        if (coverACInfo[airGroup].StartedWithCannons && !airGroup.hasCourseCannon()) return true;
+        return false;
+    }        
     public bool isStrikeAircraftWithBombs(AiAirGroup airGroup)
     {
         if (airGroup == null) return false;
@@ -3627,10 +3653,10 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 
 
 				double playerFrontDistance_m = GamePlay.gpFrontDistance(3 - player.Army(), actor.Pos().x, actor.Pos().y);
-				int minFrontDistance_km = 2; //was 15km, to prevent ppl from just sitting @ the front line & directing cover bombers.  But now trying 2 since they also have to be flying (different from previous where they could just sit at an airport close to the front lines & direct things).
+				public static int minFrontDistance_km = 2; //was 15km, to prevent ppl from just sitting @ the front line & directing cover bombers.  But now trying 2 since they also have to be flying (different from previous where they could just sit at an airport close to the front lines & direct things).
 				
 				
-				if (spawnGroup == 0 && playerFrontDistance_m < minFrontDistance_km*1000)
+				if (spawnGroup == 0 && playerFrontDistance_m < minFrontDistance_km*1000 && !mainmission.ON_TESTSERVER)
                 {
                     Timeout(0.5, () => {  GamePlay.gpLogServer(new Player[] { player }, "Sorry, you cannot bring in cover aircraft closer than " + minFrontDistance_km.ToString("N0") + " km to the front line - it is too dangerous for them.", new object[] { }); });
                     //else if (!spawnInFriendlyTerritory) Timeout(0.5, () => { GamePlay.gpLogServer(new Player[] { player }, "Sorry, you can't call in cover at an enemy airfield.", new object[] { }); });
@@ -3811,6 +3837,8 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                                 acInfo.IsStrikeAC = isStrikeAC;
                                 acInfo.IsPlayerStrikeAC = Calcs.isStrikeAC(player.Place() as AiAircraft);
                                 coverACInfo[newAirgroup] = acInfo;
+                                acInfo.StartedWithCannons = newAirgroup.hasCourseCannon();
+                                acInfo.HasCannons = newAirgroup.hasCourseCannon();
 
                                 double delay = 11.2354 + ran.NextDouble() * 2;
                                 //Console.WriteLine("1Heavybomber init: {0} {1} " + newAirgroup.Name() + " to " + player.Name(), heavyBomber, delay);
@@ -4022,6 +4050,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             else if (coverAircraftAirGroupsReleased[airGroup])
             {
                 coverAircraftAirGroupsActive.Remove(airGroup);
+                EscortMakeLand(airGroup, null);
                 return;
             }
 
@@ -4029,14 +4058,15 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
         if (coverAircraftAirGroupsOrders.Keys.Contains(airGroup)) orders = coverAircraftAirGroupsOrders[airGroup];
 
 
-        //This is to let any bombers on their bomb runs just continue it for 5 more minutes after the main a / c(live pilot) has been
+        //This is to let any coverAC/bombers on their bomb runs just continue it for 5 more minutes after the main a / c(live pilot) has been
         //killed or crashed.  So they will continue and maybe hit the target for several minutes, then be released.  Rather than just quitting instantly when the player dies.
         //There is another issue, where we might want bombers on their final run-in do not change/move but maybe we'll have to handle that separately somehow?
-        bool bombersContinuingFinalRun = false;
-            if (heavyBomber && orders == CoverAGOrders.attack && (oldTargetPoint.x != -1 || oldTargetPoint.y != -1) && (player == null || player.Place() == null || (player.Place() as AiAircraft).AirGroup() == null)) bombersContinuingFinalRun = true;
+        bool coverACContinuingFinalRun = false;
+            //if (heavyBomber && orders == CoverAGOrders.attack && (oldTargetPoint.x != -1 || oldTargetPoint.y != -1) && (player == null || player.Place() == null || (player.Place() as AiAircraft).AirGroup() == null)) coverACContinuingFinalRun = true;
+            if (orders == CoverAGOrders.attack && (oldTargetPoint.x != -1 || oldTargetPoint.y != -1) && (player == null || player.Place() == null || (player.Place() as AiAircraft).AirGroup() == null)) coverACContinuingFinalRun = true;
 
             bool aircraftChangeDisband = false;
-            if (!isBomberAllowedCover(player) && !isFighterAllowedCover(player) && !isFighterAllowedCover_wing(player) && !Calcs.isStrikeAC(player) && !isOnRepairMission(player) && !bombersContinuingFinalRun)
+            if (!isBomberAllowedCover(player) && !isFighterAllowedCover(player) && !isFighterAllowedCover_wing(player) && !Calcs.isStrikeAC(player) && !isOnRepairMission(player) && !coverACContinuingFinalRun)
             {
                 // Could use this to allow people ot jump in a/c & defend their planes, later in the mission.  Maybe. : Tuple<int, string, string, DateTime> item = supplymission.aircraftCheckedOutInfo[actor];
                 //This could be made tighter . . . right now they can still jump in a bomber, grab cover, then switch to fighter-bomber to fly them.
@@ -4061,7 +4091,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 if (leadAircraft == null)
                 {
 
-                    if (bombersContinuingFinalRun)
+                    if (coverACContinuingFinalRun)
                     {
                         //This is to let any bombers on their bomb runs just continue it for 10 more minutes after the main a/c (live pilot) has been
                         //killed or crashed.  So they will continue and maybe hit the target, then be released.
@@ -4071,6 +4101,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                           {
                               coverAircraftAirGroupsTargetPoint[airGroup] = new Point3d(-1, -1, -1);
                               coverAircraftAirGroupsReleased[airGroup] = true;
+                              EscortMakeLand(airGroup, null);
                               turnOffRegularDisplay_listPositionCurrentCoverAircraft(player);
                           });
                     }
@@ -4094,7 +4125,11 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 if (isPlayerStrikeAC && isStrikeAC) acType = mainmission.statsmission.stb_StrikeName + " aircraft";
 
                 if (coverAircraftAirGroupsReleased.ContainsKey(airGroup) && coverAircraftAirGroupsReleased[airGroup] && player != null) GamePlay.gpLogServer(new Player[] { player }, "You are too far from your {1}. The {0} group of {1} have been instructed to land at the nearest friendly airport.", new object[] { airGroup.Name(), acType });
-                if (coverAircraftAirGroupsReleased.ContainsKey(airGroup) && coverAircraftAirGroupsReleased[airGroup]) return; //Don't keep flying the a/c (except to land it) except for the short time when bombersContinuingFinalRun is true
+                if (coverAircraftAirGroupsReleased.ContainsKey(airGroup) && coverAircraftAirGroupsReleased[airGroup]) {
+                    EscortMakeLand(airGroup, null);
+                    return; //Don't keep flying the a/c (except to land it) except for the short time when coverACContinuingFinalRun is true
+                     
+                }
             }
 
             //Console.WriteLine("Cover KeepAconTask: 778789");
@@ -4132,7 +4167,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 
                 bool playerTargetPointHasChanged = hasPlayerCurrentTargetPointChanged(player, newTargetPoint);
 
-                if (bombersContinuingFinalRun) newTargetPoint = oldTargetPoint; //In case of the bombers continuing their attack after player death, they don't get a NEW point from the player, but we need to continue sending them to the same OLD point just in case they need a new actor etc etc etc near that point
+                if (coverACContinuingFinalRun) newTargetPoint = oldTargetPoint; //In case of the bombers continuing their attack after player death, they don't get a NEW point from the player, but we need to continue sending them to the same OLD point just in case they need a new actor etc etc etc near that point
 
                 double oldToNewTargetPointDistance_m = CoverCalcs.CalculatePointDistance(oldTargetPoint, newTargetPoint);
 
@@ -4206,7 +4241,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                     if (attacking) return; //if attacking is false that means for example no GROUND ENEMY was found, so it is not attacking anything, so we should keep it following or whatever else is normal
                 }
                 //if (mainmission.ON_TESTSERVER) Console.WriteLine("KAOTXX3 " + DateTime.UtcNow.ToString("T.fffffff"));
-                if (bombersContinuingFinalRun) return; //we never let bombers continuing final run move on to the next part where they escort or fly with the player, since the player DOESN'T EXIST ANY MORE!
+                if (coverACContinuingFinalRun) return; //we never let bombers continuing final run move on to the next part where they escort or fly with the player, since the player DOESN'T EXIST ANY MORE!
             }
 
             //Console.WriteLine("Cover KeepAconTask: 8");
@@ -4232,7 +4267,8 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             //AltDiffBomber_m: 25, AltDiffBomber_range_m
             AiAirGroup attackingAirGroup = getRandomNearbyEnemyAirGroup(playerAirGroup, 4000, 1000, 2000); //escorts are supposed to be 1000m above the escorted bomber, so definitely need to attack things 1000-2000 feet (333-666m) below those bombers.  Above, add 1000m fighter altitude ot bomber alt. 
 
-            if (attackingAirGroup != null && !isOnRepairMission(player))
+            //OK, HERE is where we can make the aircraft more follow or more defend the player etc
+            if (attackingAirGroup != null && !isOnRepairMission(player) && orders != CoverAGOrders.follow )
             {
                 //Console.WriteLine("3ChangeGoalTarget: {0} " + airGroup.Name() + " to " + player.Name(), airGroup.getTask());
                 //if a heavy bomber with bombs, then don't go on the 
@@ -4253,11 +4289,12 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 }
                 else
                 {
-                    airGroup.setTask(AiAirGroupTask.ATTACK_AIR, attackingAirGroup);
+                    //airGroup.setTask(AiAirGroupTask.ATTACK_AIR, attackingAirGroup);
                     task = AiAirGroupTask.ATTACK_AIR;
                     tasktarget = attackingAirGroup;
                     airGroup.changeGoalTarget(attackingAirGroup);
-                    //Console.WriteLine("4ChangeGoalTarget (after): {0} " + airGroup.Name() + " to " + player.Name(), airGroup.getTask());
+                    airGroup.setTask(task, attackingAirGroup); 
+                    Console.WriteLine("4ChangeGoalTarget (after): {0} target: {1} for " + airGroup.Name() + " of " + player.Name(), airGroup.getTask(), attackingAirGroup.Name());
                     aawpt = AiAirWayPointType.ESCORT; //THIS HELPS MAKE THEM DEFEND THE MAIN A/C
                 }
             }
@@ -4356,7 +4393,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 airGroup.setTask(task, tasktarget);
             }
 
-            //Console.WriteLine("8ChangeTask(after): {0} {1} {2} " + airGroup.Name() + " to " + player.Name(), airGroup.getTask(), task.ToString(), tasktarget.ToString());            
+            Console.WriteLine("8ChangeTask(after): task: {0} {1} tasktarget: {2} " + airGroup.Name() + " to " + player.Name(), airGroup.getTask(), task.ToString(), tasktarget.ToString());            
 
             //Console.WriteLine("6ChangeGoalTarget: {0} " + airGroup.Name() + " to " + player.Name(), airGroup.getTask());
             //if (mainmission.ON_TESTSERVER) Console.WriteLine("KAOTXX4 " + DateTime.UtcNow.ToString("T.fffffff"));
@@ -4395,365 +4432,435 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
     //with this AC to send it to newe destinations OR to make it attack any nearby enemies etc
     public string Stb_LoadSubAircraft(Point3d loc, string type = "SpitfireMkIa_100oct", string callsign = "26", string hullNumber = "3", string serialNumber = "001", string regiment = "gb02", string fuelStr = "", string weapons = "", double velocity_mps = 0, string fighterbomber = "", string skin_filename = "", string delay_sec = "", string escortedGroup = "", int numAC = 2, string formation = "VIC3", Player player = null, Vector3d? vwld = null, bool fromCover = true, Point3d? loc2 = null, int requestedNumInFlight = 0, int army = 0, bool exactPos = false)
     {
-        /*  //sample .mis file with parked a/c
-         *  [AirGroups]
-            BoB_RAF_F_141Sqn_Early.01
-            [BoB_RAF_F_141Sqn_Early.01]
-            Flight0  1f
-            Class Aircraft.SpitfireMkIa_100oct
-            Formation VIC3
-            CallSign 26
-            Fuel 100
-            Weapons 1
-            SetOnPark 1
-            Skill 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
-            [BoB_RAF_F_141Sqn_Early.01_Way]
-            TAKEOFF 76923.96 179922.36 0 0 
-      Possible Formation values;
-        VIC
-        VIC3
-        LINEABREAST
-        ECHELONLEFT
-        ECHELONRIGHT
-        LINEASTERNplayer
+        try {
+            /*  //sample .mis file with parked a/c
+            *  [AirGroups]
+                BoB_RAF_F_141Sqn_Early.01
+                [BoB_RAF_F_141Sqn_Early.01]
+                Flight0  1f
+                Class Aircraft.SpitfireMkIa_100oct
+                Formation VIC3
+                CallSign 26
+                Fuel 100
+                Weapons 1
+                SetOnPark 1
+                Skill 0.3 0.3 0.3 0.3 0.3 0.3 0.3 0.3
+                [BoB_RAF_F_141Sqn_Early.01_Way]
+                TAKEOFF 76923.96 179922.36 0 0 
+        Possible Formation values;
+            VIC
+            VIC3
+            LINEABREAST
+            ECHELONLEFT
+            ECHELONRIGHT
+            LINEASTERNplayer
 
-        VIC shows up for Blenheim while VIC3 shows up for JU88 in FMB.  Not sure the practical different between them.  But in game, using vic for blenheim gives an error and no planes, while using it for JU88 gives a finger-4 like formation.  So . . .   
-        VIC for JU88 allowed 4 planes max
+            VIC shows up for Blenheim while VIC3 shows up for JU88 in FMB.  Not sure the practical different between them.  But in game, using vic for blenheim gives an error and no planes, while using it for JU88 gives a finger-4 like formation.  So . . .   
+            VIC for JU88 allowed 4 planes max
 
 
 
-          */
-        if (GamePlay == null) return "";
-
-        if (army == 0 & player is object) army = player.Army();
-
-        //default spawn location is Bembridge, landed, 0 mph & on the ground
-        string locx = "76923.96";
-        //string locy = "179922.36"; //real Bembridge location
-        string locy = "178322.36"; //1600 meters off Bembridge
-        string locz = "0";
-        string vel = "0";
-
-        string loc2x = "72923.96";
-        string loc2y = "172322.36"; //1600 meters off Bembridge
-        string loc2z = "1000";
-
-        // The letters/numbers specify the number of a/c within the flight. The ID of the air unit contains the number of flights in a "bit mask" ("name of the air unit"."bit mask with number of flights")
-        // For # of aircraft allowed in different types of units, see: https://theairtacticalassaultgroup.com/forum/showthread.php?t=32433&p=349248#post349248
-        /*
-         *  e.g. LW fighters have 3 flights of 4 a/c
-            LW bombers have 3 flights of 3 a/c
-            RAF fighters (early) 2* flights of 6 a/c
-            RAF fighters (late) 3 flights of 4 a/c
-            RAF bombers 2* flights of 6 a/c
-            Italian fighter and bombers 3* flights of 3 a/c
             */
-        if (numAC < 1) numAC = 1;
-        
-        if (army == 1 && numAC > 24) numAC = 24; //4 flights of 6 is the max red.  (Seems to do`max for Red, in reality. Not sure about Blue.)
-        if (army == 2 && numAC > 24) numAC = 24; //6 flights of 4 is the max for blue.  (not sure if more might be theoretically possible.)
-        
-        int numInFlight = 6;
-        if (army == 2) numInFlight = 4;  //max 6 in flight for red, 4 in flight for blue.  Not sure why!
-        if (requestedNumInFlight > 0 && requestedNumInFlight <= numInFlight) numInFlight = requestedNumInFlight;
+            if (GamePlay == null) return "";
 
-        int hullNumber_int = 1;
-        try
-        {
-            hullNumber_int = Convert.ToInt32(hullNumber);
-        }
-        catch
-        {
-            hullNumber_int = 1;
-        }
-        //if (hullNumber_int < 1) hullNumber_int = 1; //sanity check; not sure on exact highest allowed number here  //OK, CloD seems to allow any neg or positive integer so we're leaving it at that
+            if (army == 0 & player is object) army = player.Army();
 
-        //Ok this is wierd. But if aiaircraft group spawn-in point is near or in the middle of the airport, then CLOD seems to use the
-        //built-in spawn points for that airport, regardless of what you have put in place.
-        //But if the given spawn-in point is like a thousand or a couple thousand meters away, then it finds the nearest airport AND uses the airdrome points that you have created in FMB
-        //So, we're going to try it.
+            //default spawn location is Bembridge, landed, 0 mph & on the ground
+            string locx = "76923.96";
+            //string locy = "179922.36"; //real Bembridge location
+            string locy = "178322.36"; //1600 meters off Bembridge
+            string locz = "0";
+            string vel = "0";
 
-        //TODO: What we shoudl really do, if this idea works, is to #1. find the nearest airport,  #2, move our loc to 2000 meters or whatever away from it. #3. Make sure that target airport is still our nearest airport
-        //loc.z = 150; //the a/c always start low, as though they have just taken off
-        Console.WriteLine("Stb_LoadSubAircraft.  Loc before: {0:F0} {1:F0} {2:F0}", loc.x, loc.y, loc.z);
-        if (loc.x != 0 && loc.y != 0 && loc.z != 0)
-        {
-            locx = (loc.x - 1000).ToString("F2"); //1000 m off the actual location
-            locy = (loc.y - 1600).ToString("F2"); //1600 m off the actual location
-            if (exactPos)
-            {
-                locx = (loc.x).ToString("F2"); //1000 m off the actual location
-                locy = (loc.y).ToString("F2"); //1600 m off the actual location
-            }
+            string loc2x = "72923.96";
+            string loc2y = "172322.36"; //1600 meters off Bembridge
+            string loc2z = "1000";
 
-            if (velocity_mps > 0)
-            {
-                locz = loc.z.ToString("F2");
-                vel = velocity_mps.ToString("F2");
-            }
-            else
-            {
-                locz = "0";
-                vel = "0";
-            }
-        }
-
-        Console.WriteLine("Stb_LoadSubAircraft.  Loc after: {0} {1} {2}", locx, locy, locz);
-
-        if (loc2.HasValue)
-        {
-            Point3d l2 = loc2.Value;
-            loc2x = (l2.x).ToString("F2"); 
-            loc2y = (l2.y).ToString("F2"); 
-            loc2z = (l2.z).ToString("F2");
+            // The letters/numbers specify the number of a/c within the flight. The ID of the air unit contains the number of flights in a "bit mask" ("name of the air unit"."bit mask with number of flights")
+            // For # of aircraft allowed in different types of units, see: https://theairtacticalassaultgroup.com/forum/showthread.php?t=32433&p=349248#post349248
+            /*
+            *  e.g. LW fighters have 3 flights of 4 a/c
+                LW bombers have 3 flights of 3 a/c
+                RAF fighters (early) 2* flights of 6 a/c
+                RAF fighters (late) 3 flights of 4 a/c
+                RAF bombers 2* flights of 6 a/c
+                Italian fighter and bombers 3* flights of 3 a/c
+                */
+            if (numAC < 1) numAC = 1;
             
-        }
+            if (army == 1 && numAC > 24) numAC = 24; //4 flights of 6 is the max red.  (Seems to do`max for Red, in reality. Not sure about Blue.)
+            if (army == 2 && numAC > 24) numAC = 24; //6 flights of 4 is the max for blue.  (not sure if more might be theoretically possible.)
+            
+            int numInFlight = 6;
+            if (army == 2) numInFlight = 4;  //max 6 in flight for red, 4 in flight for blue.  Not sure why!
+            if (requestedNumInFlight > 0 && requestedNumInFlight <= numInFlight) numInFlight = requestedNumInFlight;
 
-        //rotate the rnum from .02 through .49.  Recollection is >49 is trouble for some reason but that COULD be wrong.  .01 is presumably
-        //used by the main pilot.  In experience running it, squadron number 29 was trouble already.  It might depend on regiment etc.
-        //We have been getting errors related to duplicate regiment numbers.  PResumably there is already a .01, the player.
-        //Haven't seen these errors before?  2021/07
-        squadNum++;
-        if (squadNum > 9) squadNum = 2;
-        if (squadNum < 2) squadNum = 2;
-
-        string rnumb = string.Format(".{0:D2}", squadNum);
-        //was always ".01";
-        string cover_add = "_cover"; //adding _cover MIGHT cause problems but it is a way we can ID the cover squadrons to movebomb, so it doesn't disturb them
-        if (!fromCover) cover_add = "";
-
-        string regiment_isec = regiment + rnumb + cover_add; 
-        Console.WriteLine("<cover: regiment & number: " + regiment_isec);
-
-        ISectionFile f = GamePlay.gpCreateSectionFile();
-        string s = "";
-        string k = "";
-        string v = "";
-
-        s = "AirGroups";
-        k = regiment_isec; v = ""; f.add(s, k, v);
-        s = regiment_isec;
-        //k = "Flight0"; v = hullNumber_int.ToString(); f.add(s, k, v);
-
-        int numACcreated = 0;
-
-        for (int flight = 0; flight < 4; flight++)
-        {
-
-            v = "";
-            for (int i = 1; i <= numInFlight; i++)
+            int hullNumber_int = 1;
+            try
             {
-                numACcreated++;
-                if (numACcreated > numAC) break;
-                if (flight == 0) v += i.ToString() + " "; // flight0 1 2 3
-                else v += flight.ToString() + i.ToString() + " ";             // flight1 11 12 13  ... 
-
-                //Numbers in this table flight0 are displayed as numbers or letters on the fuselage
-                /*                     
-                * The number/letter is displayed on the fuselage. It doesn't really matter if you enter a number or a letter as the air unit type defines if a latter or number is displayed in-game (RAF = letter, LW fighter = number, LW bomber = letter). If you enter a number it is translated to a letter or reverse ( A = 1, B = 2 ... or 1 = A, B = 2, ...). IIRC for LW units you can also enter some fency symbols ("<", "<O") to mimic Stab a/c, I think there's a table in the original user manual that lists the allowed symbols.
-                * https://theairtacticalassaultgroup.com/forum/showthread.php?t=32433&p=349248#post349248
-                * */
-
+                hullNumber_int = Convert.ToInt32(hullNumber);
             }
-            if (v.Length > 0)
+            catch
             {
-                k = "Flight" + flight.ToString();
-                f.add(s, k, v);  //add "1 2 3 4 " . . . or similar, depending on how many a/c requested in one flight
+                hullNumber_int = 1;
             }
-            //Console.WriteLine("CoverCreate: Flight0: " + v);
-        }
-        //Our little trick to allow torpedo & herman models of H-6.
-        //We are safe to do this here because of the "else if"
-        string typeTemp = type;
-        if (type.Contains("He-111H-6_Trop_torpedo") || type.Contains("He-111H-6_Trop_Hermann1000kg")) typeTemp = "tobruk:Aircraft.He-111H-6_Trop";
-        else if (type.Contains("He-111H-6_torpedo") || type.Contains("He-111H-6_Hermann1000kg")) typeTemp = "tobruk:Aircraft.He-111H-6";
+            //if (hullNumber_int < 1) hullNumber_int = 1; //sanity check; not sure on exact highest allowed number here  //OK, CloD seems to allow any neg or positive integer so we're leaving it at that
 
-        //k = "Class"; v = "Aircraft." + type; f.add(s, k, v);
-        //Tobruk, now we have to include the bob: tobruk: stuff and airplane.  lbahblabhalbh
-        k = "Class"; v = typeTemp; f.add(s, k, v);
-        k = "Formation"; v = formation; f.add(s, k, v);
-        k = "CallSign"; v = callsign; f.add(s, k, v);
-        //k = "Fuel"; v = fuel.ToString(); f.add(s, k, v);
-        //k = "Weapons"; v = weapons; f.add(s, k, v);
-		
-		bool isBlenheim = type.Contains("Blenheim");
-		
-		if (isBlenheim) fuelStr ="90"; //trying to make Blennies have a heavier load so their performance is not so crazy
-		
+            //Ok this is wierd. But if aiaircraft group spawn-in point is near or in the middle of the airport, then CLOD seems to use the
+            //built-in spawn points for that airport, regardless of what you have put in place.
+            //But if the given spawn-in point is like a thousand or a couple thousand meters away, then it finds the nearest airport AND uses the airdrome points that you have created in FMB
+            //So, we're going to try it.
 
-        f = Stb_AddLoadoutForPlane(f, s, type, fighterbomber, weapons, delay_sec, fuelStr);
-
-
-        /* if (type.Contains("Spitfire") || type.Contains("Hurricane"))  //We'll have to figure out what to do for DE aircraft, blennies, etc . . . 
-        {
-            f.add(s, "Belt", "_Gun03 Gun.Browning303MkII MainBelt 11 11 9 11");
-            f.add(s, "Belt", "_Gun06 Gun.Browning303MkII MainBelt 9 11 11 11");
-            f.add(s, "Belt", "_Gun00 Gun.Browning303MkII MainBelt 11 9 11 11 11 11 10");
-            f.add(s, "Belt", "_Gun01 Gun.Browning303MkII MainBelt 9 11 11 11");
-            f.add(s, "Belt", "_Gun07 Gun.Browning303MkII MainBelt 9 11 11 11 10 11 11");
-            f.add(s, "Belt", "_Gun02 Gun.Browning303MkII MainBelt 11 11 9");
-            f.add(s, "Belt", "_Gun05 Gun.Browning303MkII MainBelt 11 11 9 11");
-            f.add(s, "Belt", "_Gun04 Gun.Browning303MkII MainBelt 11 11 11 9");
-        } */
-		
-		
-		
-        int numFlightsCreated = 0;
-        numACcreated = 0;
-        for (int flight = 0; flight < 4; flight++)
-        {
-            for (int i = 0; i < numInFlight; i++)
+            //TODO: What we shoudl really do, if this idea works, is to #1. find the nearest airport,  #2, move our loc to 2000 meters or whatever away from it. #3. Make sure that target airport is still our nearest airport
+            //loc.z = 150; //the a/c always start low, as though they have just taken off
+            Console.WriteLine("Stb_LoadSubAircraft.  Loc before: {0:F0} {1:F0} {2:F0}", loc.x, loc.y, loc.z);
+            if (loc.x != 0 && loc.y != 0 && loc.z != 0)
             {
-                numACcreated++;
-                if (numACcreated > numAC) break;
+                locx = (loc.x - 1000).ToString("F2"); //1000 m off the actual location
+                locy = (loc.y - 1600).ToString("F2"); //1600 m off the actual location
+                if (exactPos)
+                {
+                    locx = (loc.x).ToString("F2"); //1000 m off the actual location
+                    locy = (loc.y).ToString("F2"); //1600 m off the actual location
+                }
 
-                string istr = i.ToString();
-                if (flight > 0) istr = flight.ToString() + istr;
+                if (velocity_mps > 0)
+                {
+                    locz = loc.z.ToString("F2");
+                    vel = velocity_mps.ToString("F2");
+                }
+                else
+                {
+                    locz = "0";
+                    vel = "0";
+                }
+            }
 
-                //string[] defSkins = { "default.jpg", "default.jpg", "default.jpg", "white1.jpg", "white2.jpg", "white3.jpg", "white1.jpg", "white2.jpg", "white3.jpg" };
-                string[] defSkins = { "default.jpg" }; //disabling all skins now due to lockups/stuttering/slideshow when aircraft spawn in. 2021-12
-                 string defaultSkin = CoverCalcs.randSTR(defSkins);
+            Console.WriteLine("Stb_LoadSubAircraft.  Loc after: {0} {1} {2}", locx, locy, locz);
 
-                f.add(s, "Serial" + istr, serialNumber + istr);
-                if (skin_filename.Length > 0) f.add(s, "Skin" + istr, skin_filename);
-                else f.add(s, "Skin" + istr, defaultSkin);  //Not sure if this file needs to be in the relevant a/c folder Documents\1C SoftClub\il-2 sturmovik cliffs of dover - MOD\PaintSchemes\Skins\MYAIRCRAFT of the user, the server, or what.  Also don't know how to find out which skin the player is currently using
-
-
-                //List<string> rlist = new List<string>();
-                string[] rlist = new string[8];
-
-                bool isBomber = isHeavyBomber(type);
+            if (loc2.HasValue)
+            {
+                Point3d l2 = loc2.Value;
+                loc2x = (l2.x).ToString("F2"); 
+                loc2y = (l2.y).ToString("F2"); 
+                loc2z = (l2.z).ToString("F2");
                 
-
-                for (int j = 0; j < 8; j++)
-                {
-                    double r = 0.9;
-                    if (j == 3)
-                    {
-                        r = ((ran.NextDouble() * ran.NextDouble()) * (ran.Next(2) * 2.0 - 1.0)) / 10.0 + 9.0 / 10.0; //number between 0.8 & 1 but weighted towards the center of that range.  j==3 means the aerial gunnery skill.
-                        //was: r = ((ran.NextDouble() * ran.NextDouble()) * (ran.Next(2) * 2.0 - 1.0)) / 8.0 + 7.0 / 8.0; //number between 0.75 & 1 but weighted towards the center of that range.  j==3 means the aerial gunnery skill.
-                        //was :if (isBomber) r = ((ran.NextDouble() * ran.NextDouble()) * (ran.Next(2) * 2.0 - 1.0)) / 16.0 + 15.0 / 16.0; //number between 0.875 & 1 but weighted towards the center of that range.  j==3 means the aerial gunnery skill.
-                        if (isBomber) r = ((ran.NextDouble() * ran.NextDouble()) * (ran.Next(2) * 2.0 - 1.0)) / 32.0 + 31.0 / 32.0; //number between 0.9375 & 1 but weighted towards the center of that range.  j==3 means the aerial gunnery skill.
-                        //improving aiming accuracy of bombers, also fighter-bombers who might strafe etc
-                    }
-                    else r = ((ran.NextDouble() * ran.NextDouble()) * (ran.Next(2) * 2.0 - 1.0)) / 4.0 + 3.0 / 4.0; //number between 0.5 & 1 but weighted towards the center of that range
-                    r = Math.Sqrt(r); //Tobruk Boost to BLUE cover smartness but still not quite as good as RED  sqrt .5 = .71; sqrt .75 = .87
-					if (isBlenheim) {
-						//Turn down basic flying skill; much moreso if they are 'cover' vs 'bomber'
-						if ( j == 0 && isBomber ) r = (r - 0.2).Clamp(0.3,0.6);
-						if ( j == 0 && !isBomber ) r = (r - 0.4).Clamp(0.23,0.45);
-						
-						//turn down even more for advanced flying skill
-						if ( j == 1 && isBomber ) r = (r - 0.3).Clamp(0.2,0.4);
-						if ( j == 1 && !isBomber ) r = (r - 0.5).Clamp(0.1,0.3);
-						
-						//similarly for tactics
-						if ( j == 4 && isBomber ) r = (r - 0.3).Clamp(0.3, 0.5);
-						if ( j == 4 && !isBomber ) r = (r - 0.4).Clamp(0.2, 0.4);
-						
-					}
-
-
-                    if (army == 1) //So Red bomber pilots have been complaining that Blue fighter cover is more effective than theirs.  This is probably true given (especially) the formidable AI ability of a pair of 110 fighters just due to CloD's built-in 110 AI algorithms.  So . . . trying to bump up Red cover fighter abilities a little to compensate.
-                    {
-                        if (j == 3) r = ((ran.NextDouble() * ran.NextDouble()) * (ran.Next(2) * 2.0 - 1.0)) / 16.0 + 15.0 / 16.0; //number between 0.9375 & 1 but weighted towards the center of that range.  j==3 means the aerial gunnery skill.
-                        else r = ((ran.NextDouble() * ran.NextDouble()) * (ran.Next(2) * 2.0 - 1.0)) / 8.0 + 7.0 / 8.0; //number between 0.75 & 1 but weighted towards the center of that range
-                    }
-                    rlist[j] = r.ToString("F2");
-                }
-				
-				rlist[7] = "0.98"; //was 0.98; trying to make the a/c follow orders better
-				
-				if (isBomber) {   rlist[7] = "0.99"; } //was 0.98; trying to make the heavy bomber a/c follow orders better
-				
-				//Sunderlands drive like goofballs & drop their bombs willy-nilly for no reason.  So 
-				//trying to stop that by changing bravery & discipline to 1
-				if (type.Contains("Sunderland") ) {
-					rlist[6] = "1";
-					rlist[7] = "1";
-				}
-                //k = "Skill0"; v = string.Format("{0:F1} {0:F1} {0:F1} {0:F1} {0:F1} {0:F1} {0:F1} {0:F1}", r); ; f.add(s, k, v);
-                //Skills: Basic flying, advanced flying, awareness, aerial gunnery, tactics, vision, bravery, discipline
-                //2020-01-22 - CHANGING DISCIPLINE SKILL to 0.98, to see if they will stay in formation more
-                //Might need to do somethign different for fighter vs bomber pilots?
-                //Also bravery to 0.1 as an experiment, and awareness to 0.3
-                //And so, that didn't seem to do much.
-                try
-                {
-                    k = "Skill" + istr; v = string.Format("{0:n3} {1:n3} {2:n3} {3:n3} {4:n3} {5:n3} {6:n3} {7:n3}", rlist); f.add(s, k, v);
-                }
-                catch (Exception ex) { Console.WriteLine("<cover makesectionfile SKILL ERROR: " + ex.ToString()); }
-                //Console.WriteLine("CoverCreate: Skill: " + v);
-                //k = "Skill0"; v = string.Format("{0:F1} {0:F1} 0.3 {0:F1} {0:F1} {0:F1} {0:F1} 0.98", r); f.add(s, k, v);
-                // "0.7 0.7 0.7 0.7 0.7 0.7 0.7 0.7"; 
-                //r = ((ran.NextDouble() * ran.NextDouble()) * (ran.Next(2) * 2.0 - 1.0)) / 4.0 + 3.0 / 4.0; //number between 0.5 & 1 but weighted range
-                //skill = r;
-                //k = "Skill1"; v = string.Format("{0:F1} {0:F1} {0:F1} {0:F1} {0:F1} {0:F1} {0:F1} {0:F1}", r); f.add(s, k, v);
-                //k = "Skill1"; v = string.Format("{0:F1} {0:F1} 0.3 {0:F1} {0:F1} {0:F1} {0:F1} 0.98", r); f.add(s, k, v);
-                //k = "Skill1"; v = "0.6 0.6 0.6 0.6 0.6 0.6 0.6 0.6"; f.add(s, k, v);
-
             }
-            numFlightsCreated++;
-        }
-        if (velocity_mps <= 0)
+
+            //rotate the rnum from .02 through .49.  Recollection is >49 is trouble for some reason but that COULD be wrong.  .01 is presumably
+            //used by the main pilot.  In experience running it, squadron number 29 was trouble already.  It might depend on regiment etc.
+            //We have been getting errors related to duplicate regiment numbers.  PResumably there is already a .01, the player.
+            //Haven't seen these errors before?  2021/07
+            squadNum++;
+            if (squadNum > 9) squadNum = 2;
+            if (squadNum < 2) squadNum = 2;
+
+            string rnumb = string.Format(".{0:D2}", squadNum);
+            //was always ".01";
+            string cover_add = "_cover"; //adding _cover MIGHT cause problems but it is a way we can ID the cover squadrons to movebomb, so it doesn't disturb them
+            if (!fromCover) cover_add = "";
+
+            string regiment_isec = regiment + rnumb + cover_add; 
+            Console.WriteLine("<cover: regiment & number: " + regiment_isec);
+
+            ISectionFile f = GamePlay.gpCreateSectionFile();
+            string s = "";
+            string k = "";
+            string v = "";
+
+            s = "AirGroups";
+            k = regiment_isec; v = ""; f.add(s, k, v);
+            s = regiment_isec;
+            //k = "Flight0"; v = hullNumber_int.ToString(); f.add(s, k, v);
+
+            int numACcreated = 0;
+
+            for (int flight = 0; flight < 4; flight++)
+            {
+
+                v = "";
+                for (int i = 1; i <= numInFlight; i++)
+                {
+                    numACcreated++;
+                    if (numACcreated > numAC) break;
+                    if (flight == 0) v += i.ToString() + " "; // flight0 1 2 3
+                    else v += flight.ToString() + i.ToString() + " ";             // flight1 11 12 13  ... 
+
+                    //Numbers in this table flight0 are displayed as numbers or letters on the fuselage
+                    /*                     
+                    * The number/letter is displayed on the fuselage. It doesn't really matter if you enter a number or a letter as the air unit type defines if a latter or number is displayed in-game (RAF = letter, LW fighter = number, LW bomber = letter). If you enter a number it is translated to a letter or reverse ( A = 1, B = 2 ... or 1 = A, B = 2, ...). IIRC for LW units you can also enter some fency symbols ("<", "<O") to mimic Stab a/c, I think there's a table in the original user manual that lists the allowed symbols.
+                    * https://theairtacticalassaultgroup.com/forum/showthread.php?t=32433&p=349248#post349248
+                    * */
+
+                }
+                if (v.Length > 0)
+                {
+                    k = "Flight" + flight.ToString();
+                    f.add(s, k, v);  //add "1 2 3 4 " . . . or similar, depending on how many a/c requested in one flight
+                }
+                //Console.WriteLine("CoverCreate: Flight0: " + v);
+            }
+            //Our little trick to allow torpedo & herman models of H-6.
+            //We are safe to do this here because of the "else if"
+            string typeTemp = type;
+            if (type.Contains("He-111H-6_Trop_torpedo") || type.Contains("He-111H-6_Trop_Hermann1000kg")) typeTemp = "tobruk:Aircraft.He-111H-6_Trop";
+            else if (type.Contains("He-111H-6_torpedo") || type.Contains("He-111H-6_Hermann1000kg")) typeTemp = "tobruk:Aircraft.He-111H-6";
+
+            //k = "Class"; v = "Aircraft." + type; f.add(s, k, v);
+            //Tobruk, now we have to include the bob: tobruk: stuff and airplane.  lbahblabhalbh
+            k = "Class"; v = typeTemp; f.add(s, k, v);
+            k = "Formation"; v = formation; f.add(s, k, v);
+            k = "CallSign"; v = callsign; f.add(s, k, v);
+            //k = "Fuel"; v = fuel.ToString(); f.add(s, k, v);
+            //k = "Weapons"; v = weapons; f.add(s, k, v);
+            
+            bool isBlenheim = type.Contains("Blenheim");
+            
+            if (isBlenheim) fuelStr ="90"; //trying to make Blennies have a heavier load so their performance is not so crazy
+            
+
+            f = Stb_AddLoadoutForPlane(f, s, type, fighterbomber, weapons, delay_sec, fuelStr);
+
+
+            /* if (type.Contains("Spitfire") || type.Contains("Hurricane"))  //We'll have to figure out what to do for DE aircraft, blennies, etc . . . 
+            {
+                f.add(s, "Belt", "_Gun03 Gun.Browning303MkII MainBelt 11 11 9 11");
+                f.add(s, "Belt", "_Gun06 Gun.Browning303MkII MainBelt 9 11 11 11");
+                f.add(s, "Belt", "_Gun00 Gun.Browning303MkII MainBelt 11 9 11 11 11 11 10");
+                f.add(s, "Belt", "_Gun01 Gun.Browning303MkII MainBelt 9 11 11 11");
+                f.add(s, "Belt", "_Gun07 Gun.Browning303MkII MainBelt 9 11 11 11 10 11 11");
+                f.add(s, "Belt", "_Gun02 Gun.Browning303MkII MainBelt 11 11 9");
+                f.add(s, "Belt", "_Gun05 Gun.Browning303MkII MainBelt 11 11 9 11");
+                f.add(s, "Belt", "_Gun04 Gun.Browning303MkII MainBelt 11 11 11 9");
+            } */
+            
+            
+            
+            int numFlightsCreated = 0;
+            numACcreated = 0;
+
+            bool isBomber = isHeavyBomber(type);
+            bool isBR20 = type.Contains("BR-20");
+            bool isSturmovik = Calcs.isStrikeAC(type);
+            bool isJU87 = type.Contains("Ju-87");
+
+            for (int flight = 0; flight < 4; flight++)
+            {
+                for (int i = 0; i < numInFlight; i++)
+                {
+                    numACcreated++;
+                    if (numACcreated > numAC) break;
+
+                    string istr = i.ToString();
+                    if (flight > 0) istr = flight.ToString() + istr;
+
+                    //string[] defSkins = { "default.jpg", "default.jpg", "default.jpg", "white1.jpg", "white2.jpg", "white3.jpg", "white1.jpg", "white2.jpg", "white3.jpg" };
+                    string[] defSkins = { "default.jpg" }; //disabling all skins now due to lockups/stuttering/slideshow when aircraft spawn in. 2021-12
+                    string defaultSkin = CoverCalcs.randSTR(defSkins);
+
+                    f.add(s, "Serial" + istr, serialNumber + istr);
+                    if (skin_filename.Length > 0) f.add(s, "Skin" + istr, skin_filename);
+                    else f.add(s, "Skin" + istr, defaultSkin);  //Not sure if this file needs to be in the relevant a/c folder Documents\1C SoftClub\il-2 sturmovik cliffs of dover - MOD\PaintSchemes\Skins\MYAIRCRAFT of the user, the server, or what.  Also don't know how to find out which skin the player is currently using
+
+
+                    //List<string> rlist = new List<string>();
+                    string[] rlist = new string[9];
+
+
+
+                    //So we COULD have separate skills for each crew member, esp. for bombers
+                    //That way, the bombardier could be very accurate while
+                    //gunners less so.
+                    //Most bombers have 3 or 4 crew positions, a few (BR20, Wellington, Sutherland) have5
+                    //Always Bombardier is in 2nd position, pilot in first, EXCEPT BR20 which has pilot, copilot, then bombardier
+                    /* in place of the SKILL line you have lines like this:
+                        Person0_0 0 0.84 0.53 0.53 1 0.37 0.53 0.53 0.53
+                        Person0_1 1 0.84 0.53 0.53 1 0.37 0.84 0.53 0.53
+                        Person0_2 2 0.84 0.53 0.53 0.37 0.37 0.53 0.53 0.53
+                        Person0_3 3 0.84 0.53 0.53 0.37 0.37 0.53 0.53 0.53
+                        Person1_0 0 0.84 0.53 0.53 0.37 0.37 0.53 0.53 0.53
+                        Person1_1 1 0.84 0.53 0.53 1 0.37 0.53 0.53 0.53
+                        Person1_2 2 0.84 0.53 0.53 0.37 0.37 0.53 0.53 0.53
+                        Person1_3 3 0.84 0.53 0.53 0.37 0.37 0.53 0.53 0.53
+                        Person20_0 0 0.84 0.53 0.53 0.37 0.37 0.53 0.53 0.53
+                        Person20_1 1 0.84 0.53 0.53 1 0.37 0.53 0.53 0.53
+                        Person20_2 2 0.84 0.53 0.53 0.37 0.37 0.53 0.53 0.53
+                        Person20_3 3 0.84 0.53 0.53 0.37 0.37 0.53 0.53 0.53
+                        Person21_0 0 0.84 0.53 0.53 0.37 0.37 0.53 0.53 0.53
+                        Person21_1 1 0.84 0.53 0.53 1 0.37 0.53 0.53 0.53
+                        Person21_2 2 0.84 0.53 0.53 0.37 0.37 0.53 0.53 0.53
+                        Person21_3 3 0.84 0.53 0.53 0.37 0.37 0.53 0.53 0.53
+                        Person22_0 0 0.84 0.53 0.53 0.37 0.37 0.53 0.53 0.53
+                        Person22_1 1 0.84 0.53 0.53 1 0.37 0.53 0.53 0.53
+                        Person22_2 2 0.84 0.53 0.53 0.37 0.37 0.53 0.53 0.53
+                        Person22_3 3 0.84 0.53 0.53 0.37 0.37 0.53 0.53 0.53
+
+                        Person0 corresponds to istr=1 (alwasys istr-1), Person20 to istr=21, etc
+                        _0, _1 etc seems to just count up, 
+                        Second # is  position, 0,1,2 or 0,1,2,3 etc
+                        Then the regular list of 8 skills
+                    */
+                    
+                    for (int place = 0; place <5; place++) {
+                        string placestr=place.ToString();
+                        rlist[0] = placestr;
+                        for (int j = 1; j < 9; j++)
+                        {
+                            double r = 0.9;
+                            if (j == 4)
+                            {
+                                r = ((ran.NextDouble() * ran.NextDouble()) * (ran.Next(2) * 3.0 - 1.5)) / 10.0 + 8.5 / 10.0; //number between 0.8 & 1 but weighted towards the center of that range.  j==3 means the aerial gunnery skill.
+                                //was: r = ((ran.NextDouble() * ran.NextDouble()) * (ran.Next(2) * 2.0 - 1.0)) / 8.0 + 7.0 / 8.0; //number between 0.75 & 1 but weighted towards the center of that range.  j==3 means the aerial gunnery skill.
+                                //was :if (isBomber) r = ((ran.NextDouble() * ran.NextDouble()) * (ran.Next(2) * 2.0 - 1.0)) / 16.0 + 15.0 / 16.0; //number between 0.875 & 1 but weighted towards the center of that range.  j==3 means the aerial gunnery skill.
+
+
+                                if ( isSturmovik && !isJU87 && place==0) r = 1;  //otherwise they can't seem to hit anything on the ground
+                                //We set the BOMBARDIER of bomber to high accuracy
+                                //so they can hit something.  Also Sturmovik pilots,
+                                //bec. otherwise they don't hit many ground targets w/cannons etc
+                                //similarly JU-87s are sturmovik (there the pilot needs
+                                //to be the accurate one)
+                                else if (isBomber && place == 1 || isBR20 && place==2 || isJU87 && place==0 ) r = ((ran.NextDouble() * ran.NextDouble()) * (ran.Next(2) * 2.0 - 1.0)) / 32.0 + 31.0 / 32.0; //number between 0.9375 & 1 but weighted towards the center of that range.  j==3 means the aerial gunnery skill.
+                                //improving aiming accuracy of bombers, also fighter-bombers who might strafe etc
+
+                                
+
+                                else if (army == 1) //So Red bomber pilots have been complaining that Blue fighter cover is more effective than theirs.  This is probably true given (especially) the formidable AI ability of a pair of 110 fighters just due to CloD's built-in 110 AI algorithms.  So . . . trying to bump up Red cover fighter abilities a little to compensate.
+                                {
+                                    r = ((ran.NextDouble() * ran.NextDouble()) * (ran.Next(2) * 2.0 - 1.0)) / 16.0 + 15.0 / 16.0; //number between 0.9375 & 1 but weighted towards the center of that range.  j==3 means the aerial gunnery skill.
+                               
+                                }
+                            }
+                            else {
+                                r = ((ran.NextDouble() * ran.NextDouble()) * (ran.Next(2) * 2.0 - 1.0)) / 4.0 + 3.0 / 4.0; //number between 0.5 & 1 but weighted towards the center of that range
+                                r = Math.Sqrt(r); //Tobruk Boost to BLUE cover smartness but still not quite as good as RED  sqrt .5 = .71; sqrt .75 = .87
+                                if (isBlenheim) {
+                                    //Turn down basic flying skill; much moreso if they are 'cover' vs 'bomber'
+                                    if ( j == 0 && isBomber ) r = (r - 0.2).Clamp(0.3,0.6);
+                                    if ( j == 0 && !isBomber ) r = (r - 0.4).Clamp(0.23,0.45);
+                                    
+                                    //turn down even more for advanced flying skill
+                                    if ( j == 1 && isBomber ) r = (r - 0.3).Clamp(0.2,0.4);
+                                    if ( j == 1 && !isBomber ) r = (r - 0.5).Clamp(0.1,0.3);
+                                    
+                                    //similarly for tactics
+                                    if ( j == 4 && isBomber ) r = (r - 0.3).Clamp(0.3, 0.5);
+                                    if ( j == 4 && !isBomber ) r = (r - 0.4).Clamp(0.2, 0.4);
+                                    
+                                //remainder of boost to RED fighter cover    
+                                } else if (army == 1)
+                                     r = ((ran.NextDouble() * ran.NextDouble()) * (ran.Next(2) * 2.0 - 1.0)) / 8.0 + 7.0 / 8.0; //number between 0.75 & 1 but weighted towards the center of that rang
+
+
+     
+                            }
+                            rlist[j] = r.ToString("F2");
+                        }
+                    
+                        
+                        rlist[8] = "0.98"; //was 0.98; trying to make the a/c follow orders better
+                        
+                        if (isBomber) {   rlist[8] = "0.99"; } //was 0.98; trying to make the heavy bomber a/c follow orders better
+                        
+                        //Sunderlands drive like goofballs & drop their bombs willy-nilly for no reason.  So 
+                        //trying to stop that by changing bravery & discipline to 1
+                        if (type.Contains("Sunderland") ) {
+                            rlist[7] = "1";
+                            rlist[8] = "1";
+                        }
+                        //k = "Skill0"; v = string.Format("{0:F1} {0:F1} {0:F1} {0:F1} {0:F1} {0:F1} {0:F1} {0:F1}", r); ; f.add(s, k, v);
+                        //Skills: Basic flying, advanced flying, awareness, aerial gunnery, tactics, vision, bravery, discipline
+                        //2020-01-22 - CHANGING DISCIPLINE SKILL to 0.98, to see if they will stay in formation more
+                        //Might need to do somethign different for fighter vs bomber pilots?
+                        //Also bravery to 0.1 as an experiment, and awareness to 0.3
+                        //And so, that didn't seem to do much.
+                        try
+                        {
+                            //OLD way with one skill level per aircraft
+                            //k = "Skill" + istr; v = string.Format("{0:n3} {1:n3} {2:n3} {3:n3} {4:n3} {5:n3} {6:n3} {7:n3}", rlist); f.add(s, k, v);
+
+                            //2026-09 - each crew member has skill level
+                            k = "Person" + istr + "_" + placestr ; v = string.Format("{0} {1:n3} {2:n3} {3:n3} {4:n3} {5:n3} {6:n3} {7:n3} {8:n3}", rlist); f.add(s, k, v);
+                            Console.WriteLine("COVER - SKILLS: {0} : {1}", k, v);
+                        }
+                        catch (Exception ex) { Console.WriteLine("<cover makesectionfile SKILL ERROR: " + ex.ToString()); }
+                        //Console.WriteLine("CoverCreate: Skill: " + v);
+                        //k = "Skill0"; v = string.Format("{0:F1} {0:F1} 0.3 {0:F1} {0:F1} {0:F1} {0:F1} 0.98", r); f.add(s, k, v);
+                        // "0.7 0.7 0.7 0.7 0.7 0.7 0.7 0.7"; 
+                        //r = ((ran.NextDouble() * ran.NextDouble()) * (ran.Next(2) * 2.0 - 1.0)) / 4.0 + 3.0 / 4.0; //number between 0.5 & 1 but weighted range
+                        //skill = r;
+                        //k = "Skill1"; v = string.Format("{0:F1} {0:F1} {0:F1} {0:F1} {0:F1} {0:F1} {0:F1} {0:F1}", r); f.add(s, k, v);
+                        //k = "Skill1"; v = string.Format("{0:F1} {0:F1} 0.3 {0:F1} {0:F1} {0:F1} {0:F1} 0.98", r); f.add(s, k, v);
+                        //k = "Skill1"; v = "0.6 0.6 0.6 0.6 0.6 0.6 0.6 0.6"; f.add(s, k, v);
+                    }
+
+                }
+                numFlightsCreated++;
+            }
+            if (velocity_mps <= 0)
+            {
+                k = "SetOnPark"; v = "1"; f.add(s, k, v);
+                k = "Idle"; v = "1"; f.add(s, k, v);
+            }
+
+            s = regiment_isec + "_Way";
+            //if (velocity_mpos <= 0) k = "TAKEOFF";
+            //else k = "NORMFLY";        
+            k = "ESCORT";
+            if (!fromCover) k = "HUNTING";
+            v = locx + " " + locy + " " + locz + " " + vel;
+            if (escortedGroup.Length > 0) v += " " + escortedGroup + " 0";  //Not sure what the final 0 does
+            f.add(s, k, v);
+
+            Vector3d vw = new Vector3d(0, 1, 0);
+
+            if (vwld.HasValue) vw = vwld.Value;
+            double div = CoverCalcs.CalculatePointDistance(vw);
+            if (div == 0) div = 1;
+
+            //5 mins in the compass direction the player's aircraft is heading
+            //So this will set the cover a/c going in the same way the player's aircraft is currently heading
+            double deltaX_m = velocity_mps * 5 * 60 * vw.x/div;
+            double deltaY_m = velocity_mps * 5 * 60 * vw.y/div;
+            //if main a/c isn't moving then we'll head these aircraft north.
+            if (div == 0) deltaY_m = velocity_mps * 5 * 60; 
+
+            v = (loc.x + deltaX_m).ToString("n0") + " " + (loc.y + deltaY_m).ToString("n0") + " " + locz + " " + vel;
+            if (loc2.HasValue) v = loc2x + " " + loc2y + " " + loc2z + " " + vel;
+            if (escortedGroup.Length > 0) v += " " + escortedGroup + " 0";  //Not sure what the final 0 does
+            f.add(s, k, v);
+
+            //GamePlay.gpLogServer(null, "Writing Sectionfile to " + stb_FullPath + "aircraftSpawn-ISectionFile.txt", new object[] { }); //testing
+            //f.save(mainmission.stb_FullPath + "sectionfiles/aircraftSpawn-ISectionFile"+ran.Next(0,99).ToString() + ".txt"); //testing
+
+
+            if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("SXX13 " + DateTime.UtcNow.ToString("T")); //testing disk output for warps
+
+            //Console.Write("<cover: section file:   " + f.ToString()); //doesn't do anything useful, a "random" number
+            //load it in
+            GamePlay.gpPostMissionLoad(f);
+
+
+            /*string USER_DOC_PATH = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);   // DO NOT CHANGE
+            string CLOD_PATH = USER_DOC_PATH + @"/1C SoftClub/il-2 sturmovik cliffs of dover/";  // DO NOT CHANGE
+            string FILE_PATH = @"missions/Multi/Fatal/";   // mission install directory (CHANGE AS NEEDED); where we save things relevant to THIS SPECIFIC MISSION
+            string stb_FullPath = CLOD_PATH + FILE_PATH;
+            */
+
+            string rnd = (ran.Next(100, 999)).ToString();
+
+
+            Console.WriteLine("Writing Sectionfile to " + mainmission.stb_FullPath + "/sectionfiles/aircraftCover-ISectionFile" + rnd + ".txt");
+            f.save(mainmission.stb_FullPath + "/sectionfiles/aircraftCover-ISectionFile" + rnd + ".txt"); //testing
+
+            //
+
+            return (stb_lastMissionLoaded + 1).ToString() + ":" + regiment + ".000";  //There is a better way to do this (get the actual name via onmission loaded) but this might work for now
+        } catch (Exception ex)
         {
-            k = "SetOnPark"; v = "1"; f.add(s, k, v);
-            k = "Idle"; v = "1"; f.add(s, k, v);
+            Console.WriteLine("stb_LoadSubAircraft ERROR: {0}", ex);
+            return "";
         }
-
-        s = regiment_isec + "_Way";
-        //if (velocity_mpos <= 0) k = "TAKEOFF";
-        //else k = "NORMFLY";        
-        k = "ESCORT";
-        if (!fromCover) k = "HUNTING";
-        v = locx + " " + locy + " " + locz + " " + vel;
-        if (escortedGroup.Length > 0) v += " " + escortedGroup + " 0";  //Not sure what the final 0 does
-        f.add(s, k, v);
-
-        Vector3d vw = new Vector3d(0, 1, 0);
-
-        if (vwld.HasValue) vw = vwld.Value;
-        double div = CoverCalcs.CalculatePointDistance(vw);
-        if (div == 0) div = 1;
-
-        //5 mins in the compass direction the player's aircraft is heading
-        //So this will set the cover a/c going in the same way the player's aircraft is currently heading
-        double deltaX_m = velocity_mps * 5 * 60 * vw.x/div;
-        double deltaY_m = velocity_mps * 5 * 60 * vw.y/div;
-        //if main a/c isn't moving then we'll head these aircraft north.
-        if (div == 0) deltaY_m = velocity_mps * 5 * 60; 
-
-        v = (loc.x + deltaX_m).ToString("n0") + " " + (loc.y + deltaY_m).ToString("n0") + " " + locz + " " + vel;
-        if (loc2.HasValue) v = loc2x + " " + loc2y + " " + loc2z + " " + vel;
-        if (escortedGroup.Length > 0) v += " " + escortedGroup + " 0";  //Not sure what the final 0 does
-        f.add(s, k, v);
-
-        //GamePlay.gpLogServer(null, "Writing Sectionfile to " + stb_FullPath + "aircraftSpawn-ISectionFile.txt", new object[] { }); //testing
-        //f.save(stb_FullPath + "aircraftSpawn-ISectionFile.txt"); //testing
-
-
-        if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("SXX13 " + DateTime.UtcNow.ToString("T")); //testing disk output for warps
-
-        //Console.Write("<cover: section file:   " + f.ToString()); //doesn't do anything useful, a "random" number
-        //load it in
-        GamePlay.gpPostMissionLoad(f);
-
-
-        /*string USER_DOC_PATH = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);   // DO NOT CHANGE
-        string CLOD_PATH = USER_DOC_PATH + @"/1C SoftClub/il-2 sturmovik cliffs of dover/";  // DO NOT CHANGE
-        string FILE_PATH = @"missions/Multi/Fatal/";   // mission install directory (CHANGE AS NEEDED); where we save things relevant to THIS SPECIFIC MISSION
-        string stb_FullPath = CLOD_PATH + FILE_PATH;
-        */
-
-        string rnd = (ran.Next(100, 999)).ToString();
-
-
-        Console.WriteLine("Writing Sectionfile to " + mainmission.stb_FullPath + "/sectionfiles/aircraftCover-ISectionFile" + rnd + ".txt");
-        f.save(mainmission.stb_FullPath + "/sectionfiles/aircraftCover-ISectionFile" + rnd + ".txt"); //testing
-
-        //
-
-        return (stb_lastMissionLoaded + 1).ToString() + ":" + regiment + ".000";  //There is a better way to do this (get the actual name via onmission loaded) but this might work for now
 
     }
 
@@ -5217,16 +5324,16 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
         {
 
 
-            f.add(s, "Belt", "_Gun01 bob:Gun.Hispano_Mk_I MainBelt 0 1 0 1 0 1 0 1 0 1");
-            f.add(s, "Belt", "_Gun03 bob:Gun.Hispano_Mk_I MainBelt 0 1 0 1 0 1 0 1 0 1");
+            f.add(s, "Belt", "_Gun01 bob:Gun.Hispano_Mk_I MainBelt  1 0 1 1 1 1 1 1");
+            f.add(s, "Belt", "_Gun03 bob:Gun.Hispano_Mk_I MainBelt  1 1 1 1 0 1");
             f.add(s, "Belt", "_Gun06 bob:Gun.Browning303MkII MainBelt 10 11 9 11 9 10 11 9 11 9 Residual 50 ResidueBelt 10 9 10 11");
             f.add(s, "Belt", "_Gun09 bob:Gun.Browning303MkII MainBelt 10 11 9 11 9 0 11 9 Residual 50 ResidueBelt 10 9 10 11");
-            f.add(s, "Belt", "_Gun02 bob:Gun.Hispano_Mk_I MainBelt 0 1 0 1 0 1 0 1");
+            f.add(s, "Belt", "_Gun02 bob:Gun.Hispano_Mk_I MainBelt 1 1 1 1 1 0 1 1 1");
             f.add(s, "Belt", "_Gun08 bob:Gun.Browning303MkII MainBelt 9 10 11 9 11 9 11 2 Residual 50 ResidueBelt 10 9 10 11");
             f.add(s, "Belt", "_Gun07 bob:Gun.Browning303MkII MainBelt 9 10 11 9 11 9 Residual 50 ResidueBelt 10 9 10 11");
             f.add(s, "Belt", "_Gun05 bob:Gun.Browning303MkII MainBelt 9 11 10 9 2 11 9 Residual 50 ResidueBelt 10 9 10 11");
             f.add(s, "Belt", "_Gun04 bob:Gun.Browning303MkII MainBelt 10 9 9 11 9 9 11 9 9 11 Residual 50 ResidueBelt 10 9 10 11");
-            f.add(s, "Belt", "_Gun00 bob:Gun.Hispano_Mk_I MainBelt 1 1 0 1 0 1 0 1 0 0");
+            f.add(s, "Belt", "_Gun00 bob:Gun.Hispano_Mk_I MainBelt 1 1 0 1 1 1 1 1 1");
             f.add(s, "Detonator", "Bomb.Bomb_GP_250lb_MkIV 3 0 " + delay_sec);
             f.add(s, "Detonator", "Bomb.Bomb_GP_500lb_MkIV 3 0 " + delay_sec);
 
@@ -5241,16 +5348,16 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
         else if (type.Contains("BeaufighterMkIF_Late") || type.Contains("BeaufighterMkINF_Late"))  //could add residuals
         {
 
-            f.add(s, "Belt", "_Gun01 bob:Gun.Hispano_Mk_I MainBelt 0 1 0 1 0 1 0 1 0 1");
-            f.add(s, "Belt", "_Gun03 bob:Gun.Hispano_Mk_I MainBelt 0 1 0 1 0 1 0 1 0 1");
+            f.add(s, "Belt", "_Gun01 bob:Gun.Hispano_Mk_I MainBelt 1 0 1 1 1 1 1 1 ");
+            f.add(s, "Belt", "_Gun03 bob:Gun.Hispano_Mk_I MainBelt 1 0 1 1 1 1 1 1 ");
             f.add(s, "Belt", "_Gun06 bob:Gun.Browning303MkII MainBelt 10 11 9 11 9 10 11 9 11 9 Residual 50 ResidueBelt 10 9 10 11");
             f.add(s, "Belt", "_Gun09 bob:Gun.Browning303MkII MainBelt 10 11 9 11 9 0 11 9 Residual 50 ResidueBelt 10 9 10 11");
-            f.add(s, "Belt", "_Gun02 bob:Gun.Hispano_Mk_I MainBelt 0 1 0 1 0 1 0 1");
+            f.add(s, "Belt", "_Gun02 bob:Gun.Hispano_Mk_I MainBelt 1 0 1 1 1 1 1 1 ");
             f.add(s, "Belt", "_Gun08 bob:Gun.Browning303MkII MainBelt 9 10 11 9 11 9 11 2 Residual 50 ResidueBelt 10 9 10 11");
             f.add(s, "Belt", "_Gun07 bob:Gun.Browning303MkII MainBelt 9 10 11 9 11 9 Residual 50 ResidueBelt 10 9 10 11");
             f.add(s, "Belt", "_Gun05 bob:Gun.Browning303MkII MainBelt 9 11 10 9 2 11 9 Residual 50 ResidueBelt 10 9 10 11");
             f.add(s, "Belt", "_Gun04 bob:Gun.Browning303MkII MainBelt 10 9 9 11 9 9 11 9 9 11 Residual 50 ResidueBelt 10 9 10 11");
-            f.add(s, "Belt", "_Gun00 bob:Gun.Hispano_Mk_I MainBelt 1 1 0 1 0 1 0 1 0 0");
+            f.add(s, "Belt", "_Gun00 bob:Gun.Hispano_Mk_I MainBelt 1 0 1 1 1 1 1 1 ");
             if (weapons.Length == 0)
             {
                 weapons = "1 1"; //default                
@@ -5260,16 +5367,16 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
         else if (type.Contains("BeaufighterMkIF") || type.Contains("BeaufighterMkINF"))  //could add residuals
         {
 
-            f.add(s, "Belt", "_Gun01 Gun.Hispano_Mk_I MainBelt 0 1 0 1 0 1 0 1 0 1");
-            f.add(s, "Belt", "_Gun03 Gun.Hispano_Mk_I MainBelt 0 1 0 1 0 1 0 1 0 1");
+            f.add(s, "Belt", "_Gun01 Gun.Hispano_Mk_I MainBelt 1 0 1 1 1 1 1 1 ");
+            f.add(s, "Belt", "_Gun03 Gun.Hispano_Mk_I MainBelt 1 0 1 1 1 1 1 1 ");
             f.add(s, "Belt", "_Gun06 Gun.Browning303MkII MainBelt 10 11 9 11 9 10 11 9 11 9 Residual 50 ResidueBelt 10 9 10 11");
             f.add(s, "Belt", "_Gun09 Gun.Browning303MkII MainBelt 10 11 9 11 9 0 11 9 Residual 50 ResidueBelt 10 9 10 11");
-            f.add(s, "Belt", "_Gun02 Gun.Hispano_Mk_I MainBelt 0 1 0 1 0 1 0 1");
+            f.add(s, "Belt", "_Gun02 Gun.Hispano_Mk_I MainBelt 1 0 1 1 1 1 1 1 ");
             f.add(s, "Belt", "_Gun08 Gun.Browning303MkII MainBelt 9 10 11 9 11 9 11 2 Residual 50 ResidueBelt 10 9 10 11");
             f.add(s, "Belt", "_Gun07 Gun.Browning303MkII MainBelt 9 10 11 9 11 9 Residual 50 ResidueBelt 10 9 10 11");
             f.add(s, "Belt", "_Gun05 Gun.Browning303MkII MainBelt 9 11 10 9 2 11 9 Residual 50 ResidueBelt 10 9 10 11");
             f.add(s, "Belt", "_Gun04 Gun.Browning303MkII MainBelt 10 9 9 11 9 9 11 9 9 11 Residual 50 ResidueBelt 10 9 10 11");
-            f.add(s, "Belt", "_Gun00 Gun.Hispano_Mk_I MainBelt 1 1 0 1 0 1 0 1 0 0");
+            f.add(s, "Belt", "_Gun00 Gun.Hispano_Mk_I MainBelt 1 0 1 1 1 1 1 1 ");
             if (weapons.Length == 0)
             {
                 weapons = "1 1"; //default                
@@ -6019,7 +6126,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             AiAirWayPoint aawp33 = CurrentPosWaypoint(airGroup, targetAirGroup, aawptstart, aaPs.Item3);
             if (aawp33 != null) NewWaypoints.Add(aawp33);
             NewWaypoints.Add(aaPs.Item1);
-            NewWaypoints.Add(aaPs.Item2);
+            if (aaPs.Item2 != null) NewWaypoints.Add(aaPs.Item2);
             airGroup.SetWay(NewWaypoints.ToArray());
             return true;
         }
@@ -6042,6 +6149,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             if (GamePlay == null || airGroup == null) { Console.WriteLine("Cover: exiting BomberPosWaypoint; airGroup is NULL or GamePlay is NULL, no reason to continue"); return new Tuple<AiAirWayPoint, AiAirWayPoint, double, bool>(null, null, 0, false); }
             Console.WriteLine("CBCW: Bomb Aim Mode: {0}", BAM_getPlayerBombAimMode_string(player));
             //if (mainmission.ON_TESTSERVER) Console.WriteLine("MPWXX1 " + DateTime.UtcNow.ToString("HH:mm:ss.fffffff"));
+            bool tempFlakTarget = false;
             double changeL_XY_m = 100;
             AiAirWayPoint aaWP = null;
             Vector3d Vwld = new Vector3d(0, 0, 0);
@@ -6053,6 +6161,10 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 
             double target_vel_mps = CoverCalcs.CalculatePointDistance(Vwld2); //All position Point3ds in game are in meters.
             bool heavyBomber = isHeavyBomber(airGroup) || isDiveBomber(airGroup);
+
+            bool isSturmovik = Calcs.isStrikeAC(airGroup);
+            bool isJU87 = isDiveBomber(airGroup);
+
 
             Point3d playerAirGroupPos = airGroup.Pos();
             if (playerAirGroup != null) playerAirGroupPos = playerAirGroup.Pos();
@@ -6081,6 +6193,10 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             Tuple<Point3d?, double> obj_cr = ObjectivesRadius_m(pos); //FIND the TUPLE center point, radius of any objective this point is in.
             //if (mainmission.ON_TESTSERVER) Console.WriteLine("MPWXX3 " + DateTime.UtcNow.ToString("HH:mm:ss.fffffff"));
 
+            double distToNearestACTOR_m = 1000000;
+            double distToNearestGROUND_m = 1000000;
+            double distToNearestCHOSEN_m = 1000000;
+
             double Obj_radius = 0;
             Point3d Obj_pos = new Point3d(-1, -1, -1);
 
@@ -6097,7 +6213,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 //to ensure that the final point is always within the objective circle
                 double distPosToCenter = CoverCalcs.CalculatePointDistance(Obj_pos, pos);
                 randPointSearchRadius = Obj_radius/10;
-                if (randPointSearchRadius < 125) randPointSearchRadius = 125;
+                if (randPointSearchRadius > 125) randPointSearchRadius = 125;
                 //if (distPosToCenter < Obj_radius) searchRadius = Obj_radius - distPosToCenter;
                 if (randPointSearchRadius < 20) randPointSearchRadius = 20; //But, sometimes we are not aiming exactly at the center of the target (wind, etc), and all targets are AT LEAST 80-100m radius.  So we can always go with a 100m radius at least. (epsecially since we are searching for just 100/2 in reality.
 
@@ -6145,9 +6261,24 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 if (obj_cr.Item1.HasValue) //we're trying to keep it within the radius of a MIssion Objective, if it is in/near one.
                 {
                     maxMove_m = Obj_radius * 3;
-                    preferredMove_m = 3* Obj_radius / 4.0;
+                    preferredMove_m = 1.2 * Obj_radius;
                 }
                 if (maxMove_m < 3500) maxMove_m = 3500;
+
+                Console.WriteLine("CBCW: before MaxMove {0:N0} preferredMove {1:N0}", maxMove_m, preferredMove_m);
+                //allow <cdist to affect the spread of target selection
+                //float shiftFact = getShiftFactor(player);
+                if (shiftFactor<1) {
+                    maxMove_m *= shiftFactor;
+                    preferredMove_m *= shiftFactor;
+                } else {
+                    double fact1 = Math.Log(shiftFactor) + 1;
+                    maxMove_m *= fact1;
+                    preferredMove_m *= fact1;
+                }
+                Console.WriteLine("CBCW: after MaxMove {0:N0} preferredMove {1:N0}", maxMove_m, preferredMove_m);
+
+
                 
                 var mmtlm = mainmission.threadloadmission;
                 int panic = 0;
@@ -6175,11 +6306,17 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 }
                 */
 
+                //OK, now we are going to get a new target if the task is RETURN or UNKNOWN
+                AiAirGroupTask task = airGroup.getTask();
+                //if currWay is 0 it is basically lost...needs new instructions
+                int currWay = airGroup.GetCurrentWayPoint();
+
                 //Console.WriteLine("Choosing target for dive bomber/player targeted enemy, maxMove {0:F0}, preferredMove {1:F0}", maxMove_m, preferredMove_m);
-                if (airgroupTargetPoints.ContainsKey(airGroup) && airgroupTargetPoints[airGroup].x != -1 && airgroupTargetPoints[airGroup].y != -1) //x,y == -1,-1 means we're actually not targeted at anythign
+                if (airgroupTargetPoints.ContainsKey(airGroup) && airgroupTargetPoints[airGroup].x != -1 && airgroupTargetPoints[airGroup].y != -1 && task != AiAirGroupTask.RETURN && task != AiAirGroupTask.UNKNOWN && currWay != 0) //x,y == -1,-1 means we're actually not targeted at anythign
                 {
+                    
                     var oldApos = airgroupTargetPoints[airGroup];
-                    if (CoverCalcs.CalculatePointDistance(oldApos, newTargetPoint) <= maxMove_m && ran.Next(7 + 3*panic) > 0) //if old target it still good, stick with it most of the time.  Delay is 16 seconds, better if we could make this change relative to delay.  But it will choose a new target about every 10*16 seconds.
+                    if (CoverCalcs.CalculatePointDistance(oldApos, newTargetPoint) <= maxMove_m && ran.Next(5 + 3*panic) > 0 && (airGroup.hasBombs() || ! CoverCalcs.areCratersBuildingsFactoriesNear(mainmission, oldApos, 250))) //if old target it still good, stick with it most of the time.  Delay is 16 seconds, better if we could make this change relative to delay.  But it will choose a new target about every 10*16 seconds.  And if there are craters/buildings near it, skip sooner.  The ground attack planes just attack them above all else
                     {
                         diveTarget = true;
                         //Console.WriteLine("reusing old ground target");
@@ -6188,6 +6325,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                         else
                         {
                             diveTarget = false;
+                            airgroupTargetPoints[airGroup] = new Point3d(-1,-1,-1);
                             //Console.WriteLine("old ground target bad, not using it after all");
                         }
 
@@ -6198,16 +6336,22 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 
 
                 //This gets all static ACTORs such as (?) ships, artillery. (?).  There is no way to get this full list from CloD that I know of.
+                maddox.game.LandTypes landType = GamePlay.gpLandType(airGroup.Pos().x, airGroup.Pos().y);
                 double closest_m = 2 * maxMove_m;
+                
                 if (!diveTarget)
                 {
                     Console.WriteLine("CBCW: Trying to find a ground actor near {0:n0}/{1:n0}", pos.x, pos.y);
+
+                    var currTime = DateTime.UtcNow;
+
+                    //Console.WriteLine("CBCW: contains: {0} currtime {1} savetime {2}", targetPointNoEnemiesFound_time.Keys.Contains(newTargetPoint), currTime, targetPointNoEnemiesFound_time.Keys.Contains(newTargetPoint) ? 0 : targetPointNoEnemiesFound_time[newTargetPoint]);
                     //if (mainmission.ON_TESTSERVER) Console.WriteLine("MBTXX1 " + DateTime.UtcNow.ToString("T.fffffff"));
 
                     //If this area has been searched for enemies & none found, don't keep doing
                     //it repeatedly again (CPU hog).  Will stop ALL cover groups from
                     //re-searching the same area, except one can do it each one minute.
-                    var currTime = DateTime.UtcNow;
+                    
                     if (!targetPointNoEnemiesFound_time.Keys.Contains(newTargetPoint) ||
                         currTime.Subtract(targetPointNoEnemiesFound_time[newTargetPoint]).TotalSeconds > 15 ) 
                     {
@@ -6216,13 +6360,13 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 
                             if (allStaticActors != null)
                             {
-                                //if (mainmission.ON_TESTSERVER) Console.WriteLine("MBTXX1A " + DateTime.UtcNow.ToString("T.fffffff"));
+                                if (mainmission.ON_TESTSERVER) Console.WriteLine("MBTXX1A " + DateTime.UtcNow.ToString("T.fffffff"));
                                 var asa = new List<AiActor>();
                                 lock (allStaticActors_lock)
                                 {
                                     if (allStaticActors != null) asa = new List<AiActor>(allStaticActors);
                                 }
-                                //if (mainmission.ON_TESTSERVER) Console.WriteLine("MBTXX1B " + DateTime.UtcNow.ToString("T.fffffff"));
+                                if (mainmission.ON_TESTSERVER) Console.WriteLine("MBTXX1B " + DateTime.UtcNow.ToString("T.fffffff"));
                                 int p = 0;
                                 if (panic > 0) p = panic + 2;
                                 int numsteps = 6 - p;
@@ -6233,14 +6377,14 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 
                                 for (int d = 0; d <= numsteps; d++)
                                 {
-                                    //if (mainmission.ON_TESTSERVER) Console.WriteLine("MBTXX2 " + DateTime.UtcNow.ToString("T.fffffff"));
+                                    if (mainmission.ON_TESTSERVER) Console.WriteLine("MBTXX2 " + DateTime.UtcNow.ToString("T.fffffff"));
                                     if (asa == null || asa.Count == 0)
                                     {
                                         renewAllStaticActors_recurs(onetime: true);
                                     }
                                     //if (mainmission.ON_TESTSERVER) Console.WriteLine("MBTXX2A " + DateTime.UtcNow.ToString("T.fffffff"));
                                     List<AiActor> closeStaticActors = new List<AiActor>(CoverCalcs.gpGetAllGroundActorsNear(asa.ToArray(), pos, preferredMove_m + d * step).ToList()); //1000?
-                                    //if (mainmission.ON_TESTSERVER) Console.WriteLine("MBTXX2B " + DateTime.UtcNow.ToString("T.fffffff"));                                                                                                                                                   //Finding actors we're going to range wider 1500. meters IN reality maybe we could look up the objective radius.  But actors nearby will be flak, etc etc etc.  All helpful.
+                                    if (mainmission.ON_TESTSERVER) Console.WriteLine("MBTXX2B " + DateTime.UtcNow.ToString("T.fffffff"));                                                                                                                                                   //Finding actors we're going to range wider 1500. meters IN reality maybe we could look up the objective radius.  But actors nearby will be flak, etc etc etc.  All helpful.
 
                                     if (closeStaticActors == null || closeStaticActors.Count == 0)
                                     {
@@ -6256,27 +6400,52 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                                     {
                                         if (act == null || act.Army() == airGroup.getArmy()) continue;
                                         double dist_m = CoverCalcs.CalculatePointDistance(pos, act.Pos());
-                                        //Console.WriteLine(act.Name() + " " + dist_m.ToString("N0"));
+                                        Console.WriteLine(act.Name() + " " + dist_m.ToString("N0"));
                                         groundType = "";
                                         if (act as AiGroundActor != null) groundType = (act as AiGroundActor).Type().ToString();
                                         //newTarget = act; //arrgh, don't set it here, only after an actual target is found
 
                                         int numToTargetOne = 1;
-                                        if (groundType.ToLower().Contains("ship"))
+                                        if (groundType.ToLower().Contains("ship") && landType == maddox.game.LandTypes.WATER )
                                         {
                                             step = origStep * 2.5; // if ships in the neighborhood we search a bit wider, they are very spread out.
                                             numToTargetOne = 2; //for ships, we can have two bombers target same ship. Myabe even 3-4?
                                         }
 
+                                        if (act.Name().ToLower().Contains("chief")) numToTargetOne = 3;
+
+                                        distToNearestACTOR_m = distToNearestAirgroupTargetPoint(act.Pos());
+
 
                                         //if (dist_m < closest_m && act.IsAlive() && act as AiGroundActor != null)
-                                        if (act.IsAlive() && act as AiGroundActor != null && airgroupTargets.Values.Count(x => x == act) <= numToTargetOne)
+                                        if (act.IsAlive() && act as AiGroundActor != null && airgroupTargets.Values.Count(x => x == act) < numToTargetOne &&  distToNearestACTOR_m >= 600 - 600 * p / numsteps )
                                         {
+                                            if (!airGroup.hasBombs() && CoverCalcs.areCratersBuildingsFactoriesNear(mainmission, act.Pos(), 500.0 - 500.0 * p / numsteps )) continue; //the ai ground attackers will attack craters (even if only NEAR the target) so trying to avoid that. Can't hit things if they're inside a building. Also they randomly choose a "thing" nearby the point, not necessary the one we specify.  So we try to avoid all such AREAS not just pick one GG or act that is OK.  Because the ground attacker will just switch targets to a bad one, invariably, if available.
+
                                             closest_m = dist_m;
                                             bestAct = act;
                                             diveTarget = true;
                                             newTarget = act;
-                                            Console.WriteLine("CBCW: FOUND a ground actor" + newTarget.Name() + " " + groundType);
+                                            Console.WriteLine("CBCW: FOUND a ground actor" + newTarget.Name() + " " + groundType + " dist from nearest targeted: {0:n0}", distToNearestACTOR_m);
+
+                                            if (act.Name().ToLower().Contains("_tflak_")) {
+                                                List<GroundStationary> stationaries = GamePlay.gpGroundStationarys(act.Pos().x, act.Pos().y,25).ToList();
+                                                if (stationaries.Count > 0 ) {
+                                                    CoverCalcs.Shuffle(stationaries);
+                                                    newGroundTarget = stationaries[0];
+                                                    newTarget = null;
+                                                    tempFlakTarget = true;
+                                                    Console.WriteLine("CBCW: FOUND tflak - using nearby stationary instead" + newGroundTarget.Title + " " + newGroundTarget.Name + " dist from nearest targeted: {0:n0}", distToNearestACTOR_m);
+                                                    break;
+
+                                                } else continue;
+                                                
+
+                                            }
+
+                                            
+
+
                                             break;
                                             /*
                                             if (dist_m < preferredMove_m)
@@ -6301,14 +6470,19 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 
 
                         bool isAA = false;
-                        if (groundType == "AAGun" || groundType == "Artillery") isAA = true;
+                        if (tempFlakTarget || groundType == "AAGun" || groundType == "Artillery") isAA = true;
 
 
                         //THIS gets all the remaining stationaries that are NOT actors, such as jerrycans or static trucks , planes, whatever. Scenery.
                         //Here, we're going more for the center of the target. Again we COULD/SHOULD look up the actual radius of the objective.
                         //do this if #1. We haven't found an actor target, #2. It isn't with the preferred mo #3. Sometimes randomly just for variety
-                        if (!diveTarget || (Obj_radius > 0 && closest_m > Obj_radius) || (ran.Next(3) == 0)
-                             || (ran.Next(2) == 0 && isAA))  //one time in 3, choose a ground stationary instead of an actor, even if the actor was found; make it one in two if it is AA.
+                        int ml = 0;
+                        if (!tempFlakTarget && (
+                                !diveTarget  || (Obj_radius > 0 && closest_m > Obj_radius * 1.2) || closest_m > maxMove_m /2.0 || (ran.Next(3) == 0)
+                                || (ran.Next(2) == 0 && isAA))  //one time in 3, choose a ground stationary instead of an actor, even if the actor was found; make it one in two if it is AA.
+                        )
+
+                        Console.WriteLine("CBCW: Trying to find a ground stationary near {0:n0}/{1:n0}", pos.x, pos.y);
 
                         // && !BAM_isNearestEnemy(player)
                         //(but only for auto dive bomber; never for live player choosing "nearest enemy")
@@ -6325,7 +6499,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                             {
 
                                 //if (mainmission.ON_TESTSERVER) Console.WriteLine("MBTXX4 " + DateTime.UtcNow.ToString("T.fffffff"));
-                                //Console.WriteLine("CBCW: Trying to find a ground stationary");
+                                Console.WriteLine("CBCW: Trying to find a ground stationary");
                                 List<GroundStationary> stationaries = GamePlay.gpGroundStationarys(pos.x, pos.y, preferredMove_m + d * step).ToList();
                                 //foreach (GroundStationary s in stationaries) Console.WriteLine("List:" + s.Name + " " + s.Title + " " + s.Type);
                                 Console.WriteLine("CBCW: Looking for nearby stationary at {0}m", changeL_XY_m * d);
@@ -6370,30 +6544,58 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 												else { statArmy = GamePlay.gpFrontArmy(gg.pos.x, gg.pos.y); }
 											}
 
+                                            distToNearestGROUND_m = distToNearestAirgroupTargetPoint(gg.pos);
+
 
 											if (gg != null && gg.IsAlive && !airgroupGroundTargets.ContainsValue(gg)
 											&& statArmy == 3 - airGroup.getArmy() && !gg.Title.ToLower().Contains("crater")
-											&& !gg.Title.ToLower().Contains("smoke") && !gg.Title.ToLower().Contains("fire") && !gg.Title.ToLower().Contains("_dmg")//avoid choosing a smoke, fire, or crater, or damaged object to attack. There might be some other types to avoid, too but these are the main offenders.
+											&& !gg.Title.ToLower().Contains("smoke") && !gg.Title.ToLower().Contains("fire") && !gg.Title.ToLower().Contains("_dmg") && distToNearestGROUND_m > 600 - 600 * d / steps //avoid choosing a smoke, fire, or crater, or damaged object to attack. There might be some other types to avoid, too but these are the main offenders.
 											) //not trying to find the closest, just a random one within the given distance, and not already picked by another airgroup && enemy
 											  //Names including _DMG are damaged items, don't need to target them.  IE Stationary.Environment.Ladder_UK1_DMG1
 											  //We use things like this in our detritus fields, which mean target is destroyed or moved
-											  //
+											  //distToNearestAirgroupTargetPoint is trying to choose targets >500-600m from any others. If possible
+
+                                              //GROUND ATTACK BEHAVIOR noted by experiment:
+                                              //Must be type GATTACK_TARG not GATTACK_POINT
+                                              //GATTACK_POINT only works for aerial bombing, NOT ground attack/strafing/dive bombing
+                                              //IF TARGET GIVEN IT MUST BE AN ACTOR (not GROUNDSTATIONARY)
+                                              //If no ACTOR, just specifying the point is just as good (Point3d of AiAirWaypoint with task GATTACK_TARG )
+                                              //AirGroup.ChangeGoalTarget(AiActor) seems to do the same thing, maybe.  But must be ACTOR not STATIONARY and can't also set the point.
+                                              //Either way, it doesn't actually attack just that ACTOR:
+                                              // - will attack ANY groundactor OR stationary in the area
+                                              // - all aircraft attacking in a small area (ca. 500m radius)
+                                              // will ALL attack THE SAME object, either an groundactor or
+                                              // stationary
+                                              // >500m apart, or so, they will attack different targets
+                                              // - As one stationary or actor is killed, they will move
+                                              // on to the next in the immediate area
+                                              // They seem to go for groundactors esp. moving vehicles first, maybe aa/artillery next, stationaries last
+                                              // This is a PROBLEM if they are all stuck shooting a certain stationary that is e.g. inside a building and never gets killed
+                                              // - For that reason, above algo TRIES to find different targets > 500m apart for each airgroup
+
 										
 											  
 
 											{
+
+                                                if (!airGroup.hasBombs() && CoverCalcs.areCratersBuildingsFactoriesNear(mainmission, gg.pos, 400.0 - 400.0 * d / steps)) continue; //the ai ground attackers will attack craters (even if only NEAR the target) so trying to avoid that.
+
 												bool bk = false;
 												string types = (gg.Title + gg.Type.ToString() + gg.Category).ToLower(); 
 												string category = gg.Category;
-												int ml = 0;
+												
 												
 												if (gg.Category == "Aircraft" || types.Contains("aircraft")) ml = 3;
 												else if (gg.Category == "Car") ml = 2;
 												else if (gg.Category == "ArmoredCar") ml = 3;
 												else if (gg.Category == "Tank") ml = 3;
+                                                else if (types.Contains("ammo")) ml = 3; //associated with AA nests...
+                                                else if (types.Contains("bofors")) ml = 3; //associated with AA nests...
+                                                else if (types.Contains("flak37")) ml = 3; //associated with AA nests...
+                                                else if (types.Contains("pdr_mk")) ml = 3; //associated with AA nests...
 												else if (types.Contains("ship")) ml = 3;
 												else if (types.Contains("plane") || types.Contains("aagun") 
-													|| types.Contains("artillery")) ml = 3;
+													|| types.Contains("artillery")) ml = 2;
 												else if (types.Contains("tractor") || types.Contains("spg") 
 													|| types.Contains("truck") || types.Contains("trailer")
 													|| types.Contains("amphibian")) ml = 2;
@@ -6409,12 +6611,12 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 												int accept = (3 - timesThru - j).Clamp(1,3);
 												if (d == steps && j == 0) accept = 0;
 
-												Console.WriteLine("CBCW: Checkingstationary for target: " + gg.Name + " 1 " + gg.Title + " 2 " + gg.Type + " | {0:F0} {1:F0} - {2:F0} {3:F0} : score {4} && required {5}", gg.pos.x, gg.pos.y, newTargetPoint.x, newTargetPoint.y, ml, accept); //
+												Console.WriteLine("CBCW: Checkingstationary for target: " + gg.Name + " 1 " + gg.Title + " 2 " + gg.Type + " | {0:F0} {1:F0} - {2:F0} {3:F0} : score {4} && required {5} distToNearest {6:N0}", gg.pos.x, gg.pos.y, newTargetPoint.x, newTargetPoint.y, ml, accept, distToNearestGROUND_m); //
 												
 												if (ml < accept ) continue;
 												
 												newGroundTarget = gg;
-												Console.WriteLine("CBCW: Found a stationary for target: " + gg.Name + " 1 " + gg.Title + " 2 " + gg.Type + " | {0:F0} {1:F0} - {2:F0} {3:F0}", gg.pos.x, gg.pos.y, newTargetPoint.x, newTargetPoint.y); // + " " + newTarget.Pos().x.ToString());
+												Console.WriteLine("CBCW: Found a stationary for target: " + gg.Name + " 1 " + gg.Title + " 2 " + gg.Type + " | {0:F0} {1:F0} - {2:F0} {3:F0} distToNearest: {4:N0}", gg.pos.x, gg.pos.y, newTargetPoint.x, newTargetPoint.y, distToNearestGROUND_m); // + " " + newTarget.Pos().x.ToString());
 																																																																																										  //if (ran.Next(5) < 3) continue; //trying to get more of list for testing
 												diveTarget = true;
 												break;
@@ -6427,16 +6629,20 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                                 if (diveTarget) break;
                             }
                         }
-                    }
 
-                    //if we FOUND a target we reset targetPointNoEnemiesFound_time so others can also search
-                    //if we DID NOT FIND then we set it so no others will waste CPU searching for 60 seconds
-                    if (diveTarget)
-                    {
-                        if (targetPointNoEnemiesFound_time.Keys.Contains(newTargetPoint))
-                            targetPointNoEnemiesFound_time.Remove(newTargetPoint);
+                        //If the found gg was low quality and the ACTOR was pretty good, we can stick with the ACTOR instead
+                        if (newTarget != null && ml < 2 && closest_m < maxMove_m / 2.0) newGroundTarget = null;
+                    
+
+                        //if we FOUND a target we reset targetPointNoEnemiesFound_time so others can also search
+                        //if we DID NOT FIND then we set it so no others will waste CPU searching for 60 seconds
+                        if (diveTarget)
+                        {
+                            if (targetPointNoEnemiesFound_time.Keys.Contains(newTargetPoint))
+                                targetPointNoEnemiesFound_time.Remove(newTargetPoint);
+                        }
+                        else targetPointNoEnemiesFound_time[newTargetPoint] = currTime;
                     }
-                    else targetPointNoEnemiesFound_time[newTargetPoint] = currTime;
                 }
 
 
@@ -6453,12 +6659,13 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             {
                 if (newTarget != null)
                 {
+                    distToNearestCHOSEN_m = distToNearestACTOR_m;
                     Console.WriteLine("CBCW: Found a stationary, updating attack position");
-                    newPos.x = newTarget.Pos().x;
-                    newPos.y = newTarget.Pos().y;
+                   
                 }
                 else if (newGroundTarget != null)
                 {
+                    distToNearestCHOSEN_m = distToNearestGROUND_m;
                     newPos.x = newGroundTarget.pos.x;
                     newPos.y = newGroundTarget.pos.y;
                 }
@@ -6467,6 +6674,20 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 airgroupGroundTargets[airGroup] = newGroundTarget;
                 airgroupTargetPoints[airGroup] = newPos;
                 //AARGGHHH
+
+                //sooo . . . if the final distance from other targets is still too small, the
+                //a/c will just target the same ACTOR or GG anyway.  So we will just ADD
+                //Something to it to get some separation.  Hopefully.  
+                //Just moving in a random direction for now, could move opposite the nearest point
+                //or whatever.  Or by more distance.
+                double addDist=0;
+                double addAngle=0;
+                if (!tempFlakTarget && distToNearestCHOSEN_m < 500) {
+                    addDist = 500 - distToNearestCHOSEN_m + 200;
+                    addAngle = ran.NextDouble() * Math.PI * 2;
+                } 
+                newPos.x += addDist * Math.Cos(addAngle);
+                newPos.y += addDist * Math.Sin(addAngle);
             }
             //3rd approach, just set it to the actual x,y
             else
@@ -6476,6 +6697,8 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 newPos.y = pos.y;
 
             }
+
+            Console.WriteLine(String.Format("CBCW: newtargetpoint of currTarget: {0:F0} {1:F0} {2:F0} Actor: {3} Stationary: {4}", newPos.x, newPos.y, newPos.z, newTarget!=null, newGroundTarget!=null));
 
 
             //So we're calculting the climb/dive rate of the mainAC and then setting the end point
@@ -6529,7 +6752,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             double min_z = 0;
             if (coverACInfo.ContainsKey(airGroup)) min_z = coverACInfo[airGroup].MinAttackAlt_m;
 
-            newPos = calcOffset_m(newPos, airGroup, player, new Vector3d(Vwld2.x, Vwld2.y, Vwld5.z), vel_mps, offsetDirection.up_down); //shift this airgroup a little UP or DOWN depending on which a/g it is and what other a/gs of its type are also flying with this player
+            if (!diveTarget) newPos = calcOffset_m(newPos, airGroup, player, new Vector3d(Vwld2.x, Vwld2.y, Vwld5.z), vel_mps, offsetDirection.up_down); //shift this airgroup a little UP or DOWN depending on which a/g it is and what other a/gs of its type are also flying with this player
                                                                                                                                         //so here we are NOT doing the shift right/left of the main target/ac, because we want the bombers to target this precise point, not shift or offset it by some amount.  Instead, shift a little up/down
 
             //GamePlay.gpLogServer(null, "PosB: " + savePos.x.ToString("F0") + " " + savePos.y.ToString("F0") + " " + savePos.z.ToString("F0") + ":"
@@ -6627,10 +6850,14 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 				//OK< actually (newGroundTarget as AiActor) is NULL. 
 				//Explains all.
 				//so for GroundStationaries we can just set the point & forget .Target
+
 				
 				//Console.WriteLine ("(newGroundTarget as AiActor): {0} {1} {2}", (newGroundTarget as AiActor), (newGroundTarget as AiActor).Pos().x, (newGroundTarget as AiActor).Pos().y);
 				Console.WriteLine ("(newGroundTarget as AiActor): {0}", (newGroundTarget as AiActor));
+
+                Console.WriteLine(String.Format("CBCW: waypoint info of DIVETARGET {0:F0} {1:F0} {2:F0} action: {3} target: {4}", nextWP.P.x, nextWP.P.y, nextWP.P.z, (nextWP as AiAirWayPoint).Action, (nextWP as AiAirWayPoint).Target));
 				
+                //(nextWP as AiAirWayPoint).Action = AiAirWayPointType.GATTACK_POINT; //OK< that didn't work AT ALL
                 (nextWP as AiAirWayPoint).Action = AiAirWayPointType.GATTACK_TARG;  //keep action same
 				
                 if (isDiveBomber(airGroup)) (nextWP as AiAirWayPoint).GAttackType = AiAirWayPointGAttackType.DIVE;
@@ -6681,6 +6908,10 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             }*/
 			
 			Console.WriteLine("CBCW: 6");
+
+            //In case of strikeAC doing ground attacks, we make the Groundattack_Targ thing their
+            //final waypoint, seeing if we can get them to attack better
+            if ( Calcs.isStrikeAC(airGroup) && !isHeavyBomber(airGroup) && !isDiveBomber(airGroup) && !airGroup.hasBombs()) nextWP2 = null;
 
             return new Tuple<AiAirWayPoint, AiAirWayPoint, double, bool>(nextWP, nextWP2, vel_mps, noGroundEnemyFound);
 
@@ -7578,6 +7809,20 @@ public AiAirGroup getRandomNearbyEnemyAirGroup(AiAirGroup from, double distance_
         return midPos;
     }
 
+    public double distToNearestAirgroupTargetPoint(Point3d p) {
+        //if NO point selected it is set to -1,-1, which should still work for this purpose 
+        //without special handling
+        double distsq_m2 = 100000000000000;
+        foreach (Point3d pos in airgroupTargetPoints.Values) {
+            double diffX = p.x-pos.x;
+            double diffY = p.y-pos.y;
+            double dist_temp = diffX*diffX + diffY*diffY;
+            distsq_m2 = dist_temp<distsq_m2 ? dist_temp : distsq_m2;
+
+        }
+        return Math.Sqrt(distsq_m2);
+    }
+
 
 	
 
@@ -7953,6 +8198,8 @@ public AiAirGroup getRandomNearbyEnemyAirGroup(AiAirGroup from, double distance_
 					acInfo.IsStrikeAC = isStrikeAC;
 					acInfo.IsPlayerStrikeAC = Calcs.isStrikeAC(player.Place() as AiAircraft);
 					coverACInfo[airgroup] = acInfo;
+                    acInfo.StartedWithCannons = airgroup.hasCourseCannon();
+                    acInfo.HasCannons = airgroup.hasCourseCannon();
 
 					double delay = 11.2354 + ran.NextDouble() * 2;
 					//Console.WriteLine("1Heavybomber init: {0} {1} " + airgroup.Name() + " to " + player.Name(), heavyBomber, delay);
@@ -9252,8 +9499,35 @@ public static class CoverCalcs
             Console.WriteLine("gpGetAllGroundActorsNear ERROR " + ex.ToString());
             return new AiActor[] { };
         }
+    }*/
+	public static bool areCratersBuildingsFactoriesNear(Mission msn, Point3d pos, double radius_m)
+    { try
+        {
+            List<GroundStationary> stationaries = msn.GamePlay.gpGroundStationarys(pos.x, pos.y, radius_m).ToList();
+            
+                foreach (GroundStationary gg in stationaries) {
+                    string tt = gg.Title.ToLower();
+                    if (tt.Contains("crater") 
+                        || tt.Contains("building") 
+                        || tt.Contains("factory") 
+                        || tt.Contains("hangar")) 
+                        {
+                            if (msn.ON_TESTSERVER) Console.WriteLine("areCratersBuildings... FOUND at {0:n0} {1:N0} radius {2:N0}", pos.x, pos.y, radius_m  );
+                            return true;
+                        }
+                }
+                return false;
+
+
+
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("areCratersBuildingsNear ERROR " + ex.ToString());
+            return false;
+        }
     }
-	*/
+	
     public static void Shuffle<T>(this IList<T> list)
     {
         if (list == null || list.Count == 0) return;

@@ -1466,7 +1466,7 @@ public class Mission : AMission, IMainMission
 							alt = p.z;
 							newarmy = army;
 							//or maybe we should just NOT transfer the high alt, they are really out of the map boundaries
-							p.y -= ((newarmy * 2) - 3 ) * (bpNeutralFrontDistance_m + 1000);
+							p.y -= ((newarmy * 2) - 3 ) * (bpNeutralFrontDistance_m + covermission.minFrontDistance_km*1000 + 500);  //that distance keeps the <cover ac working from this spawn point, though it might be off the map...
 							
 							level = 5;
 							
@@ -4362,13 +4362,13 @@ public class Mission : AMission, IMainMission
             new List<Point2d>() { new Point2d (251381.6, 250029.4), new Point2d (289920, 206705.6)},
             new List<Point2d>() { new Point2d (259527.6, 266599.7), new Point2d (294135.2, 209694.2)},
             new List<Point2d>() { new Point2d (261626, 284269), new Point2d (294535.8, 220595.1)},
-            new List<Point2d>() { new Point2d (269631.3, 305857.6), new Point2d (304619.6, 224465.3)},
-            new List<Point2d>() { new Point2d (289955.1, 307510.1), new Point2d (313366, 227043.5)},
-            new List<Point2d>() { new Point2d (307159.4, 307233.4), new Point2d (325633.6, 229384.0)},
-            new List<Point2d>() { new Point2d (317821.9, 306656.9), new Point2d (337857.3, 235244.1)},
-            new List<Point2d>() { new Point2d (329207.1, 307342.7), new Point2d (347077.2, 240365.3)},
-            new List<Point2d>() { new Point2d (342760.8, 305927.9), new Point2d (352757.3, 244599.0)},
-            new List<Point2d>() { new Point2d (354908, 306712.9), new Point2d (358080, 247296.0)},
+            new List<Point2d>() { new Point2d (269631.3, 300000.6), new Point2d (304619.6, 224465.3)},
+            new List<Point2d>() { new Point2d (289955.1, 300000.1), new Point2d (313366, 227043.5)},
+            new List<Point2d>() { new Point2d (307159.4, 300000.4), new Point2d (325633.6, 229384.0)},
+            new List<Point2d>() { new Point2d (317821.9, 300000.9), new Point2d (337857.3, 235244.1)},
+            new List<Point2d>() { new Point2d (329207.1, 300000.7), new Point2d (347077.2, 240365.3)},
+            new List<Point2d>() { new Point2d (342760.8, 300000.9), new Point2d (352757.3, 244599.0)},
+            new List<Point2d>() { new Point2d (354908, 300000.9), new Point2d (358080, 247296.0)},
              };
 
             //2022-07 What really needs to happen instead of mult1 & mult2, the
@@ -24929,7 +24929,7 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
         if (pts_remain_someobjective_display < 0) pts_remain_someobjective_display = 0;
         if (pts_remain <= 0 && c>0) msg2 = String.Format("****Remaining objective points to turn map: 0 with all remaining primary objective{1} OR {0:n0} with {2:n0}% of primary objectives", pts_remain_someobjective_display, (c != 1)?"s":"", MO_PercentPrimaryTargetsRequired[(ArmiesE)army]);
 		if (pts_remain<=0 && pts_remain_someobjective_display <=0) {
-			msg2 += String.Format(" OR {0:n0} otherwise", MO_PointsRequiredWithNoPrimary[(ArmiesE)army]);
+			msg2 += String.Format(" OR {0:n0} otherwise", MO_PointsRequiredWithNoPrimary[(ArmiesE)army] - MissionObjectiveScore[(ArmiesE)army]);
 		}
         retmsg += msg2 + newline;
         totDelay += delay;

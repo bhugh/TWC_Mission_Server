@@ -891,6 +891,8 @@ public class MoveBombTargetMission : AMission
                     if (dist <= radius_effective_m)
                     {
                         if (mo.MOObjectiveType == Mission.MO_ObjectiveType.Submarine) continue; //no attack the submarine, that's for breathers
+                        if (mo.MOTriggerType == Mission.MO_TriggerType.NoBombs) continue;
+                        
                         if ((mo.MOObjectiveType == Mission.MO_ObjectiveType.Naval_Ship || mo.MOObjectiveType == Mission.MO_ObjectiveType.Freighter_Ship || mo.MOObjectiveType == Mission.MO_ObjectiveType.Tanker_Ship  || mo.MOObjectiveType == Mission.MO_ObjectiveType.Naval_Freighter_Convoy || mo.MOObjectiveType == Mission.MO_ObjectiveType.Naval_Tanker_Convoy) && ran.NextDouble() > 0.25) continue; //attack the navy/ship objectives only seldom 
 
                         if (mo.MOObjectiveType == Mission.MO_ObjectiveType.Military_Convoy && ran.NextDouble() > 0.2) continue; //mostly avoid attacking the convoys, they will probably just miss anyway.
@@ -1341,7 +1343,7 @@ public class MoveBombTargetMission : AMission
 
             //So, to make aircraft (in say a submission) AVOID being reprogrammed by movebomb here
             //you just include 'nochange' or 'cover' in the airgroup name.  it is a bit tricky - include
-            //it as part of the "number" no the regiment name etc.  Like:
+            //it as part of the "number" not the regiment name etc.  Like:
             //[AirGroups]
             //  BoB_LW_KG26_Stab.02_NOCHANGE
             //  BoB_LW_KG26_Stab.01_NOCHANGE

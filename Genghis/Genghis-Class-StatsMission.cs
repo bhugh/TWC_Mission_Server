@@ -4673,6 +4673,10 @@ struct
                                         AiAircraft aircraft = actor as AiAircraft;
                                         if (aircraft != null)
                                         {
+                                            //Don't change _cover ac
+                                            if  ( airGroup.Name().ToLower().Contains("_cover")) continue;
+                                            //Maybe not _NOCHANGE also?  But I think they NEED to defend...
+
                                             //For heavy bombers, do this only SOMETIMES
                                             if (airGroup.NOfAirc > 2 && Calcs.isHeavyBomber(airGroup) && stb_random.NextDouble() > 0.02) continue;
                                             else if (airGroup.NOfAirc == 2 && Calcs.isHeavyBomber(airGroup) && stb_random.NextDouble() > 0.2) continue;

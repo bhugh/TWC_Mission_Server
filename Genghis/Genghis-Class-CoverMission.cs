@@ -24,22 +24,34 @@ using System.Text.RegularExpressions;
 
 using TWCComms;
 using System.Media;
+ 
+
 
 /*   TODO:
+ *   Instead of <creserver and <cattack how about:
+ * <cnormal formation - the usual thing, bombers/sturmo stay in formation except when ground attacking, cover stays in  place unless directly attacking/defending
+ * <cstrict formation - ignore all and just fly in formation
+ * <cescort - CLoD escort function, for all AC types if assigned this. Basically escort/defend the player
+ * <cattack - air attack anything reasonably nearby.  Like if attacking a formation of bombers w/ cover
+ * <cloiter - stay in one place circling
+
+ * could also do "attack bombers" vs "attack cover"    +;.kbZAzxZzcbhhhgyygvjh;;''
+ ;'[]l;
+ ]
+ =-0-0098767667877
+ *   xxThey are not climbing above 500 meters for some reason.  Maybe because of the speed restriction on currentposwaypoint? It's baffling.
+ *   xxcover A/C catch up OK but seem to speed away once they are in front.
  *   
- *   They are not climbing above 500 meters for some reason.  Maybe because of the speed restriction on currentposwaypoint? It's baffling.
- *   cover A/C catch up OK but seem to speed away once they are in front.
+ *   xxPROBABLY need to put each cover/bomber group in a certain spot a little left/right of the main a/c instead of letting them all fight it out for the same spot
  *   
- *   PROBABLY need to put each cover/bomber group in a certain spot a little left/right of the main a/c instead of letting them all fight it out for the same spot
- *   
- *   Airgroups larger then 2 seem to split up here & there.  So, we need ot keep track of the split-off airgroups & do something with them to keep track of them.
+ *   xxAirgroups larger then 2 seem to split up here & there.  So, we need ot keep track of the split-off airgroups & do something with them to keep track of them.
  *   Right now they are just split off from the airgroup we are keeping track off and then we lose control of it.
  *   
  *      --->>  Except, this line might help with this situation: if (airGroup.motherGroup() != null && coverAircraftAirGroupsActive.ContainsKey(airGroup.motherGroup()))
  *  	--->> And, this routine: CheckSplits
  * 
- *   Doesn't auto-send all aircraft back to stock when battle ends.  (Because of delay after player leaves game to allow bombing runs to continue. OnBattleStoped doesn't do it because it comes along too late.)
- *   Needs to register function landAllCoverAircraft(); with TWCComs and then call it in SaveMapState somewhere before:
+ *   xxDoesn't auto-send all aircraft back to stock when battle ends.  (Because of delay after player leaves game to allow bombing runs to continue. OnBattleStoped doesn't do it because it comes along too late.)
+ *   xxNeeds to register function landAllCoverAircraft(); with TWCComs and then call it in SaveMapState somewhere before:
  *      if (TWCSupplyMission != null) TWCSupplyMission.SupplyEndMission(redMult, blueMult);
  * 
  * ******************************************/
@@ -7281,7 +7293,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 
             //CurrentPos.z = targetAirGroup.Pos().z + altDiff_m + ran.NextDouble() * 2 * AltDiff_range_m - AltDiff_range_m;
 
-            CurrentPos.z = 175;//landing
+            CurrentPos.z = 175;//landing            
 
             double targetDist_m = 1000;
             if (targetAirGroup != null) targetDist_m = CoverCalcs.CalculatePointDistance(airGroup.Pos(), targetAirGroup.Pos());
@@ -7302,6 +7314,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             //aaWP.Action = AiAirWayPointType.NORMFLY;
             aaWP.Action = aawpt;
             aaWP.Target = ap as AiActor;
+            
 
             //Console.WriteLine("EscortLANDINGWaypoint - returning: {0} {1:n0} {2:n0} {3:n0} {4:n0} {5}", new object[] { (aaWP as AiAirWayPoint).Action, (aaWP as AiAirWayPoint).Speed, aaWP.P.x, aaWP.P.y, aaWP.P.z, ap.Name() });
 
@@ -7372,6 +7385,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 if (frontBackDist_m > 6500 && target_vel_mps_IAS * 1.7 > vel_mps) vel_mps = target_vel_mps_IAS * 1.7; //Go 1.7X as fast, if possible, the target gets more than 1km off
                 if (frontBackDist_m > 10000 && target_vel_mps_IAS * 2.0 > vel_mps) vel_mps = target_vel_mps_IAS * 2.0; //etc
                 if (frontBackDist_m > 18000 && target_vel_mps_IAS * 3.0 > vel_mps) vel_mps = target_vel_mps_IAS * 3.0;
+            
 
                 if (!heavyBomber) //generally keep fighter escorts going much faster relative to the main a/c and it doesn't need to snuggle up as close and its target point is
                                   //closer to the main a/c which is more how we keep it in the right area
@@ -7442,6 +7456,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
         if (targetAircraft != null) tas = (double)targetAircraft.getParameter(part.ParameterTypes.Z_VelocityTAS, -1);
         if (targetAircraft != null) ias = (double)targetAircraft.getParameter(part.ParameterTypes.Z_VelocityIAS, -1);
         if (targetAircraft != null) mach = (double)targetAircraft.getParameter(part.ParameterTypes.Z_VelocityMach, -1);
+
 
         //Console.WriteLine("Cover vel before:after:target:gp dist ang #{9:D3} Req:{1:D3} : {0:D3} : {8:D3} {10:D3} {11:D3} {12:F2} | TTAS:{2:D3} TIAS:{13:D3} CMPS{3:D3} | {4:F0} FBD:{5:F0} | {6:F0} {7:F0}", (int)vel_save, (int)vel_mps, (int)target_vel_mps_TAS, (int)ag_vel_mps, (int)targetDist_m, frontBackDist_m, angleTargetToGroup, ninetyDiff, (int)vel_save2,airGroup.ID(), (int)tas, (int)ias, (int)mach, (int)target_vel_mps_IAS);
 
@@ -7596,11 +7611,14 @@ public AiAirGroup getRandomNearbyEnemyAirGroup(AiAirGroup from, double distance_
 
         n = GamePlay.gpAirports().Length;
 
+
         //AiActor[] aMinSaves = new AiActor[n + 1];
         //int j = 0;
         //GamePlay.gpLogServer(null, "Checking distance to nearest airport", new object[] { });
         for (int i = 0; i < n; i++)
         {
+
+
             AiActor a;
             Point3d ps = new Point3d(-1, -1, -1);
             int aArmy = -1;
@@ -9535,7 +9553,10 @@ public static class CoverCalcs
         if (list == null || list.Count == 0) return;
         for (var i = 0; i < list.Count; i++)
             list.Swap(i, clc_random.Next(i, list.Count));
+
+        
     }
+
     /*
      * // so this function is already added in -main.cs class Calcs so if we have everything together in the same namespace etc we don't need this again here
     private static void Swap<T>(this IList<T> list, int i, int j)

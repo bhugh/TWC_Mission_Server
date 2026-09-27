@@ -35,10 +35,7 @@ using System.Media;
  * <cattack - air attack anything reasonably nearby.  Like if attacking a formation of bombers w/ cover
  * <cloiter - stay in one place circling
 
- * could also do "attack bombers" vs "attack cover"    +;.kbZAzxZzcbhhhgyygvjh;;''
- ;'[]l;
- ]
- =-0-0098767667877
+ * could also do "attack bombers" vs "attack cover"   
  *   xxThey are not climbing above 500 meters for some reason.  Maybe because of the speed restriction on currentposwaypoint? It's baffling.
  *   xxcover A/C catch up OK but seem to speed away once they are in front.
  *   
@@ -2426,7 +2423,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             setCoverAircraftAirGroupsOrders(player, msg, CoverAGOrders.escort, "were ordered to ESCORT you, defending you from enemy aircraft.");
 
         }
-        else if (msg.StartsWith("<cloiter") || msg.StartsWith("<cloi") || msg.StartsWith("<clo"))
+        else if (msg.StartsWith("<cloiter") || msg.StartsWith("<cloi") || msg.StartsWith("<clo") || msg.StartsWith("<cl"))
         { //loiter - stay in one place, circling (<cloiter, <cloi, <clo)
             List<AiAirGroup> loiterGroups = setCoverAircraftAirGroupsOrders(player, msg, CoverAGOrders.loiter, "were ordered to LOITER in place, circling.");
             setLoiterPoints(loiterGroups); //circle around wherever they are right now, at the moment the order is given
@@ -6578,12 +6575,15 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 
                                         if (act.Name().ToLower().Contains("chief")) numToTargetOne = 3;
 
-                                        distToNearestACTOR_m = distToNearestAirgroupTargetPoint(act.Pos());
+                                        
 
 
                                         //if (dist_m < closest_m && act.IsAlive() && act as AiGroundActor != null)
-                                        if (act.IsAlive() && act as AiGroundActor != null && airgroupTargets.Values.Count(x => x == act) < numToTargetOne &&  distToNearestACTOR_m >= 600 - 600 * p / numsteps )
+                                        if (act.IsAlive() && act as AiGroundActor != null && airgroupTargets.Values.Count(x => x == act) < numToTargetOne )                                        
                                         {
+                                            //
+                                            distToNearestACTOR_m = distToNearestAirgroupTargetPoint(act.Pos(),  act); // adding ,act allows > 1 target for this actor, but more thn numToTargetOne is disallowed above in the if statement
+                                            if (distToNearestACTOR_m >= 600 - 600 * p / numsteps ) continue; //can't have any targets within abt 500m of each other because due to CLoD, they will all just switch attack the SAME target instead of different ones.
                                             if (!airGroup.hasBombs() && CoverCalcs.areCratersBuildingsFactoriesNear(mainmission, act.Pos(), 500.0 - 500.0 * p / numsteps )) continue; //the ai ground attackers will attack craters (even if only NEAR the target) so trying to avoid that. Can't hit things if they're inside a building. Also they randomly choose a "thing" nearby the point, not necessary the one we specify.  So we try to avoid all such AREAS not just pick one GG or act that is OK.  Because the ground attacker will just switch targets to a bad one, invariably, if available.
 
                                             closest_m = dist_m;
@@ -6708,12 +6708,12 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 												else { statArmy = GamePlay.gpFrontArmy(gg.pos.x, gg.pos.y); }
 											}
 
-                                            distToNearestGROUND_m = distToNearestAirgroupTargetPoint(gg.pos);
+                                            
 
 
 											if (gg != null && gg.IsAlive && !airgroupGroundTargets.ContainsValue(gg)
 											&& statArmy == 3 - airGroup.getArmy() && !gg.Title.ToLower().Contains("crater")
-											&& !gg.Title.ToLower().Contains("smoke") && !gg.Title.ToLower().Contains("fire") && !gg.Title.ToLower().Contains("_dmg") && distToNearestGROUND_m > 600 - 600 * d / steps //avoid choosing a smoke, fire, or crater, or damaged object to attack. There might be some other types to avoid, too but these are the main offenders.
+											&& !gg.Title.ToLower().Contains("smoke") && !gg.Title.ToLower().Contains("fire") && !gg.Title.ToLower().Contains("_dmg")  //avoid choosing a smoke, fire, or crater, or damaged object to attack. There might be some other types to avoid, too but these are the main offenders.
 											) //not trying to find the closest, just a random one within the given distance, and not already picked by another airgroup && enemy
 											  //Names including _DMG are damaged items, don't need to target them.  IE Stationary.Environment.Ladder_UK1_DMG1
 											  //We use things like this in our detritus fields, which mean target is destroyed or moved
@@ -6741,6 +6741,8 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 											  
 
 											{
+                                                distToNearestGROUND_m = distToNearestAirgroupTargetPoint(gg.pos);
+                                                if ( distToNearestGROUND_m > 600 - 600 * d / steps) continue; //trying to avoid having AI all attack the same area (even if technically different targets, they will all switch and just attack the same one, due to CLoD)
 
                                                 if (!airGroup.hasBombs() && CoverCalcs.areCratersBuildingsFactoriesNear(mainmission, gg.pos, 400.0 - 400.0 * d / steps)) continue; //the ai ground attackers will attack craters (even if only NEAR the target) so trying to avoid that.
 
@@ -7979,11 +7981,16 @@ public AiAirGroup getRandomNearbyEnemyAirGroup(AiAirGroup from, double distance_
         return midPos;
     }
 
-    public double distToNearestAirgroupTargetPoint(Point3d p) {
+    //If actor is given, will skip any points that are the same as the actor's position
+    public double distToNearestAirgroupTargetPoint(Point3d p, AiActor act = null) {
+        bool isActor = act != null;
+        Point3d retPos = new Point3d(-1,-1,0);
+        if (isActor) retPos = act.Pos();
         //if NO point selected it is set to -1,-1, which should still work for this purpose 
         //without special handling
         double distsq_m2 = 100000000000000;
         foreach (Point3d pos in airgroupTargetPoints.Values) {
+            if (isActor && Calcs.Point3dEqualXY(pos,retPos)) continue;
             double diffX = p.x-pos.x;
             double diffY = p.y-pos.y;
             double dist_temp = diffX*diffX + diffY*diffY;

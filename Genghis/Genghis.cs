@@ -111,7 +111,7 @@ using System.Timers;
 /*****************************************************************************
  * TODO  / Ideas
  * 
- * Make <cover recognize "nobomb" targets and not target them, but only the surrounding
+ * XXMake <cover recognize "nobomb" targets and not target them, but only the surrounding aa positions etc
  *
  *
  *
@@ -6594,6 +6594,7 @@ public class Mission : AMission, IMainMission
                         // player_sector = GamePlay.gpSectorName(p.Pos().x, p.Pos().y).ToString();
                         //player_sector = player_sector.Replace(",", ""); // remove the comma 
                         player_sector = Calcs.correctedSectorName(this, padig.pos);
+
                         if (objectiverepairmission != null && objectiverepairmission.orm_isPlayerOnRepairMission(player)) player_sector = "??"; //no sector for ferry/repair pilots
                         player_place_set = true;
                         playername = player.Name();
@@ -13030,7 +13031,7 @@ public class Mission : AMission, IMainMission
 			!(
 				msg.StartsWith("<car") || msg.StartsWith("<ses") || msg.StartsWith("<rank") || msg.StartsWith("<rr")
 				|| msg.StartsWith("<ter") || msg.StartsWith("<air") || msg.StartsWith("<ac") || msg.StartsWith("<nextac") || msg.StartsWith("<asv")
-				|| msg.StartsWith("<net") || msg.StartsWith("<k") || msg.StartsWith("<chelp") || msg.StartsWith("<cdist") || msg.StartsWith("<cover") || msg.StartsWith("<cpos") || msg.StartsWith("<cland") || msg.StartsWith("<ca") || msg.StartsWith("<cr") || msg.StartsWith("<clist") || msg.StartsWith("<cn") || msg.StartsWith("<cst") || msg.StartsWith("<ce") || msg.StartsWith("<clo") || msg.StartsWith("<de") || msg.StartsWith("<da") || msg.StartsWith("<pi") || msg.StartsWith("<fe") || msg.StartsWith("<ab") ||
+				|| msg.StartsWith("<net") || msg.StartsWith("<k") || msg.StartsWith("<chelp") || msg.StartsWith("<cdist") || msg.StartsWith("<cover") || msg.StartsWith("<cpos") || msg.StartsWith("<cland") || msg.StartsWith("<ca") || msg.StartsWith("<cr") || msg.StartsWith("<ce")|| msg.StartsWith("<cl") || msg.StartsWith("<cr") || msg.StartsWith("<cs") || msg.StartsWith("<cn")|| msg.StartsWith("<de") || msg.StartsWith("<da") || msg.StartsWith("<pi") || msg.StartsWith("<fe") || msg.StartsWith("<ab") ||
 				  msg.StartsWith("<phelp") || msg.StartsWith("<wa") || msg.StartsWith("<wind") ||
 				  msg.StartsWith("<ma") || msg.StartsWith("<khelp") || msg.StartsWith("<phelp") ||
 				  msg.StartsWith("<ahelp") || msg.StartsWith("<pi") || msg.StartsWith("<pd") || msg.StartsWith("<ma") || msg.StartsWith("<lg") || msg.StartsWith("<tac") || msg.StartsWith("<tmes ")

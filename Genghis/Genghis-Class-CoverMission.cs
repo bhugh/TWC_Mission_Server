@@ -4395,10 +4395,13 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             //if (heavyBomber && isBomberArmed(airGroup)) aawpt = AiAirWayPointType.AATTACK_FIGHTERS;
             //But let's try FOLLOW to see if they will act more like bomber formations with that in place
             //bombers seem to drop bombs rather quick if they get into any trouble/attacked
-            if ((heavyBomber && isBomberArmed(airGroup)) || isOnRepairMission(player)) aawpt = AiAirWayPointType.FOLLOW;  //not sure about hasBombs(), trying it without        
+            if ((heavyBomber && isBomberArmed(airGroup)) || isOnRepairMission(player)) aawpt = AiAirWayPointType.FOLLOW;  //not sure about hasBombs(), trying it without  
+            Point3d defendDistances_m = new Point3d (4000, 1200, 2200);
+            if (CoverAGOrders.escort == orders) defendDistances_m = new Point3d (2500, 1000, 2000);
+            else if (CoverAGOrders.normal == orders) defendDistances_m = new Point3d (1250, 600, 1200);
 
             //AltDiffBomber_m: 25, AltDiffBomber_range_m
-            AiAirGroup attackingAirGroup = getRandomNearbyEnemyAirGroup(playerAirGroup, 4000, 1000, 2000); //escorts are supposed to be 1000m above the escorted bomber, so definitely need to attack things 1000-2000 feet (333-666m) below those bombers.  Above, add 1000m fighter altitude ot bomber alt. 
+            AiAirGroup attackingAirGroup = getRandomNearbyEnemyAirGroup(playerAirGroup, defendDistances_m.x, defendDistances_m.y, defendDistances_m.z); //escorts are supposed to be 1000m above the escorted bomber, so definitely need to attack things 1000-2000 feet (333-666m) below those bombers.  Above, add 1000m fighter altitude ot bomber alt.
 
             //OK, HERE is where we can make the aircraft more follow or more defend the player etc
             if (attackingAirGroup != null && !isOnRepairMission(player) && ordersEngageAir(orders) )  //<cattack/<ca, <cnormal/<cn & <cescort/<ce engage enemy a/c; <creserve/<cr, <cstrict/<cst & <cloiter/<clo hold their fire
@@ -4412,7 +4415,8 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 				//instead of returning to base with them, so trying keep on .follow instead 2026/08
 				//We COULD make "escort" vs "follow" an option in the menu
                 //if (heavyBomber || dive && isBomberArmed(airGroup))
-				if (heavyBomber)
+                //Set to .escort even heavy bombers will actually aggressively attack anything nearby, not just fly straight & shoot
+				if (heavyBomber &&  orders != CoverAGOrders.escort)
                 {
 
                     airGroup.setTask(AiAirGroupTask.DEFENDING, playerAirGroup);
@@ -6574,9 +6578,6 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                                         }
 
                                         if (act.Name().ToLower().Contains("chief")) numToTargetOne = 3;
-
-                                        
-
 
                                         //if (dist_m < closest_m && act.IsAlive() && act as AiGroundActor != null)
                                         if (act.IsAlive() && act as AiGroundActor != null && airgroupTargets.Values.Count(x => x == act) < numToTargetOne )                                        

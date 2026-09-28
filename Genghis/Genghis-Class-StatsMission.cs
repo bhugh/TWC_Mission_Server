@@ -7069,6 +7069,7 @@ struct
 
         //Spread them out a little over time
         //TODO: this could all be done in a worker thread (just not 1000 worker threads as we attempted above)
+        if (mainmission.ON_TESTSERVER) Console.WriteLine("Bomb (stats) {0} {1} {2}", title, mass_kg, eventArgInt);
         double wait = stb_random.NextDouble() * 120;
         Timeout(wait, () =>
             OnBombExplosion_DoWork(title, mass_kg, pos, initiator, eventArgInt)

@@ -2259,7 +2259,7 @@ public class Mission : AMission, IMainMission
 					for (int i=0; i<ml ; i++ ) {
 						Timeout(random.NextDouble()*35 + 5, () => {
 							//MO_HandlePointAreaObjectives("Cannon", 230, pos, initiator);
-							OnBombExplosion_DoWork("Cannon", mass_kg: 100, pos: pos2, initiator: initiator, eventArgInt: 0);
+							OnBombExplosion_DoWork("Cannon", mass_kg: 103, pos: pos2, initiator: initiator, eventArgInt: 0);
 							
 							
 							//Not sure if the below is working at all
@@ -2315,7 +2315,7 @@ public class Mission : AMission, IMainMission
 
         //Spread them out a little over time
         //TODO: this could all be done in a worker thread (just not 1000 worker threads as we attempted above) and a queue
-        //Console.WriteLine("Bomb");
+        if (ON_TESTSERVER) Console.WriteLine("Bomb (main) {0} {1} {2}", title, mass_kg, eventArgInt);
         double wait = stb_random.NextDouble() * 90;
         Timeout(wait, () =>
             OnBombExplosion_DoWork(title, mass_kg, pos, initiator, eventArgInt)
@@ -12196,7 +12196,7 @@ public class Mission : AMission, IMainMission
                 Point3d pos = mo.Pos;
                 pos.x += random.Next(600) - 300;
                 pos.y += random.Next(600) - 300;
-                OnBombExplosion_DoWork("Bombe", 500, pos, initiator, 1);
+                OnBombExplosion_DoWork("Bombe", 501, pos, initiator, 1);
             }
 
         }
@@ -12302,7 +12302,7 @@ public class Mission : AMission, IMainMission
                 Point3d pos = mo.Pos;
                 pos.x += random.Next(600) - 300;
                 pos.y += random.Next(600) - 300;
-                OnBombExplosion_DoWork("Bombe", 500, pos, initiator, 1);
+                OnBombExplosion_DoWork("Bombe", 502, pos, initiator, 1);
             }
 
         }
@@ -12380,7 +12380,7 @@ public class Mission : AMission, IMainMission
                 Point3d pos = mo.Pos;
                 pos.x += random.Next(600) - 300;
                 pos.y += random.Next(600) - 300;
-                OnBombExplosion_DoWork("Bombe", 500, pos, initiator, 1);
+                OnBombExplosion_DoWork("Bombe", 504, pos, initiator, 1);
             }
             Timeout(120, () =>
            {

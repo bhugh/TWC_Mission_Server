@@ -1206,7 +1206,7 @@ public class CoverMission : AMission, ICoverMission
     //<cstrict - in strict formation the airgroups fly the standard (100%) formation spread, whatever the player
     //has set with <cdist, and they hold the leader's speed instead of the normal escort over-speed.
     public float strictFormationShiftFactor = 1.0f;   //1.0f = 100% = the standard formation spread
-    public double strictSpeedMatchDistance_m = 1500;  //as long as they are within this (front/back) distance of the leader, they match the leader's speed
+    public double strictSpeedMatchDistance_m = 50;  //as long as they are within this (front/back) distance of the leader, they match the leader's speed
 
     //Are these the strict (<cstrict/<cst) rigid formation orders?  The formation spacing & speed routines need
     //to know this, but they don't have the airgroup's orders to hand.

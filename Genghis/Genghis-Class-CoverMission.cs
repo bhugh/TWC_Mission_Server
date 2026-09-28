@@ -145,7 +145,8 @@ public class CoverMission : AMission, ICoverMission
     //           stays in place unless directly attacking/defending (this is the default behavior)
     //  follow - hold fire & stay in reserve, joined with the player (no attacking & no bombing)
     //  attack - air attack anything reasonably nearby, plus any bombing the player has ordered
-    //  strict - ignore all else & just fly in formation with the player
+    //  strict - ignore all else & just fly in rigid formation with the player (holds your speed & altitude,
+    //           ignores <cdist, & fires only in self defence)
     //  escort - CLoD's ESCORT behavior for all a/c types: stay with & defend the player (no ground bombing)
     //  loiter - stay in one place, circling
     public enum CoverAGOrders {none, follow, attack, normal, strict, escort, loiter };
@@ -1202,11 +1203,31 @@ public class CoverMission : AMission, ICoverMission
         return shiftFactor / 100;
     }
 
+    //<cstrict - in strict formation the airgroups fly the standard (100%) formation spread, whatever the player
+    //has set with <cdist, and they hold the leader's speed instead of the normal escort over-speed.
+    public float strictFormationShiftFactor = 1.0f;   //1.0f = 100% = the standard formation spread
+    public double strictSpeedMatchDistance_m = 1500;  //as long as they are within this (front/back) distance of the leader, they match the leader's speed
+
+    //Are these the strict (<cstrict/<cst) rigid formation orders?  The formation spacing & speed routines need
+    //to know this, but they don't have the airgroup's orders to hand.
+    public bool isInStrictFormation(AiAirGroup airGroup)
+    {
+        return (airGroup != null && coverAircraftAirGroupsOrders.ContainsKey(airGroup) && coverAircraftAirGroupsOrders[airGroup] == CoverAGOrders.strict);
+    }
+
+    //The formation spread factor to use for this airgroup - <cstrict (<cst) airgroups always use the fixed,
+    //standard spread instead of the player's <cdist setting
+    public float getShiftFactorForAirgroup(Player player, AiAirGroup airGroup)
+    {
+        if (isInStrictFormation(airGroup)) return strictFormationShiftFactor;
+        return getShiftFactor(player);
+    }
+
     public Tuple<double, int, int, int> aircraftPositionAndNumber(AiAirGroup airGroup, Player player)
     {
         //Blenheim wingspan is 17m;     JU88 18m; HE111 22.5m; DO217 19 m; Wellington 26 m
         //Beaufighter 17 m; HE110 16.25
-        float shiftFactor = getShiftFactor(player);
+        float shiftFactor = getShiftFactorForAirgroup(player, airGroup); //<cstrict airgroups use the standard formation spread, ignoring the player's <cdist setting
 
         float amtToShiftForEachBomber_m = defaultAmtToShiftForEachBomber_m * shiftFactor;        
         float amtToShiftForEachFighter_m = defaultAmtToShiftForEachFighter_m * shiftFactor;
@@ -1264,7 +1285,7 @@ public class CoverMission : AMission, ICoverMission
     public Point3d calcOffset_m(Point3d CurrentPos, AiAirGroup airGroup, Player player, Vector3d Vwld, double vel_mps, offsetDirection dir = offsetDirection.left_right, float amtToShiftWhenTargeting = 0)
     {
         //if (player==null || airGroup==null || player)
-        float shiftFactor = getShiftFactor(player);
+        float shiftFactor = getShiftFactorForAirgroup(player, airGroup);
 
         string actype = Calcs.GetAircraftType(airGroup);
         //double vertShiftFactor = 1.0f;
@@ -2580,11 +2601,13 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
         {
             string msg42 = "COVER FIGHTER & BOMBER SYSTEM - HELP PAGE 4/6";
             GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
-            msg42 = "<creserve 1 4 OR <cr 1 4 - instruct squadrons #1 and #4 to stay in reserve, joined with you, and not join the current attack. <cr (alone, no numbers) puts all squadrons on reserve.";
+            msg42 = "<creserve 1 4 OR <cr 1 4 - instruct squadrons #1 and #4 to stay in reserve, joined with you, holding their fire & not joining the current attack (they will still defend you). <cr (alone, no numbers) puts all squadrons on reserve.";
+            GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
+            msg42 = "<cstrict 2 OR <cst 2 - squadron #2 flies in rigid STRICT formation with you (holding your speed & altitude, ignoring <cdist), ignores all other action, & fires only in self defense.";
+            GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
+            msg42 = "<cescort 1 3 OR <ce 1 3 - squadrons #1 & #3 ESCORT you: stay with & defend you from enemy aircraft, without bombing ground targets.";
             GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
             msg42 = "<cnormal 2 3 OR <cn 2 3 - squadrons #2 & #3 return to their NORMAL behavior (attack nearby air enemies & bomb as you direct). <cn (alone, no numbers) puts all squadrons on normal.";
-            GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
-            msg42 = "<cstrict 2 OR <cst 2 - squadron #2 flies in STRICT formation with you & ignores all other action. <cescort / <ce - squadrons ESCORT you & defend you from enemy aircraft.";
             GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
             msg42 = "<cloiter 1 OR <clo 1 - squadron #1 LOITERS in place, circling.";
             GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
@@ -3320,7 +3343,8 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
     //
     //  <cnormal / <cn   - the usual behavior: bombers/sturmoviks stay in formation except when
     //                     ground attacking, cover stays in place unless directly attacking/defending
-    //  <cstrict / <cst  - ignore all else & just fly in formation with the player
+    //  <cstrict / <cst  - ignore all else & just fly in rigid formation with the player: holds the leader's
+    //                     speed & altitude, ignores <cdist, & fires only in self defence
     //  <cescort / <ce   - CLoD's ESCORT behavior for all a/c types: stay with & defend the player
     //  <cattack / <ca   - air attack anything reasonably nearby, plus any bombing the player has ordered
     //  <creserve / <cr  - hold fire & stay in reserve, joined with the player
@@ -4480,7 +4504,9 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             if (heavyBomber && isBomberArmed(airGroup))
             {
                 aawpt = AiAirWayPointType.FOLLOW;
-                if (!isOnRepairMission(player))
+                //<cstrict - you asked these a/c to just fly in formation, so don't task them to defend the leader either.
+                //They will still shoot in self defense, but they won't go off chasing enemy a/c on their own.
+                if (!isOnRepairMission(player) && !isInStrictFormation(airGroup))
                 {
                     airGroup.setTask(AiAirGroupTask.DEFENDING, playerAirGroup);
                     task = AiAirGroupTask.DEFENDING;
@@ -4516,7 +4542,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 aawpt = AiAirWayPointType.FOLLOW;
                 task = AiAirGroupTask.DO_NOTHING;
                 AltDiffPassed_m = -5;
-                AltDiff_range_m = 2;
+                AltDiffPassed_range_m = 2;  //this is the value actually passed to EscortUpdateWaypoints below (AltDiff_range_m is just my incoming parameter)
             }
 
             //Console.WriteLine("Going to Escort Update Waypoints");
@@ -4531,7 +4557,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                     task = AiAirGroupTask.DO_NOTHING;
                     tasktarget = null;
                     AltDiffPassed_m = -5;   //fly in formation - right at the leader's altitude, plus/minus just a couple of meters
-                    AltDiff_range_m = 2;
+                    AltDiffPassed_range_m = 2;  //this is the value actually passed to EscortUpdateWaypoints below (AltDiff_range_m is just my incoming parameter)
                 }
                 //<cloiter - circle around the loiter point that was set when the player gave the order.  This
                 //sets its own flight plan, so there is nothing more to do with this airgroup this time around.
@@ -4558,7 +4584,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 airGroup.setTask(task, tasktarget);
             }
 
-            Console.WriteLine("8ChangeTask(after): task: {0} {1} tasktarget: {2} " + airGroup.Name() + " to " + player.Name(), airGroup.getTask(), task.ToString(), tasktarget.ToString());            
+            Console.WriteLine("8ChangeTask(after): task: {0} {1} tasktarget: {2} " + airGroup.Name() + " to " + player.Name(), airGroup.getTask(), task.ToString(), (tasktarget == null ? "none" : tasktarget.ToString()));            
 
             //Console.WriteLine("6ChangeGoalTarget: {0} " + airGroup.Name() + " to " + player.Name(), airGroup.getTask());
             //if (mainmission.ON_TESTSERVER) Console.WriteLine("KAOTXX4 " + DateTime.UtcNow.ToString("T.fffffff"));
@@ -7613,6 +7639,14 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 
         //Console.WriteLine("Cover vel before:after:target:gp dist ang #{9:D3} Req:{1:D3} : {0:D3} : {8:D3} {10:D3} {11:D3} {12:F2} | TTAS:{2:D3} TIAS:{13:D3} CMPS{3:D3} | {4:F0} FBD:{5:F0} | {6:F0} {7:F0}", (int)vel_save, (int)vel_mps, (int)target_vel_mps_TAS, (int)ag_vel_mps, (int)targetDist_m, frontBackDist_m, angleTargetToGroup, ninetyDiff, (int)vel_save2,airGroup.ID(), (int)tas, (int)ias, (int)mach, (int)target_vel_mps_IAS);
 
+
+            //<cstrict - hold a rigid formation: match the leader's speed, instead of the 10% over-speed (weaving)
+            //that escorts normally use.  Only do this when we are roughly in position, though - if we have fallen
+            //well behind, the catch-up speeds that were calculated above are left in place, so we can rejoin.
+            if (isInStrictFormation(airGroup) && frontBackDist_m < strictSpeedMatchDistance_m)
+            {
+                vel_mps = target_vel_mps_IAS;
+            }
 
             if (vel_mps < 45) vel_mps = 45;
             if (vel_mps > 175) vel_mps = 175;

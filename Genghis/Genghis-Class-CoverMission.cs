@@ -6542,7 +6542,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 
                 if (mainmission.ON_TESTSERVER) Console.WriteLine("CBCW: Deciding whether to keep existing point. Have a point: {0} task: {1} currway: {2}", airgroupTargetPoints.ContainsKey(airGroup),  task, currWay);
 
-                if (airgroupTargetPoints.ContainsKey(airGroup) && airgroupTargetPoints[airGroup].x != -1 && airgroupTargetPoints[airGroup].y != -1 && task != AiAirGroupTask.RETURN && task != AiAirGroupTask.UNKNOWN && currWay != 0) //x,y == -1,-1 means we're actually not targeted at anythign
+                if (airgroupTargetPoints.ContainsKey(airGroup) && airgroupTargetPoints[airGroup].x != -1 && airgroupTargetPoints[airGroup].y != -1 && task != AiAirGroupTask.RETURN && task != AiAirGroupTask.UNKNOWN && currWay < 2) //x,y == -1,-1 means we're actually not targeted at anything.  currWay == 2 means we have already completed/passed the attack point and are not continuing.
                 {
                     
                     var oldApos = airgroupTargetPoints[airGroup];

@@ -1556,6 +1556,7 @@ public class CoverMission : AMission, ICoverMission
                 action = action.Replace("_", " ");
                 if (action.StartsWith("G")) action = "GND-" + action.Substring(1);
                 if (action.StartsWith("AA")) action = "AIR-" + action.Substring(1);
+                if (airGroup.getTask() == AiAirGroupTask.RETURN) action = "[RTB]";
                 msg += bomb + cannons + action;
 
                 //action for ground attack is either "GND-ATTACK POINT" or "GND-ATTACK TARG"

@@ -502,6 +502,12 @@ public class CoverMission : AMission, ICoverMission
 
         BAM_playerAimMode[player] = bam;
 
+        //remove any existing targets
+        
+        airgroupTargets = new Dictionary<AiAirGroup, AiActor>();
+        airgroupGroundTargets = new Dictionary<AiAirGroup, GroundStationary>();
+        airgroupTargetPoints = new Dictionary<AiAirGroup, Point3d>();
+        
         if (bam != BAM_BombAimMode.Nearest_Enemy_to_Bomb_Explosion) PBP_removePlayerLastBombOrMyPositionPoint(player); //Toggling bomb mode erases the last bomb drop location, except when switching bomb point=>actor
 
         if (bam == BAM_BombAimMode.Nearest_Enemy_to_Flare_Point || bam == BAM_BombAimMode.Drop_Flare_Point_Here_and_Target_it)
@@ -2456,7 +2462,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
         else if (msg.StartsWith("<cloiter") || msg.StartsWith("<cloi") || msg.StartsWith("<clo") || msg.StartsWith("<cl"))
         { //loiter - stay in one place, circling (<cloiter, <cloi, <clo)
             List<AiAirGroup> loiterGroups = setCoverAircraftAirGroupsOrders(player, msg, CoverAGOrders.loiter, "were ordered to LOITER in place, circling until further orders.");
-            setLoiterPoints(loiterGroups); //circle around wherever they are right now, at the moment the order is given
+            setLoiterPoints(loiterGroups, player.Place().Pos());
 
         }
         else if (msg.StartsWith("<flare"))
@@ -3440,8 +3446,10 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
     public Dictionary<AiAirGroup, Point3d> coverAircraftAirGroupsLoiterPoint = new Dictionary<AiAirGroup, Point3d>();
 
     //Set (or re-set) the point the given airgroups will circle around, to where those a/c are right now.
-    //Called when the <cloiter (<clo) command is given.
-    public void setLoiterPoints(List<AiAirGroup> airGroups)
+    //Called when the <cloiter (<cl) command is given.
+    //Will normally circle PLAYER'S current point, but current loc of group
+    //as backup
+    public void setLoiterPoints(List<AiAirGroup> airGroups, Point3d? loiterPoint = null)
     {
         try
         {
@@ -3450,6 +3458,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             {
                 if (airGroup == null) continue;
                 Point3d pos = airGroup.Pos();
+                if (loiterPoint.HasValue) pos = loiterPoint.Value;
                 pos.z = CoverCalcs.checkMinAGL(pos.z, pos);
                 coverAircraftAirGroupsLoiterPoint[airGroup] = pos;
                 Console.WriteLine("Cover: <cloiter - airgroup {0} will loiter around {1:n0} {2:n0}", airGroup.Name(), pos.x, pos.y);
@@ -3470,14 +3479,15 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             float shiftFactor = getShiftFactor(player);
             double radius_m = 900 * shiftFactor;   //<cdist adjusts how wide the circle is
             if (radius_m < 400) radius_m = 400;
-            if (radius_m > 6000) radius_m = 6000;
+            if (radius_m > 3000) radius_m = 3000;
 
             Point3d center = airGroup.Pos();
             if (coverAircraftAirGroupsLoiterPoint.ContainsKey(airGroup)) center = coverAircraftAirGroupsLoiterPoint[airGroup];
 
             //If the a/c have wandered well away from where they are supposed to be circling - or if there
             //is no loiter point for them yet - then circle wherever they are now instead
-            if (!coverAircraftAirGroupsLoiterPoint.ContainsKey(airGroup) || CoverCalcs.CalculatePointDistance(airGroup.Pos(), center) > radius_m * 3)
+            //if (!coverAircraftAirGroupsLoiterPoint.ContainsKey(airGroup) || CoverCalcs.CalculatePointDistance(airGroup.Pos(), center) > radius_m * 3)
+            if (!coverAircraftAirGroupsLoiterPoint.ContainsKey(airGroup))
             {
                 center = airGroup.Pos();
                 center.z = CoverCalcs.checkMinAGL(center.z, center);
@@ -4411,6 +4421,12 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 }
                 //if (mainmission.ON_TESTSERVER) Console.WriteLine("KAOTXX3 " + DateTime.UtcNow.ToString("T.fffffff"));
                 if (coverACContinuingFinalRun) return; //we never let bombers continuing final run move on to the next part where they escort or fly with the player, since the player DOESN'T EXIST ANY MORE!
+            } else
+            {
+                //clear the targets if the ag is not targeting anything 
+                if (airgroupTargets.ContainsKey(airGroup)) airgroupTargets.Remove(airGroup);
+                if (airgroupGroundTargets.ContainsKey(airGroup)) airgroupGroundTargets.Remove(airGroup);
+                if (airgroupTargetPoints.ContainsKey(airGroup)) airgroupTargetPoints.Remove(airGroup);
             }
 
             //Console.WriteLine("Cover KeepAconTask: 8");
@@ -6325,7 +6341,13 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 
             Tuple<AiAirWayPoint, AiAirWayPoint, double, bool> aaPs = BomberPosWaypoint(player, airGroup, targetAirGroup, newTargetPoint, aawpttarget, aawptcontinue, altDiff_m, AltDiff_range_m, nodupe, orders: orders);
             bool noGroundTargetFound = aaPs.Item4;
-            if (noGroundTargetFound) return false; 
+            if (noGroundTargetFound)
+            {
+                if (airgroupTargets.ContainsKey(airGroup)) airgroupTargets.Remove(airGroup);
+                if (airgroupGroundTargets.ContainsKey(airGroup)) airgroupGroundTargets.Remove(airGroup);
+                if (airgroupTargetPoints.ContainsKey(airGroup)) airgroupTargetPoints.Remove(airGroup);   
+                return false; 
+            }
             AiAirWayPoint aawp33 = CurrentPosWaypoint(airGroup, targetAirGroup, aawptstart, aaPs.Item3);
             if (aawp33 != null) NewWaypoints.Add(aawp33);
             NewWaypoints.Add(aaPs.Item1);
@@ -6448,7 +6470,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             //GroundStationary newTarget = null;
             AiActor newTarget = null;
             GroundStationary newGroundTarget = null;
-            bool diveTarget = false; //ground actor target
+            bool diveTarget = false; //ground actor target        
             bool stationaryDiveTarget = false; //stationary/static target
             //Choose another ground stationary somewhere within the given radius of change, starting with the GATTACK point since we don't have an actual GATTACK target actor; make sure it is alive if possible
             //Console.WriteLine("CBCW: bom,alt: {0} {1:F0}", isDiveBomber(airGroup), pos.z);
@@ -6530,12 +6552,25 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                         {
                             diveTarget = false;
                             airgroupTargetPoints[airGroup] = new Point3d(-1,-1,-1);
+
+                            //also remove any old targets 
+                            if (airgroupTargets.ContainsKey(airGroup)) airgroupTargets.Remove(airGroup);
+                            if (airgroupGroundTargets.ContainsKey(airGroup)) airgroupGroundTargets.Remove(airGroup);
+                
                             //Console.WriteLine("old ground target bad, not using it after all");
                         }
 
 
                     }
                 }
+
+                //We're getting new target points now, so remove any old targets
+                //otherwise they can interfere with e.g. counts of how many a/g are
+                //targeting a certain objective or stationary or groundactor
+                if (airgroupTargets.ContainsKey(airGroup)) airgroupTargets.Remove(airGroup);
+                if (airgroupGroundTargets.ContainsKey(airGroup)) airgroupGroundTargets.Remove(airGroup);
+                if (airgroupTargetPoints.ContainsKey(airGroup)) airgroupTargetPoints.Remove(airGroup);
+
                 string groundType = "";
 
 
@@ -6914,6 +6949,10 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 //Console.WriteLine("CBCW: No stationary found, updating attack position");
                 newPos.x = pos.x;
                 newPos.y = pos.y;
+                if (airgroupTargets.ContainsKey(airGroup)) airgroupTargets.Remove(airGroup);
+                if (airgroupGroundTargets.ContainsKey(airGroup)) airgroupGroundTargets.Remove(airGroup);
+                if (airgroupTargetPoints.ContainsKey(airGroup)) airgroupTargetPoints.Remove(airGroup);
+                
 
             }
 
@@ -7098,6 +7137,9 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 (nextWP as AiAirWayPoint).Action = AiAirWayPointType.NORMFLY;
                 noGroundEnemyFound = true;
 				Console.WriteLine("CBCW: 4");
+                if (airgroupTargets.ContainsKey(airGroup)) airgroupTargets.Remove(airGroup);
+                if (airgroupGroundTargets.ContainsKey(airGroup)) airgroupGroundTargets.Remove(airGroup);
+                if (airgroupTargetPoints.ContainsKey(airGroup)) airgroupTargetPoints.Remove(airGroup);
 			              
             }
 			

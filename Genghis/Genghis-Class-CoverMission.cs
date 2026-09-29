@@ -4457,7 +4457,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             AiAirGroup attackingAirGroup = getRandomNearbyEnemyAirGroup(playerAirGroup, defendDistances_m.x, defendDistances_m.y, defendDistances_m.z); //escorts are supposed to be 1000m above the escorted bomber, so definitely need to attack things 1000-2000 feet (333-666m) below those bombers.  Above, add 1000m fighter altitude ot bomber alt.
 
             //OK, HERE is where we can make the aircraft more follow or more defend the player etc
-            if (attackingAirGroup != null && !isOnRepairMission(player) && ordersEngageAir(orders) && !attacking )  //<cattack/<ca, <cnormal/<cn & <cescort/<ce engage enemy a/c; <creserve/<cr, <cstrict/<cst & <cloiter/<clo hold their fire
+            if (attackingAirGroup != null && !isOnRepairMission(player) && ordersEngageAir(orders) )  //<cattack/<ca, <cnormal/<cn & <cescort/<ce engage enemy a/c; <creserve/<cr, <cstrict/<cst & <cloiter/<clo hold their fire
             {
                 //Console.WriteLine("3ChangeGoalTarget: {0} " + airGroup.Name() + " to " + player.Name(), airGroup.getTask());
                 //if a heavy bomber with bombs, then don't go on the 
@@ -6371,12 +6371,12 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 
     //Dictionary<AiAirGroup, GroundStationary> airgroupTargets = new Dictionary<AiAirGroup, GroundStationary>();
 
-    public Tuple<AiAirWayPoint, AiAirWayPoint, double, bool> BomberPosWaypoint(Player player, AiAirGroup airGroup, AiAirGroup playerAirGroup, Point3d newTargetPoint, AiAirWayPointType aawpttarget = AiAirWayPointType.FOLLOW, AiAirWayPointType aawptcontinue = AiAirWayPointType.FOLLOW, double altDiff_m = 1000,
+    public Tuple<AiAirWayPoint, AiAirWayPoint, double, bool, bool> BomberPosWaypoint(Player player, AiAirGroup airGroup, AiAirGroup playerAirGroup, Point3d newTargetPoint, AiAirWayPointType aawpttarget = AiAirWayPointType.FOLLOW, AiAirWayPointType aawptcontinue = AiAirWayPointType.FOLLOW, double altDiff_m = 1000,
         double AltDiff_range_m = 700, bool nodupe = true, CoverAGOrders orders = CoverAGOrders.normal)
     {
 		//try
         //{
-            if (GamePlay == null || airGroup == null) { Console.WriteLine("Cover: exiting BomberPosWaypoint; airGroup is NULL or GamePlay is NULL, no reason to continue"); return new Tuple<AiAirWayPoint, AiAirWayPoint, double, bool>(null, null, 0, false, false); }
+            if (GamePlay == null || airGroup == null) { Console.WriteLine("Cover: exiting BomberPosWaypoint; airGroup is NULL or GamePlay is NULL, no reason to continue"); return new Tuple<AiAirWayPoint, AiAirWayPoint, double, bool, bool>(null, null, 0, false, false); }
             Console.WriteLine("CBCW: Bomb Aim Mode: {0}", BAM_getPlayerBombAimMode_string(player));
             //if (mainmission.ON_TESTSERVER) Console.WriteLine("MPWXX1 " + DateTime.UtcNow.ToString("HH:mm:ss.fffffff"));
             bool tempFlakTarget = false;
@@ -6561,14 +6561,14 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                             newTarget = airgroupTargets[airGroup];
                             diveTarget = true;
                             stationaryDiveTarget = true;
-                            return new Tuple<AiAirWayPoint, AiAirWayPoint, double, bool>(null, null, 0, false, true); //final TRUE means we're going to keep the old target point, we're still in the middle of the attack, just keep on keeping on.
+                            return new Tuple<AiAirWayPoint, AiAirWayPoint, double, bool, bool>(null, null, 0, false, true); //final TRUE means we're going to keep the old target point, we're still in the middle of the attack, just keep on keeping on.
                         }
                         else if (airgroupGroundTargets.ContainsKey(airGroup) && airgroupGroundTargets[airGroup] != null && airgroupGroundTargets[airGroup].IsAlive)
                         {
                             stationaryDiveTarget = true;
                             diveTarget = true;
                             newGroundTarget = airgroupGroundTargets[airGroup];
-                            return new Tuple<AiAirWayPoint, AiAirWayPoint, double, bool>(null, null, 0, false, true); //final TRUE means we're going to keep the old target point, we're still in the middle of the attack, just keep on keeping on.
+                            return new Tuple<AiAirWayPoint, AiAirWayPoint, double, bool, bool>(null, null, 0, false, true); //final TRUE means we're going to keep the old target point, we're still in the middle of the attack, just keep on keeping on.
                         }
                         else
                         {
@@ -7200,7 +7200,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             //final waypoint, seeing if we can get them to attack better
             if ( Calcs.isStrikeAC(airGroup) && !isHeavyBomber(airGroup) && !isDiveBomber(airGroup) && !airGroup.hasBombs()) nextWP2 = null;
 
-            return new Tuple<AiAirWayPoint, AiAirWayPoint, double, bool>(nextWP, nextWP2, vel_mps, noGroundEnemyFound, false);
+            return new Tuple<AiAirWayPoint, AiAirWayPoint, double, bool, bool>(nextWP, nextWP2, vel_mps, noGroundEnemyFound, false);
 
         }
         catch (Exception ex) { Console.WriteLine("Cover/MoveBomb ChangeBomberWaypoint: " + ex.ToString()); return null; }

@@ -1526,7 +1526,7 @@ public class CoverMission : AMission, ICoverMission
                         string nm = "";
                         if ((wp as AiAirWayPoint).Target != null) nm = (wp as AiAirWayPoint).Target.Name();
 
-                        Console.WriteLine("ListCoverPosition - all waypoints: currway: {7} currtask: {8} {0} speed: [{1:N0} vs {9:N0}] ({2:n0} {3:n0} {4:n0}), target: {5}, name: {6}", (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z, (wp as AiAirWayPoint).Target, nm, currWay, airGroup.getTask(), Calcs.milesphour2meterspsec(player_vel_mph));                       
+                        Console.WriteLine("ListCoverPosition - all waypoints: currway: {7} currtask: {8} {0} speed: [{1:N0} vs {9:N0}] ({2:n0} {3:n0} {4:n0}), gp: {5}, name: {6}", (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z, airGroup.Name(), nm, currWay, airGroup.getTask(), Calcs.milesphour2meterspsec(player_vel_mph));                       
 
                     }
                     //If the next waypoint is more interesting than the current one, display that one instead (usually it is "GATTACK_POINT" or such instead of "FOLLOW" or "ESCORT"
@@ -3479,7 +3479,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 
             float shiftFactor = getShiftFactor(player);
             double radius_m = 900 * shiftFactor;   //<cdist adjusts how wide the circle is
-            if (radius_m < 400) radius_m = 400;
+            if (radius_m < 1200) radius_m = 1200;
             if (radius_m > 3000) radius_m = 3000;
 
             Point3d center = airGroup.Pos();
@@ -3508,9 +3508,9 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             double z_m = CoverCalcs.checkMinAGL(airGroup.Pos().z, airGroup.Pos());
 
             List<AiAirWayPoint> NewWaypoints = new List<AiAirWayPoint>();
-            for (int leg = 1; leg <= 4; leg++) //4 points, 90 degrees apart, all the way around the circle
+            for (int leg = 1; leg <= 30; leg++) //5 points, 72 degrees apart, all the way around the circle and go around 6 full  time just to be sure we dont' run out of points  (planes turn to RTB Mode if they run out of points, then they are useless from then on)
             {
-                double leg_ang_rad = ang_rad + dir * leg * Math.PI / 2;
+                double leg_ang_rad = ang_rad + dir * leg * 2 * Math.PI / 5;
                 Point3d legPos = new Point3d(center.x + Math.Cos(leg_ang_rad) * radius_m, center.y + Math.Sin(leg_ang_rad) * radius_m, z_m);
                 AiAirWayPoint legWP = new AiAirWayPoint(ref legPos, vel_mps);
                 (legWP as AiAirWayPoint).Action = AiAirWayPointType.NORMFLY;
@@ -7318,7 +7318,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             AiAirWayPoint aaWP = null;
             AiAirWayPoint aaWP2 = null;
             Point3d CurrentPos = new Point3d(50000, 50000, 500);
-            Point3d LongPos = new Point3d(50000, 50000, 500);
+            Point3d LongPos = new Point3d(75000, 75000, 500);
             double vel_mps = 100;
             double targetDist_m = 1;
             bool heavyBomber = isHeavyBomber(airGroup) || isDiveBomber(airGroup);
@@ -7336,9 +7336,9 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 CurrentPos.z = airGroup.Pos().z + (2000 + ran.NextDouble() * 2000) * (ran.Next(2) * 2 - 1);
                 if (CurrentPos.z < 75) CurrentPos.z = 75;
 
-                LongPos.x = CurrentPos.x + (2000 + ran.NextDouble() * 2000) * (ran.Next(2) * 2 - 1);
-                LongPos.y = CurrentPos.y + (2000 + ran.NextDouble() * 2000) * (ran.Next(2) * 2 - 1);
-                LongPos.z = CurrentPos.z + (2000 + ran.NextDouble() * 2000) * (ran.Next(2) * 2 - 1);                
+                LongPos.x = CurrentPos.x + (20000 + ran.NextDouble() * 20000) * (ran.Next(2) * 2 - 1);
+                LongPos.y = CurrentPos.y + (20000 + ran.NextDouble() * 20000) * (ran.Next(2) * 2 - 1);
+                LongPos.z = CurrentPos.z + (20000 + ran.NextDouble() * 20000) * (ran.Next(2) * 2 - 1);                
 
             }
             else
@@ -7481,7 +7481,12 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                     //   savePos_offset.y - direction* targetVwld2.y * 30, CurrentPos.z);
 
                     //A point 30 sec ahead of the main a/c, so hopefully they circle between just ahead/just behind the main a/c
-                    LongPos = new Point3d(savePos_offset.x + targetVwld2.x * 30,
+                    //So escorts follow their own plan pretty much no matter what
+                    // Having a really long point doesn't hurt, it will just be replaced whenever the new
+                    //flightplan is put in place.
+                    //BUT if  they run out of flightplan, they are SCREWED as they switch to RTB (.RETURN task)
+                    //and once in that mode, you can't get them back out for love nor money
+                    LongPos = new Point3d(savePos_offset.x + targetVwld2.x * 200,
                         savePos_offset.y + targetVwld2.y * 30, CurrentPos.z);
                 }
 

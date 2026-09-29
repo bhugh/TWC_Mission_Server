@@ -1467,7 +1467,7 @@ public class CoverMission : AMission, ICoverMission
 
                 string msg = "";
 				
-				if (mainmission.ON_TESTSERVER) Console.WriteLine("LCA #4");
+				//if (mainmission.ON_TESTSERVER) Console.WriteLine("LCA #4");
 
                 if (playerPlaceAircraft == null) msg = "#" + count.ToString() + " " + CoverCalcs.GetAircraftType(aircraft) + " at " + alt_msg + CoverCalcs.correctedSectorNameDoubleKeypad(this, aircraft.Pos());
                 else
@@ -1499,7 +1499,7 @@ public class CoverMission : AMission, ICoverMission
                     msg = "#" + count.ToString() + " " + mi_10 + bearing_10.ToString("F0") + "°" + ang + " " + vel + heading_10.ToString("F0") + "°" + " - " + numAC + "x" + CoverCalcs.GetAircraftType(aircraft);
                 }
 				
-				if (mainmission.ON_TESTSERVER) Console.WriteLine("LCA #5");
+				//if (mainmission.ON_TESTSERVER) Console.WriteLine("LCA #5");
 
                 //AiAirGroupTask task = airGroup.getTask();
                 //string tsk = task.ToString();
@@ -1520,7 +1520,7 @@ public class CoverMission : AMission, ICoverMission
                         string nm = "";
                         if ((wp as AiAirWayPoint).Target != null) nm = (wp as AiAirWayPoint).Target.Name();
 
-                        Console.WriteLine("ListCoverPosition - all waypoints: currway: {7} currtask: {8} {0} ({1:n0} {2:n0} {3:n0}) {4:n0}, target: {5}, name: {6}", (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z, (wp as AiAirWayPoint).Target, nm, currWay, airGroup.getTask());                        
+                        Console.WriteLine("ListCoverPosition - all waypoints: currway: {7} currtask: {8} {0} speed: [{0:N0} vs {1:N0}] ({2:n0} {3:n0} {4:n0}), target: {5}, name: {6}", (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z, (wp as AiAirWayPoint).Target, nm, currWay, airGroup.getTask(), Calcs.milesphour2meterspsec(player_vel_mph));                        
 
                     }
                     //If the next waypoint is more interesting than the current one, display that one instead (usually it is "GATTACK_POINT" or such instead of "FOLLOW" or "ESCORT"
@@ -1580,7 +1580,7 @@ public class CoverMission : AMission, ICoverMission
 					
                 }
 
-                bool ordersAreFollow = (coverAircraftAirGroupsOrders.ContainsKey(airGroup) && coverAircraftAirGroupsOrders[airGroup] == CoverAGOrders.reserve);
+                bool ordersAreReserve = (coverAircraftAirGroupsOrders.ContainsKey(airGroup) && coverAircraftAirGroupsOrders[airGroup] == CoverAGOrders.reserve);
                 bool ordersAreNormal = (!coverAircraftAirGroupsOrders.ContainsKey(airGroup) || (coverAircraftAirGroupsOrders[airGroup] == CoverAGOrders.normal));
                 bool ordersAreAttack = (coverAircraftAirGroupsOrders.ContainsKey(airGroup) && coverAircraftAirGroupsOrders[airGroup] == CoverAGOrders.attack);
                 bool ordersAreStrict = (coverAircraftAirGroupsOrders.ContainsKey(airGroup) && coverAircraftAirGroupsOrders[airGroup] == CoverAGOrders.strict);
@@ -1649,7 +1649,7 @@ public class CoverMission : AMission, ICoverMission
 				if (mainmission.ON_TESTSERVER) Console.WriteLine("LCA #17");
                 //Display some info about aircraft health
                 if (displayHealth) msg += " (" + healthString + ")";
-                if (ordersAreFollow) msg += " [[[JOIN]]]";
+                if (ordersAreReserve) msg += " [[[RESERVED]]]";
                 if (ordersAreAttack) msg += " [[[ATTACK]]]";
                 if (ordersAreStrict) msg += " [[[STRICT]]]";
                 if (ordersAreEscort) msg += " [[[ESCORT]]]";
@@ -4400,7 +4400,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                     AiAirGroup playerAirgroup = null;
                     if (player != null && player.Place() != null) playerAirgroup = (player.Place() as AiAircraft).AirGroup();
 
-                    bool attacking = BomberUpdateWaypoints(player, airGroup, playerAirgroup, newTargetPoint, AiAirWayPointType.FOLLOW, AiAirWayPointType.GATTACK_POINT, AiAirWayPointType.FOLLOW, altDiff_m: AltDiffBomber_m, AltDiff_range_m: AltDiffBomber_range_m, nodupe: true);
+                    bool attacking = BomberUpdateWaypoints(player, airGroup, playerAirgroup, newTargetPoint, AiAirWayPointType.FOLLOW, AiAirWayPointType.GATTACK_POINT, AiAirWayPointType.FOLLOW, altDiff_m: AltDiffBomber_m, AltDiff_range_m: AltDiffBomber_range_m, nodupe: true, orders: orders);
                     //airGroup.setTask(AiAirGroupTask.ATTACK_GROUND, null);
                     //task = AiAirGroupTask.ATTACK_GROUND;
                     //tasktarget = null;
@@ -4586,7 +4586,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 }
             }
 
-            EscortUpdateWaypoints(player, airGroup, (player.Place() as AiAircraft).AirGroup(), aawpt, altDiff_m: AltDiffPassed_m, AltDiff_range_m: AltDiffPassed_range_m, nodupe: true);
+            EscortUpdateWaypoints(player, airGroup, (player.Place() as AiAircraft).AirGroup(), aawpt, altDiff_m: AltDiffPassed_m, AltDiff_range_m: AltDiffPassed_range_m, nodupe: true, orders: orders);
 
             //only change task if we have specifically indicated something above
             //setting task to ATTACK_GROUND ETC SEEMS TO MAKE bombers drop their bombs?
@@ -6315,7 +6315,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
     //returns false IF no bomber target waypoint was added - say it was targeting GROUND ENEMY
     //and none was found
     public bool BomberUpdateWaypoints(Player player, AiAirGroup airGroup, AiAirGroup targetAirGroup, Point3d newTargetPoint, AiAirWayPointType aawptstart = AiAirWayPointType.FOLLOW, AiAirWayPointType aawpttarget = AiAirWayPointType.FOLLOW, AiAirWayPointType aawptcontinue = AiAirWayPointType.FOLLOW, double altDiff_m = 20,
-        double AltDiff_range_m = 50, bool nodupe = true)
+        double AltDiff_range_m = 50, bool nodupe = true, CoverAGOrders orders = CoverAGOrders.normal)
     {
         try
         {
@@ -6323,7 +6323,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 
             Console.WriteLine("Bomberupdatewaypoints");
 
-            Tuple<AiAirWayPoint, AiAirWayPoint, double, bool> aaPs = BomberPosWaypoint(player, airGroup, targetAirGroup, newTargetPoint, aawpttarget, aawptcontinue, altDiff_m, AltDiff_range_m, nodupe);
+            Tuple<AiAirWayPoint, AiAirWayPoint, double, bool> aaPs = BomberPosWaypoint(player, airGroup, targetAirGroup, newTargetPoint, aawpttarget, aawptcontinue, altDiff_m, AltDiff_range_m, nodupe, orders: orders);
             bool noGroundTargetFound = aaPs.Item4;
             if (noGroundTargetFound) return false; 
             AiAirWayPoint aawp33 = CurrentPosWaypoint(airGroup, targetAirGroup, aawptstart, aaPs.Item3);
@@ -6345,7 +6345,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
     //Dictionary<AiAirGroup, GroundStationary> airgroupTargets = new Dictionary<AiAirGroup, GroundStationary>();
 
     public Tuple<AiAirWayPoint, AiAirWayPoint, double, bool> BomberPosWaypoint(Player player, AiAirGroup airGroup, AiAirGroup playerAirGroup, Point3d newTargetPoint, AiAirWayPointType aawpttarget = AiAirWayPointType.FOLLOW, AiAirWayPointType aawptcontinue = AiAirWayPointType.FOLLOW, double altDiff_m = 1000,
-        double AltDiff_range_m = 700, bool nodupe = true)
+        double AltDiff_range_m = 700, bool nodupe = true, CoverAGOrders orders = CoverAGOrders.normal)
     {
 		//try
         //{
@@ -6374,7 +6374,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 
             double targetDist_m = CoverCalcs.CalculatePointDistance(airGroup.Pos(), playerAirGroupPos);
 
-            Tuple<double, double> ret = calcCoverSpeedToMatchMain(airGroup, playerAirGroup, Vwld, target_vel_mps, targetDist_m, heavyBomber, player);
+            Tuple<double, double> ret = calcCoverSpeedToMatchMain(airGroup, playerAirGroup, Vwld, target_vel_mps, targetDist_m, heavyBomber, isSturmovik, true, orders, aawpttarget, player);
             double vel_mps = ret.Item1;
             double angleTargetToGroup = ret.Item2;
 
@@ -6989,7 +6989,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 
             if (vel_mps < 15) vel_mps = 70;  //help prevent crashes while a/c circling the airport waiting for main a/c to take off.  Or if it crashes, is dead, etc.
             if (vel_mps < 55) vel_mps = 55;
-            if (vel_mps > 160) vel_mps = 160;
+            if (vel_mps > 170) vel_mps = 170;
 
             double minDistance_m = 200;
             double newTargetDist_m = CoverCalcs.CalculatePointDistance(airGroup.Pos(), newPos);
@@ -7034,7 +7034,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             AiAirWayPoint nextWP2 = new AiAirWayPoint(ref LongPos, vel_mps);
 
 
-            Console.WriteLine(String.Format("CBCW: newtargetpoint as sent to AiAirWayPoint: {0:F0} {1:F0} {2:F0}  ", newPos.x, newPos.y, newPos.z));
+            Console.WriteLine(String.Format("CBCW: newtargetpoint as sent to AiAirWayPoint: ({0:F0} {1:F0} {2:F0} target mps: {3:F0} main mps: {4:F0})  ", newPos.x, newPos.y, newPos.z, vel_mps, target_vel_mps));
 
             (nextWP as AiAirWayPoint).GAttackPasses = AiAirWayPointGAttackPasses.AUTO;  //can do ._1 ._2 ._3 ._4 OR ALL_OUT.  But it is hard to say if it really affects the AI behavior much?
             (nextWP as AiAirWayPoint).GAttackType = AiAirWayPointGAttackType.LEVEL;
@@ -7204,7 +7204,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
     }
 
     public void EscortUpdateWaypoints(Player player, AiAirGroup airGroup, AiAirGroup targetAirGroup, AiAirWayPointType aawpt = AiAirWayPointType.AATTACK_FIGHTERS, double altDiff_m = 1000,
-        double AltDiff_range_m = 700, bool nodupe = true)
+        double AltDiff_range_m = 700, bool nodupe = true, CoverAGOrders orders = CoverAGOrders.normal)
     {
 
         //Console.WriteLine("Escort UpdateWaypoints");
@@ -7229,7 +7229,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 		}
         
     }
-    public Tuple<AiAirWayPoint, AiAirWayPoint, double> EscortPosWaypoint(Player player, AiAirGroup airGroup, AiAirGroup targetAirGroup, AiAirWayPointType aawpt = AiAirWayPointType.AATTACK_FIGHTERS, double altDiff_m = 1000, double AltDiff_range_m = 700, bool nodupe = true)
+    public Tuple<AiAirWayPoint, AiAirWayPoint, double> EscortPosWaypoint(Player player, AiAirGroup airGroup, AiAirGroup targetAirGroup, AiAirWayPointType aawpt = AiAirWayPointType.AATTACK_FIGHTERS, double altDiff_m = 1000, double AltDiff_range_m = 700, bool nodupe = true, CoverAGOrders orders = CoverAGOrders.normal)
     {
         try
         {
@@ -7273,7 +7273,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 double target_vel_mps = CoverCalcs.CalculatePointDistance(targetVwld2);
 
                 targetDist_m = CoverCalcs.CalculatePointDistance(airGroup.Pos(), targetAirGroup.Pos());
-                Tuple<double, double> ret = calcCoverSpeedToMatchMain(airGroup, targetAirGroup, Vwld, target_vel_mps, targetDist_m, heavyBomber, player);
+                Tuple<double, double> ret = calcCoverSpeedToMatchMain(airGroup, targetAirGroup, Vwld, target_vel_mps, targetDist_m, heavyBomber, false, false, orders, aawpt, player);
                 vel_mps = ret.Item1;
                 double angleTargetToGroup = ret.Item2;
 
@@ -7517,7 +7517,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
     //Calculate the speed needed for the cover group to catch up to and then fly along with the player/target group.
     //Speed up a lot when far behind, slow down when ahead, gradually match target a/c speed when close in front or behind
     //return new Tuple<double,double> (vel_mps, angleTargetToGroup);
-    public Tuple<double, double> calcCoverSpeedToMatchMain(AiAirGroup airGroup, AiAirGroup targetAirGroup, Vector3d Vwld, double target_vel_mps_TAS, double targetDist_m, bool heavyBomber, Player player)
+    public Tuple<double, double> calcCoverSpeedToMatchMain(AiAirGroup airGroup, AiAirGroup targetAirGroup, Vector3d Vwld, double target_vel_mps_TAS, double targetDist_m, bool heavyBomber, bool isSturmovik, bool hasGroundTarget, CoverAGOrders orders,  AiAirWayPointType aawpt, Player player)
     {
         try
         {
@@ -7535,9 +7535,10 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             //more precise 1 + alt_m * mult, where mult = 0.000037758346582
             //determined from in-game figures.  0.00005039179621558  seems to be a little more accurate
             //double iasMult = 1 + alt_m * 0.000037758346582;
-            double iasMult = 1 + alt_m * 0.00005039179621558;
+            //OK, so supposedly the airspeed with give in an AIRWAYPOINT is the TAS, not the IAS. So we need to SKIP  the conversion to IAS.
+            //double iasMult = 1 + alt_m * 0.00005039179621558;
 
-            double target_vel_mps_IAS = target_vel_mps_TAS / iasMult;
+            //double target_vel_mps_IAS = target_vel_mps_TAS / iasMult;
 
             Point3d targetPos = new Point3d(0, 0, 0);
             if (targetAirGroup != null) targetPos = targetAirGroup.Pos();
@@ -7559,51 +7560,72 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 
             bool inFront = false;
             if (angleTargetToGroup > 90 && angleTargetToGroup < 270) inFront = true;
-            double overSpeed = ag_vel_mps / target_vel_mps_IAS;
+            double overSpeed = ag_vel_mps / target_vel_mps_TAS;
+
+            /*
+            bool pacePlayer = true;
+
+            //case fighter & not strict
+            if ( !heavyBomber && !isSturmovik && (orders != CoverAGOrders.strict)) pacePlayer = false; //cover fighters fly above & faster unless orders=strict
+            else if (orders == CoverAGOrders.escort) pacePlayer = false; //when put into escort/defend player mode they can go as fast as needed
+            else if ( !hasGroundTarget && isSturmovik && orders == CoverAGOrders.attack) pacePlayer = false; //sturmovik w/ no ground target & orders=attack can go faster
+            else if ( hasGroundTarget && isSturmovik && !airGroup.hasBombs()) pacePlayer = false; //if sturmovik & independently attacking ground targets, can go as fast as needed
+            */
+
+            bool pacePlayer = true;
+            if (aawpt == AiAirWayPointType.ESCORT) pacePlayer = false; //when put into escort/defend player mode they can go as fast as needed
+
 
 
 
             if (!inFront) //IN BACK, ie, cover a/c headed straight towards main a/c, more or less
             {
-                vel_mps = target_vel_mps_IAS * 0.999; //This is the actual resting point/stability point we're shooting for 0 to 30 meters behind the main a/c.
-                if (frontBackDist_m > 30 && target_vel_mps_IAS * 1.03 > vel_mps) vel_mps = target_vel_mps_IAS * 1.03; //Go at least 20% faster than the group they're escorting, if possible
-                if (frontBackDist_m > 250 && target_vel_mps_IAS * 1.05 > vel_mps) vel_mps = target_vel_mps_IAS * 1.05; //Go at least 20% faster than the group they're escorting, if possible
-                if (frontBackDist_m > 400 && target_vel_mps_IAS * 1.1 > vel_mps) vel_mps = target_vel_mps_IAS * 1.1; //Go at least 20% faster than the group they're escorting, if possible
-                if (frontBackDist_m > 600 && target_vel_mps_IAS * 1.2 > vel_mps) vel_mps = target_vel_mps_IAS * 1.2; //Go at least 20% faster than the group they're escorting, if possible
-                if (frontBackDist_m > 1200 && target_vel_mps_IAS * 1.3 > vel_mps) vel_mps = target_vel_mps_IAS * 1.3; //Go at least 20% faster than the group they're escorting, if possible
-                if (frontBackDist_m > 2000 && target_vel_mps_IAS * 1.4 > vel_mps) vel_mps = target_vel_mps_IAS * 1.4; //Go at least 20% faster than the group they're escorting, if possible
-                if (frontBackDist_m > 4500 && target_vel_mps_IAS * 1.5 > vel_mps) vel_mps = target_vel_mps_IAS * 1.5; //Go 2X as fast, if possible, the target gets more than 1km off //try BIG BRAKES for one cycle
-                if (frontBackDist_m > 6500 && target_vel_mps_IAS * 1.7 > vel_mps) vel_mps = target_vel_mps_IAS * 1.7; //Go 1.7X as fast, if possible, the target gets more than 1km off
-                if (frontBackDist_m > 10000 && target_vel_mps_IAS * 2.0 > vel_mps) vel_mps = target_vel_mps_IAS * 2.0; //etc
-                if (frontBackDist_m > 18000 && target_vel_mps_IAS * 3.0 > vel_mps) vel_mps = target_vel_mps_IAS * 3.0;
-            
+                if (pacePlayer )
+                {
+                    vel_mps = target_vel_mps_TAS * 0.999; //This is the actual resting point/stability point we're shooting for 0 to 30 meters behind the main a/c.
+                    if (frontBackDist_m > 30 && target_vel_mps_TAS * 1.03 > vel_mps) vel_mps = target_vel_mps_TAS * 1.03; //Go at least 20% faster than the group they're escorting, if possible
+                    if (frontBackDist_m > 250 && target_vel_mps_TAS * 1.05 > vel_mps) vel_mps = target_vel_mps_TAS * 1.05; //Go at least 20% faster than the group they're escorting, if possible
+                    if (frontBackDist_m > 400 && target_vel_mps_TAS * 1.1 > vel_mps) vel_mps = target_vel_mps_TAS * 1.1; //Go at least 20% faster than the group they're escorting, if possible
+                    if (frontBackDist_m > 600 && target_vel_mps_TAS * 1.2 > vel_mps) vel_mps = target_vel_mps_TAS * 1.2; //Go at least 20% faster than the group they're escorting, if possible
+                    if (frontBackDist_m > 1200 && target_vel_mps_TAS * 1.3 > vel_mps) vel_mps = target_vel_mps_TAS * 1.3; //Go at least 20% faster than the group they're escorting, if possible
+                    if (frontBackDist_m > 2000 && target_vel_mps_TAS * 1.4 > vel_mps) vel_mps = target_vel_mps_TAS * 1.4; //Go at least 20% faster than the group they're escorting, if possible
+                    if (frontBackDist_m > 4500 && target_vel_mps_TAS * 1.5 > vel_mps) vel_mps = target_vel_mps_TAS * 1.5; //Go 2X as fast, if possible, the target gets more than 1km off //try BIG BRAKES for one cycle
+                    if (frontBackDist_m > 6500 && target_vel_mps_TAS * 1.7 > vel_mps) vel_mps = target_vel_mps_TAS * 1.7; //Go 1.7X as fast, if possible, the target gets more than 1km off
+                    if (frontBackDist_m > 10000 && target_vel_mps_TAS * 2.0 > vel_mps) vel_mps = target_vel_mps_TAS * 2.0; //etc
+                    if (frontBackDist_m > 18000 && target_vel_mps_TAS * 3.0 > vel_mps) vel_mps = target_vel_mps_TAS * 3.0;
 
-                if (!heavyBomber) //generally keep fighter escorts going much faster relative to the main a/c and it doesn't need to snuggle up as close and its target point is
+                }
+            
+                else  //generally keep fighter escorts going much faster relative to the main a/c and it doesn't need to snuggle up as close and its target point is
                                   //closer to the main a/c which is more how we keep it in the right area
                 {
-                    vel_mps = target_vel_mps_IAS * 1.1; //Generally fighters go a fair but faster than the bombers//2020-02-16 - cutting this back to try to keep them closer in
-                    if (targetDist_m > 1000 && target_vel_mps_IAS * 1.0 > vel_mps) vel_mps = target_vel_mps_IAS * 1.0;
-                    if (targetDist_m > 3000 && target_vel_mps_IAS * 2.5 > vel_mps) vel_mps = target_vel_mps_IAS * 2.5;
+                    vel_mps = target_vel_mps_TAS * 1.5; //Generally fighters go a fair bit faster than the bombers//2020-02-16 - cutting this back to try to keep them closer in
+                    if (targetDist_m > 1000 && target_vel_mps_TAS * 1.0 > vel_mps) vel_mps = target_vel_mps_TAS * 1.0;
+                    if (targetDist_m > 3000 && target_vel_mps_TAS * 2.5 > vel_mps) vel_mps = target_vel_mps_TAS * 2.5;
 
                 }
             }
             else //IN FRONT, ie, cover a/c headed straight away from main a/c, more or less
             {
-                vel_mps = target_vel_mps_IAS * 0.99; //Go 75% as fast as main aircraft when ahead but kinda close
-                if (frontBackDist_m > 30 && target_vel_mps_IAS * .98 < vel_mps) vel_mps = target_vel_mps_IAS * 0.98; //Go 80% as fast when the target a/c gets more than 750m off
-                if (frontBackDist_m > 80 && target_vel_mps_IAS * .95 < vel_mps) vel_mps = target_vel_mps_IAS * 0.97; //Go 80% as fast when the target a/c gets more than 750m off
-                if (frontBackDist_m > 120 && target_vel_mps_IAS * .85 < vel_mps) vel_mps = target_vel_mps_IAS * 0.97; //Go 80% as fast when the target a/c gets more than 750m off
-                if (frontBackDist_m > 300 && target_vel_mps_IAS * .8 < vel_mps) vel_mps = target_vel_mps_IAS * 0.7; //Go 80% as fast when the target a/c gets more than 750m off
-                if (frontBackDist_m > 500 && target_vel_mps_IAS * .75 < vel_mps) vel_mps = target_vel_mps_IAS * 0.7; //Go 80% as fast when the target a/c gets more than 750m off
-                if (frontBackDist_m > 1500 && target_vel_mps_IAS * .6 < vel_mps) vel_mps = target_vel_mps_IAS * 0.6; //Go 60% as fast when the target a/c gets more than 1.5km off
-                if (frontBackDist_m > 2500 && target_vel_mps_IAS * .4 < vel_mps) vel_mps = target_vel_mps_IAS * 0.4; //Go 40% as fast when the target a/c gets more than 1km off
+                if (pacePlayer){
+                     vel_mps = target_vel_mps_TAS * 0.99; //Go 75% as fast as main aircraft when ahead but kinda close
+                    if (frontBackDist_m > 30 && target_vel_mps_TAS * .98 < vel_mps) vel_mps = target_vel_mps_TAS * 0.98; //Go 80% as fast when the target a/c gets more than 750m off
+                    if (frontBackDist_m > 80 && target_vel_mps_TAS * .95 < vel_mps) vel_mps = target_vel_mps_TAS * 0.97; //Go 80% as fast when the target a/c gets more than 750m off
+                    if (frontBackDist_m > 120 && target_vel_mps_TAS * .85 < vel_mps) vel_mps = target_vel_mps_TAS * 0.97; //Go 80% as fast when the target a/c gets more than 750m off
+                    if (frontBackDist_m > 300 && target_vel_mps_TAS * .8 < vel_mps) vel_mps = target_vel_mps_TAS * 0.7; //Go 80% as fast when the target a/c gets more than 750m off
+                    if (frontBackDist_m > 500 && target_vel_mps_TAS * .75 < vel_mps) vel_mps = target_vel_mps_TAS * 0.7; //Go 80% as fast when the target a/c gets more than 750m off
+                    if (frontBackDist_m > 1500 && target_vel_mps_TAS * .6 < vel_mps) vel_mps = target_vel_mps_TAS * 0.6; //Go 60% as fast when the target a/c gets more than 1.5km off
+                    if (frontBackDist_m > 2500 && target_vel_mps_TAS * .4 < vel_mps) vel_mps = target_vel_mps_TAS * 0.4; //Go 40% as fast when the target a/c gets more than 1km off
+                }
 
-                if (!heavyBomber) //generally keep fighter escorts going much faster relative to the main a/c and it doesn't need to snuggle up as close and its target point is
+
+                //if (!heavyBomber) //generally keep fighter escorts going much faster relative to the main a/c and it doesn't need to snuggle up as close and its target point is
                                   //closer to the main a/c which is more how we keep it in the right area
+                else                  
                 {
-                    vel_mps = target_vel_mps_IAS * 1.1; //Generally fighters go a fair but faster than the bombers, but if they get TOO far away and are going in the wrong direction, slow down
-                    if (targetDist_m > 3000 && target_vel_mps_IAS * 1 > vel_mps) vel_mps = target_vel_mps_IAS * 1;
-                    if (targetDist_m > 7000 && target_vel_mps_IAS * 0.7 > vel_mps) vel_mps = target_vel_mps_IAS * 0.7;
+                    vel_mps = target_vel_mps_TAS * 1.3; //Generally fighters go a fair but faster than the bombers, but if they get TOO far away and are going in the wrong direction, slow down
+                    if (targetDist_m > 3000 && target_vel_mps_TAS * 1 > vel_mps) vel_mps = target_vel_mps_TAS * 1;
+                    if (targetDist_m > 7000 && target_vel_mps_TAS * 0.7 > vel_mps) vel_mps = target_vel_mps_TAS * 0.9;
 
                 }
             }
@@ -7613,11 +7635,11 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
         //The banhammer drops if the bomber formation members are going too fast
         if (heavyBomber)
         {
-            if ((frontBackDist_m < 6000 || inFront) && overSpeed > 1.2) vel_mps = target_vel_mps_IAS * 0.4; //if its closer than 6km in the rear, or in front, and going faster than 120% of main a/c speed, then put brakes on HARD
-            else if ((frontBackDist_m < 3000 || inFront) && overSpeed > 1.1) vel_mps = target_vel_mps_IAS * 0.7; //if its closer than 6km in the rear, or in front, and going faster than 120% of main a/c 
-            else if ((frontBackDist_m < 1500 || inFront) && overSpeed > 1.05) vel_mps = target_vel_mps_IAS * 0.85;
-            else if ((frontBackDist_m > 100 && inFront) && overSpeed > 1) vel_mps = target_vel_mps_IAS * 0.9;
-            //else if (inFront && overSpeed > 1) vel_mps = target_vel_mps_IAS * 0.95; //if its closer than 6km in the rear, or in front, and going faster than 120% of main a/c 
+            if ((frontBackDist_m < 6000 || inFront) && overSpeed > 1.2) vel_mps = target_vel_mps_TAS * 0.4; //if its closer than 6km in the rear, or in front, and going faster than 120% of main a/c speed, then put brakes on HARD
+            else if ((frontBackDist_m < 3000 || inFront) && overSpeed > 1.1) vel_mps = target_vel_mps_TAS * 0.7; //if its closer than 6km in the rear, or in front, and going faster than 120% of main a/c 
+            else if ((frontBackDist_m < 1500 || inFront) && overSpeed > 1.05) vel_mps = target_vel_mps_TAS * 0.85;
+            else if ((frontBackDist_m > 100 && inFront) && overSpeed > 1) vel_mps = target_vel_mps_TAS * 0.9;
+            //else if (inFront && overSpeed > 1) vel_mps = target_vel_mps_TAS * 0.95; //if its closer than 6km in the rear, or in front, and going faster than 120% of main a/c 
         }
         */
 
@@ -7636,7 +7658,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
         //if (frontBackDist_m < 1000) vel_mps = (vel_mps -target_vel_mps) * frontBackDist_m / 1000 + target_vel_mps; // if close enough in distance to main A/C gradually go same speed as main A/C
 
             //Only do this when close AND within 2% of the correct speed.  Trying to rather eaxtly match the speed.
-            if (frontBackDist_m < 400 && Math.Abs(target_vel_mps_IAS * 0.9999 - ag_vel_mps) < target_vel_mps_IAS / 9) vel_mps = (target_vel_mps_IAS - ag_vel_mps) * frontBackDist_m * sign / 1000 + 0.9999 * target_vel_mps_IAS; // brakes/accelerator plan.  Only do this if close to the main a/c AND within 5% in velocity.
+            if (frontBackDist_m < 400 && Math.Abs(target_vel_mps_TAS * 0.9999 - ag_vel_mps) < target_vel_mps_TAS / 9) vel_mps = (target_vel_mps_TAS - ag_vel_mps) * frontBackDist_m * sign / 1000 + 0.9999 * target_vel_mps_TAS; // brakes/accelerator plan.  Only do this if close to the main a/c AND within 5% in velocity.
                                                                                                                                                                                                                                  //else if (ninetyDiff < 10) vel_mps = (vel_mps - target_vel_mps) * ninetyDiff / 3 + target_vel_mps; // if close enough in ANGLE to main A/C gradually go same speed as main A/C   
 
         AiAircraft targetAircraft = player.Place() as AiAircraft;
@@ -7649,7 +7671,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
         if (targetAircraft != null) mach = (double)targetAircraft.getParameter(part.ParameterTypes.Z_VelocityMach, -1);
 
 
-        //Console.WriteLine("Cover vel before:after:target:gp dist ang #{9:D3} Req:{1:D3} : {0:D3} : {8:D3} {10:D3} {11:D3} {12:F2} | TTAS:{2:D3} TIAS:{13:D3} CMPS{3:D3} | {4:F0} FBD:{5:F0} | {6:F0} {7:F0}", (int)vel_save, (int)vel_mps, (int)target_vel_mps_TAS, (int)ag_vel_mps, (int)targetDist_m, frontBackDist_m, angleTargetToGroup, ninetyDiff, (int)vel_save2,airGroup.ID(), (int)tas, (int)ias, (int)mach, (int)target_vel_mps_IAS);
+        if (mainmission.ON_TESTSERVER) Console.WriteLine("Cover vel before:after:target:gp dist ang #{9:D3} Req:{1:D3} : {0:D3} : {8:D3} {10:D3} {11:D3} {12:F2} | TTAS:{2:D3} TIAS:{13:D3} CMPS{3:D3} | {4:F0} FBD:{5:F0} | {6:F0} {7:F0} pacePlayer: {14} task: {15} {16}", (int)vel_save, (int)vel_mps, (int)target_vel_mps_TAS, (int)ag_vel_mps, (int)targetDist_m, frontBackDist_m, angleTargetToGroup, ninetyDiff, (int)vel_save2,airGroup.ID(), (int)tas, (int)ias, (int)mach, (int)target_vel_mps_TAS, pacePlayer, aawpt.ToString(), orders.ToString());
 
 
             //<cstrict - hold a rigid formation: match the leader's speed, instead of the 10% over-speed (weaving)
@@ -7657,12 +7679,12 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             //well behind, the catch-up speeds that were calculated above are left in place, so we can rejoin.
             if (isInStrictFormation(airGroup) && frontBackDist_m < strictSpeedMatchDistance_m)
             {
-                vel_mps = target_vel_mps_IAS;
+                vel_mps = target_vel_mps_TAS;
             }
 
             if (vel_mps < 45) vel_mps = 45;
             if (vel_mps > 175) vel_mps = 175;
-            if (target_vel_mps_IAS < 15 && vel_mps < 75) vel_mps = 75;  //faster speed here to help prevent crashes while a/c circling the airport waiting for main a/c to take off.  Or if it crashes, is dead, etc.
+            if (target_vel_mps_TAS < 15 && vel_mps < 75) vel_mps = 75;  //faster speed here to help prevent crashes while a/c circling the airport waiting for main a/c to take off.  Or if it crashes, is dead, etc.
             return new Tuple<double, double>(vel_mps, angleTargetToGroup);
         }
         catch (Exception ex) { Console.WriteLine("Cover CalcCoverSpeedToMatch ERROR: " + ex.ToString()); return null; }

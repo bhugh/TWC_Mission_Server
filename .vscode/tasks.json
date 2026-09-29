@@ -1,0 +1,61 @@
+{
+    // Compile/type-check the Genghis CLoD mission (all Genghis*.cs = one assembly, like the game does).
+    // Run with:  Ctrl+Shift+B   (default build task)
+    //        or: Terminal > Run Task...   (both tasks are listed there)
+    //        or: Command Palette > "Tasks: Run Task"
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "compile-check (Genghis mission)",
+            "type": "shell",
+            "command": "pwsh",
+            "args": [
+                "-NoProfile",
+                "-ExecutionPolicy", "Bypass",
+                "-File", "${workspaceFolder}/Genghis/check-compile.ps1"
+            ],
+            "options": { "cwd": "${workspaceFolder}" },
+            "group": { "kind": "build", "isDefault": true },
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared",
+                "clear": true,
+                "showReuseMessage": false
+            },
+            // csc emits:  Genghis\Genghis.cs(12653,32): error CS1503: message
+            "problemMatcher": [
+                {
+                    "owner": "csc",
+                    "source": "genghis-csc",
+                    "fileLocation": [ "autoDetect", "${workspaceFolder}" ],
+                    "pattern": {
+                        "regexp": "^(.*?)\\(\\d+,\\d+\\):\\s+(error|warning)\\s+(CS\\d+):\\s+(.*)$",
+                        "file": 1,
+                        "severity": 2,
+                        "code": 3,
+                        "message": 4
+                    }
+                }
+            ]
+        },
+        {
+            "label": "compile-check (Genghis mission, show all warnings)",
+            "detail": "Same check, but without -warn:0 - lists every warning (mostly pre-existing: unused 'ex' in catch blocks, duplicate usings, hides-inherited-member, fire-and-forget Task).",
+            "type": "shell",
+            "command": "pwsh",
+            "args": [
+                "-NoProfile",
+                "-ExecutionPolicy", "Bypass",
+                "-File", "${workspaceFolder}/Genghis/check-compile.ps1",
+                "-ShowWarnings"
+            ],
+            "options": { "cwd": "${workspaceFolder}" },
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared",
+                "clear": true,
+                "showReuseMessage": false
+            }
+        }
+    ]
+}

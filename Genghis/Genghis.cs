@@ -30346,7 +30346,7 @@ public static class Calcs
         {
             if (word.Length + line.Length <= maxLineLength)
             {
-                line.Append(word);
+                line.Append(word + " ");
             }
             else
             {

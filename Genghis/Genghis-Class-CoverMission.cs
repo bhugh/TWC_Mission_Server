@@ -6538,26 +6538,40 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 int currWay = airGroup.GetCurrentWayPoint();
 
                 //Console.WriteLine("Choosing target for dive bomber/player targeted enemy, maxMove {0:F0}, preferredMove {1:F0}", maxMove_m, preferredMove_m);
+
+                if (mainmission.ON_TESTSERVER) Console.WriteLine("CBCW: Deciding whether to keep existing point. Have a point: {0} task: {1} currway: {2}", airgroupTargetPoints.ContainsKey(airGroup),  task, currWay);
+
                 if (airgroupTargetPoints.ContainsKey(airGroup) && airgroupTargetPoints[airGroup].x != -1 && airgroupTargetPoints[airGroup].y != -1 && task != AiAirGroupTask.RETURN && task != AiAirGroupTask.UNKNOWN && currWay != 0) //x,y == -1,-1 means we're actually not targeted at anythign
                 {
                     
                     var oldApos = airgroupTargetPoints[airGroup];
-                    if (CoverCalcs.CalculatePointDistance(oldApos, newTargetPoint) <= maxMove_m && ran.Next(5 + 3*panic) > 0 && (airGroup.hasBombs() || ! CoverCalcs.areCratersBuildingsFactoriesNear(mainmission, oldApos, 250))) //if old target it still good, stick with it most of the time.  Delay is 16 seconds, better if we could make this change relative to delay.  But it will choose a new target about every 10*16 seconds.  And if there are craters/buildings near it, skip sooner.  The ground attack planes just attack them above all else
+
+                    if (mainmission.ON_TESTSERVER) Console.WriteLine("CBCW: Deciding whether to keep existing point. Have a point: {0:n0} {1:n0} distance: {2:n0}", oldApos.x, oldApos.y, CoverCalcs.CalculatePointDistance(oldApos, newTargetPoint));
+
+                    if (CoverCalcs.CalculatePointDistance(oldApos, newTargetPoint) <= maxMove_m && ran.Next(10 + 3*panic) > 0 && (airGroup.hasBombs() || ! CoverCalcs.areCratersBuildingsFactoriesNear(mainmission, oldApos, 250))) //if old target it still good, stick with it most of the time.  Delay is 16 seconds, better if we could make this change relative to delay.  But it will choose a new target about every 10*16 seconds.  And if there are craters/buildings near it, skip sooner.  The ground attack planes just attack them above all else
                     {
-                        diveTarget = true;
-                        //Console.WriteLine("reusing old ground target");
-                        if (airgroupTargets.ContainsKey(airGroup) && airgroupTargets[airGroup] != null && airgroupTargets[airGroup].IsAlive()) newTarget = airgroupTargets[airGroup];
-                        else if (airgroupGroundTargets.ContainsKey(airGroup) && airgroupGroundTargets[airGroup] != null && airgroupGroundTargets[airGroup].IsAlive) newGroundTarget = airgroupGroundTargets[airGroup];
+                        
+                        if (mainmission.ON_TESTSERVER) Console.WriteLine("reusing old ground target");
+                        if (airgroupTargets.ContainsKey(airGroup) && airgroupTargets[airGroup] != null && airgroupTargets[airGroup].IsAlive()) {
+                            newTarget = airgroupTargets[airGroup];
+                            diveTarget = true;
+                        }
+                        else if (airgroupGroundTargets.ContainsKey(airGroup) && airgroupGroundTargets[airGroup] != null && airgroupGroundTargets[airGroup].IsAlive)
+                        {
+                            stationaryDiveTarget = true;
+                            newGroundTarget = airgroupGroundTargets[airGroup];
+                        }
                         else
                         {
                             diveTarget = false;
+                            stationaryDiveTarget = false;
                             airgroupTargetPoints[airGroup] = new Point3d(-1,-1,-1);
 
                             //also remove any old targets 
                             if (airgroupTargets.ContainsKey(airGroup)) airgroupTargets.Remove(airGroup);
                             if (airgroupGroundTargets.ContainsKey(airGroup)) airgroupGroundTargets.Remove(airGroup);
                 
-                            //Console.WriteLine("old ground target bad, not using it after all");
+                            if (mainmission.ON_TESTSERVER) Console.WriteLine("old ground target bad, couldn't find actor OR stationary, not using it after all actor : {0} stationary: {1}", airgroupTargets.ContainsKey(airGroup) && airgroupTargets[airGroup] != null, airgroupGroundTargets.ContainsKey(airGroup) && airgroupGroundTargets[airGroup] != null );
                         }
 
 
@@ -6661,13 +6675,13 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                                             //
                                             distToNearestACTOR_m = distToNearestAirgroupTargetPoint(act.Pos(),  act); // adding ,act allows > 1 target for this exact actor, but more than numToTargetOne is disallowed above in the if statement
 
-                                            Console.WriteLine(act.Name() + " distNactor: {0:N0} distLIMIT: {1:N0} reject: {2} numToTarget: {3}",distToNearestACTOR_m, 500 - 500 * p / numsteps, distToNearestACTOR_m <= 500 - 500 * p / numsteps, numToTargetOne );
+                                            Console.WriteLine(act.Name() + " distNactor: {0:N0} distLIMIT: {1:N0} reject: {2} numToTarget: {3}",distToNearestACTOR_m, 500.0 - 500.0 * d / (double)numsteps, distToNearestACTOR_m <= 500.0 - 500.0 * d / (double)numsteps, numToTargetOne );
                                             
                                             //groundType = "";
 
-                                            if (distToNearestACTOR_m <= 500 - 500 * p / numsteps ) continue; //can't have any targets within abt 500m of each other because due to CLoD, they will all just switch attack the SAME target instead of different ones.
+                                            if (distToNearestACTOR_m <= 500.0 - 500.0 * (double)d / (double)numsteps ) continue; //can't have any targets within abt 500m of each other because due to CLoD, they will all just switch attack the SAME target instead of different ones.
 
-                                            if (!airGroup.hasBombs() && CoverCalcs.areCratersBuildingsFactoriesNear(mainmission, act.Pos(), 500.0 - 500.0 * p / numsteps )) continue; //the ai ground attackers will attack craters (even if only NEAR the target) so trying to avoid that. Can't hit things if they're inside a building. Also they randomly choose a "thing" nearby the point, not necessary the one we specify.  So we try to avoid all such AREAS not just pick one GG or act that is OK.  Because the ground attacker will just switch targets to a bad one, invariably, if available.
+                                            if (!airGroup.hasBombs() && CoverCalcs.areCratersBuildingsFactoriesNear(mainmission, act.Pos(), 500.0 - 500.0 * (double)d / numsteps )) continue; //the ai ground attackers will attack craters (even if only NEAR the target) so trying to avoid that. Can't hit things if they're inside a building. Also they randomly choose a "thing" nearby the point, not necessary the one we specify.  So we try to avoid all such AREAS not just pick one GG or act that is OK.  Because the ground attacker will just switch targets to a bad one, invariably, if available.
 
                                             closest_m = dist_m;
                                             bestAct = act;
@@ -6827,9 +6841,9 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 
 											{
                                                 distToNearestGROUND_m = distToNearestAirgroupTargetPoint(gg.pos);
-                                                if ( distToNearestGROUND_m <= 600 - 600 * d / steps) continue; //trying to avoid having AI all attack the same area (even if technically different targets, they will all switch and just attack the same one, due to CLoD)
+                                                if ( distToNearestGROUND_m <= 600.0 - 600.0 * (double)d / (double)steps) continue; //trying to avoid having AI all attack the same area (even if technically different targets, they will all switch and just attack the same one, due to CLoD)
 
-                                                if (!airGroup.hasBombs() && CoverCalcs.areCratersBuildingsFactoriesNear(mainmission, gg.pos, 400.0 - 400.0 * d / steps)) continue; //the ai ground attackers will attack craters (even if only NEAR the target) so trying to avoid that.
+                                                if (!airGroup.hasBombs() && CoverCalcs.areCratersBuildingsFactoriesNear(mainmission, gg.pos, 400.0 - 400.0 * (double)d / (double)steps)) continue; //the ai ground attackers will attack craters (even if only NEAR the target) so trying to avoid that.
 
 												bool bk = false;
 												string types = (gg.Title + gg.Type.ToString() + gg.Category).ToLower(); 
@@ -6914,7 +6928,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                     newPos.x = newTarget.Pos().x;
                     newPos.y = newTarget.Pos().y;
                     savePos = newPos;
-                    Console.WriteLine("CBCW: Found a stationary, updating attack position");
+                    Console.WriteLine("CBCW: Found a groundactor, updating attack position");
                    
                 }
                 else if ( stationaryDiveTarget && newGroundTarget != null)
@@ -6922,6 +6936,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                     distToNearestCHOSEN_m = distToNearestGROUND_m;
                     newPos.x = newGroundTarget.pos.x;
                     newPos.y = newGroundTarget.pos.y;
+                    Console.WriteLine("CBCW: Found a ground stationary, updating attack position");
                 }
 
                 airgroupTargets[airGroup] = newTarget;
@@ -7010,7 +7025,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             double min_z = 0;
             if (coverACInfo.ContainsKey(airGroup)) min_z = coverACInfo[airGroup].MinAttackAlt_m;
 
-            if (!diveTarget) newPos = calcOffset_m(newPos, airGroup, player, new Vector3d(Vwld2.x, Vwld2.y, Vwld5.z), vel_mps, offsetDirection.up_down); //shift this airgroup a little UP or DOWN depending on which a/g it is and what other a/gs of its type are also flying with this player
+            if (!diveTarget && !stationaryDiveTarget) newPos = calcOffset_m(newPos, airGroup, player, new Vector3d(Vwld2.x, Vwld2.y, Vwld5.z), vel_mps, offsetDirection.up_down); //shift this airgroup a little UP or DOWN depending on which a/g it is and what other a/gs of its type are also flying with this player
                                                                                                                                         //so here we are NOT doing the shift right/left of the main target/ac, because we want the bombers to target this precise point, not shift or offset it by some amount.  Instead, shift a little up/down
 
             //GamePlay.gpLogServer(null, "PosB: " + savePos.x.ToString("F0") + " " + savePos.y.ToString("F0") + " " + savePos.z.ToString("F0") + ":"
@@ -7064,7 +7079,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             newPos.z = CoverCalcs.checkMinAGL(newPos.z, newPos);
 			
 			//In case target is nearest enemy & we don't find one, we just head the a/c towards the player
-			if (!diveTarget && BAM_isNearestEnemy(player))
+			if (!diveTarget && !stationaryDiveTarget && BAM_isNearestEnemy(player))
 				if (player != null & player.Place() != null && player.Place() as AiAircraft != null) 
 					newPos = player.Place().Pos();  
 				
@@ -7079,7 +7094,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             if (dst == 0) dst = 1;
             double fact = 30000 / dst;
             double LongPosZ = newPos.z;
-            if (diveTarget) LongPosZ = 400; //800m suggested for after dive?  Let's try 400 m though.
+            if (diveTarget || stationaryDiveTarget) LongPosZ = 400; //800m suggested for after dive?  Let's try 400 m though.
             Point3d LongPos = new Point3d((newPos.x - airGroup.Pos().x) * fact + airGroup.Pos().x,
                 (newPos.y - airGroup.Pos().y) * fact + airGroup.Pos().y, LongPosZ);
 
@@ -7099,7 +7114,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 			 //Console.WriteLine("CBCW: bom,alt: {0} {1:F0} {2}", isDiveBomber(airGroup), pos.z, (newTarget as AiActor) != null);
             //if ((newTarget as AiActor) != null && isDiveBomber(airGroup) && pos.z >= 1800)
             bool noGroundEnemyFound = false;
-            if (diveTarget)
+            if (diveTarget || stationaryDiveTarget)
             {
                 //(nextWP as AiAirWayPoint).Target = newTarget as AiActor;  //change to newly selected target
                 if (newTarget != null) (nextWP as AiAirWayPoint).Target = newTarget;  //change to newly selected target
@@ -7117,6 +7132,8 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 				
                 //(nextWP as AiAirWayPoint).Action = AiAirWayPointType.GATTACK_POINT; //OK< that didn't work AT ALL
                 (nextWP as AiAirWayPoint).Action = AiAirWayPointType.GATTACK_TARG;  //keep action same
+
+                Console.WriteLine(String.Format("CBCW: waypoint info of DIVETARGET {0:F0} {1:F0} {2:F0} action: {3} target: {4}", nextWP.P.x, nextWP.P.y, nextWP.P.z, (nextWP as AiAirWayPoint).Action, (nextWP as AiAirWayPoint).Target));
 				
                 if (isDiveBomber(airGroup)) (nextWP as AiAirWayPoint).GAttackType = AiAirWayPointGAttackType.DIVE;
 				else (nextWP as AiAirWayPoint).GAttackType = AiAirWayPointGAttackType.AUTO;
@@ -8122,6 +8139,7 @@ public AiAirGroup getRandomNearbyEnemyAirGroup(AiAirGroup from, double distance_
             distsq_m2 = dist_temp<distsq_m2 ? dist_temp : distsq_m2;
 
         }
+        if (act != null && distsq_m2 <0.2) return 10000000; //if that close, assuming it is  actually the same actor, return a large number so it will be ignored
         return Math.Sqrt(distsq_m2);
     }
 

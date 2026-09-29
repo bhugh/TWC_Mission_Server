@@ -1,0 +1,80 @@
+# TWC Mission Server Cline Rules
+
+## Purpose
+Workspace-level rules for Cline in VS Code. This file is the Cline equivalent of Continue's `.continue/rules/*.md` and is auto-injected into every Cline prompt in this workspace (no `globs:` scoping available). Keep it markdown-only and concise.
+
+## Conventions
+- Line endings: CRLF only (verify with `git ls-files --eol`; never introduce mixed endings).
+- C# / .NET Framework targeting the IL-2 CloD engine (Team Fusion 4.312+ / Desert Wings Tobruk / Blitz).
+- Scripts require `#define DEBUG` / `#define TRACE` and `//$reference parts/core/gamePlay.dll` (etc.) at the top.
+- Credit TWC - The Wrecking Crew (http://twcclan.com/) for reuse/snippets.
+
+## Overall Project layout - several missions and independent modules in different directories
+Only the files within ./Genghis are actively being developed in now and should be actively consulted for relevant information and possible cross-module interaction, and actively edited.  The rest are older campaigns and missions that are no longer being actively developed - of possible interest for history or specific techniques, but most everything of interest is already in ./Genghis.
+
+ - ./Genghis - our main campaign and project for now.  This is the only directory we are actively developing in now.  On the English Channel map.
+ - ./Campaign21 - an older campaign mission variant, On the English Channel map.
+ - ./M001-M003 - yet older campaign mission variants, On the English Channel map.
+ - ./Testing - a yet older campaign mission call Escort21, On the English Channel map.
+ - ./Tobruk_Campaign - the most recent campaign mission variant other than Genghis, on the Tobruk map and never completely finished.
+ - ./autohotkey-autolauncher-start-tools - a set of scripts to automate the launching of the server and the campaigns on the server.
+ - ./CloDMissionCommunicator - the inter-module communication layer for the server and the campaigns, legacy but still used here and there in the code.
+ - ./radar - .html and .js files for the radar display, hosted on a separate web server; the campaign server uploads various files to this server and the ./js files interpret and display them as a map plus list of information about the current campaign status, objectives, reconnaissance results, etc
+ - ./res some images and icons used in the campaign, particularly the radar display
+
+## Project layout (key modules under Genghis/)
+
+
+- Genghis.cs                            -> main battle loop & event hooks; most complex module and logic; many functions that could be split out into separate modules
+- Genghis-Class-StatsMission.cs         -> player stats/rank; together with Genghis.cs this is the main campaign logic - others modules have far more specific functions
+- Genghis-Class-CoverMission.cs         -> AI cover/escort, `<c...` order system, formations
+- Genghis-Class-SupplyMission.cs        -> aircraft inventory & supply
+- Genghis-Class-TacviewRecorder.cs      -> flight logging
+- Genghis-Class-MoveBombTarget.cs       -> bomber targeting, re-writes bomber/fighter flight plans to patrol different parts of the map, bomb certain objectives, then exit the map appropriately
+- Genghis-Class-ObjectiveRepairMission.cs -> specific player missions that allow them to repair and add Defense Units to objectives, and ferry aircraft from the rear to add them to supply
+- Genghis-Class-ThreadLoad.cs           -> check current CPU load various ways; output used to avoid CPU overloading in various places. Also checks for and handles error conditions and server crashes/graceful shutdowns.
+- Genghis-Class-MakeLandingGround.cs     -> Players can land on any empty/unclaimed airfield and make a new airfield there.
+- Genghis-Class-Knickebein.cs           -> Knickebein navigation system, how players can navigate to objectives and points on the map; displays at top of player screen in HUD area; chat commands for player input
+- Genghis-Class-AerialInterceptRadar.cs  -> Certain aircraft can display a radar intercept screen showing nearby aircraft and their positions.  This displays in the CHAT area; TAB-4 and chat commands for player input
+- Genghis-Class-AirToSurfaceVesselRadar.cs  -> Certain aircraft can display a surface radar screen showing nearby ships and their positions.  This displays in the CHAT area; TAB-4 and chat commands for player input
+
+ - TacviewImplMission.cs                 -> Tacview logging, for the server to record flight paths and other data, interface for tacviewrecorder.dll
+ - TacviewRecorder.cs                    -> Reverse engineered from the original tacviewrecorder.dll, the interface for the server to record flight paths and other data; only for reference/can't be edited
+ - TacView-IL2CLOD-folder/                -> Tacview output templates, only used by tacviewrecorder.dll, only for reference/can't be edited
+ - Tacview-web/                          -> .html and .js files for the tacview display, hosted on a separate web server; the campaign server uploads tacview files to this server and the ./js files show a list of the tacview files available for players to download, and deletes older files
+ - tacview/                              -> pwsh and other needed scripts to manipulate tacview files, filter them as needed, and upload them to the tacview server, and delete them from the server after a while.  The pwsh script is called by the campaign server at the start of each mission, to process the tacview files, the processed file is  then uploaded by -StatsMission.cs to and upload to the tacview server.
+ - *.mis files                           -> campaign mission files, the campaign server loads these files, which contain surface objects, aircraft and their flight plans, airfields, etc.  Some .mis are loaded and manipulated by the .cs files in the course of a mission or campaign.
+ 
+
+## Cover order system (Genghis-Class-CoverMission.cs)
+- Single source of truth: the `coverAircraftAirGroupsOrders` dict keyed by `AiAirGroup`, values are `CoverAGOrders { normal, strict, escort, loiter }`.
+- `CoverAGOrders.strict` = rigid wingman: `aawpt = FOLLOW`, `task = DO_NOTHING`, no DEFENDING task, altitude `-5 m ± 2 m`, speed matches the leader.
+  - Implemented by `isInStrictFormation(airGroup)` + `getShiftFactorForAirgroup` (spacing) and the speed match in `calcCoverSpeedToMatchMain` (`vel_mps = target_vel_mps_IAS` when `frontBackDist_m < strictSpeedMatchDistance_m`).
+- `CoverAGOrders.normal`  -> engage air + bomb as directed.
+- `CoverAGOrders.escort`  -> CLoD ESCORT, defend player, no ground bombing.
+- `CoverAGOrders.loiter`  -> `keepAircraftLoitering`, 4-point NORMFLY circle.
+- Gate all new `<c...>` commands through `setCoverAircraftAirGroupsOrders`; add each new prefix to the **chat-suppression list in Genghis.cs** so it isn't swallowed.
+
+## Formation helpers & known pitfalls
+- `calcOffset_m` returns `Tuple<...>` and applies `offsetDirection.left_right`/`up_down`; spacing factor comes from `getShiftFactor(player)` (player-settable via `<cdist`) — but `<cstrict` uses `getShiftFactorForAirgroup(player, airGroup)` which pins to `strictFormationShiftFactor`.
+- `EscortPosWaypoint` (line ~7340s): `CurrentPos.z += altDiff_m + ran.NextDouble()*2*AltDiff_range_m - AltDiff_range_m;` — the random range is the **only** vertical separation in the escort/follow path, so tightening `<cstrict` range to 2 m packs groups into a thin slab separated only by left/right offset.
+- **Shadowed-parameter bug pattern**: `AltDiff_range_m`/`AltDiff_m`/etc. are incoming method parameters (copied to `AltDiffPassed_*` at the top of `keepAircraftOnTask_recurs`). Assigning to the bare parameter name later has NO effect — always use `AltDiffPassed_*`. `ordersEngageAir` / `ordersHoldFire` / `ordersBombGround` are the decision helpers, not inline `if orders ==`.
+- `<cdist` only meaningfully affects non-strict groups.
+
+## Reliability & async
+- Heavy work (ground/static actor sweeps, objective-distance scans) must run off the hot path: `Task.Run(...)` or `Timeout(...)`.
+- Wrap event hooks (`OnBattleStarted`, `OnPlaceEnter`, `OnActorDestroyed`, etc.) in try/catch and write errors to `Console.WriteLine` / `GamePlay.gpLogServer`.
+
+## Compile & test gate
+- Build check: `dotnet build` the `%TEMP%\CoverCheck\CoverCheck.csproj` harness against the CloD DLLs. Required: `0 Error(s)`.
+- Warnings (e.g. CS0429/CS0219) should not rise; baseline is ~243 and is considered acceptable.
+- Behavior changes affecting formation/speed/spacing require an in-game sanity pass for the relevant command (e.g. `<cn`, `<cst`, `<ce`, `<ca`, `<cr`, `<clo`).
+
+## Quick command map
+- `<cn`/`<cnormal>` engage air + bomb as ordered
+- `<cst`/`<cstrict>` rigid wingman, hold position, match leader
+- `<ce`/`<cescort>` escort + defend
+- `<clo`/`<cloiter>` circle in place
+- `<cr`/`<creserve>` hold fire / in reserve
+- `<ca`/`<cattack>` join current attack
+- many others in each module relevant to that module

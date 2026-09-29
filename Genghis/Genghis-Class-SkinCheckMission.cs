@@ -94,8 +94,8 @@ public class SkinCheckMission : AMission
                         {
                             Console.WriteLine("Found too-large skin file " + fileName);
                             mainmission.twcLogServer(null, "SKIN FILE TOO LARGE!!!!!", null);
-                            mainmission.twcLogServer(null, "A skin file from a player who recently entered an aircraft is too large--please keep them under 500K.");
-                            mainmission.twcLogServer(null, "Large skin files slow the server to a crawl.");
+                            mainmission.twcLogServer((Player[])null, "A skin file from a player who recently entered an aircraft is too large--please keep them under 500K.");
+                            mainmission.twcLogServer((Player[])null, "Large skin files slow the server to a crawl.");
                         }
                         LargeSkins.Add(fileName);
                         if (deleteFile) File.Delete(fileName);

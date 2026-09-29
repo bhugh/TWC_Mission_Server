@@ -578,7 +578,7 @@ public class TacviewImplMission : TacviewMission
             Console.WriteLine("Will record action via Tacview for the next 5 minutes...");
 			tacRecorderCount ++;
 			mainmission.twcLogServer(new Player[] { player }, string.Format(">>>Tacview: Will record action via Tacview for the next 5 minutes. Request {0} of {1} allowed per session.", tacRecorderCount, tacRecorderMax));            
-			mainmission.twcLogServer(null, string.Format(">>>Tacview: Recording started - for next 5 minutes!"));            
+			mainmission.twcLogServer((Player[])null, string.Format(">>>Tacview: Recording started - for next 5 minutes!"));            
             
 			string ms = "Recording started at request of " + player.Name();
 			AddBookmark(ms);
@@ -588,7 +588,7 @@ public class TacviewImplMission : TacviewMission
 				StopRecorder();
 				tacRecorderOn = false;
 				Console.WriteLine("Tacview stopped...");
-			mainmission.twcLogServer(null, ">>>Tacview: Recording stopped.");            
+			mainmission.twcLogServer((Player[])null, ">>>Tacview: Recording stopped.");            
 				
 				});
 

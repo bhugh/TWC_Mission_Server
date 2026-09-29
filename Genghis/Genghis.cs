@@ -12650,7 +12650,7 @@ public class Mission : AMission, IMainMission
         {
             AiAirport ap = Calcs.nearestAirport(GamePlay, player.Place().Pos(), player.Army());
             AirfieldDisable(ap, 1);
-            twcLogServer(null, "Destroying the airport nearest where you are currently located: " + (ap as AiActor).Name());
+            twcLogServer((Player[])null, "Destroying the airport nearest where you are currently located: " + (ap as AiActor).Name());
 
 
         }
@@ -14486,6 +14486,16 @@ public class Mission : AMission, IMainMission
         var plAr = new Player[] { player };
         if (player == null) plAr = null;
         twcLogServer(plAr, data, third);
+    }
+
+    //Single-recipient overload: lets callers pass the Player directly, eg twcLogServer(player, "some message").
+    //NOTE: deliberately takes exactly 2 parameters.  An overload whose 1st parameter is 'Player' & which ALSO has
+    //the optional 3rd 'third' parameter would make every existing 'twcLogServer(null, ...)' call site ambiguous
+    //(CS0121), because a null literal converts to BOTH 'Player[]' & 'Player'.  Use twcLogServerP(player, data, third)
+    //when the 'third' array is needed as well.
+    public void twcLogServer(Player player, string data)
+    {
+        twcLogServerP(player, data, null);
     }
 	
 	DateTime msgDelayStartTime = DateTime.UtcNow;
@@ -26862,7 +26872,7 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
                         MO_HandleTriggerObjectiveRefresh(mo, loadIndividually: true); //re-init stationaries as needed to make the trigger work again, for trigger OBJs
                     });
 
-                    twcLogServer(null, mo.Name + " has been repaired and returned to service.");
+                    twcLogServer((Player[])null, mo.Name + " has been repaired and returned to service.");
 
                     time = "No value";
                     if (mo.TimeToUndestroy_UTC.HasValue) time = mo.TimeToUndestroy_UTC.ToString();
@@ -27602,8 +27612,8 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
 
             if (!mo.ThingsToSave_stillAlive && mo.ThingsToSave_stillAlive  != saveStillAlive) //just killed the General, or whatever...
             {
-                twcLogServer(null, mo.ThingsToSave_destroyed_message );                
-                twcLogServer(null,">>>You'll have to try " + mo.Name + " again another day, after it has been reactivated with new troops, supplies, and equipment.");
+                twcLogServer((Player[])null, mo.ThingsToSave_destroyed_message );                
+                twcLogServer((Player[])null,">>>You'll have to try " + mo.Name + " again another day, after it has been reactivated with new troops, supplies, and equipment.");
 
                 //And now it is undestroyed/alldamage repair, for the rest of the mission
                 //And disabled until the end of the mission

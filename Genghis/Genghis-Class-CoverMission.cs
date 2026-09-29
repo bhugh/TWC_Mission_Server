@@ -1582,7 +1582,7 @@ public class CoverMission : AMission, ICoverMission
 
                 bool ordersAreFollow = (coverAircraftAirGroupsOrders.ContainsKey(airGroup) && coverAircraftAirGroupsOrders[airGroup] == CoverAGOrders.reserve);
                 bool ordersAreNormal = (!coverAircraftAirGroupsOrders.ContainsKey(airGroup) || (coverAircraftAirGroupsOrders[airGroup] == CoverAGOrders.normal));
-                bool ordersAreAttack = (coverAircraftAirGroupsOrders.ContainsKey(airGroup) && (coverAircraftAirGroupsOrders[airGroup] == CoverAGOrders.attack);
+                bool ordersAreAttack = (coverAircraftAirGroupsOrders.ContainsKey(airGroup) && coverAircraftAirGroupsOrders[airGroup] == CoverAGOrders.attack);
                 bool ordersAreStrict = (coverAircraftAirGroupsOrders.ContainsKey(airGroup) && coverAircraftAirGroupsOrders[airGroup] == CoverAGOrders.strict);
                 bool ordersAreEscort = (coverAircraftAirGroupsOrders.ContainsKey(airGroup) && coverAircraftAirGroupsOrders[airGroup] == CoverAGOrders.escort);
                 bool ordersAreLoiter = (coverAircraftAirGroupsOrders.ContainsKey(airGroup) && coverAircraftAirGroupsOrders[airGroup] == CoverAGOrders.loiter);
@@ -2381,7 +2381,15 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 			Console.WriteLine(msg111);
 			mainmission.twcLogServer(new Player[] { player }, msg111 );
 		
-			CoverCalcs.listAllGroundStationaries(this, GamePlay, new Player[] {player}, missionNumber: -1, initPos: pos, radius_m: 10000, saveFile: saveFile);
+			CoverCalcs.listAllGroundStationaries(
+				this,
+			 GamePlay,
+				new Player[] {player},
+				missionNumber: -1,
+				initPos: pos,
+				radius_m: 10000,
+				saveFile: saveFile
+			);
 		}
 
         /*
@@ -2398,7 +2406,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
         }
         else if (msg.StartsWith("<clist")) //<clist
         {
-            if (playeFr == null) return;
+            if (player == null) return;
             GamePlay.gpLogServer(new Player[] { player }, ">>>Please use Tab-4-4-4-4 menu for controlling your Cover/Bomber Aircraft when possible", null);
             listCoverAircraftCurrentlyAvailable((ArmiesE)player.Army(), player);
 
@@ -2544,140 +2552,143 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 
 
         }
+        else if (msg.StartsWith("<chelp7"))
+        {
+            string[] helpMessages = {
+                "COVER FIGHTER & BOMBER SYSTEM - HELP PAGE 6/6",
+                "Targeting by POINT (Knickebein, bomb, or flare point) is good for heavy bombers who can blanket an AREA with ordnance.",
+                "Target by NEAREST ENEMY (to Knickebein, bomb, or flare point) is required for dive bombers and sturmovik aircraft to operate correctly & target effectively.",
+                "With a NEAREST ENEMY target, dive bombers and sturmovik aircraft, will actually do a dive bomb or close ground attack. Without it, they will simply drop from altitude.",
+                "NEAREST ENEMY targeting also works for heavy bombers to drop from altitude. It can be useful if you need to target specific naval or ground objectives - even moving/mobile objects.",
+                "When targeting by NEAREST ENEMY, cover pilots will look for ground and naval targets near the given point",
+                "and will search a wider radius if none is found.  They choose the highest-value targets they can.",
+                "Each cover pilot will choose a different ground target in the given area, if possible.",
+                "Cover pilots will inform you of their chosen target and its double-keypad location in <cover info listing.",
+                "They must be quite close to the target point, 5-10km generally, before they can identify a specific ground enemy target.",
+                "If pilots cannot identify a nearby or even moderately distant ground enemy, they will continue looking but revert to FOLLOW YOU flight plan. Target will be still be listed as \"(coord) AZ03.4.2\" or similar",
+                "<<<<END OF COVER AIRCRAFT HELP>>>>"
+            };
+
+            foreach (string message in helpMessages)
+            {
+                mainmission.twcLogServer(player, message);
+            }
+        }
         else if (msg.StartsWith("<chelp6"))
         {
-            string msg42 = "COVER FIGHTER & BOMBER SYSTEM - HELP PAGE 6/6";
-            GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
-            msg42 = "Targeting by POINT (Knickebein, bomb, or flare point) is good for heavy bombers who can blanket an AREA with ordnance.";
-            GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
-            msg42 = "Target by NEAREST ENEMY (to Knickebein, bomb, or flare point) is required for dive bombers and sturmovik aircraft to operate correctly & target effectively.";
-            GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
-            msg42 = "With a NEAREST ENEMY target, dive bombers and sturmovik aircraft, will actually do a dive bomb or close ground attack. Without it, they will simply drop from altitude.";
-            GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
-            msg42 = "NEAREST ENEMY targeting also works for heavy bombers to drop from altitude. It can be useful if you need to target specific naval or ground objectives - even moving/mobile objects.";
-            GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
-            msg42 = "When targeting by NEAREST ENEMY, cover pilots will look for ground and naval targets near the given point";
-            GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
-            msg42 = "and will search a wider radius if none is found.  They choose the highest-value targets they can.";
-            GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
-            msg42 = "Each cover pilot will choose a different ground target in the given area, if possible.";
-            GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
-            msg42 = "Cover pilots will inform you of their chosen target and its double-keypad location in <cover info listing.";
-            GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
-            msg42 = "They must be quite close to the target point, 5-10km generally, before they can identify a specific ground enemy target.";
-            GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
-            msg42 = "If pilots cannot identify a nearby ground enemy, they will simply target the given point - listed as \"(coord) AZ03.4.2\" or similar";
-            GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
-            msg42 = "<<<<END OF COVER AIRCRAFT HELP>>>>";
-            GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
+            string[] helpMessages = {
+                "COVER FIGHTER & BOMBER SYSTEM - GROUND ATTACK MODES - HELP PAGE 6/7",
+                "Tab-4-4-4-4-7 has several modes of ground attack for your bombers & fighter-bombers:",
+                "KNICKEBEIN POINT - attack the position of the current Knickebein point (<khelp for info on the KB system)",
+                "NEAREST ENEMY TO KNICKEBEIN POINT - find an enemy ground vehicle, ship, AA gun, train, or other ground object near the Knickebein Point and attack it.",
+                "NEXT BOMB DROP POINT - when you drop your NEXT bomb, the cover aircraft will note that point and attack it.",
+                "NEAREST ENEMY TO BOMB DROP POINT - note point of your next bomb drop and target for ground/naval enemies near that point.",
+                "DROP FLARE & TARGET FLARE DROP POINT - at the moment you press the button to select this option, you drop a flare.  Cover aircraft will attack the flare point.",
+                "DROP FLARE & TARGET ENEMIES NEAR DROP POINT - at the moment you press the button to select this option, you drop a second flare.  Cover aircraft will attack enemies near that point.",
+                "IMPORTANT NOTE: Sturmovik/ground attack aircraft & Dive Bombers require 'NEAREST ENEMY' target points to ground attack/dive bomb. See <chelp7.",
+                "For all \"ENEMIES NEAR\" targeting: If no enemy is found near the specified point, bombers will generally hold their fire and revert to 'Follow'. Watch your CHAT display for clues as to current target or failure to locate targets.",
+                "For KNICKEBEIN point targets, you need to check Recon Reports for exact coordinates to target - ideally before you leave home base",
+                "BOMB and FLARE drop targeting are more flexible. You can fly to the enemy, drop a bomb or flare to indicate your desired target point, and cover aircraft will target it (or enemies near it, ifor 'NEAREST ENEMY' targeting).",
+                "<chelp7 for more..."
+            };
+
+            foreach (string message in helpMessages)
+            {
+                mainmission.twcLogServer(player, message);
+            }
         }
         else if (msg.StartsWith("<chelp5"))
         {
-            string msg42 = "COVER FIGHTER & BOMBER SYSTEM - HELP PAGE 5/6";
-            GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
-            msg42 = "Tab-4-4-4-4-7 has several modes of attack for your bombers & fighter-bombers:";
-            GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
-            msg42 = "KNICKEBEIN POINT - attack the position of the current Knickebein point (<khelp for info on the KB system)";
-            GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
-            msg42 = "NEAREST ENEMY TO KNICKEBEIN POINT - find an enemy ground vehicle, ship, AA gun, train, or other ground object near the Knickebein Point and attack it.";
-            GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
-            msg42 = "NEXT BOMB DROP POINT - when you drop your NEXT bomb, the cover aircraft will note that point and attack it.";
-            GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
-            msg42 = "NEAREST ENEMY TO BOMB DROP POINT - note point of your next bomb drop and target for ground/naval enemies near that point.";
-            GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
-            msg42 = "DROP FLARE & TARGET FLARE DROP POINT - at the moment you press the button to select this option, you drop a flare.  Cover aircraft will attack the flare point.";
-            GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
-            msg42 = "DROP FLARE & TARGET ENEMIES NEAR DROP POINT - at the moment you press the button to select this option, you drop a second flare.  Cover aircraft will attack enemies near that point.";
-            GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
-            msg42 = "For all \"ENEMIES NEAR\" targeting: If no enemy is found near the specified point, bombers will hold their fire and revert to \"Follow\".";
-            GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
-            msg42 = "For KNICKEBEIN point targets, you need to check Recon Reports for exact coordinates to target - ideally before you leave home base";
-            GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
-            msg42 = "BOMB and FLARE drop targeting are more flexible. You can fly to the enemy, drop a bomb or flare to indicate your desired target point, and cover aircraft will target it.";
-            GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
-            msg42 = "<chelp6 for more...";
-            GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
+            string[] helpMessages = {
+                "COVER FIGHTER & BOMBER SYSTEM - SQUADRON ORDERS - HELP PAGE 5/7",
+                "SQUADRON ORDERS:  INSTRUCT SQUADRONS TO ATTACK AND DEFEND AS NORMAL, OR HOLD FIRE AND JOIN YOU, OR ATTACK NEARBY ENEMY AIRCRAFT MORE VIGOROUSLY, OR COVER AND DEFEND YOU, ETC.",
+                "SQUADRON ORDERS: All orders can apply to specific squadrons, or to all squadrons at once. For example: <cn 2 5 puts squadrons #2 and #5 on NORMAL behavior. <cn (alone, no numbers) puts ALL squadrons on NORMAL behavior.",
+                "<cnormal OR <cn - NORMAL behavior: attack ground targets if you direct via the TAB-4 menu; fighters/sturmovik will leave formation to defend against nearby air enemies (default behavior).",
+                "<cattack OR <ca - ATTACK ground targets if instructed by Tab-4 menu; fighters/sturmovik will vigorously attack any enemy aircraft they see rather than waiting for them to approach.",
+                "<cescort OR <ce - ESCORT you: stay with you & vigorously defend you from enemy aircraft near you, turn and fight nearby enemies, leaving formation if necessary (even bombers); discontinue ground attacks.",
+                "<creserve OR <cr - stay in RESERVE, joined with you; do not join the current ground attack. Stay in formation, but fighters/sturmovik will leave formation to defend against enemy approaching closely.",
+                "<cstrict OR <cs - squadrons fly in rigid STRICT, close formation with you, all aircraft at your altitude, close to you (ignoring <cdist), ignores all other action, & ordered to ignore even direct attacks and simply fly in formation with you.",
+                "<cloiter OR <cl - LOITER in place, circling. Will defend if attacked, but otherwise remain out of the action and awaiting further orders.",
+                "<chelp6 for more..."
+            };
+
+            foreach (string message in helpMessages)
+            {
+                mainmission.twcLogServer(player, message);
+            }
         }
         else if (msg.StartsWith("<chelp4"))
         {
-            string msg42 = "COVER FIGHTER & BOMBER SYSTEM - HELP PAGE 4/6";
-            GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
-            msg42 = "<creserve 1 4 OR <cr 1 4 - instruct squadrons #1 and #4 to stay in reserve, joined with you, holding their fire & not joining the current attack (they will still defend you). <cr (alone, no numbers) puts all squadrons on reserve.";
-            GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
-            msg42 = "<cstrict 2 OR <cst 2 - squadron #2 flies in rigid STRICT formation with you (holding your speed & altitude, ignoring <cdist), ignores all other action, & fires only in self defense.";
-            GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
-            msg42 = "<cescort 1 3 OR <ce 1 3 - squadrons #1 & #3 ESCORT you: stay with & defend you from enemy aircraft, without bombing ground targets.";
-            GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
-            msg42 = "<cnormal 2 3 OR <cn 2 3 - squadrons #2 & #3 return to their NORMAL behavior (attack nearby air enemies & bomb as you direct). <cn (alone, no numbers) puts all squadrons on normal.";
-            GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
-            msg42 = "<cloiter 1 OR <clo 1 - squadron #1 LOITERS in place, circling.";
-            GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
-            msg42 = "<cattack 2 3 5 OR <ca 2 3 5 - instruct squadrons #2, #3, and #5 to participate in the current attack (as ordered by Tab-4-4-4-4-7). <ca (alone, no numbers) puts all squadrons into attack mode";
-            GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
-            msg42 = "<chelp5 for more...";
-            GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
+            string[] helpMessages = {
+                "COVER FIGHTER & BOMBER SYSTEM - BOMB LOADS - HELP PAGE 4/7",
+                "Bombers, Sturmovik/Strike Aircraft, and Fighter-bombers always include bombs loaded by default.",
+                "You can force the fighter or bomber version of your cover aircraft by specifying 'fighter' or 'fi'",
+                "or 'bomber' or 'bo' at the end of the <cover command.",
+                "OR specify 'heavy' or 'he' to load heavy bombs, when available (generally 2000lb/1000kg)",
+                "(Default bomb load is many smaller bombs - good for extended area targets. \"Heavy\" specifies fewer but larger bombs. Less overall tonnage but will put more ordnance in one SMALL area. Good for ships, bunkers.)",
+                "Adding x3 x5 x9, etc, at the end of a command will repeat the command the specified number of times. Instead of typing \"<cover 5 1\" four times, just use \"<cover 5 1 x4\"",
+                "Examples: <cover 21 fi | <cover 32 VI bomber | <cover 12 3 AS fighter x3 | <cover 3 bo | <cover 14 2 he",
+                "<chelp5 for more..."
+            };
+
+            foreach (string message in helpMessages)
+            {
+                mainmission.twcLogServer(player, message);
+            }
         }
         else if (msg.StartsWith("<chelp3"))
         {
-            string msg42 = "COVER FIGHTER & BOMBER SYSTEM - HELP PAGE 3/6";
-            GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
-            msg42 = "Cover aircraft include cover fighters and bombers. They are available to heavy bomber pilots and some fighter models.";
-            GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
-            msg42 = "Bombers, Sturmovik/Strike Aircraft, and Fighter-bombers always include bombs loaded by default.";
-            GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
-            msg42 = "You can force the fighter or bomber version of your cover aircraft by specifying 'fighter' or 'fi'";
-            GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
-            msg42 = "or 'bomber' or 'bo' at the end of the <cover command.";
-            GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
-            msg42 = "OR specify 'heavy' or 'he' to load heavy bombs, when available (generally 2000lb/1000kg)";
-            GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
-            msg42 = "(Default bomb load is many smaller bombs - good for extended area targets. \"Heavy\" specifies fewer but larger bombs. Less overall tonnage but will put more ordnance in one SMALL area. Good for ships, bunkers.)";
-            GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
-            msg42 = "Adding x3 x5 x9, etc, at the end of a command will repeat the command the specified number of times. Instead of typing \"<cover 5 1\" four times, just use \"<cover 5 1 x4\"";
-            
-            GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
-            msg42 = "Examples: <cover 21 fi | <cover 32 VI bomber | <cover 12 3 AS fighter x3 | <cover 3 bo | <cover 14 2 he";
-            GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
-            msg42 = "<chelp4 for more...";
-            GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
+            string[] helpMessages = {
+                "COVER FIGHTER & BOMBER SYSTEM - COVER AIRCRAFT AVAILABLE - HELP PAGE 3/7",
+                "Cover aircraft include cover fighters and bombers. They are available to heavy bomber pilots, Sturmovik pilots and some fighter pilots.",
+                "Bomber pilots: Can call bombers to fly with you, cover fighters to fly above.",
+                "Sturmovik pilots: Can call a few Sturmovik to fly with you.",
+                "Fighter pilots (older models): Can call a few bombers to fly with you; you fly above the bombers as cover.",
+                "Fighter pilots (current models): Can call one or a few fighters to fly as your wing.",
+                "NOTE: When flying low (to avoid radar detection), all aircraft will fly low at your altitude. As you gain altitude, bombers & cover fighters will start to maintain separate altitudes as described above.",
+                "<chelp4 for more..."
+            };
+
+            foreach (string message in helpMessages)
+            {
+                mainmission.twcLogServer(player, message);
+            }
         }
         else if (msg.StartsWith("<chelp2"))
         {
-            string msg42 = "COVER FIGHTER & BOMBER SYSTEM - HELP PAGE 2/6";
-            GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
-            msg42 = "<cover 3 5 - means launch a flight of 5 aircraft of type #3";
-            GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
-            msg42 = "<cover 2 6 AS - means launch a flight of 6 aircraft of type #2, formation: ASTERN";
-            GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
-            msg42 = "Formation types: VI=Vic, V3=Vic3, AB=Abreast, AS=Astern, RI=Right echelon, LE=Left echelon";
-            GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
-            msg42 = "<cover 4 3 heavy x3 - launch a flight of 3 aircraft type #4, loaded with heavy bombs, and repeat this command 3 times";
-            GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
-            msg42 = "<cland 2 4 5 release group #2, #4, and #5.  Get group # from Tab-4 menu or <cpos. <cland (or Tab-4 menu) alone lands all aircraft.";
-            GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
-            msg42 = "<cdist 200 - set cover formation distance 200% normal. <cdist 50 - set cover distance 50% normal. <cdist 1000 - cover distance 10X normal";
-            GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
-            msg42 = "<chelp3 for more...";
-            GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
+            string[] helpMessages = {
+                "COVER FIGHTER & BOMBER SYSTEM - BASIC COMMANDS - HELP PAGE 2/7",
+                "<cover 3 5 - means launch a flight of 5 aircraft of type #3",
+                "<cover 2 6 AS - means launch a flight of 6 aircraft of type #2, formation: ASTERN",
+                "Formation types: VI=Vic, V3=Vic3, AB=Abreast, AS=Astern, RI=Right echelon, LE=Left echelon",
+                "<cover 4 3 heavy x3 - launch a flight of 3 aircraft type #4, loaded with heavy bombs, and repeat this command 3 times",
+                "<cland 2 4 5 release group #2, #4, and #5.  Get group # from Tab-4 menu or <cpos. <cland (or Tab-4 menu) alone lands all aircraft.",
+                "<cdist 200 - set cover formation distance 200% normal. <cdist 50 - set cover distance 50% normal. <cdist 1000 - cover distance 10X normal",
+                "<chelp3 for more..."
+            };
+
+            foreach (string message in helpMessages)
+            {
+                mainmission.twcLogServer(player, message);
+            }
         }
         else if (msg.StartsWith("<chelp"))
         {
-            string msg42 = "COVER FIGHTER & BOMBER SYSTEM - HELP (1/6)";
-            GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
-            msg42 = "Tab-4-4-4-4 menu OR Chat Commands <cover OR <cover Beau OR <cover 3 OR <cover 3 6 AS";
-            GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
-            msg42 = " - launch a cover squadron of aircraft name or type # indicated. Optional: Add # of aircraft to launch, formation type, heavy (bombs), and x2 or x3 to repeat the command.";
-            GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
-            msg42 = "Tab-4 menu OR commands <clist - list available cover fighters & ID#; <cpos - position of your current fighters";
-            GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
-            msg42 = "Tab-4-4-4-4-7 set cover aircraft attack mode/target";
-            GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
-            msg42 = "<cnormal, <cstrict, <cescort, <cattack, <creserve & <cloiter 1 3 give standing orders to your squadrons (try <chelp4)";
-            GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
-            msg42 = "Tab-4 menu OR command <cland - release cover fighters to land (IMPORTANT!)";
-            GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
-            msg42 = "<chelp2 for more...";
-            GamePlay.gpLogServer(new Player[] { player }, msg42, new object[] { });
+            string[] helpMessages = {
+                "COVER FIGHTER & BOMBER SYSTEM - HELP (1/7)",
+                "Tab-4-4-4-4 menu OR Chat Commands <cover OR <cover Beau OR <cover 3 OR <cover 3 6 AS",
+                " - launch a cover squadron of aircraft name or type # indicated. Optional: Add # of aircraft to launch, formation type, heavy (bombs), and x2 or x3 to repeat the command.",
+                "Tab-4 menu OR commands <clist - list available cover fighters & ID#; <cpos - position of your current fighters",
+                "Tab-4-4-4-4-7 set cover aircraft attack mode/target",
+                "<cnormal, <cstrict, <cescort, <cattack, <creserve & <cloiter 1 3 give standing orders to e.g. squadrons 1 & 3 (details @ <chelp5)",
+                "Tab-4 menu OR command <cland - release cover fighters to land (IMPORTANT!)",
+                "<chelp2 for more..."
+            };
+
+            foreach (string message in helpMessages)
+            {
+                mainmission.twcLogServer(player, message);
+            }
         }
 
         else if (msg.StartsWith("<help") || msg.StartsWith("<HELP"))// || msg.StartsWith("<"))

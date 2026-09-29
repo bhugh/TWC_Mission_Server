@@ -4362,13 +4362,13 @@ public class Mission : AMission, IMainMission
             new List<Point2d>() { new Point2d (251381.6, 250029.4), new Point2d (289920, 206705.6)},
             new List<Point2d>() { new Point2d (259527.6, 266599.7), new Point2d (294135.2, 209694.2)},
             new List<Point2d>() { new Point2d (261626, 284269), new Point2d (294535.8, 220595.1)},
-            new List<Point2d>() { new Point2d (269631.3, 300000.6), new Point2d (304619.6, 224465.3)},
-            new List<Point2d>() { new Point2d (289955.1, 300000.1), new Point2d (313366, 227043.5)},
-            new List<Point2d>() { new Point2d (307159.4, 300000.4), new Point2d (325633.6, 229384.0)},
-            new List<Point2d>() { new Point2d (317821.9, 300000.9), new Point2d (337857.3, 235244.1)},
-            new List<Point2d>() { new Point2d (329207.1, 300000.7), new Point2d (347077.2, 240365.3)},
-            new List<Point2d>() { new Point2d (342760.8, 300000.9), new Point2d (352757.3, 244599.0)},
-            new List<Point2d>() { new Point2d (354908, 300000.9), new Point2d (358080, 247296.0)},
+            new List<Point2d>() { new Point2d (269631.3, 290000.6), new Point2d (304619.6, 224465.3)},
+            new List<Point2d>() { new Point2d (289955.1, 290000.1), new Point2d (313366, 227043.5)},
+            new List<Point2d>() { new Point2d (307159.4, 290000.4), new Point2d (325633.6, 229384.0)},
+            new List<Point2d>() { new Point2d (317821.9, 290000.9), new Point2d (337857.3, 235244.1)},
+            new List<Point2d>() { new Point2d (329207.1, 290000.7), new Point2d (347077.2, 240365.3)},
+            new List<Point2d>() { new Point2d (342760.8, 290000.9), new Point2d (352757.3, 244599.0)},
+            new List<Point2d>() { new Point2d (354908, 290000.9), new Point2d (358080, 247296.0)},
              };
 
             //2022-07 What really needs to happen instead of mult1 & mult2, the

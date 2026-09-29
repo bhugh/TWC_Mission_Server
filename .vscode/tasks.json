@@ -29,7 +29,10 @@
                     "source": "genghis-csc",
                     "fileLocation": [ "autoDetect", "${workspaceFolder}" ],
                     "pattern": {
-                        "regexp": "^(.*?)\\(\\d+,\\d+\\):\\s+(error|warning)\\s+(CS\\d+):\\s+(.*)$",
+                        // ^\s* strips the 3-space indent that check-compile.ps1 puts in front of each
+                        // error line - without it group 1 is "   Genghis\...cs" and the path won't
+                        // resolve, giving an unclickable Problems entry.
+                        "regexp": "^\\s*(.*?)\\(\\d+,\\d+\\):\\s+(error|warning)\\s+(CS\\d+):\\s+(.*)$",
                         "file": 1,
                         "severity": 2,
                         "code": 3,
@@ -55,7 +58,22 @@
                 "panel": "shared",
                 "clear": true,
                 "showReuseMessage": false
-            }
+            },
+            // same matcher as the build task, so F8 / the Problems panel work here too
+            "problemMatcher": [
+                {
+                    "owner": "csc",
+                    "source": "genghis-csc-warnings",
+                    "fileLocation": [ "autoDetect", "${workspaceFolder}" ],
+                    "pattern": {
+                        "regexp": "^\\s*(.*?)\\(\\d+,\\d+\\):\\s+(error|warning)\\s+(CS\\d+):\\s+(.*)$",
+                        "file": 1,
+                        "severity": 2,
+                        "code": 3,
+                        "message": 4
+                    }
+                }
+            ]
         }
     ]
 }

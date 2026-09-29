@@ -1520,7 +1520,7 @@ public class CoverMission : AMission, ICoverMission
                         string nm = "";
                         if ((wp as AiAirWayPoint).Target != null) nm = (wp as AiAirWayPoint).Target.Name();
 
-                        Console.WriteLine("ListCoverPosition - all waypoints: currway: {7} currtask: {8} {0} speed: [{0:N0} vs {1:N0}] ({2:n0} {3:n0} {4:n0}), target: {5}, name: {6}", (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z, (wp as AiAirWayPoint).Target, nm, currWay, airGroup.getTask(), Calcs.milesphour2meterspsec(player_vel_mph));                        
+                        Console.WriteLine("ListCoverPosition - all waypoints: currway: {7} currtask: {8} {0} speed: [{1:N0} vs {9:N0}] ({2:n0} {3:n0} {4:n0}), target: {5}, name: {6}", (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z, (wp as AiAirWayPoint).Target, nm, currWay, airGroup.getTask(), Calcs.milesphour2meterspsec(player_vel_mph));                       
 
                     }
                     //If the next waypoint is more interesting than the current one, display that one instead (usually it is "GATTACK_POINT" or such instead of "FOLLOW" or "ESCORT"
@@ -6448,7 +6448,8 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             //GroundStationary newTarget = null;
             AiActor newTarget = null;
             GroundStationary newGroundTarget = null;
-            bool diveTarget = false;
+            bool diveTarget = false; //ground actor target
+            bool stationaryDiveTarget = false; //stationary/static target
             //Choose another ground stationary somewhere within the given radius of change, starting with the GATTACK point since we don't have an actual GATTACK target actor; make sure it is alive if possible
             //Console.WriteLine("CBCW: bom,alt: {0} {1:F0}", isDiveBomber(airGroup), pos.z);
 
@@ -6611,18 +6612,26 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                                         int numToTargetOne = 1;
                                         if (groundType.ToLower().Contains("ship") && landType == maddox.game.LandTypes.WATER )
                                         {
-                                            step = origStep * 2.5; // if ships in the neighborhood we search a bit wider, they are very spread out.
+                                            //step = origStep * 1 .5; // if ships in the neighborhood we search a bit wider, they are very spread out.
                                             numToTargetOne = 2; //for ships, we can have two bombers target same ship. Myabe even 3-4?
                                         }
 
                                         if (act.Name().ToLower().Contains("chief")) numToTargetOne = 3;
 
+                                        Console.WriteLine("CBCW: Keep this one? {0} IsAlive: {1} isAIgroundactor: {2} numalreadytargetingit: {3} maxnumToTargetit: {4} ", act.Name(), act.IsAlive(), act as AiGroundActor != null, airgroupTargets.Values.Count(x => x == act), numToTargetOne);
+
                                         //if (dist_m < closest_m && act.IsAlive() && act as AiGroundActor != null)
                                         if (act.IsAlive() && act as AiGroundActor != null && airgroupTargets.Values.Count(x => x == act) < numToTargetOne )                                        
                                         {
                                             //
-                                            distToNearestACTOR_m = distToNearestAirgroupTargetPoint(act.Pos(),  act); // adding ,act allows > 1 target for this actor, but more thn numToTargetOne is disallowed above in the if statement
-                                            if (distToNearestACTOR_m >= 600 - 600 * p / numsteps ) continue; //can't have any targets within abt 500m of each other because due to CLoD, they will all just switch attack the SAME target instead of different ones.
+                                            distToNearestACTOR_m = distToNearestAirgroupTargetPoint(act.Pos(),  act); // adding ,act allows > 1 target for this exact actor, but more than numToTargetOne is disallowed above in the if statement
+
+                                            Console.WriteLine(act.Name() + " distNactor: {0:N0} distLIMIT: {1:N0} reject: {2} numToTarget: {3}",distToNearestACTOR_m, 500 - 500 * p / numsteps, distToNearestACTOR_m <= 500 - 500 * p / numsteps, numToTargetOne );
+                                            
+                                            //groundType = "";
+
+                                            if (distToNearestACTOR_m <= 500 - 500 * p / numsteps ) continue; //can't have any targets within abt 500m of each other because due to CLoD, they will all just switch attack the SAME target instead of different ones.
+
                                             if (!airGroup.hasBombs() && CoverCalcs.areCratersBuildingsFactoriesNear(mainmission, act.Pos(), 500.0 - 500.0 * p / numsteps )) continue; //the ai ground attackers will attack craters (even if only NEAR the target) so trying to avoid that. Can't hit things if they're inside a building. Also they randomly choose a "thing" nearby the point, not necessary the one we specify.  So we try to avoid all such AREAS not just pick one GG or act that is OK.  Because the ground attacker will just switch targets to a bad one, invariably, if available.
 
                                             closest_m = dist_m;
@@ -6680,6 +6689,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                         //Here, we're going more for the center of the target. Again we COULD/SHOULD look up the actual radius of the objective.
                         //do this if #1. We haven't found an actor target, #2. It isn't with the preferred mo #3. Sometimes randomly just for variety
                         int ml = 0;
+                        
                         if (!tempFlakTarget && (
                                 !diveTarget  || (Obj_radius > 0 && closest_m > Obj_radius * 1.2) || closest_m > maxMove_m /2.0 || (ran.Next(3) == 0)
                                 || (ran.Next(2) == 0 && isAA))  //one time in 3, choose a ground stationary instead of an actor, even if the actor was found; make it one in two if it is AA.
@@ -6691,6 +6701,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                         //(but only for auto dive bomber; never for live player choosing "nearest enemy")
                         {
                             //prevent cpu hog
+                            
                             
                             int steps = 7;
                             if (mmtlm.recentCPUPercent > 98 || mmtlm.rollingAverageCPUPercent > 95) steps = 1;
@@ -6705,13 +6716,13 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                                 Console.WriteLine("CBCW: Trying to find a ground stationary");
                                 List<GroundStationary> stationaries = GamePlay.gpGroundStationarys(pos.x, pos.y, preferredMove_m + d * step).ToList();
                                 //foreach (GroundStationary s in stationaries) Console.WriteLine("List:" + s.Name + " " + s.Title + " " + s.Type);
-                                Console.WriteLine("CBCW: Looking for nearby stationary at {0}m", changeL_XY_m * d);
+                                Console.WriteLine("CBCW: Looking for nearby stationary at {0}m, found {1} stationaries", preferredMove_m + d * step, stationaries.Count);
                                 int numToCheck = 30;
                                 if (stationaries.Count < numToCheck) numToCheck = stationaries.Count;
 								
 								int timesThru = (d * 3) / steps;
 								
-								for (int j = timesThru; j>=0; j--) { //run through this three times, lloking for better then worse targets
+								for (int j = timesThru; j>=0; j--) { //run through this three times, looking for better then worse targets
 									CoverCalcs.Shuffle(stationaries);
 									for (int i = 0; i < numToCheck; i++)
 									{
@@ -6781,7 +6792,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 
 											{
                                                 distToNearestGROUND_m = distToNearestAirgroupTargetPoint(gg.pos);
-                                                if ( distToNearestGROUND_m > 600 - 600 * d / steps) continue; //trying to avoid having AI all attack the same area (even if technically different targets, they will all switch and just attack the same one, due to CLoD)
+                                                if ( distToNearestGROUND_m <= 600 - 600 * d / steps) continue; //trying to avoid having AI all attack the same area (even if technically different targets, they will all switch and just attack the same one, due to CLoD)
 
                                                 if (!airGroup.hasBombs() && CoverCalcs.areCratersBuildingsFactoriesNear(mainmission, gg.pos, 400.0 - 400.0 * d / steps)) continue; //the ai ground attackers will attack craters (even if only NEAR the target) so trying to avoid that.
 
@@ -6823,7 +6834,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 												newGroundTarget = gg;
 												Console.WriteLine("CBCW: Found a stationary for target: " + gg.Name + " 1 " + gg.Title + " 2 " + gg.Type + " | {0:F0} {1:F0} - {2:F0} {3:F0} distToNearest: {4:N0}", gg.pos.x, gg.pos.y, newTargetPoint.x, newTargetPoint.y, distToNearestGROUND_m); // + " " + newTarget.Pos().x.ToString());
 																																																																																										  //if (ran.Next(5) < 3) continue; //trying to get more of list for testing
-												diveTarget = true;
+												stationaryDiveTarget = true;
 												break;
 											}
 										}
@@ -6831,17 +6842,17 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 
 									}
 								}
-                                if (diveTarget) break;
+                                if (stationaryDiveTarget) break;
                             }
                         }
 
                         //If the found gg was low quality and the ACTOR was pretty good, we can stick with the ACTOR instead
-                        if (newTarget != null && ml < 2 && closest_m < maxMove_m / 2.0) newGroundTarget = null;
+                        if (stationaryDiveTarget && newTarget != null && ml < 2 && closest_m < maxMove_m / 2.0) newGroundTarget = null;
                     
 
                         //if we FOUND a target we reset targetPointNoEnemiesFound_time so others can also search
                         //if we DID NOT FIND then we set it so no others will waste CPU searching for 60 seconds
-                        if (diveTarget)
+                        if (diveTarget || stationaryDiveTarget)
                         {
                             if (targetPointNoEnemiesFound_time.Keys.Contains(newTargetPoint))
                                 targetPointNoEnemiesFound_time.Remove(newTargetPoint);
@@ -6851,7 +6862,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 }
 
 
-                if (!diveTarget) Console.WriteLine("CBCW: Didn't find Actor or Stationary for target, going to NORMFLY instead");
+                if (!diveTarget && !stationaryDiveTarget) Console.WriteLine("CBCW: Didn't find Actor or Stationary for target, going to NORMFLY instead");
 
             }
             //if (mainmission.ON_TESTSERVER) Console.WriteLine("MBTXX5 " + DateTime.UtcNow.ToString("T.fffffff"));
@@ -6860,15 +6871,18 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 
 
             //Use the position of the newly found ground actor as the new attack position, IF the actor exists/was found
-            if (diveTarget)
+            if (diveTarget || stationaryDiveTarget)
             {
-                if (newTarget != null)
+                if (diveTarget && newTarget != null)
                 {
                     distToNearestCHOSEN_m = distToNearestACTOR_m;
+                    newPos.x = newTarget.Pos().x;
+                    newPos.y = newTarget.Pos().y;
+                    savePos = newPos;
                     Console.WriteLine("CBCW: Found a stationary, updating attack position");
                    
                 }
-                else if (newGroundTarget != null)
+                else if ( stationaryDiveTarget && newGroundTarget != null)
                 {
                     distToNearestCHOSEN_m = distToNearestGROUND_m;
                     newPos.x = newGroundTarget.pos.x;

@@ -103,9 +103,9 @@
  *
  *   - Polling at 1-2 Hz is plenty.  Against a 1000-2000m target, a 1Hz poll puts the release
  *     within ~100-120m of the intended line, comfortably inside the target.            [GAME]
- *
- *
- *
+
+     - The bomb-drop detection system doesn't work if the server (or offline mission) is set to unlimited ammo.  In that case the S_BombReserve parameter is always doesn't change.  I don't think .hasBombs() is reliable either.  So this function won't work really at all in unlimited ammo mode.
+     
  *   ================================================================================================
  *   4.  part.ParameterTypes - NAMING CONVENTION
  *   ================================================================================================

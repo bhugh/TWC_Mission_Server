@@ -23165,8 +23165,8 @@ added Rouen Flak
     
 
                  var flak = new List<string> { "Artillery.Flak30_Shield", "Artillery.Flak30_Shield",
-                    "Artillery.Flak30_Shield","Artillery.Bofors_StandAlone"
-                    "Artillery.Flak30_Shield","Artillery.Flak30_Shield","Artillery.Flak30_Shield","Artillery.Bofors_StandAlone"
+                    "Artillery.Flak30_Shield","Artillery.Bofors_StandAlone",
+                    "Artillery.Flak30_Shield","Artillery.Flak30_Shield","Artillery.Flak30_Shield","Artillery.Bofors_StandAlone",
                     "Artillery.Flak30_Shield","Artillery.Flak30_Shield","Artillery.Flak30_Shield",                  
                     "Artillery.Bofors_StandAlone", };    
                 var flakStands = new List<string> { "Stationary.Environment.Zwillingssockel36_Base_GER1",  };
@@ -23222,7 +23222,7 @@ added Rouen Flak
                     if (ON_TESTSERVER) Console.WriteLine("Placing flak gun placed for {4} ({6}) at ({0:N0} {1:N0} {2:N0}) heading: {3:N0}, formation: {5}) {6}", Math.Round(newPoint.x), Math.Round(newPoint.y), Math.Round(mo.Pos.z), head, mo.Name, formation, side, tempFlak?"TempFlak":"AutoFlak");
                     //Update - radius_hide how far out the AA looks, so it won't fire until the enemy is closer than this distance
                     f = Calcs.makeStatic(f, GamePlay, this, Math.Round(newPoint.x), Math.Round(newPoint.y), 0, type: flak[flakType], heading: head, side: side, radiusHide: Convert.ToInt32(radiusHide), chiefNum: autoFlakChiefNum, resetCount: resetCount, staticprefix: staticprefix);
-                     f = Calcs.makeStatic(f, GamePlay, this, Math.Round(newPoint.x), Math.Round(newPoint.y), 0, type: flakBase[random.Next(flakBase.Count)], heading: head, side: side,  resetCount: false, staticprefix: staticprefix);
+                     f = Calcs.makeStatic(f, GamePlay, this, Math.Round(newPoint.x), Math.Round(newPoint.y), 0, type: flakStands[random.Next(flakStands.Count)], heading: head, side: side,  resetCount: false, staticprefix: staticprefix);
                     resetCount = false;
                     if (tempFlak) tempFlakTotal++;
                     totalFlakPlaced++;

@@ -15581,7 +15581,7 @@ public class Mission : AMission, IMainMission
             AutoFlakIfPrimary = true;
             AutoFlak = true;
             NumFlakBatteries = 3;
-            NumInFlakBattery = 4;            
+            NumInFlakBattery = 1;            
 
             MOMobileObjectiveType = MO_MobileObjectiveType.None;
             MobileMoveTime_hrs = 0; //Time after which the mobile objective should move to a different location. 0 means never.
@@ -15697,7 +15697,7 @@ public class Mission : AMission, IMainMission
             AutoFlakIfPrimary = true;
             AutoFlak = false;
             NumFlakBatteries = 3;
-            NumInFlakBattery = 3;
+            NumInFlakBattery = 1;
             //for testing
             //NumFlakBatteries = 3;
             //NumInFlakBattery = 4;
@@ -15790,7 +15790,7 @@ public class Mission : AMission, IMainMission
             AutoFlakIfPrimary = true;
             AutoFlak = true;
             NumFlakBatteries = 2;
-            NumInFlakBattery = 2;
+            NumInFlakBattery = 1;
             //for testing
             //NumFlakBatteries = 3;
             //NumInFlakBattery = 4;
@@ -15884,8 +15884,8 @@ public class Mission : AMission, IMainMission
             //NumFlakBatteries = 4;
             //NumInFlakBattery = 10;
             //for testing
-            NumFlakBatteries = 2;
-            NumInFlakBattery = 6;
+            NumFlakBatteries = 3;
+            NumInFlakBattery = 1;
 
             MOMobileObjectiveType = MO_MobileObjectiveType.None;
             MobileMoveTime_hrs = 0; //Time after which the mobile objective should move to a different location. 0 means never.
@@ -22295,7 +22295,7 @@ added Rouen Flak
                 }
                 tempFlak_Lifetime_s = 1000; //but flak lifetime proportionate
                 minRatingForFlak = 150;
-                maxACAltitudeforTempflak = 1000;
+                maxACAltitudeforTempflak = 750;
                 sectionFileDelay_s = 60;
                 maxSectionFiles = 1;
             }
@@ -22844,7 +22844,7 @@ added Rouen Flak
                 {
                     num_aa_forobj = (numFor1s + leftovers) / totalObjOver1;
                     if (num_aa_forobj < 1) num_aa_forobj = 1;
-                    if (num_aa_forobj > 8) num_aa_forobj = 8;
+                    if (num_aa_forobj > 8) num_aa_forobj = 6;
 
                 }
 
@@ -22857,7 +22857,7 @@ added Rouen Flak
 
 
                 //batteries of 6-8-ish seem to work best while batteries of say 15 don't seem to work at all?
-                int nib = 4; //num in battery //update 2023/01/06, 4 seems to be really sufficient
+                int nib = 2; //num in battery //update 2023/01/06, 4 seems to be really sufficient
                 int nfb = num_aa_forobj / nib; //num flak batteries
                 if (num_aa_forobj % nib > 0) nfb++; //add an extra battery for the remainder, in case their are leftovers
 
@@ -22975,6 +22975,7 @@ added Rouen Flak
             if (mo.isMoving()) return f; //we don't provide flak for moving objectives - they will just move away from it anyway
 
             //too much flak seems to bring the server to it's knees, so if not a primary just 2x2 flak, otherwise what is requested
+            //*****NON PRIMARY OBJECTIVES ONLY*****
             if (!mo.IsEnabled || !mo.IsPrimaryTarget)
             {
 
@@ -23161,12 +23162,14 @@ added Rouen Flak
                 //2023-01 - trying to go with like 90% Flak30 and 10% Bofors, to see if we can
                 //make them more of a low-level oriented flak shield type thing,
                 //rather than reaching up to 10-15000ft also.
-                var flak = new List<string> { "Artillery.Flak30_Shield", "Artillery.Flak30_Shield",
-                    "Artillery.Flak30_Shield",
-                    "Artillery.Flak30_Shield","Artillery.Flak30_Shield","Artillery.Flak30_Shield",
-                    "Artillery.Flak30_Shield","Artillery.Flak30_Shield","Artillery.Flak30_Shield",
-                    "Artillery.Bofors_StandAlone", };
+    
 
+                 var flak = new List<string> { "Artillery.Flak30_Shield", "Artillery.Flak30_Shield",
+                    "Artillery.Flak30_Shield","Artillery.Bofors_StandAlone"
+                    "Artillery.Flak30_Shield","Artillery.Flak30_Shield","Artillery.Flak30_Shield","Artillery.Bofors_StandAlone"
+                    "Artillery.Flak30_Shield","Artillery.Flak30_Shield","Artillery.Flak30_Shield",                  
+                    "Artillery.Bofors_StandAlone", };    
+                var flakStands = new List<string> { "Stationary.Environment.Zwillingssockel36_Base_GER1",  };
                 //OK, the artillery chief is one of my prime suspects for the warping/rubberbanding.  Trying to disable them all to see if that helps.  2020/03/07
                 //Next thing to try would be disabling all this autoflak.  It does seem to slow down/tie up the server noticeably.
                 //Trying chiefs onliy for primary targets
@@ -23219,6 +23222,7 @@ added Rouen Flak
                     if (ON_TESTSERVER) Console.WriteLine("Placing flak gun placed for {4} ({6}) at ({0:N0} {1:N0} {2:N0}) heading: {3:N0}, formation: {5}) {6}", Math.Round(newPoint.x), Math.Round(newPoint.y), Math.Round(mo.Pos.z), head, mo.Name, formation, side, tempFlak?"TempFlak":"AutoFlak");
                     //Update - radius_hide how far out the AA looks, so it won't fire until the enemy is closer than this distance
                     f = Calcs.makeStatic(f, GamePlay, this, Math.Round(newPoint.x), Math.Round(newPoint.y), 0, type: flak[flakType], heading: head, side: side, radiusHide: Convert.ToInt32(radiusHide), chiefNum: autoFlakChiefNum, resetCount: resetCount, staticprefix: staticprefix);
+                     f = Calcs.makeStatic(f, GamePlay, this, Math.Round(newPoint.x), Math.Round(newPoint.y), 0, type: flakBase[random.Next(flakBase.Count)], heading: head, side: side,  resetCount: false, staticprefix: staticprefix);
                     resetCount = false;
                     if (tempFlak) tempFlakTotal++;
                     totalFlakPlaced++;

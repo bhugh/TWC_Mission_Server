@@ -27,13 +27,26 @@ using System.Media;
  
 
 
-/*   TODO:
+/*   >>>  READ THIS FIRST:  Genghis-Class-CloDNotes.cs
+ *
+ *   That file records how CLoD's AI aircraft, waypoints and aircraft parameters actually behave -
+ *   how to make AI drop bombs, the ~16s waypoint-overwrite trap, how to detect a player's bomb
+ *   release, the S_BombReserve parameter conventions, and the AiAirGroup / AiActor type gotchas.
+ *   None of it is documented anywhere by 1C/TF; it was all found by in-game testing and by
+ *   reflecting over the game assemblies.  Consult it before changing any waypoint or bomb-release
+ *   code in this file.
+ */
+
+ /*   TODO:
  *   Instead of <creserver and <cattack how about:
- * <cnormal formation - the usual thing, bombers/sturmo stay in formation except when ground attacking, cover stays in  place unless directly attacking/defending
- * <cstrict formation - ignore all and just fly in formation
- * <cescort - CLoD escort function, for all AC types if assigned this. Basically escort/defend the player
- * <cattack - air attack anything reasonably nearby.  Like if attacking a formation of bombers w/ cover
- * <cloiter - stay in one place circling
+ * XX <cnormal formation - the usual thing, bombers/sturmo stay in formation except when ground attacking, cover stays in  place unless directly attacking/defending
+ * XX <cstrict formation - ignore all and just fly in formation
+ * XX <cescort - CLoD escort function, for all AC types if assigned this. Basically escort/defend the player
+ * XX <cattack - air attack anything reasonably nearby.  Like if attacking a formation of bombers w/ cover
+ * XX <cloiter - stay in one place circling
+   <cdrop - bombers drop bombs when the player drops (IN PROGRESS - the waypoint recipe that makes
+          this work is in Genghis-Class-CloDNotes.cs section 1; the AI only releases when a
+          GATTACK_POINT becomes the CURRENT waypoint AND its release point is already behind it)
 
  * could also do "attack bombers" vs "attack cover"   
  *   xxThey are not climbing above 500 meters for some reason.  Maybe because of the speed restriction on currentposwaypoint? It's baffling.
@@ -9316,6 +9329,34 @@ public static class CoverCalcs
 
         }
         else return null;
+    }
+    public static int bombCount(AiAirGroup airGroup)
+    {
+        int count = 0;
+        if (airGroup == null) return 0;
+        if (airGroup.GetItems().Length == 0) return 0;
+        foreach (AiActor a in airGroup.GetItems())
+        {
+            if (a == null || (a as AiAircraft) == null) continue;
+            AiAircraft aircraft = a as AiAircraft;            
+            count += bombCount(aircraft);
+            
+        }
+        return count;
+    }
+
+    public static int bombCount(AiAircraft a)
+    {
+        ParameterTypes.S_BombReserve pt = ParameterTypes.S_BombReserve;
+        int count = 0;
+        int numToCount = 50;
+        for (int i = 0; i <numToCount ; i++) {
+            try {
+                //Console.WriteLine ("Param {0} #{1}: {2}", pt, i, a.getParameter(pt, i));
+                count += a.getParameter(pt, i);
+            } catch (Exception ex) {}
+        }
+        return count;
     }
 
     //Trying to reduce AI crashes by setting minimum alt.  70m is below radar, shouldn't be a problem.

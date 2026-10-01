@@ -162,7 +162,11 @@ public class CoverMission : AMission, ICoverMission
     //           ignores <cdist, & fires only in self defence)
     //  escort - CLoD's ESCORT behavior for all a/c types: stay with & defend the player (no ground bombing)
     //  loiter - stay in one place, circling
-    public enum CoverAGOrders {none, reserve, attack, normal, strict, escort, loiter };
+    //  drop - "drop when I drop".  Like reserve, they hold their bombs and fly with the leader, but
+    //         the moment the leader lets his FIRST bomb go, every bomber in the formation lets go too.
+    //         See Genghis-Class-CloDNotes.cs section 1 - making them actually release needs a
+    //         NORMFLY + GATTACK_POINT waypoint pair, NOT setTask(ATTACK_GROUND).
+    public enum CoverAGOrders {none, reserve, attack, normal, strict, escort, loiter, drop };
 
     public Dictionary<Player, int> numberCoverAircraftActorsCheckedOutWholeMission = new Dictionary<Player, int>();
     public Dictionary<AiActor, Player> coverAircraftActorsCheckedOut = new Dictionary<AiActor, Player>();
@@ -415,6 +419,13 @@ public class CoverMission : AMission, ICoverMission
             foreach (Player player in COVER_ListPositionTimer.Keys) if (COVER_ListPositionTimer[player] != null) COVER_ListPositionTimer[player].Dispose();
         }
         catch (Exception ex) { Console.WriteLine("Cover OnBattleStoped2: " + ex.ToString()); }
+
+        try
+        {
+            foreach (Player player in COVER_DropWatchTimer.Keys) if (COVER_DropWatchTimer[player] != null) COVER_DropWatchTimer[player].Dispose();
+            COVER_DropWatchTimer.Clear();
+        }
+        catch (Exception ex) { Console.WriteLine("Cover OnBattleStoped3: " + ex.ToString()); }
 		
 		if (COVER_CheckSplits_Timer != null) COVER_CheckSplits_Timer.Dispose();
 
@@ -1360,6 +1371,300 @@ public class CoverMission : AMission, ICoverMission
     public Dictionary<Player, System.Threading.Timer> COVER_ListPositionTimer = new Dictionary<Player, System.Threading.Timer>();
     public readonly int COVER_ListPositionTimerPeriod_ms = 20154; //20 sec
 
+    /*************************************************************
+    // <cdrop - "DROP WHEN I DROP"
+    //
+    //Mimics ww2 practice, where only the leader carried a bombsight and the rest of the formation
+    //just watched him and pulled their own release when he pulled his.
+    //
+    //How it works:
+    //  1. a fast timer watches the LEADER's bomb count.  There is no bomb-release event in CLoD (the
+    //     only bomb callback, OnBombExplosion, fires on explosion not release) so we poll
+    //     CoverCalcs.bombCount() instead - see Genghis-Class-CloDNotes.cs section 3.
+    //  2. when the count goes DOWN the leader has dropped, so we record a "drop line": the leader's
+    //     position + his heading at that instant.  That line is where the rest of the formation
+    //     wants to be when they pull.
+    //  3. each airgroup then either drops straight away (if it is already close to the leader) or, if
+    //     it is further back, keeps flying normally until it reaches that line and drops there.
+    //     Either way they all release over the same stretch of ground.
+    //
+    //One release per pass: we latch after the first drop, so a multi-salvo release by the leader does
+    //not make them dribble their bombs out one group at a time.  Re-issue <cdrop to re-arm.
+    //<reserve still works as an escape hatch - it takes a squadron out of this mode entirely.
+    *************************************************************/
+
+    public Dictionary<Player, System.Threading.Timer> COVER_DropWatchTimer = new Dictionary<Player, System.Threading.Timer>();
+    public readonly int COVER_DropWatchPeriod_ms = 750; //0.75 sec - leader's drop detected within ~1 sec
+
+    //how close to the leader an airgroup must be to drop immediately rather than waiting for the line.
+    //Roughly "within an airfield's distance" - inside this they are close enough that dropping now
+    //puts the bombs on the same stretch of ground the leader is aiming at.
+    public double coverDropImmediateDist_m = 1500;
+
+    //we latch after the first drop so one leader pass = one formation release.  Reset by <cdrop.
+    Dictionary<Player, bool> coverDropAlreadyFired = new Dictionary<Player, bool>();
+    Dictionary<Player, Point3d> coverDropLinePoint = new Dictionary<Player, Point3d>();
+    Dictionary<Player, Point3d> coverDropLineDir = new Dictionary<Player, Point3d>();   //unit vector of leader's heading
+    Dictionary<Player, int> coverDropLastLeaderBombCount = new Dictionary<Player, int>();
+    Dictionary<Player, bool> coverDropLeaderHadBombs = new Dictionary<Player, bool>();
+
+    //airgroups we have already told to drop, and when - so keepAircraftOnTask_recurs() can leave
+    //their new flight plan alone long enough for the release to actually happen (that routine runs
+    //every ~16s and would otherwise overwrite it - see Genghis-Class-CloDNotes.cs section 2).
+    Dictionary<AiAirGroup, DateTime> coverAircraftAirGroupsDropIssued = new Dictionary<AiAirGroup, DateTime>();
+    public readonly double coverDropHoldFlightPlan_s = 25; //how long we leave the drop flight plan in place
+
+    //Start (or re-arm) the <cdrop watcher for this player.  Records the leader's CURRENT bomb count
+    //immediately, so a drop in the first fraction of a second after the order is not missed.
+    public void armCoverDropWatch(Player player)
+    {
+        if (player == null) return;
+        try
+        {
+            turnOffCoverDropWatch(player);
+
+            AiAircraft pa = player.Place() as AiAircraft;
+            if (pa != null)
+            {
+                coverDropLastLeaderBombCount[player] = CoverCalcs.bombCount(pa);
+                coverDropLeaderHadBombs[player] = pa.AirGroup() != null && pa.AirGroup().hasBombs();
+            }
+            coverDropAlreadyFired[player] = false;
+            coverDropLinePoint.Remove(player);
+            coverDropLineDir.Remove(player);
+
+            COVER_DropWatchTimer[player] = new System.Threading.Timer(
+                coverDropWatch_obj, player, dueTime: 100, period: COVER_DropWatchPeriod_ms);
+        }
+        catch (Exception ex) { Console.WriteLine("Cover armCoverDropWatch ERROR! " + ex.ToString()); }
+    }
+
+    public void turnOffCoverDropWatch(Player player)
+    {
+        if (player == null) return;
+        try
+        {
+            if (COVER_DropWatchTimer.ContainsKey(player))
+            {
+                if (COVER_DropWatchTimer[player] != null) COVER_DropWatchTimer[player].Dispose();
+                COVER_DropWatchTimer.Remove(player);
+            }
+            coverDropAlreadyFired.Remove(player);
+            coverDropLinePoint.Remove(player);
+            coverDropLineDir.Remove(player);
+            coverDropLastLeaderBombCount.Remove(player);
+            coverDropLeaderHadBombs.Remove(player);
+        }
+        catch (Exception ex) { Console.WriteLine("Cover turnOffCoverDropWatch ERROR! " + ex.ToString()); }
+    }
+
+    public void coverDropWatch_obj(object ob)
+    {
+        try
+        {
+            Player player = ob as Player;
+            if (player == null) return;
+            coverDropWatch(player);
+        }
+        catch (Exception ex) { Console.WriteLine("Cover coverDropWatch_obj ERROR! " + ex.ToString()); }
+    }
+
+    public void coverDropWatch(Player player)
+    {
+        try
+        {
+            if (player == null) return;
+
+            //still using <cdrop at all?  if they changed order, stand ourselves down.
+            bool stillWanted = false;
+            List<AiAirGroup> saveCAAGA = new List<AiAirGroup>(coverAircraftAirGroupsActive.Keys);
+            foreach (AiAirGroup airGroup in saveCAAGA)
+            {
+                if (airGroup == null) continue;
+                if (coverAircraftAirGroupsActive[airGroup] != player) continue;
+                if (coverAircraftAirGroupsOrders.ContainsKey(airGroup) && coverAircraftAirGroupsOrders[airGroup] == CoverAGOrders.drop)
+                {
+                    stillWanted = true;
+                    break;
+                }
+            }
+            if (!stillWanted) { turnOffCoverDropWatch(player); return; }
+
+            AiAircraft pa = player.Place() as AiAircraft;
+            if (pa == null || pa.AirGroup() == null)
+            {
+                turnOffCoverDropWatch(player);   //leader out of his aircraft - nothing to follow
+                return;
+            }
+
+            //------------------------------------------ did the leader just drop?
+            bool hasBombsNow = pa.AirGroup().hasBombs();
+            int bombsNow = CoverCalcs.bombCount(pa);
+
+            bool justDropped = false;
+            int last = bombsNow;
+            if (coverDropLastLeaderBombCount.ContainsKey(player))
+            {
+                last = coverDropLastLeaderBombCount[player];
+                //count going DOWN is the reliable signal - it catches EVERY salvo, not just the last
+                if (bombsNow < last) justDropped = true;
+                //failsafe, in case the S_BombReserve slots ever read back something unexpected.
+                //hasBombs() only goes false when he is completely empty, but a late drop beats a miss.
+                if (!justDropped && coverDropLeaderHadBombs.ContainsKey(player) && coverDropLeaderHadBombs[player] && !hasBombsNow) justDropped = true;
+            }
+            coverDropLastLeaderBombCount[player] = bombsNow;
+            coverDropLeaderHadBombs[player] = hasBombsNow;
+
+            bool alreadyFired = coverDropAlreadyFired.ContainsKey(player) && coverDropAlreadyFired[player];
+
+            if (justDropped && !alreadyFired)
+            {
+                alreadyFired = true;
+                coverDropAlreadyFired[player] = true;
+
+                //record the line he dropped on: his position + his heading, both right now
+                Point3d p = pa.Pos();
+                Vector3d vwld = pa.AirGroup().Vwld();
+                double vlen = CoverCalcs.CalculatePointDistance(vwld);
+                Point3d dir = new Point3d(0, 1, 0);
+                if (vlen > 0.1) dir = new Point3d(vwld.x / vlen, vwld.y / vlen, 0);
+                coverDropLinePoint[player] = p;
+                coverDropLineDir[player] = dir;
+
+                if (mainmission.ON_TESTSERVER)
+                    Console.WriteLine("COVER <cdrop: {0} dropped ({1}->{2} bombs).  Line at {3:n0} {4:n0}, heading {5:n0} {6:n0}",
+                        player.Name(), last, bombsNow, p.x, p.y, dir.x, dir.y);
+            }
+
+            if (!alreadyFired) return;  //he hasn't dropped yet - they just keep flying formation
+
+            coverDropReleasePass(player, pa);
+        }
+        catch (Exception ex) { Console.WriteLine("Cover coverDropWatch ERROR! " + ex.ToString()); }
+    }
+
+    //Second half of <cdrop: the leader has dropped, so walk each of his airgroups and decide whether it
+    //pulls now or waits until it reaches the drop line.
+    //  - close to the leader, or already at/ahead of the line  ->  drop now
+    //  - further back                                      ->  keep flying normally, try again next tick
+    public void coverDropReleasePass(Player player, AiAircraft leaderAircraft)
+    {
+        Point3d lineP;
+        Point3d lineD;
+        if (!coverDropLinePoint.ContainsKey(player) || !coverDropLineDir.ContainsKey(player)) return;
+        lineP = coverDropLinePoint[player];
+        lineD = coverDropLineDir[player];
+
+        DateTime nowUtc = DateTime.UtcNow;
+        bool anyStillArmed = false;
+        bool issuedAnyThisPass = false;
+
+        List<AiAirGroup> groups = new List<AiAirGroup>(coverAircraftAirGroupsActive.Keys);
+        foreach (AiAirGroup airGroup in groups)
+        {
+            if (airGroup == null || airGroup.GetItems() == null || airGroup.GetItems().Length == 0) continue;
+            if (coverAircraftAirGroupsActive[airGroup] != player) continue;
+            if (!coverAircraftAirGroupsOrders.ContainsKey(airGroup) || coverAircraftAirGroupsOrders[airGroup] != CoverAGOrders.drop) continue;
+
+            //only the ones that can actually bomb.  Skip torps: a torpedo pulled off a GATTACK_POINT
+            //at formation altitude is a dud, and the He-111 torpedo conversions have their own attack
+            //logic we don't want to disturb here.
+            if (!isBomberArmed(airGroup)) continue;
+            if (airGroup.hasTorpedos()) continue;
+
+            //already told it to drop, and its new flight plan is still in place?
+            if (coverAircraftAirGroupsDropIssued.ContainsKey(airGroup))
+            {
+                if ((nowUtc - coverAircraftAirGroupsDropIssued[airGroup]).TotalSeconds < coverDropHoldFlightPlan_s)
+                {
+                    issuedAnyThisPass = true;   //still inside its release window - keep the watcher alive
+                    continue;
+                }
+                coverAircraftAirGroupsDropIssued.Remove(airGroup);
+            }
+
+            Point3d ap = airGroup.Pos();
+            double distToLeader_m = CoverCalcs.CalculatePointDistance(ap, leaderAircraft.Pos());
+
+            //how far PAST the drop line are we?  +ve = at/ahead of it, -ve = still behind it
+            double pastLine_m = (ap.x - lineP.x) * lineD.x + (ap.y - lineP.y) * lineD.y;
+
+            bool dropNow = (distToLeader_m <= coverDropImmediateDist_m) || (pastLine_m >= 0);
+
+            if (!dropNow) { anyStillArmed = true; continue; }  //further back - wait for the line
+
+            //game objects want touching on the mission thread, not on the timer thread.
+            //NB a small non-zero delay, as elsewhere in this file - not Timeout(0, ...).
+            AiAirGroup ag2 = airGroup;
+            Timeout(0.05, () => dropBombsNow_airGroup(ag2));
+            coverAircraftAirGroupsDropIssued[airGroup] = nowUtc;
+            issuedAnyThisPass = true;
+        }
+
+        //stand down once this player has nothing left to watch: nobody still waiting for the line, and
+        //nobody we just told to drop still inside its release window.  (coverAircraftAirGroupsDropIssued
+        //is keyed by airgroup across ALL players, so don't test its overall Count here.)
+        if (!anyStillArmed && !issuedAnyThisPass) turnOffCoverDropWatch(player);
+    }
+
+    //Tell one airgroup to pull its release NOW, by giving it the waypoint pair CLoD actually responds
+    //to: a NORMFLY where it is, then a GATTACK_POINT a short distance ahead.  The AI only evaluates the
+    //release when the GATTACK_POINT becomes the CURRENT waypoint, and because the release point is by
+    //then already behind it, it lets go straight away.
+    //setTask(ATTACK_GROUND) does NOT do this - see Genghis-Class-CloDNotes.cs section 1.
+    public void dropBombsNow_airGroup(AiAirGroup airGroup)
+    {
+        try
+        {
+            if (airGroup == null || airGroup.GetItems() == null || airGroup.GetItems().Length == 0) return;
+
+            Vector3d vwld = airGroup.Vwld();
+            double vel = CoverCalcs.CalculatePointDistance(vwld);
+            if (vel < 80) vel = 80;
+            if (vel > 170) vel = 170;
+
+            double vlen = CoverCalcs.CalculatePointDistance(vwld);
+            Point3d dir = new Point3d(0, 1, 0);
+            if (vlen > 0.1) dir = new Point3d(vwld.x / vlen, vwld.y / vlen, 0);
+
+            Point3d apos = airGroup.Pos();
+            List<AiWayPoint> newWaypoints = new List<AiWayPoint>();
+
+            //1. NORMFLY at exactly where it is now, so the next point becomes current immediately
+            Point3d wp0pos = new Point3d(apos.x, apos.y, apos.z);
+            AiAirWayPoint wp0 = new AiAirWayPoint(ref wp0pos, vel);
+            wp0.Action = AiAirWayPointType.NORMFLY;
+            newWaypoints.Add(wp0);
+
+            //2. GATTACK_POINT a short distance ahead.  ~35m: confirmed to give an immediate release, and
+            //   comfortably far enough apart not to be swallowed by one slow game tick
+            //   (see Genghis-Class-CloDNotes.cs section 1, "WAYPOINT SPACING").
+            Point3d wp1pos = new Point3d(apos.x + dir.x * 35, apos.y + dir.y * 35, apos.z);
+            AiAirWayPoint wp1 = new AiAirWayPoint(ref wp1pos, vel);
+            wp1.Action = AiAirWayPointType.GATTACK_POINT;
+            newWaypoints.Add(wp1);
+
+            //3. then a run of ordinary points continuing along the same heading, purely so they do NOT run
+            //out of waypoints before keepAircraftOnTask_recurs() takes over - an airgroup with an empty
+            //flight plan switches itself to RTB mode and is then useless to us for good.
+            for (int i = 1; i <= 8; i++)
+            {
+                Point3d wpn = new Point3d(apos.x + dir.x * (35 + i * 1500), apos.y + dir.y * (35 + i * 1500), apos.z);
+                AiAirWayPoint wp = new AiAirWayPoint(ref wpn, vel);
+                wp.Action = AiAirWayPointType.NORMFLY;
+                newWaypoints.Add(wp);
+            }
+
+            airGroup.SetWay(newWaypoints.ToArray());
+            airGroup.setTask(AiAirGroupTask.FLY_WAYPOINT, null);
+
+            if (mainmission.ON_TESTSERVER)
+                Console.WriteLine("COVER <cdrop: {0} told to DROP now, {1} bombs, at {2:n0} {3:n0}",
+                    airGroup.Name(), CoverCalcs.bombCount(airGroup), apos.x, apos.y);
+        }
+        catch (Exception ex) { Console.WriteLine("Cover dropBombsNow_airGroup ERROR! " + ex.ToString()); }
+    }
+
     //returns false if it's been turned off or true if turned on.
     public bool toggleregularDisplay_listPositionCurrentCoverAircraft(Player player = null)
     {
@@ -1614,6 +1919,7 @@ public class CoverMission : AMission, ICoverMission
                 bool ordersAreStrict = (coverAircraftAirGroupsOrders.ContainsKey(airGroup) && coverAircraftAirGroupsOrders[airGroup] == CoverAGOrders.strict);
                 bool ordersAreEscort = (coverAircraftAirGroupsOrders.ContainsKey(airGroup) && coverAircraftAirGroupsOrders[airGroup] == CoverAGOrders.escort);
                 bool ordersAreLoiter = (coverAircraftAirGroupsOrders.ContainsKey(airGroup) && coverAircraftAirGroupsOrders[airGroup] == CoverAGOrders.loiter);
+                bool ordersAreDrop = (coverAircraftAirGroupsOrders.ContainsKey(airGroup) && coverAircraftAirGroupsOrders[airGroup] == CoverAGOrders.drop);
                 bool ordersAreHoldFire = (coverAircraftAirGroupsOrders.ContainsKey(airGroup) && ordersHoldFire(coverAircraftAirGroupsOrders[airGroup]));
                 double distToTarget_m = CoverCalcs.CalculatePointDistance(p, aircraft.Pos());
 				
@@ -1682,6 +1988,7 @@ public class CoverMission : AMission, ICoverMission
                 if (ordersAreStrict) msg += " [[[STRICT]]]";
                 if (ordersAreEscort) msg += " [[[ESCORT]]]";
                 if (ordersAreLoiter) msg += " [[[LOITER]]]";
+                if (ordersAreDrop) msg += " [[[DROP-WHEN-I-DROP]]]";
                 delay += 0.08; //was .06 but that seemed to cause stuttering?  Maybe needs 0.1 or even more
                 Timeout(delay, () =>
                 {
@@ -2488,6 +2795,12 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             setLoiterPoints(loiterGroups);  //but using a/g pos seems better most of the time
 
         }
+        else if (msg.StartsWith("<cdrop") || msg.StartsWith("<cdro"))
+        { //drop - "drop when I drop": hold your bombs and fly with the leader, then pull your release when he pulls his (<cdrop, <cdro)
+            setCoverAircraftAirGroupsOrders(player, msg, CoverAGOrders.drop, "were ordered to DROP WHEN YOU DROP - they will hold their bombs and, the moment you let your first bomb go, release everything at the same time.");
+            armCoverDropWatch(player);  //starts (or re-arms) the watcher that watches YOUR bomb count
+
+        }
         else if (msg.StartsWith("<flare"))
         {
             if (player != null && player.Place() != null)
@@ -2638,6 +2951,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 "** <creserve OR <cr - stay in RESERVE, joined with you; do not join the current ground attack. Stay in formation, but fighters/sturmovik will leave formation to defend against enemy approaching closely.",
                 "** <cstrict OR <cs - squadrons fly in rigid STRICT, close formation with you, all aircraft at your altitude, close to you (ignoring <cdist), ignores all other action, & ordered to ignore even direct attacks and simply fly in formation with you.",
                 "** <cloiter OR <cl - LOITER in place, circling. Will defend if attacked, but otherwise remain out of the action and awaiting further orders.",
+                "** <cdrop OR <cdro - DROP WHEN I DROP: they hold their bombs and fly with you, and the moment you let your first bomb go they release everything at the same time - just as ww2 crews did, with only the leader carrying a bombsight. Squadrons still further back will catch up to your line and release there. They release once per pass, so re-issue <cdrop to re-arm them for another run.",
                 "<chelp6 for more..."
             };
 
@@ -3396,10 +3710,11 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
     //Do these orders mean the airgroup should hold its fire (no ground bombing & no air attacks)?
     public bool ordersHoldFire(CoverAGOrders orders)
     {
-        return orders == CoverAGOrders.reserve || orders == CoverAGOrders.strict || orders == CoverAGOrders.loiter;
+        return orders == CoverAGOrders.reserve || orders == CoverAGOrders.strict || orders == CoverAGOrders.loiter || orders == CoverAGOrders.drop;
     }
 
     //Do these orders mean the airgroup should engage nearby enemy aircraft?
+    //<cdrop holds fire in the air too - a bombing run formation shouldn't scatter chasing fighters.
     public bool ordersEngageAir(CoverAGOrders orders)
     {
         return orders == CoverAGOrders.attack || orders == CoverAGOrders.normal || orders == CoverAGOrders.escort;
@@ -3407,6 +3722,9 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 
     //Do these orders mean the airgroup should still run ground/naval bombing attacks on the target
     //point the player has given it (Knickebein point, bomb drop point, flare point, etc)?
+    //<cdrop returns FALSE - that is what makes them sit on their bombs and wait for the leader instead
+    //of running their own bombing pass off the player's aim point.  The release is driven separately,
+    //by dropBombsNow_airGroup() once we detect the leader actually dropping.
     public bool ordersBombGround(CoverAGOrders orders)
     {
         return orders == CoverAGOrders.attack || orders == CoverAGOrders.normal;
@@ -4342,6 +4660,17 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 
             //Console.WriteLine("Cover KeepAconTask: 778789");        
             
+
+            //<cdrop - we have just handed this airgroup a NORMFLY+GATTACK_POINT pair to make it pull its
+            //release.  This routine runs every ~16s and would otherwise rewrite the flight plan out from
+            //under the drop before it happens, so skip the whole waypoint section for a short while.
+            //Same trick the ground-attack path uses by returning right after BomberUpdateWaypoints().
+            //See Genghis-Class-CloDNotes.cs section 2.
+            if (coverAircraftAirGroupsDropIssued.ContainsKey(airGroup))
+            {
+                if ((DateTime.UtcNow - coverAircraftAirGroupsDropIssued[airGroup]).TotalSeconds < coverDropHoldFlightPlan_s) return;
+                coverAircraftAirGroupsDropIssued.Remove(airGroup);
+            }
 
             if (
                   heavyBomber ||
@@ -9347,8 +9676,12 @@ public static class CoverCalcs
 
     public static int bombCount(AiAircraft a)
     {
-        ParameterTypes.S_BombReserve pt = ParameterTypes.S_BombReserve;
-        int count = 0;
+        //NB: "ParameterTypes pt = ..." not "ParameterTypes.S_BombReserve pt = ..." - the left of a
+        //declaration is a TYPE, and ParameterTypes.S_BombReserve is an enum VALUE, not a nested type.
+        ParameterTypes pt = ParameterTypes.S_BombReserve;
+        //NB: getParameter returns DOUBLE, so accumulate in a double and round once at the end -
+        //    count += a.getParameter(...) straight into an int will not compile.
+        double count = 0;
         int numToCount = 50;
         for (int i = 0; i <numToCount ; i++) {
             try {
@@ -9356,7 +9689,7 @@ public static class CoverCalcs
                 count += a.getParameter(pt, i);
             } catch (Exception ex) {}
         }
-        return count;
+        return (int)Math.Round(count);
     }
 
     //Trying to reduce AI crashes by setting minimum alt.  70m is below radar, shouldn't be a problem.

@@ -11479,6 +11479,7 @@ public class Mission : AMission, IMainMission
 				twcLogServer(new Player[] { player }, "Welcome to " + CAMPAIGN_ID + ", " + player.Name(), new object[] { });
                 showTimeLeft(player: player);
                 twcLogServer(new Player[] { player }, "How to fly: Use chat command <help & read detailed briefing on Map/Flags Page", new object[] { });
+                twcLogServer(new Player[] { player }, ">>>>> Major new update to <cover! Check <chelp, <chelp5 <<<<<", new object[] { });
                 twcLogServer(new Player[] { player }, "===========================================", new object[] { });
                 twcLogServer(new Player[] { player }, ".", new object[] { });
                 twcLogServer(new Player[] { player }, ".", new object[] { });

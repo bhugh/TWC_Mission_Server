@@ -378,6 +378,14 @@ public class CoverMission : AMission, ICoverMission
         catch (Exception ex) { Console.WriteLine("Cover OnMissionLoaded(): " + ex.ToString()); }
     }
 
+    public override void OnActorTaskCompleted(int missionNumber, string shortName, maddox.game.world.AiActor actor)
+    {
+        base.OnActorTaskCompleted(missionNumber, shortName, actor);
+        Console.WriteLine("OnActorTaskCompleted: {0} {1} {2} complete: {3}", missionNumber, shortName, actor.Name(), actor.IsTaskComplete());
+        if (actor as AiAirGroup != null) Console.WriteLine("OnActorTaskCompleted2: {0} ", (actor as AiAirGroup).getTask());
+    }
+
+
     public override void OnBattleStoped()
     {
         base.OnBattleStoped();
@@ -2463,7 +2471,8 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
         else if (msg.StartsWith("<cloiter") || msg.StartsWith("<cloi") || msg.StartsWith("<clo") || msg.StartsWith("<cl"))
         { //loiter - stay in one place, circling (<cloiter, <cloi, <clo)
             List<AiAirGroup> loiterGroups = setCoverAircraftAirGroupsOrders(player, msg, CoverAGOrders.loiter, "were ordered to LOITER in place, circling until further orders.");
-            setLoiterPoints(loiterGroups, player.Place().Pos());
+            //setLoiterPoints(loiterGroups, player.Place().Pos()); //can use player .pos like this
+            setLoiterPoints(loiterGroups);  //but using a/g pos seems better most of the time
 
         }
         else if (msg.StartsWith("<flare"))
@@ -2563,10 +2572,10 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
         {
             string[] helpMessages = {
                 "COVER FIGHTER & BOMBER SYSTEM - HELP PAGE 6/6",
-                "Targeting by POINT (Knickebein, bomb, or flare point) is good for heavy bombers who can blanket an AREA with ordnance.",
-                "Target by NEAREST ENEMY (to Knickebein, bomb, or flare point) is required for dive bombers and sturmovik aircraft to operate correctly & target effectively.",
-                "With a NEAREST ENEMY target, dive bombers and sturmovik aircraft, will actually do a dive bomb or close ground attack. Without it, they will simply drop from altitude.",
-                "NEAREST ENEMY targeting also works for heavy bombers to drop from altitude. It can be useful if you need to target specific naval or ground objectives - even moving/mobile objects.",
+                "** Targeting by POINT (Knickebein, bomb, or flare point) is good for heavy bombers who can blanket an AREA with ordnance.",
+                "** Target by NEAREST ENEMY (to Knickebein, bomb, or flare point) is required for dive bombers and sturmovik aircraft to operate correctly & target effectively.",
+                "** With a NEAREST ENEMY target, dive bombers and sturmovik aircraft, will actually do a dive bomb or close ground attack. Without it, they will simply drop from altitude.",
+                "** NEAREST ENEMY targeting also works for heavy bombers to drop from altitude. It can be useful if you need to target specific naval or ground objectives - even moving/mobile objects.",
                 "When targeting by NEAREST ENEMY, cover pilots will look for ground and naval targets near the given point",
                 "and will search a wider radius if none is found.  They choose the highest-value targets they can.",
                 "Each cover pilot will choose a different ground target in the given area, if possible.",
@@ -2587,11 +2596,11 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 "COVER FIGHTER & BOMBER SYSTEM - GROUND ATTACK MODES - HELP PAGE 6/7",
                 "Tab-4-4-4-4-7 has several modes of ground attack for your bombers & fighter-bombers:",
                 "KNICKEBEIN POINT - attack the position of the current Knickebein point (<khelp for info on the KB system)",
-                "NEAREST ENEMY TO KNICKEBEIN POINT - find an enemy ground vehicle, ship, AA gun, train, or other ground object near the Knickebein Point and attack it.",
-                "NEXT BOMB DROP POINT - when you drop your NEXT bomb, the cover aircraft will note that point and attack it.",
-                "NEAREST ENEMY TO BOMB DROP POINT - note point of your next bomb drop and target for ground/naval enemies near that point.",
-                "DROP FLARE & TARGET FLARE DROP POINT - at the moment you press the button to select this option, you drop a flare.  Cover aircraft will attack the flare point.",
-                "DROP FLARE & TARGET ENEMIES NEAR DROP POINT - at the moment you press the button to select this option, you drop a second flare.  Cover aircraft will attack enemies near that point.",
+                "** NEAREST ENEMY TO KNICKEBEIN POINT - find an enemy ground vehicle, ship, AA gun, train, or other ground object near the Knickebein Point and attack it.",
+                "** NEXT BOMB DROP POINT - when you drop your NEXT bomb, the cover aircraft will note that point and attack it.",
+                "** NEAREST ENEMY TO BOMB DROP POINT - note point of your next bomb drop and target for ground/naval enemies near that point.",
+                "** DROP FLARE & TARGET FLARE DROP POINT - at the moment you press the button to select this option, you drop a flare.  Cover aircraft will attack the flare point.",
+                "** DROP FLARE & TARGET ENEMIES NEAR DROP POINT - at the moment you press the button to select this option, you drop a second flare.  Cover aircraft will attack enemies near that point.",
                 "IMPORTANT NOTE: Sturmovik/ground attack aircraft & Dive Bombers require 'NEAREST ENEMY' target points to ground attack/dive bomb. See <chelp7.",
                 "For all \"ENEMIES NEAR\" targeting: If no enemy is found near the specified point, bombers will generally hold their fire and revert to 'Follow'. Watch your CHAT display for clues as to current target or failure to locate targets.",
                 "For KNICKEBEIN point targets, you need to check Recon Reports for exact coordinates to target - ideally before you leave home base",
@@ -2608,14 +2617,14 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
         {
             string[] helpMessages = {
                 "COVER FIGHTER & BOMBER SYSTEM - SQUADRON ORDERS - HELP PAGE 5/7",
-                "SQUADRON ORDERS:  INSTRUCT SQUADRONS TO ATTACK AND DEFEND AS NORMAL, OR HOLD FIRE AND JOIN YOU, OR ATTACK NEARBY ENEMY AIRCRAFT MORE VIGOROUSLY, OR COVER AND DEFEND YOU, ETC.",
-                "SQUADRON ORDERS: All orders can apply to specific squadrons, or to all squadrons at once. For example: <cn 2 5 puts squadrons #2 and #5 on NORMAL behavior. <cn (alone, no numbers) puts ALL squadrons on NORMAL behavior.",
-                "<cnormal OR <cn - NORMAL behavior: attack ground targets if you direct via the TAB-4 menu; fighters/sturmovik will leave formation to defend against nearby air enemies (default behavior).",
-                "<cattack OR <ca - ATTACK ground targets if instructed by Tab-4 menu; fighters/sturmovik will vigorously attack any enemy aircraft they see rather than waiting for them to approach.",
-                "<cescort OR <ce - ESCORT you: stay with you & vigorously defend you from enemy aircraft near you, turn and fight nearby enemies, leaving formation if necessary (even bombers); discontinue ground attacks.",
-                "<creserve OR <cr - stay in RESERVE, joined with you; do not join the current ground attack. Stay in formation, but fighters/sturmovik will leave formation to defend against enemy approaching closely.",
-                "<cstrict OR <cs - squadrons fly in rigid STRICT, close formation with you, all aircraft at your altitude, close to you (ignoring <cdist), ignores all other action, & ordered to ignore even direct attacks and simply fly in formation with you.",
-                "<cloiter OR <cl - LOITER in place, circling. Will defend if attacked, but otherwise remain out of the action and awaiting further orders.",
+                ">>SQUADRON ORDERS: Instruct squadrons to attack and defend as normal, or hold fire and join you, or attack nearby enemy aircraft more vigorously, or cover and defend you, etc.",
+                ">>SQUADRON ORDERS: All orders can apply to specific squadrons, or to all squadrons at once. For example: <cn 2 5 puts squadrons #2 and #5 on NORMAL behavior. <cn (alone, no numbers) puts ALL squadrons on NORMAL behavior.",
+                "** <cnormal OR <cn - NORMAL behavior: attack ground targets if you direct via the TAB-4 menu; fighters/sturmovik will leave formation to defend against nearby air enemies (default behavior).",
+                "** <cattack OR <ca - ATTACK ground targets if instructed by Tab-4 menu; fighters/sturmovik will vigorously attack any enemy aircraft they see rather than waiting for them to approach.",
+                "** <cescort OR <ce - ESCORT you: stay with you & vigorously defend you from enemy aircraft near you, turn and fight nearby enemies, leaving formation if necessary (even bombers); discontinue ground attacks.",
+                "** <creserve OR <cr - stay in RESERVE, joined with you; do not join the current ground attack. Stay in formation, but fighters/sturmovik will leave formation to defend against enemy approaching closely.",
+                "** <cstrict OR <cs - squadrons fly in rigid STRICT, close formation with you, all aircraft at your altitude, close to you (ignoring <cdist), ignores all other action, & ordered to ignore even direct attacks and simply fly in formation with you.",
+                "** <cloiter OR <cl - LOITER in place, circling. Will defend if attacked, but otherwise remain out of the action and awaiting further orders.",
                 "<chelp6 for more..."
             };
 
@@ -2629,11 +2638,11 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             string[] helpMessages = {
                 "COVER FIGHTER & BOMBER SYSTEM - BOMB LOADS - HELP PAGE 4/7",
                 "Bombers, Sturmovik/Strike Aircraft, and Fighter-bombers always include bombs loaded by default.",
-                "You can force the fighter or bomber version of your cover aircraft by specifying 'fighter' or 'fi'",
+                "** You can force the fighter or bomber version of your cover aircraft by specifying 'fighter' or 'fi'",
                 "or 'bomber' or 'bo' at the end of the <cover command.",
-                "OR specify 'heavy' or 'he' to load heavy bombs, when available (generally 2000lb/1000kg)",
+                "** OR specify 'heavy' or 'he' to load heavy bombs, when available (generally 2000lb/1000kg)",
                 "(Default bomb load is many smaller bombs - good for extended area targets. \"Heavy\" specifies fewer but larger bombs. Less overall tonnage but will put more ordnance in one SMALL area. Good for ships, bunkers.)",
-                "Adding x3 x5 x9, etc, at the end of a command will repeat the command the specified number of times. Instead of typing \"<cover 5 1\" four times, just use \"<cover 5 1 x4\"",
+                "** Adding x3 x5 x9, etc, at the end of a command will repeat the command the specified number of times. Instead of typing \"<cover 5 1\" four times, just use \"<cover 5 1 x4\"",
                 "Examples: <cover 21 fi | <cover 32 VI bomber | <cover 12 3 AS fighter x3 | <cover 3 bo | <cover 14 2 he",
                 "<chelp5 for more..."
             };
@@ -2648,10 +2657,10 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             string[] helpMessages = {
                 "COVER FIGHTER & BOMBER SYSTEM - COVER AIRCRAFT AVAILABLE - HELP PAGE 3/7",
                 "Cover aircraft include cover fighters and bombers. They are available to heavy bomber pilots, Sturmovik pilots and some fighter pilots.",
-                "Bomber pilots: Can call bombers to fly with you, cover fighters to fly above.",
-                "Sturmovik pilots: Can call a few Sturmovik to fly with you.",
-                "Fighter pilots (older models): Can call a few bombers to fly with you; you fly above the bombers as cover.",
-                "Fighter pilots (current models): Can call one or a few fighters to fly as your wing.",
+                "** Bomber pilots: Can call bombers to fly with you, cover fighters to fly above.",
+                "** Sturmovik pilots: Can call a few Sturmovik to fly with you.",
+                "** Fighter pilots (older models): Can call a few bombers to fly with you; you fly above the bombers as cover.",
+                "** Fighter pilots (current models): Can call one or a few fighters to fly as your wing.",
                 "NOTE: When flying low (to avoid radar detection), all aircraft will fly low at your altitude. As you gain altitude, bombers & cover fighters will start to maintain separate altitudes as described above.",
                 "<chelp4 for more..."
             };
@@ -2665,12 +2674,12 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
         {
             string[] helpMessages = {
                 "COVER FIGHTER & BOMBER SYSTEM - BASIC COMMANDS - HELP PAGE 2/7",
-                "<cover 3 5 - means launch a flight of 5 aircraft of type #3",
-                "<cover 2 6 AS - means launch a flight of 6 aircraft of type #2, formation: ASTERN",
+                "** <cover 3 5 - means launch a flight of 5 aircraft of type #3",
+                "** <cover 2 6 AS - means launch a flight of 6 aircraft of type #2, formation: ASTERN",
                 "Formation types: VI=Vic, V3=Vic3, AB=Abreast, AS=Astern, RI=Right echelon, LE=Left echelon",
-                "<cover 4 3 heavy x3 - launch a flight of 3 aircraft type #4, loaded with heavy bombs, and repeat this command 3 times",
-                "<cland 2 4 5 release group #2, #4, and #5.  Get group # from Tab-4 menu or <cpos. <cland (or Tab-4 menu) alone lands all aircraft.",
-                "<cdist 200 - set cover formation distance 200% normal. <cdist 50 - set cover distance 50% normal. <cdist 1000 - cover distance 10X normal",
+                "** <cover 4 3 heavy x3 - launch a flight of 3 aircraft type #4, loaded with heavy bombs, and repeat this command 3 times",
+                "** <cland 2 4 5 release group #2, #4, and #5.  Get group # from Tab-4 menu or <cpos. <cland (or Tab-4 menu) alone lands all aircraft.",
+                "** <cdist 200 - set cover formation distance 200% normal. <cdist 50 - set cover distance 50% normal. <cdist 1000 - cover distance 10X normal",
                 "<chelp3 for more..."
             };
 
@@ -2683,12 +2692,13 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
         {
             string[] helpMessages = {
                 "COVER FIGHTER & BOMBER SYSTEM - HELP (1/7)",
-                "Tab-4-4-4-4 menu OR Chat Commands <cover OR <cover Beau OR <cover 3 OR <cover 3 6 AS",
-                " - launch a cover squadron of aircraft name or type # indicated. Optional: Add # of aircraft to launch, formation type, heavy (bombs), and x2 or x3 to repeat the command.",
-                "Tab-4 menu OR commands <clist - list available cover fighters & ID#; <cpos - position of your current fighters",
-                "Tab-4-4-4-4-7 set cover aircraft attack mode/target",
-                "<cnormal, <cstrict, <cescort, <cattack, <creserve & <cloiter 1 3 give standing orders to e.g. squadrons 1 & 3 (details @ <chelp5)",
-                "Tab-4 menu OR command <cland - release cover fighters to land (IMPORTANT!)",
+                "The COVER system allows you to call in AI aircraft to fly with you and help you accomplish mission and objectives.",
+                "** Tab-4-4-4-4 menu OR Chat Commands <cover OR <cover Beau OR <cover 3 OR <cover 3 6 AS:",
+                "Launch a cover squadron of aircraft name or type # indicated. Optional: Add # of aircraft to launch, formation type, heavy (bombs), and x2 or x3 to repeat the command.",
+                "** Tab-4 menu OR command <clist: List available cover fighters & ID#; <cpos - position of your current fighters",
+                "** Tab-4-4-4-4-7: Set cover aircraft ground attack mode/target",
+                "** <cnormal, <cstrict, <cescort, <cattack, <creserve & <cloiter 1 3: Give standing orders to e.g. squadrons 1 & 3 (details @ <chelp5)",
+                "** Tab-4 menu OR command <cland: Release cover fighters to land (IMPORTANT!)",
                 "<chelp2 for more..."
             };
 
@@ -2703,7 +2713,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             double to = 1.6; //make sure this comes AFTER the main mission, stats mission, <help listing, or WAY after if it is responding to the "<"
             if (!msg.StartsWith("<help")) to = 5.2;
 
-            string msg41 = "<cover - request cover bombers/fighters to join you, <chelp - cover bomber help, <flare - drop a flare now";
+            string msg41 = "<cover - request cover bombers/ground attack/fighters to join you, <chelp - cover aircraft help, <flare - drop a flare now";
 
             Timeout(to, () => { GamePlay.gpLogServer(new Player[] { player }, msg41, new object[] { }); });
             //GamePlay.gp(, from);
@@ -4147,6 +4157,8 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             //if (mainmission.ON_TESTSERVER) Console.WriteLine("KAOTXX1 " + DateTime.UtcNow.ToString("T.fffffff"));
             AiAirGroup tasktarget = null;
             task = AiAirGroupTask.DO_NOTHING;
+
+         
             //So, sometimes airgroups split up, say when under attack or landing.  If so, we just add the new group to the coverAircraftAirGroupsActive (but
             //only when the original groups was also there)
             //In this case the name of the motherGroup is split off from is in airGroup.motherGroup()
@@ -4198,6 +4210,9 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 
             double AltDiffPassed_m = AltDiff_m;
             double AltDiffPassed_range_m = AltDiff_range_m;
+            bool isEscortAirgroup = true; //this is like a fighter that normally flies higher than the bombers, the first created/default AltDiff 
+            aawpt = AiAirWayPointType.ESCORT; //default for cover fighters
+            task = AiAirGroupTask.ATTACK_AIR; //default for cover fighters
 
             //int numAC = airGroup.NOfAirc;
             int numAC = airGroup.GetItems().Length; //2021/07/05 - I am suspicious of this method for counting a/c and it might give ZERO as answer when it shouldn't (.NOfAC())
@@ -4260,7 +4275,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 
             //Console.WriteLine("Cover KeepAconTask: 6");
 
-            if (aircraftChangeDisband || player == null || player.Place() == null || (player.Place() as AiAircraft).AirGroup() == null || distToLeadAircraft > 40000)  //Was about 20,000, seemed to small. 50,000 seems too large.  
+            if (aircraftChangeDisband || player == null || player.Place() == null || (player.Place() as AiAircraft).AirGroup() == null || distToLeadAircraft > 42000)  //Was about 20,000, seemed to small. 50,000 seems too large.  
             {
                 //Console.WriteLine("Cover KeepAconTask: Cover exiting {0} {1} {2} {3:N0} ", player == null, player.Place() == null, (player.Place() as AiAircraft).AirGroup() == null, distToLeadAircraft);
 
@@ -4312,7 +4327,8 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 }
             }
 
-            //Console.WriteLine("Cover KeepAconTask: 778789");
+            //Console.WriteLine("Cover KeepAconTask: 778789");        
+            
 
             if (
                   heavyBomber ||
@@ -4323,6 +4339,9 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 //aawpt = AiAirWayPointType.GATTACK_POINT;
                 AltDiffPassed_m = AltDiffBomber_m;
                 AltDiffPassed_range_m = AltDiffBomber_range_m;
+                isEscortAirgroup = false;
+                aawpt = AiAirWayPointType.FOLLOW; //default for bombers
+                task = AiAirGroupTask.FLY_WAYPOINT; //default for bombers
 				
 				//If a fighter a/c then it is escorting e.g. bombers & they stay below the player (escorting a/c)
 				//But if it is a strike AC flying with other strike AC then no, it is more like flying
@@ -4332,6 +4351,8 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 {
                     AltDiffPassed_m = AltDiffPlayerEscort_m;
                     AltDiffPassed_range_m = AltDiffPlayerEscort_range_m;
+                    aawpt = AiAirWayPointType.FOLLOW; //default for Sturmo flying with sturmo player
+                    task =  AiAirGroupTask.FLY_WAYPOINT; //default for Sturmo flying with sturmo player
 
                 }
                 //Console.WriteLine("Cover KeepAconTask: 791919191");
@@ -4365,12 +4386,15 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 BAM_BombAimMode bam = BAM_getplayerBombAimMode_enum(player);
                 if (bam == BAM_BombAimMode.None || !ordersBombGround(orders) )  //no bombing, unless the orders are attack or normal (so <creserve, <cstrict, <cescort & <cloiter all hold their bombs)
                 {
-                    bombing = false;
+                bombing = false;
                     newTargetPoint = new Point3d(-1, -1, -1);
+                    if (airgroupTargets.ContainsKey(airGroup)) airgroupTargets.Remove(airGroup);
+                    if (airgroupGroundTargets.ContainsKey(airGroup)) airgroupGroundTargets.Remove(airGroup);
+                    if (airgroupTargetPoints.ContainsKey(airGroup)) airgroupTargetPoints.Remove(airGroup);       
                 }
 
                 //Console.WriteLine("Cover KeepAconTask: 444");
-                //If the a/c was previous targeted at a point, and the point is still the same, and we are closer then 8km to it, and haven't bombed yet, then DON'T CHANGE IT
+                //If the a/c was previous targeted at a point, and the point is still the same, and we are closer then 5km to it, and haven't bombed yet, and still flying towards it, then DON'T CHANGE IT
                 //This hopefully will increase the accuracy of bombers by not messing with their final run-in
                 //Must coordinate this distance with the random target point distances as 
                 //determined by searchRadius around line 5292
@@ -4378,7 +4402,12 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 float shiftFactor = getShiftFactor(player);
                 targetChangeDistance_m *= shiftFactor;
 
-                if (bombing && (oldTargetPoint.x != -1 || oldTargetPoint.y != -1) && !playerTargetPointHasChanged && isBomberArmed(airGroup) && CoverCalcs.CalculatePointDistance(oldTargetPoint, airGroup.Pos()) < 12000)
+                Point3d targetDirection = new Point3d(oldTargetPoint.x - airGroup.Pos().x, oldTargetPoint.y - airGroup.Pos().y, oldTargetPoint.z - airGroup.Pos().z);
+
+                bool flyingTowardsTarget = CoverCalcs.roughlySameDirection(targetDirection, airGroup.Vwld(), 15);
+                
+                //keeps a/c just locked on the same target the last 5k in
+                if (bombing && flyingTowardsTarget || (oldTargetPoint.x != -1 || oldTargetPoint.y != -1) && !playerTargetPointHasChanged && isBomberArmed(airGroup) && CoverCalcs.CalculatePointDistance(oldTargetPoint, airGroup.Pos()) < 5000)
                 {
                     return;
                 }
@@ -4448,7 +4477,10 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             //if (heavyBomber && isBomberArmed(airGroup)) aawpt = AiAirWayPointType.AATTACK_FIGHTERS;
             //But let's try FOLLOW to see if they will act more like bomber formations with that in place
             //bombers seem to drop bombs rather quick if they get into any trouble/attacked
-            if ((heavyBomber && isBomberArmed(airGroup)) || isOnRepairMission(player)) aawpt = AiAirWayPointType.FOLLOW;  //not sure about hasBombs(), trying it without  
+            //if ((heavyBomber && isBomberArmed(airGroup)) || isOnRepairMission(player)) aawpt = AiAirWayPointType.FOLLOW;  //not sure about hasBombs(), trying it without  
+
+            aawpt = AiAirWayPointType.FOLLOW; //making this the DEFAULT for all AC, unless nearby enemy AC or they are specifically escort AC.
+            
             Point3d defendDistances_m = new Point3d (4000, 1200, 2200);
             if (CoverAGOrders.escort == orders) defendDistances_m = new Point3d (2500, 1000, 2000);
             else if (CoverAGOrders.normal == orders) defendDistances_m = new Point3d (1250, 600, 1200);
@@ -4485,7 +4517,9 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                     airGroup.changeGoalTarget(attackingAirGroup);
                     airGroup.setTask(task, attackingAirGroup); 
                     Console.WriteLine("4ChangeGoalTarget (after): {0} target: {1} for " + airGroup.Name() + " of " + player.Name(), airGroup.getTask(), attackingAirGroup.Name());
-                    aawpt = AiAirWayPointType.ESCORT; //THIS HELPS MAKE THEM DEFEND THE MAIN A/C
+                    aawpt = AiAirWayPointType.AATTACK_FIGHTERS; //trying this, perhaps it will reinforce the current setTask instead of overriding.  2026/09/30
+                    //aawpt = AiAirWayPointType.ATTACK_AIR; //THIS HELPS MAKE THEM DEFEND THE MAIN A/C
+                    task = AiAirGroupTask.DO_NOTHING; //prevents setTask etc from being run below
                 }
             }
             else
@@ -4517,9 +4551,15 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 AltDiffPassed_range_m = 4;
                 //aawpt = AiAirWayPointType.AATTACK_FIGHTERS; //aawpt = AiAirWayPointType.COVER seems to work better in general but the cover aircraft stay up above the a/c they are covering and thus are seen by radar even if the main a/c is below radar. Trying AATACK_FIGHTERS to see if they will stay below radar better.
 
-                if ((heavyBomber && isBomberArmed(airGroup)) || !isOnRepairMission(player) || (isPlayerStrikeAC && isStrikeAC)) aawpt = AiAirWayPointType.FOLLOW;  //not sure about hasBombs(), trying it without
-                else aawpt = AiAirWayPointType.COVER;
-            } else if (!heavyBomber && !isBomberArmed(airGroup) && !isOnRepairMission(player) && !(isPlayerStrikeAC && isStrikeAC))
+                //if ((heavyBomber && isBomberArmed(airGroup)) || !isOnRepairMission(player) || (isPlayerStrikeAC && isStrikeAC)) aawpt = AiAirWayPointType.FOLLOW;  //not sure about hasBombs(), trying it without
+                //else aawpt = AiAirWayPointType.COVER;
+                aawpt = AiAirWayPointType.FOLLOW;
+            //} else if (!heavyBomber && !isBomberArmed(airGroup) && !isOnRepairMission(player) && !(isPlayerStrikeAC && isStrikeAC))
+
+            } 
+            
+            //2026/09 - now we have already set this above
+            /* else if (!heavyBomber && !isOnRepairMission(player) && !(isPlayerStrikeAC && isStrikeAC))
 
             //Console.WriteLine("5ChangeGoalTarget: {0} hasBombs: {1} " + airGroup.Name() + " to " + player.Name(), airGroup.getTask(), isBomberArmed(airGroup));
             //for just plain fighters we want .escort to be the default
@@ -4529,6 +4569,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             {
                 aawpt = AiAirWayPointType.ESCORT;
             }
+            */
             //If the cover a/c are bombers and still have their bombs we try to make them fly nice & follow the leader instead of engaging
             if (heavyBomber && isBomberArmed(airGroup))
             {
@@ -4566,10 +4607,12 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 
             //For repair/restock missions the config is very basic
             //This applies to both bombers & fighters, at all times, because bomb mode always = .NONE
+            //despite attacking/defending/etc if they get too far away from the main a/c just try
+            //to make them come BACK
             if (isOnRepairMission(player))
             {
                 aawpt = AiAirWayPointType.FOLLOW;
-                task = AiAirGroupTask.DO_NOTHING;
+                task = AiAirGroupTask.FLY_WAYPOINT;
                 AltDiffPassed_m = -5;
                 AltDiffPassed_range_m = 2;  //this is the value actually passed to EscortUpdateWaypoints below (AltDiff_range_m is just my incoming parameter)
             }
@@ -4583,10 +4626,10 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 if (orders == CoverAGOrders.strict)
                 {
                     aawpt = AiAirWayPointType.FOLLOW;
-                    task = AiAirGroupTask.DO_NOTHING;
+                    task = AiAirGroupTask.FLY_WAYPOINT;
                     tasktarget = null;
-                    AltDiffPassed_m = -5;   //fly in formation - right at the leader's altitude, plus/minus just a couple of meters
-                    AltDiffPassed_range_m = 2;  //this is the value actually passed to EscortUpdateWaypoints below (AltDiff_range_m is just my incoming parameter)
+                    AltDiffPassed_m = -3;   //fly in formation - right at the leader's altitude, plus/minus just a couple of meters
+                    AltDiffPassed_range_m = 15;  //this is the value actually passed to EscortUpdateWaypoints below (AltDiff_range_m is just my incoming parameter)
                 }
                 //<cloiter - circle around the loiter point that was set when the player gave the order.  This
                 //sets its own flight plan, so there is nothing more to do with this airgroup this time around.
@@ -4597,7 +4640,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 }
                 //<cescort - CLoD's ESCORT behavior for all types of cover a/c: stay with & defend the player.
                 //(If an enemy airgroup was nearby, an ATTACK_AIR or DEFENDING task was already set for that, above.)
-                else if (orders == CoverAGOrders.escort && task == AiAirGroupTask.DO_NOTHING)
+                else if (orders == CoverAGOrders.escort && task != AiAirGroupTask.ATTACK_AIR && task != AiAirGroupTask.DEFENDING && task != AiAirGroupTask.DO_NOTHING)//prevents setTask etc from being run below) //ATTACK_AIR & DEFENDING are set above if a nearby enemy is found. Otherwise, they should be set to ESCORT.
                 {
                     aawpt = AiAirWayPointType.ESCORT;
                 }
@@ -6354,6 +6397,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 return false; 
             }
             AiAirWayPoint aawp33 = CurrentPosWaypoint(airGroup, targetAirGroup, aawptstart, aaPs.Item3);
+            //2026-09-29, experimental, just not sending the currentpos waypoint at all
             if (aawp33 != null) NewWaypoints.Add(aawp33);
             NewWaypoints.Add(aaPs.Item1);
             if (aaPs.Item2 != null) NewWaypoints.Add(aaPs.Item2);
@@ -6821,7 +6865,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 
 											if (gg != null && gg.IsAlive && !airgroupGroundTargets.ContainsValue(gg)
 											&& statArmy == 3 - airGroup.getArmy() && !gg.Title.ToLower().Contains("crater")
-											&& !gg.Title.ToLower().Contains("smoke") && !gg.Title.ToLower().Contains("fire") && !gg.Title.ToLower().Contains("_dmg")  //avoid choosing a smoke, fire, or crater, or damaged object to attack. There might be some other types to avoid, too but these are the main offenders.
+											&& !gg.Title.ToLower().Contains("smoke") && !gg.Title.ToLower().Contains("fire") && !gg.Title.ToLower().Contains("_dmg")  && !gg.Title.ToLower().Contains("AEC_Regent_II")  && !gg.Title.ToLower().Contains("MG_TA")  //avoid choosing a smoke, fire, or crater, or damaged object to attack. There might be some other types to avoid, too but these are the main offenders.
 											) //not trying to find the closest, just a random one within the given distance, and not already picked by another airgroup && enemy
 											  //Names including _DMG are damaged items, don't need to target them.  IE Stationary.Environment.Ladder_UK1_DMG1
 											  //We use things like this in our detritus fields, which mean target is destroyed or moved
@@ -7251,6 +7295,11 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 
             Point3d CurrentPos = airGroup.Pos();
 
+             
+            CurrentPos.x += Vwld.x * 10; //OK, it seems if the first point is BEHIND the a/c, it causes some kind of a panic and the a/c reverts to task .RETURN.  Once in this RTB mode it accepts no further tasks etc.  So we try to avoid this by putting it 1 second forward.  Could try a few more seconds if this is still flaky.
+            CurrentPos.y += Vwld.y * 10; 
+                        
+
             aaWP = new AiAirWayPoint(ref CurrentPos, vel_mps);
             //aaWP.Action = AiAirWayPointType.NORMFLY;
             if (aawpt != null) aaWP.Action = aawpt;
@@ -7298,6 +7347,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
         if (aawp2 != null && aawp2.Action != null) aawpt = aawp2.Action;
 
         AiAirWayPoint aawp33 = CurrentPosWaypoint(airGroup, targetAirGroup, aawpt, aaWPs.Item3);
+        //2026-09-29 - experimental, just not sending the current waypoint at all
         if (aawp33 != null) NewWaypoints.Add(aawp33);
         NewWaypoints.Add(aawp2);
         NewWaypoints.Add(aawp3);
@@ -7368,7 +7418,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 //GamePlay.gpLogServer(null, "PosE: " + savePos.x.ToString("F0") + " " + savePos.y.ToString("F0") + " " + savePos.z.ToString("F0") + ":"
                 //   + CurrentPos.x.ToString("F0") + " " + CurrentPos.y.ToString("F0") + " " + CurrentPos.z.ToString("F0"), new object[] { });
 
-                double current_vel_mps = CoverCalcs.CalculatePointDistance(Vwld); //Not 100% sure mps is the right unit here?
+                double current_vel_mps = CoverCalcs.CalculatePointDistance(Vwld); 
                 if (heavyBomber) //ok, tried this for ALL aircraft but it didn't go so well
                 {
                     if (current_vel_mps < 60) //We set the target waypoint closer if the cover a/c speed is lower, and quite a bit further out of it's going faster
@@ -7521,7 +7571,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             if(mainmission.ON_TESTSERVER) {
 				try
 				{
-					Console.WriteLine("Cover: EscortPosWaypoint - returning: {0} {1} {2:n0}/{3:n0} {4:n0} LONG: {5:n0}/{6:n0} {7:n0} Dist: {8:n0} Currpos: {9:n0}/{10:n0} {11:n0} for " + airGroup.Name() + " to " + targetAirGroup.Name() + " at {12:n0}/{13:n0} {14:n0}", new object[] { (aaWP as AiAirWayPoint).Action, (aaWP as AiAirWayPoint).Speed, aaWP.P.x, aaWP.P.y, aaWP.P.z, aaWP2.P.x, aaWP2.P.y, aaWP2.P.z, targetDist_m, airGroup.Pos().x, airGroup.Pos().y, airGroup.Pos().z, targetAirGroup.Pos().x, targetAirGroup.Pos().y, targetAirGroup.Pos().z });
+					Console.WriteLine("Cover: EscortPosWaypoint - returning: {0} {1} {2:n0}/{3:n0} {4:n0} LONG: {5:n0}/{6:n0} {7:n0} Dist: {8:n0} Currpos: {9:n0}/{10:n0} {11:n0} for " + airGroup.Name() + " to " + targetAirGroup.Name() + " player at {12:n0}/{13:n0} {14:n0}", new object[] { (aaWP as AiAirWayPoint).Action, (aaWP as AiAirWayPoint).Speed, aaWP.P.x, aaWP.P.y, aaWP.P.z, aaWP2.P.x, aaWP2.P.y, aaWP2.P.z, targetDist_m, airGroup.Pos().x, airGroup.Pos().y, airGroup.Pos().z, targetAirGroup.Pos().x, targetAirGroup.Pos().y, targetAirGroup.Pos().z });
 				} catch (Exception ex) { Console.WriteLine("Cover: EscortPosWaypoint ERROR printing to console - " + ex.ToString()); }
 			}
             
@@ -7777,7 +7827,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
         catch (Exception ex) { Console.WriteLine("Cover CalcCoverSpeedToMatch ERROR: " + ex.ToString()); return null; }
     }
 
-public AiAirGroup getRandomNearbyEnemyAirGroup(AiAirGroup from, double distance_m, double lowAlt_m, double highAlt_m)
+    public AiAirGroup getRandomNearbyEnemyAirGroup(AiAirGroup from, double distance_m, double lowAlt_m, double highAlt_m)
     {
         try
         {
@@ -7785,7 +7835,9 @@ public AiAirGroup getRandomNearbyEnemyAirGroup(AiAirGroup from, double distance_
             List<AiAirGroup> airGroups = getNearbyEnemyAirGroups(from, distance_m, lowAlt_m, highAlt_m);
             if (airGroups == null || airGroups.Count == 0) return null;
             int choice = ran.Next(airGroups.Count);
-            if (airGroups[choice].Pos().distance(ref startPos) <= distance_m / 2) //We'll somewhat favor airgroups closer to the from airgroup
+            if (airGroups[choice].Pos().distance(ref startPos) >= distance_m / 4) //We'll somewhat favor airgroups very to the from airgroup
+                choice = ran.Next(airGroups.Count);
+            if (airGroups[choice].Pos().distance(ref startPos) >= distance_m / 2) //We'll somewhat favor airgroups closer to the from airgroup
                 choice = ran.Next(airGroups.Count);
             return airGroups[choice];
         }
@@ -7804,13 +7856,15 @@ public AiAirGroup getRandomNearbyEnemyAirGroup(AiAirGroup from, double distance_
             AiAirGroup[] Airgroups;
             Point3d StartPos = from.Pos();
 
-            Airgroups = GamePlay.gpAirGroups((from.Army() == 1) ? 2 : 1);
+            int army = from.Army();
+            if (army < 1 || army > 2) return returnAirGroups;
+            Airgroups = GamePlay.gpAirGroups((army == 1) ? 2 : 1);
 
             if (Airgroups != null)
             {
                 foreach (AiAirGroup airGroup in Airgroups)
                 {
-                    if (airGroup == null || airGroup.GetItems().Length == 0) continue;
+                    if (airGroup == null || airGroup.GetItems().Length == 0 || !(airGroup as AiActor).IsAlive() || !(airGroup as AiActor).IsValid() || (airGroup as AiActor).Name().ToLower().Contains("noname") || (airGroup as AiActor).Army() ==from.Army()) continue;
                     //AiAircraft a = airGroup.GetItems()[0] as AiAircraft;
 
                     if (airGroup.Pos().z > StartPos.z - lowAlt_m && airGroup.Pos().z < StartPos.z + highAlt_m && airGroup.Pos().distance(ref StartPos) <= distance_m)
@@ -8857,6 +8911,35 @@ public static class CoverCalcs
         // the value of direction is in rad so we need *180/Pi to get the value in degrees.  We subtract from pi/2 to convert to compass directions
         double bearing = (newVector.direction()) * 180.0 / Math.PI;
         return (bearing > 0.0 ? bearing : (360.0 + bearing));  //we want bearing to be 0-360, generally
+    }
+    //True if the two vectors point in roughly the same direction, i.e. the angle between them is
+    //less than tolerance_deg.  Uses the cosine of the angle between them (the dot product of the
+    //NORMALIZED vectors) - both must be normalized, otherwise a fast and a slow a/c flying the
+    //identical heading would score differently just because of their different speeds.
+    //  cos = +1 = same direction, 0 = perpendicular, -1 = opposite.
+    //Useful angles:  within 15deg => >0.966, within 30deg => >0.866, within 45deg => >0.707, within 60deg => >0.5
+    //Note we deliberately do NOT use Vector3d.angle() here, because we could not verify whether it
+    //returns degrees or radians; this version is unambiguous either way.
+    //Returns FALSE if either vector is (near) zero-length - a stationary a/c has no heading at all,
+    //and dividing by ~0 would give NaN.  Every NaN comparison is false, so without this guard a
+    //stopped aircraft would silently read as "not pointing that way".
+    public static bool roughlySameDirection(Point3d a, Vector3d b, double tolerance_deg)
+    {
+        return roughlySameDirection(a, new Point3d(b.x, b.y, b.z), tolerance_deg);
+    }
+
+    public static bool roughlySameDirection(Point3d a, Point3d b, double tolerance_deg)
+    {
+        double lenA = CalculatePointDistance(a);  //note this is x/y only - headings here are horizontal
+        double lenB = CalculatePointDistance(b);
+        if (lenA < 0.0001 || lenB < 0.0001) return false;
+
+        double cos = (a.x * b.x + a.y * b.y) / (lenA * lenB);
+        //floating point can nudge this a hair outside [-1,1]; would break a later Math.Acos
+        if (cos > 1.0) cos = 1.0;
+        if (cos < -1.0) cos = -1.0;
+
+        return cos > Math.Cos(DegreesToRadians(tolerance_deg));
     }
 
     public static double CalculatePitchDegree(Vector3d vector)

@@ -1785,6 +1785,7 @@ public class CoverMission : AMission, ICoverMission
                 AiAircraft aircraft = airGroup.GetItems()[0] as AiAircraft;
                 if (aircraft == null) continue;
 
+
                 count++;
                 double alt_m = aircraft.Pos().z;
                 double alt_km = alt_m / 1000;
@@ -1852,7 +1853,7 @@ public class CoverMission : AMission, ICoverMission
                         string nm = "";
                         if ((wp as AiAirWayPoint).Target != null) nm = (wp as AiAirWayPoint).Target.Name();
 
-                        Console.WriteLine("ListCoverPosition - all waypoints: currway: {7} currtask: {8} {0} speed: [{1:N0} vs {9:N0}] ({2:n0} {3:n0} {4:n0}), gp: {5}, name: {6}", (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z, airGroup.Name(), nm, currWay, airGroup.getTask(), Calcs.milesphour2meterspsec(player_vel_mph));                       
+                        Console.WriteLine("ListCoverPosition - all waypoints: currway: {7} currtask: {8} {0} speed: [{1:N0}cw/{10:N0}ca vs {9:N0}p] ({2:n0} {3:n0} {4:n0}), gp: {5}, name: {6}", (wp as AiAirWayPoint).Action, (wp as AiAirWayPoint).Speed, wp.P.x, wp.P.y, wp.P.z, airGroup.Name(), nm, currWay, airGroup.getTask(), Calcs.milesphour2meterspsec(player_vel_mph), CoverCalcs.distance(airGroup.Vwld().x, airGroup.Vwld().y));                       
 
                     }
                     //If the next waypoint is more interesting than the current one, display that one instead (usually it is "GATTACK_POINT" or such instead of "FOLLOW" or "ESCORT"
@@ -5341,8 +5342,8 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                                 r = Math.Sqrt(r); //Tobruk Boost to BLUE cover smartness but still not quite as good as RED  sqrt .5 = .71; sqrt .75 = .87
                                 if (isBlenheim) {
                                     //Turn down basic flying skill; much moreso if they are 'cover' vs 'bomber'
-                                    if ( j == 0 && isBomber ) r = (r - 0.2).Clamp(0.3,0.6);
-                                    if ( j == 0 && !isBomber ) r = (r - 0.4).Clamp(0.23,0.45);
+                                    if ( j == 0 && isBomber ) r = (r - 0.05).Clamp(0.65,0.8);
+                                    if ( j == 0 && !isBomber ) r = (r - 0.1).Clamp(0.6,0.75);
                                     
                                     //turn down even more for advanced flying skill
                                     if ( j == 1 && isBomber ) r = (r - 0.3).Clamp(0.2,0.4);
@@ -8062,7 +8063,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 if (pacePlayer )
                 {
                     vel_mps = target_vel_mps_TAS * 0.999; //This is the actual resting point/stability point we're shooting for 0 to 30 meters behind the main a/c.
-                    if (frontBackDist_m > 30 && target_vel_mps_TAS * 1.03 > vel_mps) vel_mps = target_vel_mps_TAS * 1.03; //Go at least 20% faster than the group they're escorting, if possible
+                    if (frontBackDist_m > 3 && target_vel_mps_TAS * 1.03 > vel_mps) vel_mps = target_vel_mps_TAS * 1.03; //Go at least 20% faster than the group they're escorting, if possible
                     if (frontBackDist_m > 250 && target_vel_mps_TAS * 1.05 > vel_mps) vel_mps = target_vel_mps_TAS * 1.05; //Go at least 20% faster than the group they're escorting, if possible
                     if (frontBackDist_m > 400 && target_vel_mps_TAS * 1.1 > vel_mps) vel_mps = target_vel_mps_TAS * 1.1; //Go at least 20% faster than the group they're escorting, if possible
                     if (frontBackDist_m > 600 && target_vel_mps_TAS * 1.2 > vel_mps) vel_mps = target_vel_mps_TAS * 1.2; //Go at least 20% faster than the group they're escorting, if possible
@@ -8088,7 +8089,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             {
                 if (pacePlayer){
                      vel_mps = target_vel_mps_TAS * 0.99; //Go 75% as fast as main aircraft when ahead but kinda close
-                    if (frontBackDist_m > 30 && target_vel_mps_TAS * .98 < vel_mps) vel_mps = target_vel_mps_TAS * 0.98; //Go 80% as fast when the target a/c gets more than 750m off
+                    if (frontBackDist_m > 3 && target_vel_mps_TAS * .98 < vel_mps) vel_mps = target_vel_mps_TAS * 0.98; //Go 80% as fast when the target a/c gets more than 750m off
                     if (frontBackDist_m > 80 && target_vel_mps_TAS * .95 < vel_mps) vel_mps = target_vel_mps_TAS * 0.97; //Go 80% as fast when the target a/c gets more than 750m off
                     if (frontBackDist_m > 120 && target_vel_mps_TAS * .85 < vel_mps) vel_mps = target_vel_mps_TAS * 0.97; //Go 80% as fast when the target a/c gets more than 750m off
                     if (frontBackDist_m > 300 && target_vel_mps_TAS * .8 < vel_mps) vel_mps = target_vel_mps_TAS * 0.7; //Go 80% as fast when the target a/c gets more than 750m off

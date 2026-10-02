@@ -449,7 +449,14 @@ public class CoverMission : AMission, ICoverMission
      //
      ***************************************************************************************************************/
 
-    public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Point, Bomb_Explosion_Point, Nearest_Enemy_to_Bomb_Explosion, Drop_Flare_Point_Here_and_Target_it, Nearest_Enemy_to_Flare_Point, None };
+    //<cdrop - "DROP WHEN I DROP" lives in this cycle too, so it sits on the Tab-4-4-4-4-6 "Cover
+//Targeting" menu right alongside Knickebein Point / Bomb Explosion Point / etc, where it belongs -
+//it is a bombing mode, not a formation directive.  It is deliberately the ONLY value here that
+//matches none of the BAM_is* predicates: those all answer "WHERE do they bomb", whereas this one
+//answers "WHEN do they bomb", so it drives the airgroup ORDERS instead (see BAM_enterDropMode()).
+//Keep it immediately before None so the existing cycle order (None -> Knickebein -> ... -> Flare)
+//is unchanged and everybody's muscle memory still works.
+public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Point, Bomb_Explosion_Point, Nearest_Enemy_to_Bomb_Explosion, Drop_Flare_Point_Here_and_Target_it, Nearest_Enemy_to_Flare_Point, Drop_When_I_Drop, None };
 
     public bool BAM_isBombPoint(Player player)
     {
@@ -512,6 +519,25 @@ public class CoverMission : AMission, ICoverMission
 
     }
 
+    //Whenever an airgroup is dropped from coverAircraftAirGroupsActive (disbanded, destroyed, or
+    //released to land) we must drop our per-airgroup state too, or these dictionaries grow for the
+    //whole mission.  Keyed by AiAirGroup, so each stale key is small - but it is permanent, and it
+    //keeps the dead group object alive through the key reference.
+    public void forgetAirGroup(AiAirGroup airGroup)
+    {
+        if (airGroup == null) return;
+        coverAGSpeedRatio.Remove(airGroup);
+        coverAGSpeedRequested.Remove(airGroup);
+        coverAircraftAirGroupsOrders.Remove(airGroup);
+        coverAircraftAirGroupsTargetPoint.Remove(airGroup);
+        coverAircraftAirGroupsDropIssued.Remove(airGroup);
+        coverAircraftAirGroupsReleased.Remove(airGroup);
+        coverAircraftAirGroupsLoiterPoint.Remove(airGroup);
+        airgroupTargets.Remove(airGroup);
+        airgroupGroundTargets.Remove(airGroup);
+        airgroupTargetPoints.Remove(airGroup);
+    }
+
     public string BAM_toggleBombAimMode(Player player)
     {
         if (player == null) return "(none)";
@@ -528,7 +554,8 @@ public class CoverMission : AMission, ICoverMission
             else if (bam == BAM_BombAimMode.Bomb_Explosion_Point) bam = BAM_BombAimMode.Nearest_Enemy_to_Bomb_Explosion;
             else if (bam == BAM_BombAimMode.Nearest_Enemy_to_Bomb_Explosion) bam = BAM_BombAimMode.Drop_Flare_Point_Here_and_Target_it;
             else if (bam == BAM_BombAimMode.Drop_Flare_Point_Here_and_Target_it) bam = BAM_BombAimMode.Nearest_Enemy_to_Flare_Point;
-            else if (bam == BAM_BombAimMode.Nearest_Enemy_to_Flare_Point) bam = BAM_BombAimMode.None;
+            else if (bam == BAM_BombAimMode.Nearest_Enemy_to_Flare_Point) bam = BAM_BombAimMode.Drop_When_I_Drop;
+            else if (bam == BAM_BombAimMode.Drop_When_I_Drop) bam = BAM_BombAimMode.None;
             else if (bam == BAM_BombAimMode.None) bam = BAM_BombAimMode.Knickebein_Point;
         }
 
@@ -560,11 +587,84 @@ public class CoverMission : AMission, ICoverMission
         return BAM_getPlayerBombAimMode_string(player);
     }
 
+    //<cdrop - turn DROP WHEN I DROP on.  Called both from the Tab-4-4-4-4-6 menu (BAM cycle) and from
+    //the <cdrop chat command, so the menu label and the actual orders can never disagree.
+    //Snapshot the player's current orders FIRST, then put everyone on .drop.  Empty msg => every
+    //group is selected (see setCoverAircraftAirGroupsOrders), which is what the menu can express;
+    //players who want only some squadrons use "<cdrop 3 6" in chat.
+    public void BAM_enterDropMode(Player player, string msg = "")
+    {
+        if (player == null) return;
+
+        //Re-issuing <cdrop to RE-ARM an existing drop must NOT overwrite the snapshot - that would
+        //throw away the pre-drop orders and leave us with nowhere to restore to.
+        if (coverOrdersBeforeDrop.ContainsKey(player)) { setCoverAircraftAirGroupsOrders(player, msg, CoverAGOrders.drop, "were ordered to DROP WHEN YOU DROP - they will hold their bombs and, the moment you let your first bomb go, release everything at the same time."); return; }
+
+        Dictionary<AiAirGroup, CoverAGOrders> snap = new Dictionary<AiAirGroup, CoverAGOrders>();
+        try
+        {
+            foreach (KeyValuePair<AiAirGroup, Player> kv in coverAircraftAirGroupsActive)
+            {
+                if (kv.Value != player) continue;
+                AiAirGroup airGroup = kv.Key;
+                if (airGroup == null) continue;
+                if (!coverAircraftAirGroupsOrders.ContainsKey(airGroup)) continue;
+                snap[airGroup] = coverAircraftAirGroupsOrders[airGroup];
+            }
+        }
+        catch (Exception ex) { Console.WriteLine("Cover BAM_enterDropMode ERROR taking snapshot! " + ex.ToString()); }
+        coverOrdersBeforeDrop[player] = snap;
+
+        armCoverDropWatch(player);  //start watching the leader's bomb count
+        setCoverAircraftAirGroupsOrders(player, msg, CoverAGOrders.drop, "were ordered to DROP WHEN YOU DROP - they will hold their bombs and, the moment you let your first bomb go, release everything at the same time.");
+    }
+
+    //<cdrop - turn DROP WHEN I DROP off again, restoring the orders that were in force when it was
+    //switched on.  Only groups whose order is STILL .drop get reverted; anything the player changed
+    //in the meantime (a <creserve N, most importantly) is left exactly as they set it.
+    public void BAM_leaveDropMode(Player player)
+    {
+        if (player == null) return;
+        Dictionary<AiAirGroup, CoverAGOrders> snap;
+        if (!coverOrdersBeforeDrop.TryGetValue(player, out snap)) return;  //nothing remembered, so nothing to undo
+        coverOrdersBeforeDrop.Remove(player);
+
+        try
+        {
+            List<AiAirGroup> saveCAAGA = new List<AiAirGroup>(coverAircraftAirGroupsActive.Keys);
+            int restored = 0;
+            foreach (AiAirGroup airGroup in saveCAAGA)
+            {
+                if (airGroup == null) continue;
+                if (coverAircraftAirGroupsActive[airGroup] != player) continue;
+                if (!coverAircraftAirGroupsOrders.ContainsKey(airGroup)) continue;
+                if (coverAircraftAirGroupsOrders[airGroup] != CoverAGOrders.drop) continue;  //player has since overridden it - leave it alone
+
+                CoverAGOrders was = CoverAGOrders.normal;
+                if (snap.ContainsKey(airGroup)) was = snap[airGroup];   //group that appeared after we started: fall back to normal
+                coverAircraftAirGroupsOrders[airGroup] = was;
+                restored++;
+            }
+            if (GamePlay != null && restored > 0) GamePlay.gpLogServer(new Player[] { player }, restored.ToString() + " groups of cover aircraft returned to their previous orders (DROP WHEN I DROP is off)", new object[] { });
+        }
+        catch (Exception ex) { Console.WriteLine("Cover BAM_leaveDropMode ERROR restoring orders! " + ex.ToString()); }
+    }
+
     public void BAM_toggleBombAimMode_withmessages(Player player)
     {
         if (GamePlay == null) return;
+        //<cdrop - entering/leaving DROP WHEN I DROP is a change to the airgroup ORDERS, not just to the
+        //menu label, so capture the mode we are leaving in order to act on the transition.
+        BAM_BombAimMode prev = BAM_getplayerBombAimMode_enum(player);
         bool removeLastBombPoint = true;
         string s = BAM_toggleBombAimMode(player);
+        BAM_BombAimMode now = BAM_getplayerBombAimMode_enum(player);
+
+        if (prev != now)
+        {
+            if (now == BAM_BombAimMode.Drop_When_I_Drop) BAM_enterDropMode(player);
+            else if (prev == BAM_BombAimMode.Drop_When_I_Drop) BAM_leaveDropMode(player);
+        }
 
         if (isOnRepairMission(player))
         {
@@ -596,6 +696,15 @@ public class CoverMission : AMission, ICoverMission
         else if (BAM_getplayerBombAimMode_enum(player) == BAM_BombAimMode.Nearest_Enemy_to_Flare_Point)
         {
             GamePlay.gpLogServer(new Player[] { player }, "Cover bombers will target enemy ground objects nearest the flare drop point.", null);
+        }
+        //<cdrop - the one mode on this menu that is about WHEN, not WHERE.  No ground target is set
+        //for it at all; the release is aimed off the leader's own position when he lets his bombs go.
+        else if (BAM_getplayerBombAimMode_enum(player) == BAM_BombAimMode.Drop_When_I_Drop)
+        {
+            GamePlay.gpLogServer(new Player[] { player }, "DROP WHEN I DROP is ON. Your bombers hold their bombs and fly tight formation with you, then release everything the moment you drop.", null);
+            GamePlay.gpLogServer(new Player[] { player }, "They release once per pass, so cycle this back to OFF and on again to re-arm them for another run. Use <creserve to hold squadrons back, or <cdropnow for an immediate release.", null);
+            GamePlay.gpLogServer(new Player[] { player }, "NOTE: on a server set to unlimited ammo this cannot work at all - use <cdropnow instead.", null);
+            removeLastBombPoint = false;  //this mode does not use the player's bomb drop point
         }
 
         //if (removeLastBombPoint) PBP_removePlayerLastBombPoint(player); //Toggling bomb mode erases the last bomb drop location, except when switching point=>actor
@@ -854,6 +963,7 @@ public class CoverMission : AMission, ICoverMission
                     if (countAC == 0 && coverAircraftAirGroupsActive.ContainsKey(aircraft.AirGroup()))
                     {
                         coverAircraftAirGroupsActive.Remove(aircraft.AirGroup());
+                        forgetAirGroup(aircraft.AirGroup());
                         //Console.WriteLine("CoverOnDestroy: Removing airgroup from active list");
                     }
 
@@ -1260,6 +1370,51 @@ public class CoverMission : AMission, ICoverMission
     //settle slightly AHEAD of the leader, where the inFront braking bands pull them back.
     //NOTE: the inFront braking bands below are deliberately left below 1.0 - do NOT bias those.
     public double coverFormationSpeedBias = 1.06;
+
+    //<cfdist - player-set forward/back offset for their formation, in metres.  Positive = the
+    //formation is asked to ride this far AHEAD of the leader, negative = this far behind.
+    //<cdist sets the left/right (lateral) spread; this is the front/back axis of the same idea.
+    //Both axes meet in calcOffset_m(), which only knows about left/right.
+    public Dictionary<Player, double> coverFrontBackDist_m = new Dictionary<Player, double>();
+
+    //Per-airgroup speed calibration.  A cover group only ever achieves roughly 98% of the speed
+    //commanded in its waypoint (see CloDNotes section 7), and that ratio drifts with altitude,
+    //aircraft type and - most visibly - whether it is still carrying bombs.  Rather than hand-tune
+    //one global number, learn each group's own ratio: compare the speed we LAST asked for against
+    //the speed it actually flew, keep a rolling average of that, and scale the next request by
+    //1/ratio, so the speed we WANT is the speed we GET.
+    //Without this, a group running at 100% while the rest of the flight runs at 98% creeps away
+    //from the leader and is never pulled back: the control loop only ever compares actual speed
+    //against the LEADER's speed, never against its own request.
+    public Dictionary<AiAirGroup, double> coverAGSpeedRatio = new Dictionary<AiAirGroup, double>();     //smoothed actual/requested; 1.0 = delivers exactly
+    public Dictionary<AiAirGroup, double> coverAGSpeedRequested = new Dictionary<AiAirGroup, double>();  //the speed we last asked this group for
+    public readonly double coverAGSpeedRatioMin = 0.85;   //never trust a ratio outside this band
+    public readonly double coverAGSpeedRatioMax = 1.15;
+    public readonly double coverAGSpeedRatioNewWeight = 0.3;  //weight of the newest sample in the rolling average (~7 samples to settle)
+
+    //<cdrop - snapshot of each player's airgroup orders, taken when DROP WHEN I DROP is switched
+    //on, so switching it off again can put everyone back where they were.  Only groups whose order
+    //is STILL .drop are reverted - so a <creserve N issued while drop mode is on is left alone.
+    public Dictionary<Player, Dictionary<AiAirGroup, CoverAGOrders>> coverOrdersBeforeDrop = new Dictionary<Player, Dictionary<AiAirGroup, CoverAGOrders>>();
+
+    //<cfdist - this player's front/back offset, or 0 if they never set one.
+    public double getFrontBackDist(Player player)
+    {
+        if (player != null && coverFrontBackDist_m.ContainsKey(player)) return coverFrontBackDist_m[player];
+        return 0;
+    }
+
+    //Move a point forwards (+ve) or backwards (-ve) along the leader's heading, by offset_m metres.
+    //Used to apply <cfdist to the formation's target point.  Vertical is left alone - that is the
+    //job of calcOffset_m's up_down mode.
+    public Point3d addFrontBackOffset(Point3d p, Vector3d leaderVwld, double offset_m)
+    {
+        if (Math.Abs(offset_m) < 0.001) return p;
+        double vlen = CoverCalcs.distance(leaderVwld.x, leaderVwld.y);
+        if (vlen < 0.0001) return p;   //leader not moving - no meaningful forward direction
+        double f = offset_m / vlen;
+        return new Point3d(p.x + leaderVwld.x * f, p.y + leaderVwld.y * f, p.z);
+    }
 
     //BombSpacing (metres) written into the airgroup section of the sectionfile that spawns cover
     //aircraft, in Stb_LoadSubAircraft().
@@ -2855,6 +3010,34 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             GamePlay.gpLogServer(new Player[] { player }, ">>>Spread factor for your cover aircraft set to " + shiftFactor.ToString("F0") + "%", null);
 
         }
+        //<cfdist - the front/back counterpart to <cdist.  <cdist sets the lateral (left/right) spread;
+        //this nudges the formation along the leader's heading, so "<cfdist 10" asks them to ride 10m
+        //further ahead of him and "<cfdist -10" 10m further back.  Bare "<cfdist" = back to zero.
+        else if (msg.StartsWith("<cfdist"))
+        {
+            double fbd_m = 0;
+            string arg = msg_orig.Substring(7).Trim();
+            bool ok = true;
+            if (arg.Length > 0)
+            {
+                try { fbd_m = Convert.ToDouble(arg); }
+                catch (Exception ex) { ok = false; }
+            }
+            if (!ok)
+            {
+                GamePlay.gpLogServer(new Player[] { player }, ">>>Usage: <cfdist [metres] - positive to have your cover aircraft sit that many metres AHEAD of you, negative to sit behind.  For example <cfdist 10, or <cfdist -100.  Bare <cfdist resets to 0.", new object[] { });
+            }
+            else
+            {
+                //keep it sane - anything beyond +/-1km is not a formation any more
+                if (fbd_m > 1000) fbd_m = 1000;
+                if (fbd_m < -1000) fbd_m = -1000;
+                coverFrontBackDist_m[player] = fbd_m;
+                string fbstr = (fbd_m > 0 ? fbd_m.ToString("F0") + "m further ahead of you" : fbd_m < 0 ? Math.Abs(fbd_m).ToString("F0") + "m further behind you" : "back to your own position");
+                GamePlay.gpLogServer(new Player[] { player }, ">>>Cover aircraft front/back offset is now " + fbstr + " (<cfdist again to change it)", new object[] { });
+            }
+
+        }
         else if (msg.StartsWith("<cr") || msg.StartsWith("<cj"))
         { //reserve - hold fire, force the AG to follow continuously & not attack (<creserve, <cres, <cr, <cjoin, <cj)
             setCoverAircraftAirGroupsOrders(player, msg, CoverAGOrders.reserve, "were ordered to stay in RESERVE, cease ground attacks, bombers stay in formation, sturmovik/cover fighters defend only immediate/very close air threats.");
@@ -2897,8 +3080,11 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
         }
         else if (msg.StartsWith("<cdrop") || msg.StartsWith("<cdro"))
         { //drop - "drop when I drop": hold your bombs and fly with the leader, then pull your release when he pulls his (<cdrop, <cdro)
-            setCoverAircraftAirGroupsOrders(player, msg, CoverAGOrders.drop, "were ordered to DROP WHEN YOU DROP - they will hold their bombs and, the moment you let your first bomb go, release everything at the same time.");
-            armCoverDropWatch(player);  //starts (or re-arms) the watcher that watches YOUR bomb count
+            //<cdrop - set the BAM mode too, so the Tab-4-4-4-4-6 "Cover Targeting [..]" label shows
+            //what is actually happening.  BAM_enterDropMode does the snapshot + orders + watcher.
+            BAM_playerAimMode[player] = BAM_BombAimMode.Drop_When_I_Drop;
+            BAM_enterDropMode(player, msg_orig.Substring(6).Trim());   //"<cdrop 3 6" => msg "3 6"; bare "<cdrop" => every group
+            if (isOnRepairMission(player)) GamePlay.gpLogServer(new Player[] { player }, ">>>Note: on a repair/restock mission your cover aircraft fly a fixed formation and this will have no effect", new object[] { });
 
         }
         else if (msg.StartsWith("<flare"))
@@ -3051,7 +3237,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 "** <creserve OR <cr - stay in RESERVE, joined with you; do not join the current ground attack. Stay in formation, but fighters/sturmovik will leave formation to defend against enemy approaching closely.",
                 "** <cstrict OR <cs - squadrons fly in rigid STRICT, close formation with you, all aircraft at your altitude, close to you (ignoring <cdist), ignores all other action, & ordered to ignore even direct attacks and simply fly in formation with you.",
                 "** <cloiter OR <cl - LOITER in place, circling. Will defend if attacked, but otherwise remain out of the action and awaiting further orders.",
-                "** <cdrop OR <cdro - DROP WHEN I DROP: they hold their bombs and fly in tight formation with you, and the moment you let your first bomb go they release everything at the same time - just as ww2 crews did, with only the leader carrying a bombsight. Squadrons still further back will catch up to your line and release there. They release once per pass, so re-issue <cdrop to re-arm them for another run. NOTE: on a server set to unlimited ammo this cannot work at all - use <cdropnow instead.",
+                "** <cdrop OR <cdro OR Tab-4-4-4-4-6 (Cover Targeting cycles to 'Drop When I Drop') - DROP WHEN I DROP: they hold their bombs and fly in tight formation with you, and the moment you let your first bomb go they release everything at the same time - just as ww2 crews did, with only the leader carrying a bombsight. Squadrons still further back will catch up to your line and release there. They release once per pass, so re-issue <cdrop to re-arm them for another run. Use <creserve 3 to hold particular squadrons back, or <cdrop 3 6 to put only those squadrons on this mode. NOTE: on a server set to unlimited ammo this cannot work at all - use <cdropnow instead.",
                 "** <cdropnow OR <cbomb - order an IMMEDIATE release from every squadron now, whatever order they are on. Squadrons sitting on <creserve are held back; everything else goes, including <cstrict squadrons.",
                 "<chelp6 for more..."
             };
@@ -3108,6 +3294,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 "** <cover 4 3 heavy x3 - launch a flight of 3 aircraft type #4, loaded with heavy bombs, and repeat this command 3 times",
                 "** <cland 2 4 5 release group #2, #4, and #5.  Get group # from Tab-4 menu or <cpos. <cland (or Tab-4 menu) alone lands all aircraft.",
                 "** <cdist 200 - set cover formation distance 200% normal. <cdist 50 - set cover distance 50% normal. <cdist 1000 - cover distance 10X normal",
+                "** <cfdist 10 - set your cover formation to ride 10m further AHEAD of you (negative = further behind, e.g. <cfdist -100). <cfdist alone resets to your own position. This is the front/back counterpart to <cdist, which sets the left/right spread.",
                 "<chelp3 for more..."
             };
 
@@ -3879,6 +4066,18 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             }
 
             GamePlay.gpLogServer(new Player[] { player }, numFoundIndxs.ToString() + " groups of cover aircraft " + orderDescription + " (#{0})", new object[] { String.Join(" #", foundIndxs.Trim()) });
+
+            //<cdrop - if the player has just overridden EVERYONE out of DROP WHEN I DROP (a bare <cnormal,
+            //<cattack, <cstrict etc), then drop mode is no longer in force and the Tab-4-4-4-4-6 "Cover
+            //Targeting [..]" label would otherwise still read "Drop When I Drop" - so clear it.
+            //Deliberately NOT done for a PARTIAL command: "<creserve 3" only moves squadron 3, the rest
+            //are still on .drop, and that is exactly how a player holds squadrons back during a drop run.
+            //BAM_enterDropMode() passes order == drop, so this can never fight with entering drop mode.
+            if (order != CoverAGOrders.drop && indxs.Count == 0 && numFoundIndxs > 0 && BAM_getplayerBombAimMode_enum(player) == BAM_BombAimMode.Drop_When_I_Drop)
+            {
+                BAM_playerAimMode[player] = BAM_BombAimMode.None;
+                coverOrdersBeforeDrop.Remove(player);   //they have overridden us; there is nothing left to restore
+            }
         }
         catch (Exception ex) { Console.WriteLine("Cover setCoverAircraftAirGroupsOrders ERROR: " + ex.ToString()); }
         return ret;
@@ -4651,6 +4850,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             if (numAC == 0)
             {
                 coverAircraftAirGroupsActive.Remove(airGroup);
+                forgetAirGroup(airGroup);
                 //Console.WriteLine("Cover KeepAircraftOnTask: Removing airgroup {0} from active list because no more aircraft in the group", airGroup.Name());
                 if (player != null) GamePlay.gpLogServer(new Player[] { player }, "Your {0} cover group has been disbanded (no aircraft left in it)", new object[] { airGroup.Name() });
                 return;
@@ -4677,6 +4877,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             else if (coverAircraftAirGroupsReleased[airGroup])
             {
                 coverAircraftAirGroupsActive.Remove(airGroup);
+                forgetAirGroup(airGroup);
                 EscortMakeLand(airGroup, null);
                 return;
             }
@@ -4827,7 +5028,12 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 
                 //This turns off bombing for the a/c if the player turns it off via the menu
                 BAM_BombAimMode bam = BAM_getplayerBombAimMode_enum(player);
-                if (bam == BAM_BombAimMode.None || !ordersBombGround(orders) )  //no bombing, unless the orders are attack or normal (so <creserve, <cstrict, <cescort & <cloiter all hold their bombs)
+                //Drop_When_I_Drop is listed with None here on purpose.  Without this, selecting drop mode and then
+                //issuing <cnormal would leave bam != None AND ordersBombGround(orders) == true, so the
+                //stale newTargetPoint would survive and they would fly a GATTACK_POINT at it.  Treating
+                //it exactly like None means "DROP WHEN I DROP" can never produce a ground attack: the
+                //release comes from the leader's own position instead (see dropBombsNow_airGroup).
+                if (bam == BAM_BombAimMode.None || bam == BAM_BombAimMode.Drop_When_I_Drop || !ordersBombGround(orders) )  //no bombing, unless the orders are attack or normal (so <creserve, <cstrict, <cescort & <cloiter all hold their bombs)
                 {
                 bombing = false;
                     newTargetPoint = new Point3d(-1, -1, -1);
@@ -5013,8 +5219,14 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 aawpt = AiAirWayPointType.ESCORT;
             }
             */
-            //If the cover a/c are bombers and still have their bombs we try to make them fly nice & follow the leader instead of engaging
-            if (heavyBomber && isBomberArmed(airGroup))
+            //If the cover a/c are bombers we try to make them fly nice & follow the leader instead of engaging
+            //NOTE: the isBomberArmed() test used to gate this, and that was a bug - it is FALSE the moment
+            //they release, so an empty bomber fell through to the .ESCORT default set above and then
+            //calcCoverSpeedToMatchMain() gave it pacePlayer == false, i.e. 1.3x the leader's speed with
+            //NO braking in front and 1.5x behind.  That is 1-3km of separation in a couple of minutes and
+            //the player cannot catch it up.  Whether they still carry bombs has nothing to do with how
+            //they should fly WITH the leader, so test heavyBomber alone.
+            if (heavyBomber)
             {
                 aawpt = AiAirWayPointType.FOLLOW;
                 //<cstrict - you asked these a/c to just fly in formation, so don't task them to defend the leader either.
@@ -6792,6 +7004,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 
 
             coverAircraftAirGroupsActive.Remove(airGroup);
+            forgetAirGroup(airGroup);
 
             /*Timeout(240, () =>bomberway
             //Timeout(6, () =>  //for testing
@@ -7863,6 +8076,11 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 CurrentPos = targetAirGroup.Pos();
                 Point3d savePos = CurrentPos;
                 CurrentPos = calcOffset_m(CurrentPos, airGroup, player, targetVwld, target_vel_mps, offsetDirection.left_right); //shift this airgroup a little left or right depending on which a/g it is and what other a/gs of its type are also flying with this player
+                //<cfdist - ...and calcOffset_m() only knows about the lateral axis.  Apply the player's
+                //<cfdist offset ALONG the leader's heading here, before savePos_offset, so that both
+                //the LongPos variants below and the target point itself inherit it.  targetVwld is the
+                //leader's velocity, i.e. the right axis for "ahead of / behind me".
+                CurrentPos = addFrontBackOffset(CurrentPos, targetVwld, getFrontBackDist(player));
 
                 Point3d savePos_offset = CurrentPos;
                 //GamePlay.gpLogServer(null, "PosE: " + savePos.x.ToString("F0") + " " + savePos.y.ToString("F0") + " " + savePos.z.ToString("F0") + ":"
@@ -8249,7 +8467,13 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             //replaced here - which is why the old 0.9999 target made the whole band table pointless
             //inside 400m.  The target is now biased above the leader's speed, so a group that has
             //drifted behind actually keeps closing instead of settling at a fixed offset.
-            if (frontBackDist_m < 400 && Math.Abs(target_vel_mps_TAS * coverFormationSpeedBias - ag_vel_mps) < target_vel_mps_TAS / 9) vel_mps = (target_vel_mps_TAS - ag_vel_mps) * frontBackDist_m * sign / 1000 + coverFormationSpeedBias * target_vel_mps_TAS; // brakes/accelerator plan.  Only do this if close to the main a/c AND within 5% in velocity.
+            //
+            //The bias is applied BEHIND ONLY (inFront == false).  That matters a lot here: this override
+            //REPLACES the inFront braking bands, so while in front it would have been commanding at
+            //least 1.06x the leader's speed - i.e. telling a group that was ALREADY ahead to keep
+            //accelerating, with the braking bands underneath it silently discarded.  In front we want
+            //the bands, so we leave the target at the leader's own speed and just let them slow down.
+            if (!inFront && frontBackDist_m < 400 && Math.Abs(target_vel_mps_TAS * coverFormationSpeedBias - ag_vel_mps) < target_vel_mps_TAS / 9) vel_mps = (target_vel_mps_TAS - ag_vel_mps) * frontBackDist_m * sign / 1000 + coverFormationSpeedBias * target_vel_mps_TAS; // brakes/accelerator plan.  Only do this if close to the main a/c AND within 5% in velocity.
                                                                                                                                                                                                                                  //else if (ninetyDiff < 10) vel_mps = (vel_mps - target_vel_mps) * ninetyDiff / 3 + target_vel_mps; // if close enough in ANGLE to main A/C gradually go same speed as main A/C   
 
         AiAircraft targetAircraft = player.Place() as AiAircraft;
@@ -8272,6 +8496,46 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             {
                 vel_mps = target_vel_mps_TAS;
             }
+
+            //<cover - per-airgroup speed calibration.  Everything above decides what speed we WANT; this
+            //converts that into what we must ASK FOR to actually get it.  Each group only ever
+            //delivers ~98% of the speed commanded in its waypoint, and that fraction varies with
+            //altitude, aircraft type and bomb load - so measure it per group instead of assuming.
+            //Learn step: compare the speed we asked for LAST time against what it actually flew.
+            //The previous cycle's command is the only honest denominator, because ag_vel_mps is this
+            //group's response to THAT command, not to the target we are computing right now.
+            //Apply step: scale the request by 1/ratio, so the speed we want is the speed we get.
+            //This is deliberately applied AFTER the <cstrict exact-match block below is decided in the
+            //previous version - it goes in before the clamps, so the [45,175] limits still bound it.
+            double coverSpeedRatio = 1.0;
+            double coverLastAsked = 0;
+            try
+            {
+                if (coverAGSpeedRequested.ContainsKey(airGroup))
+                {
+                    double lastAsked = coverAGSpeedRequested[airGroup];
+                    coverLastAsked = lastAsked;
+                    if (lastAsked > 5 && ag_vel_mps > 5)
+                    {
+                        double observed = ag_vel_mps / lastAsked;
+                        if (observed < coverAGSpeedRatioMin) observed = coverAGSpeedRatioMin;
+                        if (observed > coverAGSpeedRatioMax) observed = coverAGSpeedRatioMax;
+                        double prevRatio = coverAGSpeedRatio.ContainsKey(airGroup) ? coverAGSpeedRatio[airGroup] : 1.0;
+                        coverAGSpeedRatio[airGroup] = (prevRatio * (1.0 - coverAGSpeedRatioNewWeight)) + (observed * coverAGSpeedRatioNewWeight);
+                    }
+                }
+                if (coverAGSpeedRatio.ContainsKey(airGroup))
+                {
+                    coverSpeedRatio = coverAGSpeedRatio[airGroup];
+                    if (coverSpeedRatio < coverAGSpeedRatioMin) coverSpeedRatio = coverAGSpeedRatioMin;
+                    if (coverSpeedRatio > coverAGSpeedRatioMax) coverSpeedRatio = coverAGSpeedRatioMax;
+                    vel_mps = vel_mps / coverSpeedRatio;
+                }
+                coverAGSpeedRequested[airGroup] = vel_mps;
+            }
+            catch (Exception ex) { Console.WriteLine("Cover speed ratio calibration ERROR: " + ex.ToString()); }
+
+            if (mainmission.ON_TESTSERVER) Console.WriteLine("Cover speed ratio: {0} at {1:N0}m (last asked {2:N0}, actually flew {3:N0}, ratio {4:F3}, now asking {5:N0} for a wanted {6:N0})", airGroup.Name(), targetDist_m, coverLastAsked, ag_vel_mps, coverSpeedRatio, vel_mps, vel_mps * coverSpeedRatio);
 
             if (vel_mps < 45) vel_mps = 45;
             if (vel_mps > 175) vel_mps = 175;

@@ -289,4 +289,49 @@
  *
  *
  *   ================================================================================================
+ *   8.  THE "SPEED AWAY AFTER DROPPING" BUG  -  and per-airgroup speed calibration
+ *   ================================================================================================
+ *
+ *   - THE SYMPTOM: bombers held formation correctly, then the moment they released they accelerated
+ *     to 1-3km ahead and the player could not catch them.  Reproduced with 3 different bomber types.
+ *                                                                                             [GAME]
+ *
+ *   - THE CAUSE is a chain of two facts, and NEITHER of them is about speed:
+ *       1. In keepAircraftOnTask_recurs() the default for aawpt was .ESCORT, and the only line that
+ *          overrode it for bombers was  if (heavyBomber && isBomberArmed(airGroup)).
+ *          isBomberArmed() goes FALSE the instant they release, so an EMPTY bomber fell back through
+ *          to .ESCORT.
+ *       2. In calcCoverSpeedToMatchMain(),  if (aawpt == .ESCORT) pacePlayer = false;  That skips
+ *          the normal braking bands entirely and uses the fighter-escort numbers instead:
+ *          1.5x the leader's speed when behind, and 1.3x - WITH NO BRAKING AT ALL - when in front.
+ *     At 75 m/s that is +22.5 m/s: 1km in 45 seconds, 3km in about 2 minutes.             [CODE+]
+ *   - Separately, the sub-400m convergence override REPLACES whatever the bands decided, so it also
+ *     had to be restricted to the not-inFront case: while in front it was commanding >= 1.06x the
+ *     leader's speed, i.e. telling groups that were ALREADY ahead to keep accelerating.     [CODE]
+ *
+ *   - FIX 1: test heavyBomber alone.  Whether they still carry bombs has nothing to do with how they
+ *     should fly WITH the leader.
+ *   - FIX 2: apply the convergence override only when !inFront, so the braking bands survive.
+ *
+ *   *** WHY ONE GLOBAL bias IS THE WRONG ANSWER ***                                         [CODE]
+ *   - The ~2% shortfall in section 7 is an AVERAGE, and it MOVES - with altitude, with aircraft
+ *     type, and most of all with bomb load: a bomber that has just dumped its load is aerodynamically
+ *     a different aircraft from the same bomber 30 seconds earlier.  No single number is right for
+ *     all of them at once, and when it is wrong there is no restoring force, because the loop only
+ *     ever compares a group's actual speed against the LEADER's - never against the group's own
+ *     last request.  A group that over-delivers simply runs away, with nothing pulling it back.
+ *   - CoverMission now learns a ratio PER AIRGROUP: compare the speed we last asked for against what
+ *     it actually flew, keep a rolling average (~7 samples), clamp to [0.85,1.15], and divide the
+ *     request by it.  The denominator MUST be the previous cycle's command - ag_vel_mps is the
+ *     response to THAT command, not to the target being computed this cycle.  Using the current
+ *     target as the denominator is a trap: it silently drives the ratio to 1 and disables itself.
+ *   - So the bias still creates positive closure, while the ratio makes each group actually achieve
+ *     the speed it was asked for.  Bias alone can never fix an over-delivering group.        [CODE]
+ *
+ *   - Any per-airgroup state added here must also be removed when the group is dropped from
+ *     coverAircraftAirGroupsActive - see forgetAirGroup().  Those dictionary keys hold a reference to
+ *     the airgroup, so a leak is permanent for the life of the server, not just the mission. [CODE]
+ *
+ *
+ *   ================================================================================================
  */

@@ -1198,21 +1198,21 @@ public class CoverMission : AMission, ICoverMission
     public int getPlayerFormationPosition(Player player)
     {
         if (player == null) return 0;
-        if (!playerFormationPosition.ContainsKey(player)) playerFormationPosition[player] = ran.Next(-6, 7);
+        if (!playerFormationPosition.ContainsKey(player)) playerFormationPosition[player] = ran.Next(-2, 2);
         return playerFormationPosition[player];
     }
 
     public int setPlayerFormationPosition(Player player, int ps = -1000)
     {
-        if (ps == -1000) ps = ran.Next(-6, 7);
+        if (ps == -1000) ps = ran.Next(-2, 2);
         playerFormationPosition[player] = ps;
         return playerFormationPosition[player];
     }
 
     Dictionary<string, float> playerShiftFactor_pct = new Dictionary<string, float>();// Player name & percentage value to expand formation by, so 100, 150, 200, 300 etc for 100%, 200%, 300%
-    float defaultAmtToShiftForEachBomber_m = 42;
+    float defaultAmtToShiftForEachBomber_m = 44;
     float defaultAmtToShiftForEachFighter_m = 30;
-    float defaultAmtVerticleShift_m = 20;
+    float defaultAmtVerticleShift_m = 40;
 
     public float setShiftFactor(Player player, string shiftFactor_s)
     {
@@ -1244,7 +1244,7 @@ public class CoverMission : AMission, ICoverMission
     //<cstrict - in strict formation the airgroups fly the standard (100%) formation spread, whatever the player
     //has set with <cdist, and they hold the leader's speed instead of the normal escort over-speed.
     public float strictFormationShiftFactor = 1.0f;   //1.0f = 100% = the standard formation spread
-    public double strictSpeedMatchDistance_m = 50;  //as long as they are within this (front/back) distance of the leader, they match the leader's speed
+    public double strictSpeedMatchDistance_m = 30;  //as long as they are within this (front/back) distance of the leader, they match the leader's speed
 
     //How much FASTER than the leader cover a/c are asked to fly when they are BEHIND him, as a
     //multiplier on the leader's speed.  1.0 = exactly the leader's speed, which means never closing.
@@ -7047,7 +7047,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 
                     if (mainmission.ON_TESTSERVER) Console.WriteLine("CBCW: Deciding whether to keep existing point. Have a point: {0:n0} {1:n0} distance: {2:n0}", oldApos.x, oldApos.y, CoverCalcs.CalculatePointDistance(oldApos, newTargetPoint));
 
-                    if (CoverCalcs.CalculatePointDistance(oldApos, newTargetPoint) <= maxMove_m && ran.Next(10 + 3*panic) > 0 && (airGroup.hasBombs() || ! CoverCalcs.areCratersBuildingsFactoriesNear(mainmission, oldApos, 250))) //if old target it still good, stick with it most of the time.  Delay is 16 seconds, better if we could make this change relative to delay.  But it will choose a new target about every 10*16 seconds.  And if there are craters/buildings near it, skip sooner.  The ground attack planes just attack them above all else
+                    if (CoverCalcs.CalculatePointDistance(oldApos, newTargetPoint) <= maxMove_m && ran.Next(10 + 3*panic) > 0 && (airGroup.hasBombs() || ! CoverCalcs.areCratersBuildingsFactoriesNear(mainmission, oldApos, 250, airGroup))) //if old target it still good, stick with it most of the time.  Delay is 16 seconds, better if we could make this change relative to delay.  But it will choose a new target about every 10*16 seconds.  And if there are craters/buildings near it, skip sooner.  The ground attack planes just attack them above all else
                     {
                         
                         if (mainmission.ON_TESTSERVER) Console.WriteLine("reusing old ground target");
@@ -7184,7 +7184,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 
                                             if (distToNearestACTOR_m <= 500.0 - 500.0 * (double)d / (double)numsteps ) continue; //can't have any targets within abt 500m of each other because due to CLoD, they will all just switch attack the SAME target instead of different ones.
 
-                                            if (!airGroup.hasBombs() && CoverCalcs.areCratersBuildingsFactoriesNear(mainmission, act.Pos(), 500.0 - 500.0 * (double)d / numsteps )) continue; //the ai ground attackers will attack craters (even if only NEAR the target) so trying to avoid that. Can't hit things if they're inside a building. Also they randomly choose a "thing" nearby the point, not necessary the one we specify.  So we try to avoid all such AREAS not just pick one GG or act that is OK.  Because the ground attacker will just switch targets to a bad one, invariably, if available.
+                                            if (!airGroup.hasBombs() && CoverCalcs.areCratersBuildingsFactoriesNear(mainmission, act.Pos(), 500.0 - 500.0 * (double)d / numsteps, airGroup )) continue; //the ai ground attackers will attack craters (even if only NEAR the target) so trying to avoid that. Can't hit things if they're inside a building. Also they randomly choose a "thing" nearby the point, not necessary the one we specify.  So we try to avoid all such AREAS not just pick one GG or act that is OK.  Because the ground attacker will just switch targets to a bad one, invariably, if available.
 
                                             closest_m = dist_m;
                                             bestAct = act;
@@ -7346,7 +7346,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                                                 distToNearestGROUND_m = distToNearestAirgroupTargetPoint(gg.pos);
                                                 if ( distToNearestGROUND_m <= 600.0 - 600.0 * (double)d / (double)steps) continue; //trying to avoid having AI all attack the same area (even if technically different targets, they will all switch and just attack the same one, due to CLoD)
 
-                                                if (!airGroup.hasBombs() && CoverCalcs.areCratersBuildingsFactoriesNear(mainmission, gg.pos, 400.0 - 400.0 * (double)d / (double)steps)) continue; //the ai ground attackers will attack craters (even if only NEAR the target) so trying to avoid that.
+                                                if (!airGroup.hasBombs() && CoverCalcs.areCratersBuildingsFactoriesNear(mainmission, gg.pos, 400.0 - 400.0 * (double)d / (double)steps, airGroup)) continue; //the ai ground attackers will attack craters (even if only NEAR the target) so trying to avoid that.
 
 												bool bk = false;
 												string types = (gg.Title + gg.Type.ToString() + gg.Category).ToLower(); 
@@ -8170,7 +8170,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 if (pacePlayer )
                 {
                     vel_mps = target_vel_mps_TAS * coverFormationSpeedBias; //Resting/stability point for a/c in behind.  Biased ABOVE the leader's speed on purpose - at 1.0 they never close the gap, they just sit wherever they are.  See coverFormationSpeedBias.
-                    if (frontBackDist_m > 3 && target_vel_mps_TAS * 1.03 > vel_mps) vel_mps = target_vel_mps_TAS * 1.03; //Go at least 20% faster than the group they're escorting, if possible
+                    if (frontBackDist_m > 10 && target_vel_mps_TAS * 1.03 > vel_mps) vel_mps = target_vel_mps_TAS * 1.03; //Go at least 20% faster than the group they're escorting, if possible
                     if (frontBackDist_m > 250 && target_vel_mps_TAS * 1.05 > vel_mps) vel_mps = target_vel_mps_TAS * 1.05; //Go at least 20% faster than the group they're escorting, if possible
                     if (frontBackDist_m > 400 && target_vel_mps_TAS * 1.1 > vel_mps) vel_mps = target_vel_mps_TAS * 1.1; //Go at least 20% faster than the group they're escorting, if possible
                     if (frontBackDist_m > 600 && target_vel_mps_TAS * 1.2 > vel_mps) vel_mps = target_vel_mps_TAS * 1.2; //Go at least 20% faster than the group they're escorting, if possible
@@ -8196,7 +8196,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             {
                 if (pacePlayer){
                      vel_mps = target_vel_mps_TAS * 0.99; //Go 75% as fast as main aircraft when ahead but kinda close
-                    if (frontBackDist_m > 3 && target_vel_mps_TAS * .98 < vel_mps) vel_mps = target_vel_mps_TAS * 0.98; //Go 80% as fast when the target a/c gets more than 750m off
+                    if (frontBackDist_m > 0 && target_vel_mps_TAS * .98 < vel_mps) vel_mps = target_vel_mps_TAS * 0.98; //Go 80% as fast when the target a/c gets more than 750m off
                     if (frontBackDist_m > 80 && target_vel_mps_TAS * .95 < vel_mps) vel_mps = target_vel_mps_TAS * 0.97; //Go 80% as fast when the target a/c gets more than 750m off
                     if (frontBackDist_m > 120 && target_vel_mps_TAS * .85 < vel_mps) vel_mps = target_vel_mps_TAS * 0.97; //Go 80% as fast when the target a/c gets more than 750m off
                     if (frontBackDist_m > 300 && target_vel_mps_TAS * .8 < vel_mps) vel_mps = target_vel_mps_TAS * 0.7; //Go 80% as fast when the target a/c gets more than 750m off
@@ -10403,9 +10403,10 @@ public static class CoverCalcs
             return new AiActor[] { };
         }
     }*/
-	public static bool areCratersBuildingsFactoriesNear(Mission msn, Point3d pos, double radius_m)
+	public static bool areCratersBuildingsFactoriesNear(Mission msn, Point3d pos, double radius_m, AiAirGroup airGroup = null)
     { try
         {
+            if (airGroup != null && airGroup.hasBombs()) return false; //we don't need to worry about this when the a/c has bombs; they still work. It's shooting that is the problem.
             List<GroundStationary> stationaries = msn.GamePlay.gpGroundStationarys(pos.x, pos.y, radius_m).ToList();
             
                 foreach (GroundStationary gg in stationaries) {

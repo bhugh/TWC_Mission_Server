@@ -7182,7 +7182,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                                             
                                             //groundType = "";
 
-                                            if (distToNearestACTOR_m <= 500.0 - 500.0 * (double)d / (double)numsteps ) continue; //can't have any targets within abt 500m of each other because due to CLoD, they will all just switch attack the SAME target instead of different ones.
+                                            if (!airGroup.hasBombs() && distToNearestACTOR_m <= 500.0 - 500.0 * (double)d / (double)numsteps ) continue; //can't have any targets within abt 500m of each other because due to CLoD, they will all just switch attack the SAME target instead of different ones.
 
                                             if (!airGroup.hasBombs() && CoverCalcs.areCratersBuildingsFactoriesNear(mainmission, act.Pos(), 500.0 - 500.0 * (double)d / numsteps, airGroup )) continue; //the ai ground attackers will attack craters (even if only NEAR the target) so trying to avoid that. Can't hit things if they're inside a building. Also they randomly choose a "thing" nearby the point, not necessary the one we specify.  So we try to avoid all such AREAS not just pick one GG or act that is OK.  Because the ground attacker will just switch targets to a bad one, invariably, if available.
 
@@ -7344,7 +7344,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 
 											{
                                                 distToNearestGROUND_m = distToNearestAirgroupTargetPoint(gg.pos);
-                                                if ( distToNearestGROUND_m <= 600.0 - 600.0 * (double)d / (double)steps) continue; //trying to avoid having AI all attack the same area (even if technically different targets, they will all switch and just attack the same one, due to CLoD)
+                                                if (!airGroup.hasBombs() && distToNearestGROUND_m <= 600.0 - 600.0 * (double)d / (double)steps) continue; //trying to avoid having AI all attack the same area (even if technically different targets, they will all switch and just attack the same one, due to CLoD)
 
                                                 if (!airGroup.hasBombs() && CoverCalcs.areCratersBuildingsFactoriesNear(mainmission, gg.pos, 400.0 - 400.0 * (double)d / (double)steps, airGroup)) continue; //the ai ground attackers will attack craters (even if only NEAR the target) so trying to avoid that.
 

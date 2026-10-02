@@ -61,6 +61,68 @@
  *
  *
  *   ================================================================================================
+ *   1b.  GATTACK_POINT vs GATTACK_TARG, and the TYPE / PASSES options
+ *   ================================================================================================
+ *
+ *   - In the FMB waypoint menu, GATTACK_POINT GREYS OUT both TYPE and PASSES - they cannot be
+ *     selected, and the engine ignores them.  GATTACK_TARG makes them available.              [GAME]
+ *     => do NOT bother setting GAttackType / GAttackPasses on a GATTACK_POINT waypoint.  A plan
+ *        to use GAttackPasses.ALL_OUT to force a full release is a NO-OP on a point waypoint.
+ *   - AiAirWayPoint.GAttackPasses = {AUTO=0, _1=1, _2=2, _3=3, _4=4, ALL_OUT=5}                [IL]
+ *     AiAirWayPoint.GAttackType   = {AUTO=0, LEVEL=1, DIVE=2, TOP_MAST=3, SHALLOW_DIVE=4}    [IL]
+ *     Both are public FIELDS on AiAirWayPoint; only settable usefully on GATTACK_TARG.         [IL]
+ *   - RELEASE IS ALL-OR-NOTHING: tested with NORMFLY then successive GATTACK_POINTs, every
+ *     aircraft with bombs dropped its WHOLE load on the first attack point - Weltingtons,
+ *     Blenheims, all of them - regardless of how many passes were set, and regardless of whether
+ *     the waypoint was GATTACK_POINT or GATTACK_TARG.                                       [GAME]
+ *   - So a "they only dropped some of their bombs" report is NOT a partial release.  It is
+ *     almost always BombSpacing - see the salvo/stick note below.                              [GAME]
+ *   - What PASSES actually controls is the number of ATTACK PASSES, not how many bombs:
+ *       * heavy bombers  -> one bombing pass, then they fly on, whatever the pass count       [GAME]
+ *       * strafers (Beaufighter, Ju-88C, Hurricane) -> bomb pass first, then STRAFE for the
+ *         remaining passes.  The pass count genuinely works.                                  [GAME]
+ *   - ALL_OUT: not established.  Possibly "keep attacking until the object is destroyed".     [??]
+ *   - Attack TYPE only works on aircraft that can do it - only Ju-87s will dive.  Give an
+ *     aircraft a type it cannot perform and it just level bombs instead.                      [GAME]
+ *   - GATTACK_TARG target must be a DIFFERENT army (neutral 0 or the enemy).  If the target has
+ *     the same army as the attacker, the engine ignores the whole attack.                      [GAME]
+ *
+ *   - FMB CAVEAT: making a mission and playing it straight away on the same machine sometimes
+ *     behaves differently from a real multiplayer server.  Worth re-confirming anything crucial
+ *     (BombSpacing was checked on the server and behaved the same).                           [GAME]
+ *
+ *
+ *   ================================================================================================
+ *   1c.  GROUND-TARGET SELECTION (GATTACK_TARG) - a shared-target trap
+ *   ================================================================================================
+ *
+ *   - The aircraft does NOT attack the object you actually picked.  It attacks whatever ground
+ *     actor / stationary it happens to find nearby.                                          [GAME]
+ *   - ALL aircraft targeting that area (~500m radius) converge on the SAME object.  When it dies
+ *     they all move on to another in the same area, and so on.                                 [GAME]
+ *   - The failure mode: if that object cannot be killed - a bomb crater, a large object that
+ *     cannot be strafed down, or something inside a building - then EVERY aircraft in that area
+ *     grinds away at that one unkillable object indefinitely.                                 [GAME]
+ *     CoverCalcs.areCratersBuildingsFactoriesNear() exists to steer them away from exactly this,
+ *     and a lot of BomberPosWaypoint() exists to pick targets that are actually killable.
+ *
+ *
+ *   ================================================================================================
+ *   1d.  BOMB SPACING - why a Wellington could only damage 10% of an airfield
+ *   ================================================================================================
+ *
+ *   - "BombSpacing <metres>" is a key in the AIRGROUP section of a mission sectionfile, alongside
+ *     Class / Formation / CallSign / Fuel / Weapons.  It is what separates dropping the bombs as a
+ *     spaced-out STICK across the target from dumping the whole load as one tight SALVO.     [GAME]
+ *   - Every .mis in this repo carries "BombSpacing 20"; no .cs file ever wrote it, so cover
+ *     aircraft spawned at runtime had no spacing and salved instead.  Measured: a full squadron of
+ *     Wellingtons on Shoreham took out ~10% of the airfield salving, vs the usual 50-60%.      [GAME]
+ *   - Stock spacing is 20 for heavy bombers, dive bombers and fighter-bombers alike.          [GAME]
+ *   - Set at spawn time, so it applies for that aircraft's whole life.  There is no way to
+ *     change it once the aircraft exists, and no runtime control for it.                        [GAME]
+ *
+ *
+ *   ================================================================================================
  *   2.  THE ~16 SECOND WAYPOINT OVERWRITE  (a silent-failure trap)
  *   ================================================================================================
  *
@@ -103,6 +165,23 @@
  *
  *   - Polling at 1-2 Hz is plenty.  Against a 1000-2000m target, a 1Hz poll puts the release
  *     within ~100-120m of the intended line, comfortably inside the target.            [GAME]
+ *
+ *   - The UNUSED S_BombReserve subtypes return 0; they do NOT throw.  So CoverCalcs.bombCount()
+ *     never actually takes an exception, its try/catch is belt-and-braces only, the 0..49 scan is
+ *     cheap, and - most importantly - a CHANGE in the count is genuine signal rather than an
+ *     artefact of a swallowed exception.  1-2 Hz polling is therefore comfortably affordable.  [GAME]
+ *
+ *   *** THE BIG LIMITATION: UNLIMITED AMMO ***
+ *
+ *   - If the server (or an offline mission) is set to UNLIMITED AMMO, S_BombReserve never changes,
+ *     and hasBombs() cannot be relied on either.  So bomb-drop detection does not work AT ALL in
+ *     that mode, and the automatic <cdrop cannot fire.                                        [GAME]
+ *     This is why the manual <cdropnow / <cbomb command exists - it is the only way to run a
+ *     drop formation on an unlimited-ammo server.
+ *
+ *   - hasBombs() is separately SUSPECT: it has been seen reporting "Has bombs" for an aircraft
+ *     that had already released its whole load.  Treat it as unreliable for anything that
+ *     matters; prefer CoverCalcs.bombCount().                                                  [GAME]
 
  *  - The bomb-drop detection system doesn't work if the server (or offline mission) is set to unlimited ammo.  In that case the S_BombReserve parameter doesn't change.  I don't think .hasBombs() is reliable either.  So this function won't work really at all in unlimited ammo mode.
 
@@ -172,20 +251,41 @@
  *   6.  STILL UNKNOWN - WORTH TESTING
  *   ================================================================================================
  *
- *   - Does an immediate drop release ONE salvo, or the ENTIRE remaining load?                     [??]
+ *   - Does an immediate drop release ONE salvo, or the ENTIRE remaining load?
+ *       ANSWERED - the ENTIRE load.  See section 1b: release is all-or-nothing on the first
+ *       attack point, whatever the pass count.                                               [GAME]
  *
- *   - Do the unused S_BombReserve subtypes THROW, or do they return 0?  CoverCalcs.bombCount()
- *     swallows exceptions either way - but if they throw, that is up to 50 exceptions per aircraft
- *     per poll, on a mission that already fights warping.  Worth logging once to find out.     [??]
- *
- *   - Do GAttackPasses (AUTO / _1.._4 / ALL_OUT) and GAttackType (LEVEL / DIVE) actually change
- *     behaviour?  The existing bomber code sets them but nobody is certain they do anything.     [??]
+ *   - (ANSWERED: unused S_BombReserve subtypes return 0, they do not throw - see section 3.  The
+ *     exception-cost worry was unfounded and bombCount() is cheap.)
+ *   - (ANSWERED: GAttackPasses / GAttackType DO change behaviour, but only on a GATTACK_TARG
+ *     waypoint - GATTACK_POINT greys them out and ignores them.  See section 1b.)
  *
  *   - maddox.GP.Vector3d.angle() exists, but we could not confirm whether it returns degrees or
  *     radians.  Use CoverCalcs.roughlySameDirection() instead - that one is unambiguous.       [??]
  *
  *   - A_BombBayDoor (=73) may give a few seconds of advance warning of a drop, on aircraft that
  *     have bomb bay doors.  Untested.                                                         [??]
+ *
+ *
+ *   ================================================================================================
+ *   7.  WAYPOINT SPEED - aircraft only deliver ~98% of the speed you command
+ *   ================================================================================================
+ *
+ *   - Measured on the server by logging commanded waypoint speed, the airgroup's actual ground
+ *     speed, and the player's: commanded 70.4 vs actual 68.5 (player 68) at 1300m, and commanded
+ *     76.5 vs actual 75.1 (player 75.7) at 16000ft.  Consistently ~1.5-1.9 m/s / ~2% SHORT of the
+ *     commanded figure, at both altitudes.                                                    [GAME]
+ *   - This is NOT an IAS/TAS units problem.  At 16000ft TAS/IAS is ~1.26, so a units mismatch
+ *     would show actual ~20 m/s HIGHER than commanded, not 1.5 lower.  Checked and ruled out.
+ *   - Probably the aircraft is always in transient toward a commanded value that is re-derived
+ *     every ~16s, so actual speed lags a moving target.                                       [OBS]
+ *   - CONSEQUENCE: any "catch-up" speed command must exceed this ~2% shortfall or the formation
+ *     can never close a gap - commanding exactly the leader's speed means zero closure.  That is
+ *     why CoverMission's coverFormationSpeedBias is 1.06 rather than 1.0.
+ *   - Beware: a later "convergence" block that overrides an earlier catch-up speed table with a
+ *     target of 0.9999x the leader's speed silently disables the whole table in its range.  In
+ *     CoverMission that block (frontBackDist < 400m) was the reason the formation sat 100m+ behind
+ *     forever, with a measured closure rate of +0.5 to -0.6 m/s.
  *
  *
  *   ================================================================================================

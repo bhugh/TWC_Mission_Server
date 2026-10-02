@@ -334,4 +334,52 @@
  *
  *
  *   ================================================================================================
+ *   9.  OPEN ISSUES - instrumentation in place, diagnosis pending test data
+ *   ================================================================================================
+ *
+ *   *** (a) RUBBER BANDING: the formation oscillates +-300-500m instead of holding station. ***
+ *   - The pacing branch of calcCoverSpeedToMatchMain() is a RELAY controller, not a proportional one.
+ *     As a multiple of the leader's speed:
+ *         behind  10-400m : 1.06   <- a CONSTANT; nothing eases off as the gap closes
+ *         behind  400m+   : 1.10 / 1.20 / 1.30 / ...
+ *         ahead   0-300m  : 0.98, then 0.97   <- only -2%, i.e. almost no braking
+ *         ahead   300m+   : 0.70              <- a -27% STEP, from one metre of movement
+ *     There is NO proportional feedback across the entire +-300m band, then a cliff.  A limit cycle
+ *     is the expected behaviour of that shape, not a defect in the AI.  It maps exactly onto the
+ *     report: steady behind -> still closing at +3m/s so it overshoots -> almost nothing brakes it
+ *     for 300m -> violent correction -> repeat.                                        [CODE+]
+ *   - A FOURTH discontinuity exists as well: <cstrict AND <cdrop both fly strict formation, which
+ *     forces vel_mps = the leader's speed inside strictSpeedMatchDistance_m (30m).  So a bombing run
+ *     has yet another step, at 30m, that a normal run does not.                            [CODE]
+ *   - Contributing: the law is only re-evaluated every ~16s (keepAircraftOnTask_recurs), so the
+ *     command is HELD while the offset keeps drifting underneath it.  That is the "steady for a
+ *     while, then move" part of the report - a relaxation oscillator on a 16s dead-time sample.
+ *   - ALSO: coverFormationSpeedBias (1.06) was tuned to OVERCOME the section-7 delivery shortfall.
+ *     So the per-airgroup ratio calibration and the bias were both correcting the same error, and
+ *     once the ratio made delivery exact they STACKED - raising the loop gain by ~50%.            [CODE]
+ *   - Suspected fix (NOT yet done - awaiting data): replace the near-field bands with a single
+ *     symmetric proportional law on front/back offset, deadbanded ~30-50m, keyed to <cfdist, keep
+ *     the big catch-up bands only beyond ~1200m, and retire coverFormationSpeedBias.
+ *
+ *   *** (b) <cdrop / <cdropnow RELEASE LATENCY. ***
+ *   - Our own latency is under a second: a 750ms bombCount() poll plus Timeout(0.05).  So the
+ *     delay the player sees has to be in the SIM adopting the new flight plan.                [CODE]
+ *   - Prime suspect: SetWay() is NOT adopted until the aircraft reaches its current waypoint.
+ *     That would explain the observed symptom exactly - <cdropnow releasing when the group ARRIVES
+ *     at the leader's old position, rather than at the GATTACK_POINT we placed at the group's own
+ *     position.  The trailing NORMFLYs are 1500m apart (~20s each), which bounds the worst case. [??]
+ *   - If confirmed, the fix is to shorten the leg the aircraft is already flying.  If instead the
+ *     new GATTACK_POINT becomes current within a tick and the bombs STILL do not go, the delay is
+ *     in the AI's release logic and no waypoint trick will help - the way out would then be a
+ *     WRITABLE bomb-release parameter, since C_-prefixed types are writable (see section 4).
+ *
+ *   - DIAGNOSTICS ADDED, both ON_TESTSERVER only:  COVERSPEED logs every stage of the speed
+ *     decision for one group per cycle, including the effective multiplier and whether the strict
+ *     override fired;  DROPTRACE logs a release-latency ladder (detect, issue, +1/3/6/10/15/20/30s)
+ *     with the group's CURRENT waypoint index, action and distance to it.
+ *   - Deliberately UNCHANGED for the baseline run: the band values, COVER_DropWatchPeriod_ms (750),
+ *     coverFormationSpeedBias, coverDropImmediateDist_m and the 1500m trailing waypoint spacing.
+ *
+ *
+ *   ================================================================================================
  */

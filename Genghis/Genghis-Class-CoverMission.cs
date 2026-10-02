@@ -1713,6 +1713,12 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
                 if (mainmission.ON_TESTSERVER)
                     Console.WriteLine("COVER <cdrop: {0} dropped ({1}->{2} bombs).  Line at {3:n0} {4:n0}, heading {5:n0} {6:n0}",
                         player.Name(), last, bombsNow, p.x, p.y, dir.x, dir.y);
+
+                //DIAGNOSTIC - stamp the moment we DETECTED the release, so the DROPTRACE "issue" lines
+                //that follow give us detect->issue latency on top of issue->actual-release latency.
+                if (mainmission.ON_TESTSERVER)
+                    Console.WriteLine("DROPTRACE detect t={0:HH:mm:ss.fff} player={1} bombs={2}->{3} immediateDist_m={4:N0}",
+                        DateTime.UtcNow, player.Name(), last, bombsNow, coverDropImmediateDist_m);
             }
 
             if (!alreadyFired) return;  //he hasn't dropped yet - they just keep flying formation
@@ -1775,7 +1781,7 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
             //game objects want touching on the mission thread, not on the timer thread.
             //NB a small non-zero delay, as elsewhere in this file - not Timeout(0, ...).
             AiAirGroup ag2 = airGroup;
-            Timeout(0.05, () => dropBombsNow_airGroup(ag2));
+            Timeout(0.05, () => dropBombsNow_airGroup(ag2, leaderAircraft != null ? leaderAircraft.AirGroup() : null));
             coverAircraftAirGroupsDropIssued[airGroup] = nowUtc;
             issuedAnyThisPass = true;
         }
@@ -1803,6 +1809,17 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
             int held = 0;
             int nothing = 0;
 
+            //<cdropnow - pass the leader's own airgroup through to the trace, so the log shows how far each
+            //squadron is from HIM at the moment it is told to release.  That distance is the thing
+            //that will tell us whether the delay scales with how far back the group is.
+            AiAirGroup leaderAG = null;
+            try
+            {
+                AiAircraft pla = player.Place() as AiAircraft;
+                if (pla != null) leaderAG = pla.AirGroup();
+            }
+            catch (Exception ex) { }
+
             List<AiAirGroup> groups = new List<AiAirGroup>(coverAircraftAirGroupsActive.Keys);
             foreach (AiAirGroup airGroup in groups)
             {
@@ -1818,7 +1835,7 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
                 //torps are no good off a GATTACK_POINT at formation altitude, same as <cdrop
                 if (!isBomberArmed(airGroup) || airGroup.hasTorpedos()) { nothing++; continue; }
 
-                dropBombsNow_airGroup(airGroup);
+                dropBombsNow_airGroup(airGroup, leaderAG);
                 //remember it, so the ~16s keepAircraftOnTask_recurs() loop leaves the release plan
                 //alone long enough for the bombs to actually go (see Genghis-Class-CloDNotes.cs s.2)
                 coverAircraftAirGroupsDropIssued[airGroup] = DateTime.UtcNow;
@@ -1838,7 +1855,55 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
     //release when the GATTACK_POINT becomes the CURRENT waypoint, and because the release point is by
     //then already behind it, it lets go straight away.
     //setTask(ATTACK_GROUND) does NOT do this - see Genghis-Class-CloDNotes.cs section 1.
-    public void dropBombsNow_airGroup(AiAirGroup airGroup)
+    //DIAGNOSTIC (ON_TESTSERVER only) - <cdrop / <cdropnow release-latency trace.
+    //Prints the one thing that matters and is otherwise invisible: WHICH waypoint the group is
+    //actually flying right now, how far away it is, and whether its bombs have gone yet.  Called at
+    //"issue" and then again on a fixed ladder of delays, so we can see exactly when the release
+    //happens relative to the moment we asked for it - and, critically, whether the new flight plan is
+    //adopted immediately or only once the aircraft finishes the leg it is already flying.
+    public void dropTrace(AiAirGroup airGroup, string tag, AiAirGroup leader)
+    {
+        try
+        {
+            if (airGroup == null) return;
+            int nWp = 0;
+            int cw = -1;
+            string act = "?";
+            double distToWp = -1;
+            AiWayPoint[] wps = airGroup.GetWay();
+            if (wps != null) nWp = wps.Length;
+            cw = airGroup.GetCurrentWayPoint();
+            if (wps != null && cw >= 0 && cw < wps.Length && (wps[cw] as AiAirWayPoint) != null)
+            {
+                act = (wps[cw] as AiAirWayPoint).Action.ToString();
+                distToWp = CoverCalcs.CalculatePointDistance(wps[cw].P, airGroup.Pos());
+            }
+            double leadDist = -1;
+            if (leader != null) leadDist = CoverCalcs.CalculatePointDistance(airGroup.Pos(), leader.Pos());
+            Console.WriteLine("DROPTRACE {0} t={1:HH:mm:ss.fff} grp={2} bombs={3} cw={4}/{5} act={6} distToWp={7:N0} leadDist={8:N0}",
+                tag, DateTime.UtcNow, airGroup.Name(), CoverCalcs.bombCount(airGroup), cw, nWp, act, distToWp, leadDist);
+        }
+        catch (Exception ex) { Console.WriteLine("Cover dropTrace ERROR! " + ex.ToString()); }
+    }
+
+    //<cdrop / <cdropnow - the "issue" trace plus the follow-up ladder.  1/3/6s are tight because that is
+    //where our own latency could plausibly hide (750ms poll + Timeout(0.05)); 10-30s is where we would
+    //expect to find the group still on its OLD leg if SetWay() is only adopted at a waypoint boundary.
+    public void dropTraceLadder(AiAirGroup airGroup, AiAirGroup leader)
+    {
+        if (!mainmission.ON_TESTSERVER) return;
+        dropTrace(airGroup, "issue", leader);
+        AiAirGroup agT = airGroup;
+        AiAirGroup ldT = leader;
+        double[] delays = new double[] { 1, 3, 6, 10, 15, 20, 30 };
+        foreach (double d in delays)
+        {
+            double dd = d;
+            Timeout(dd, () => dropTrace(agT, "+" + dd.ToString("F0") + "s", ldT));
+        }
+    }
+
+    public void dropBombsNow_airGroup(AiAirGroup airGroup, AiAirGroup leader = null)
     {
         try
         {
@@ -1885,8 +1950,11 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
             airGroup.setTask(AiAirGroupTask.FLY_WAYPOINT, null);
 
             if (mainmission.ON_TESTSERVER)
+            {
                 Console.WriteLine("COVER <cdrop: {0} told to DROP now, {1} bombs, at {2:n0} {3:n0}",
                     airGroup.Name(), CoverCalcs.bombCount(airGroup), apos.x, apos.y);
+                dropTraceLadder(airGroup, leader);
+            }
         }
         catch (Exception ex) { Console.WriteLine("Cover dropBombsNow_airGroup ERROR! " + ex.ToString()); }
     }
@@ -8474,6 +8542,9 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             //accelerating, with the braking bands underneath it silently discarded.  In front we want
             //the bands, so we leave the target at the leader's own speed and just let them slow down.
             if (!inFront && frontBackDist_m < 400 && Math.Abs(target_vel_mps_TAS * coverFormationSpeedBias - ag_vel_mps) < target_vel_mps_TAS / 9) vel_mps = (target_vel_mps_TAS - ag_vel_mps) * frontBackDist_m * sign / 1000 + coverFormationSpeedBias * target_vel_mps_TAS; // brakes/accelerator plan.  Only do this if close to the main a/c AND within 5% in velocity.
+            //DIAGNOSTIC - capture what the bands decided (vel_save) vs what the override decided, so we
+            //can see which of the two is actually steering.  Currently only the former is logged.
+            double velAfterOverride = vel_mps;
                                                                                                                                                                                                                                  //else if (ninetyDiff < 10) vel_mps = (vel_mps - target_vel_mps) * ninetyDiff / 3 + target_vel_mps; // if close enough in ANGLE to main A/C gradually go same speed as main A/C   
 
         AiAircraft targetAircraft = player.Place() as AiAircraft;
@@ -8492,9 +8563,15 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             //<cstrict - hold a rigid formation: match the leader's speed, instead of the 10% over-speed (weaving)
             //that escorts normally use.  Only do this when we are roughly in position, though - if we have fallen
             //well behind, the catch-up speeds that were calculated above are left in place, so we can rejoin.
+            //DIAGNOSTIC - did the <cstrict exact-match override fire this cycle?  <cstrict AND <cdrop both run
+            //strict formation, and inside strictSpeedMatchDistance_m this forces vel to the leader's own
+            //speed regardless of everything above it - a FOURTH discontinuity in the steering law, and
+            //one that only shows up on bombing runs.  Worth seeing in the numbers before we re-tune.
+            bool strictApplied = false;
             if (isInStrictFormation(airGroup) && frontBackDist_m < strictSpeedMatchDistance_m)
             {
                 vel_mps = target_vel_mps_TAS;
+                strictApplied = true;
             }
 
             //<cover - per-airgroup speed calibration.  Everything above decides what speed we WANT; this
@@ -8540,6 +8617,27 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             if (vel_mps < 45) vel_mps = 45;
             if (vel_mps > 175) vel_mps = 175;
             if (target_vel_mps_TAS < 15 && vel_mps < 75) vel_mps = 75;  //faster speed here to help prevent crashes while a/c circling the airport waiting for main a/c to take off.  Or if it crashes, is dead, etc.
+
+            //DIAGNOSTIC (ON_TESTSERVER) - one line per group per ~16s cycle summarising every stage of
+            //the speed decision, so the formation oscillation can be read off directly instead of
+            //inferred.  The key column is "mult" = final commanded speed as a fraction of the leader's:
+            //  - behind the leader the band table pins it at coverFormationSpeedBias (1.06) for ALL
+            //    distances out to 400m - a constant, so nothing eases off as the gap closes;
+            //  - ahead of the leader it is 0.98/0.97 out to 300m, then drops to 0.70 - a -27% step from
+            //    one metre of movement.  That asymmetry is what produces the back-and-forth surge.
+            //timestamps also show the ~16s re-planning quantisation: consecutive lines for one group
+            //are ~16s apart, so the command is HELD while the offset keeps drifting underneath it.
+            if (mainmission.ON_TESTSERVER)
+            {
+                double mult = (target_vel_mps_TAS > 1) ? vel_mps / target_vel_mps_TAS : 0;
+                double multBands = (target_vel_mps_TAS > 1) ? vel_save / target_vel_mps_TAS : 0;
+                Console.WriteLine("COVERSPEED t={0:HH:mm:ss.fff} grp={1} inFront={2} fbDist={3:N0} ang={4:F0} tgtDist={5:N0} | leaderV={6:N1} grpV={7:N1} ratio={8:F3} | bands={9:N1} afterOvr={10:N1} strict={11} final={12:N1} mult={13:F3} multBands={14:F3} | pace={15} {16} {17}",
+                    DateTime.UtcNow, airGroup.Name(), inFront, frontBackDist_m, angleTargetToGroup, targetDist_m,
+                    target_vel_mps_TAS, ag_vel_mps, coverSpeedRatio,
+                    vel_save, velAfterOverride, strictApplied, vel_mps, mult, multBands,
+                    pacePlayer, aawpt.ToString(), orders.ToString());
+            }
+
             return new Tuple<double, double>(vel_mps, angleTargetToGroup);
         }
         catch (Exception ex) { Console.WriteLine("Cover CalcCoverSpeedToMatch ERROR: " + ex.ToString()); return null; }

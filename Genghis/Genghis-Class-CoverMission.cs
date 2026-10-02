@@ -531,11 +531,15 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
         coverAircraftAirGroupsOrders.Remove(airGroup);
         coverAircraftAirGroupsTargetPoint.Remove(airGroup);
         coverAircraftAirGroupsDropIssued.Remove(airGroup);
+        coverAircraftAirGroupsDroppedThisPass.Remove(airGroup);  //<cdrop one-issue-per-pass latch - same leak class as the hold-off above
         coverAircraftAirGroupsReleased.Remove(airGroup);
         coverAircraftAirGroupsLoiterPoint.Remove(airGroup);
         airgroupTargets.Remove(airGroup);
         airgroupGroundTargets.Remove(airGroup);
         airgroupTargetPoints.Remove(airGroup);
+        //Do NOT touch coverOrdersBeforeDrop here: BAM_leaveDropMode restores from the snapshot,
+        //and a mid-drop disband must still restore the survivors.  A dead group simply never matches
+        //the restore loop (it iterates live coverAircraftAirGroupsActive keys).
     }
 
     public string BAM_toggleBombAimMode(Player player)
@@ -591,14 +595,31 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
     //the <cdrop chat command, so the menu label and the actual orders can never disagree.
     //Snapshot the player's current orders FIRST, then put everyone on .drop.  Empty msg => every
     //group is selected (see setCoverAircraftAirGroupsOrders), which is what the menu can express;
-    //players who want only some squadrons use "<cdrop 3 6" in chat.
+    //players who want only some squadrons use "<cdrop 3 6" in chat.  The all-groups scope is
+    //remembered alongside the snapshot (see coverOrdersBeforeDrop): a group later released from
+    //<cstrict/<creserve with <cnormal re-joins drop mode only under an all-groups scope; under a
+    //selective "<cdrop 3 6" scope it stays on normal, out of the drop.  Groups sitting on
+    //<cstrict/<creserve are SKIPPED by a bare all-groups <cdrop (they were told to hold fire, and a
+    //blanket drop order must not overrule that); name them explicitly ("<cdrop 2") to pull them in.
     public void BAM_enterDropMode(Player player, string msg = "")
     {
         if (player == null) return;
 
         //Re-issuing <cdrop to RE-ARM an existing drop must NOT overwrite the snapshot - that would
-        //throw away the pre-drop orders and leave us with nowhere to restore to.
-        if (coverOrdersBeforeDrop.ContainsKey(player)) { setCoverAircraftAirGroupsOrders(player, msg, CoverAGOrders.drop, "were ordered to DROP WHEN YOU DROP - they will hold their bombs and, the moment you let your first bomb go, release everything at the same time."); return; }
+        //throw away the pre-drop orders and leave us with nowhere to restore to.  But if the re-arm
+        //is a BARE <cdrop (all groups) it widens the scope: any earlier selective "<cdrop 3 6" snapshot
+        //becomes all-groups, so <cnormal re-joins work from here on.  A selective re-arm never narrows
+        //an all-groups scope - the Tab-4 label applies to everyone.
+        if (coverOrdersBeforeDrop.ContainsKey(player))
+        {
+            if (msg.Trim().Length == 0)
+            {
+                var held = coverOrdersBeforeDrop[player];
+                if (!held.Item2) coverOrdersBeforeDrop[player] = new Tuple<Dictionary<AiAirGroup, CoverAGOrders>, bool>(held.Item1, true);
+            }
+            setCoverAircraftAirGroupsOrders(player, msg, CoverAGOrders.drop, "were ordered to DROP WHEN YOU DROP - they will hold their bombs and, the moment you let your first bomb go, release everything at the same time.", skipHoldFire: msg.Trim().Length == 0);
+            return;
+        }
 
         Dictionary<AiAirGroup, CoverAGOrders> snap = new Dictionary<AiAirGroup, CoverAGOrders>();
         try
@@ -613,10 +634,10 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
             }
         }
         catch (Exception ex) { Console.WriteLine("Cover BAM_enterDropMode ERROR taking snapshot! " + ex.ToString()); }
-        coverOrdersBeforeDrop[player] = snap;
+        coverOrdersBeforeDrop[player] = new Tuple<Dictionary<AiAirGroup, CoverAGOrders>, bool>(snap, msg.Trim().Length == 0);
 
         armCoverDropWatch(player);  //start watching the leader's bomb count
-        setCoverAircraftAirGroupsOrders(player, msg, CoverAGOrders.drop, "were ordered to DROP WHEN YOU DROP - they will hold their bombs and, the moment you let your first bomb go, release everything at the same time.");
+        setCoverAircraftAirGroupsOrders(player, msg, CoverAGOrders.drop, "were ordered to DROP WHEN YOU DROP - they will hold their bombs and, the moment you let your first bomb go, release everything at the same time.", skipHoldFire: msg.Trim().Length == 0);
     }
 
     //<cdrop - turn DROP WHEN I DROP off again, restoring the orders that were in force when it was
@@ -625,8 +646,9 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
     public void BAM_leaveDropMode(Player player)
     {
         if (player == null) return;
-        Dictionary<AiAirGroup, CoverAGOrders> snap;
-        if (!coverOrdersBeforeDrop.TryGetValue(player, out snap)) return;  //nothing remembered, so nothing to undo
+        Tuple<Dictionary<AiAirGroup, CoverAGOrders>, bool> held;
+        if (!coverOrdersBeforeDrop.TryGetValue(player, out held)) return;  //nothing remembered, so nothing to undo
+        Dictionary<AiAirGroup, CoverAGOrders> snap = held.Item1;
         coverOrdersBeforeDrop.Remove(player);
 
         try
@@ -1395,7 +1417,11 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
     //<cdrop - snapshot of each player's airgroup orders, taken when DROP WHEN I DROP is switched
     //on, so switching it off again can put everyone back where they were.  Only groups whose order
     //is STILL .drop are reverted - so a <creserve N issued while drop mode is on is left alone.
-    public Dictionary<Player, Dictionary<AiAirGroup, CoverAGOrders>> coverOrdersBeforeDrop = new Dictionary<Player, Dictionary<AiAirGroup, CoverAGOrders>>();
+    //Second value is the SCOPE of the snapshot: true = every group (bare "<cdrop" or the Tab-4 menu,
+    //which can only express all-groups), false = only named squadrons ("<cdrop 3 6").  A <cnormal that
+    //releases a group from <cstrict/<creserve re-joins it to drop mode only when scope is all-groups;
+    //with a selective scope that <cnormal means "fly normal, stay out of the drop".
+    public Dictionary<Player, Tuple<Dictionary<AiAirGroup, CoverAGOrders>, bool>> coverOrdersBeforeDrop = new Dictionary<Player, Tuple<Dictionary<AiAirGroup, CoverAGOrders>, bool>>();
 
     //<cfdist - this player's front/back offset, or 0 if they never set one.
     public double getFrontBackDist(Player player)
@@ -1594,6 +1620,21 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
     //their new flight plan alone long enough for the release to actually happen (that routine runs
     //every ~16s and would otherwise overwrite it - see Genghis-Class-CloDNotes.cs section 2).
     Dictionary<AiAirGroup, DateTime> coverAircraftAirGroupsDropIssued = new Dictionary<AiAirGroup, DateTime>();
+
+    //<cdrop - ONE ISSUE PER PASS.  This is deliberately a SEPARATE thing from
+    //coverAircraftAirGroupsDropIssued, which is only the 25s hold-off that stops
+    //keepAircraftOnTask_recurs() from overwriting the release flight plan.
+    //Those two were the same dictionary, with the following catastrophic result:
+    //  coverDropReleasePass() removed the entry after coverDropHoldFlightPlan_s (25s) and re-issued
+    //  the drop plan, while keepAircraftOnTask_recurs() early-returns while the entry is <25s old.
+    //  Refreshing it every ~25.5s meant that early-return won on essentially EVERY call, so no
+    //  formation waypoints were ever issued again and calcCoverSpeedToMatchMain() was never called -
+    //  measured in the test log as a 413s (6.9 min) silent gap in COVERSPEED, followed by another
+    //  138s gap, with the group flying a straight-line bombing run the whole time.  That is what
+    //  sent the bombers off to the side, without speed control, several km behind.
+    //This latch is what the documentation always claimed: one release per pass, cleared when the
+    //player re-arms with <cdrop.
+    Dictionary<AiAirGroup, Player> coverAircraftAirGroupsDroppedThisPass = new Dictionary<AiAirGroup, Player>();
     public readonly double coverDropHoldFlightPlan_s = 25; //how long we leave the drop flight plan in place
 
     //Start (or re-arm) the <cdrop watcher for this player.  Records the leader's CURRENT bomb count
@@ -1634,6 +1675,26 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
             coverDropLinePoint.Remove(player);
             coverDropLineDir.Remove(player);
             coverDropLastLeaderBombCount.Remove(player);
+            //Release the per-pass latch and the release-hold entries for THIS player's groups.
+            //armCoverDropWatch() calls us first, so re-arming with <cdrop cleanly re-opens the pass
+            //and they may drop again.  The hold-off entries must go player-by-player (the dictionary
+            //is keyed by airgroup across ALL players): clearing it wholesale would lift another
+            //player's drop protection, letting keepAircraftOnTask_recurs() overwrite their release
+            //flight plan before the bombs go.  Both are also cleared per-group by forgetAirGroup()
+            //when the group itself goes away - this is the player-level equivalent.
+            List<AiAirGroup> latchedThisPass = new List<AiAirGroup>(coverAircraftAirGroupsDroppedThisPass.Keys);
+            foreach (AiAirGroup agL in latchedThisPass)
+            {
+                if (agL == null) continue;
+                if (coverAircraftAirGroupsDroppedThisPass[agL] == player) coverAircraftAirGroupsDroppedThisPass.Remove(agL);
+            }
+            List<AiAirGroup> heldRelease = new List<AiAirGroup>(coverAircraftAirGroupsDropIssued.Keys);
+            foreach (AiAirGroup agH in heldRelease)
+            {
+                if (agH == null) continue;
+                if (!coverAircraftAirGroupsActive.ContainsKey(agH)) { coverAircraftAirGroupsDropIssued.Remove(agH); continue; }
+                if (coverAircraftAirGroupsActive[agH] == player) coverAircraftAirGroupsDropIssued.Remove(agH);
+            }
         }
         catch (Exception ex) { Console.WriteLine("Cover turnOffCoverDropWatch ERROR! " + ex.ToString()); }
     }
@@ -1757,12 +1818,21 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
             if (!isBomberArmed(airGroup)) continue;
             if (airGroup.hasTorpedos()) continue;
 
-            //already told it to drop, and its new flight plan is still in place?
+            //<cdrop - ONE ISSUE PER PASS.  If we have already handed this group its release plan for
+            //this pass, leave it alone completely: do not re-issue, and do not count it as
+            //outstanding either.  (Re-issuing is what caused the control blackout - see the comment
+            //on coverAircraftAirGroupsDroppedThisPass.)  A latched group is DONE, so it must not
+            //set issuedAnyThisPass, or the watcher would never stand down.
+            if (coverAircraftAirGroupsDroppedThisPass.ContainsKey(airGroup)) continue;
+
+            //The 25s hold-off: our release plan stays in force and keepAircraftOnTask_recurs()
+            //early-returns while this is set.  It is written ONCE now and never refreshed, so it
+            //expires naturally after coverDropHoldFlightPlan_s and formation control resumes.
             if (coverAircraftAirGroupsDropIssued.ContainsKey(airGroup))
             {
                 if ((nowUtc - coverAircraftAirGroupsDropIssued[airGroup]).TotalSeconds < coverDropHoldFlightPlan_s)
                 {
-                    issuedAnyThisPass = true;   //still inside its release window - keep the watcher alive
+                    issuedAnyThisPass = true;   //just issued, still holding the plan - keep the watcher alive
                     continue;
                 }
                 coverAircraftAirGroupsDropIssued.Remove(airGroup);
@@ -1783,6 +1853,7 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
             AiAirGroup ag2 = airGroup;
             Timeout(0.05, () => dropBombsNow_airGroup(ag2, leaderAircraft != null ? leaderAircraft.AirGroup() : null));
             coverAircraftAirGroupsDropIssued[airGroup] = nowUtc;
+            coverAircraftAirGroupsDroppedThisPass[airGroup] = player;   //once per pass - never refresh this
             issuedAnyThisPass = true;
         }
 
@@ -4087,12 +4158,15 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
     }
 
     //Shared logic for all of the player's airgroup order commands (<cnormal, <cstrict, <cescort,
-    //<cattack, <creserve & <cloiter).  Parses any airgroup #'s out of the command - no #'s at all
-    //means ALL of the player's cover airgroups - & applies the given order to each of them.
+    //<cattack, <creserve, <cloiter, <cdrop).  Parses any airgroup #'s out of the command - no #'s at
+    //all means ALL of the player's cover airgroups - & applies the given order to each of them.
     //Returns the list of airgroups the order was applied to.
     //Note that the command word(s) themselves need not be stripped out of the message, because
     //anything that isn't a # is simply ignored when the airgroup #'s are parsed out.
-    public List<AiAirGroup> setCoverAircraftAirGroupsOrders(Player player, string msg, CoverAGOrders order, string orderDescription)
+    //skipHoldFire is only used entering <cdrop: a bare all-groups <cdrop (Tab-4 menu included)
+    //must not overrule a <cstrict/<creserve/<cloiter hold-fire order, so those groups are skipped;
+    //naming them explicitly ("<cdrop 2") still pulls them in.
+    public List<AiAirGroup> setCoverAircraftAirGroupsOrders(Player player, string msg, CoverAGOrders order, string orderDescription, bool skipHoldFire = false)
     {
         List<AiAirGroup> ret = new List<AiAirGroup>();
         try
@@ -4113,6 +4187,11 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             int count = 0;
             string foundIndxs = "";
             int numFoundIndxs = 0;
+            //Set when a <cnormal RE-JOINS groups to drop mode (see below).  A bare all-groups <cnormal
+            //is both "release everyone from hold-fire" AND "the Tab-4 label is still Drop When I Drop",
+            //so the clear-aim-mode block further down must NOT fire - that would undo the re-join it
+            //just performed and throw the snapshot away.
+            bool rejoinedDropMode = false;
 
             List<AiAirGroup> saveCAAGA = new List<AiAirGroup>(coverAircraftAirGroupsActive.Keys); //copy the keys, so the list can safely change while we set orders
             foreach (AiAirGroup airGroup in saveCAAGA)
@@ -4126,22 +4205,45 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 count++;
                 if (indxs.Contains(count) || indxs.Count == 0)
                 {
+                    //<cdrop entering with a bare all-groups order skips hold-fire groups (<cstrict,
+                    //<creserve, <cloiter): they were told to hold fire, and a blanket drop must not
+                    //overrule that.  Explicit "<cdrop 2" still pulls them in (skipHoldFire is false).
+                    //Groups already on .drop are never skipped (they ARE the drop).
+                    if (skipHoldFire && order == CoverAGOrders.drop && coverAircraftAirGroupsOrders.ContainsKey(airGroup) && coverAircraftAirGroupsOrders[airGroup] != CoverAGOrders.drop && ordersHoldFire(coverAircraftAirGroupsOrders[airGroup])) continue;
                     coverAircraftAirGroupsOrders[airGroup] = order;
                     ret.Add(airGroup);
                     foundIndxs += count.ToString() + " ";
                     numFoundIndxs++;
+                    //<cnormal releasing a hold-fire group re-joins it to DROP WHEN I DROP, but ONLY under
+                    //an all-groups drop scope (bare <cdrop or the Tab-4 menu, which can only express
+                    //all-groups) and ONLY when the <cnormal itself was all-groups.  Selective "<cdrop 3 6"
+                    //scope, or a selective "<cnormal 2", means "fly normal, stay out of the drop".
+                    //The SNAPSHOT IS LEFT ALONE on purpose: it holds the order to restore when drop mode
+                    //ends, and the honest answer for a re-joined group is still its pre-drop order.  Writing
+                    //.drop into it would make BAM_leaveDropMode restore .drop - i.e. the group would never
+                    //bomb for the rest of the mission.
+                    if (order == CoverAGOrders.normal && indxs.Count == 0 && BAM_getplayerBombAimMode_enum(player) == BAM_BombAimMode.Drop_When_I_Drop && coverOrdersBeforeDrop.ContainsKey(player) && coverOrdersBeforeDrop[player].Item2)
+                    {
+                        coverAircraftAirGroupsOrders[airGroup] = CoverAGOrders.drop;
+                        rejoinedDropMode = true;
+                    }
                 }
             }
 
             GamePlay.gpLogServer(new Player[] { player }, numFoundIndxs.ToString() + " groups of cover aircraft " + orderDescription + " (#{0})", new object[] { String.Join(" #", foundIndxs.Trim()) });
 
-            //<cdrop - if the player has just overridden EVERYONE out of DROP WHEN I DROP (a bare <cnormal,
-            //<cattack, <cstrict etc), then drop mode is no longer in force and the Tab-4-4-4-4-6 "Cover
-            //Targeting [..]" label would otherwise still read "Drop When I Drop" - so clear it.
+            //<cdrop - if the player has just overridden EVERYONE out of DROP WHEN I DROP (a bare
+            //<cattack, <cstrict, <cescort, <cloiter - i.e. orders that cannot mean "join the drop"),
+            //then drop mode is no longer in force and the Tab-4-4-4-4-6 "Cover Targeting [..]" label
+            //would otherwise still read "Drop When I Drop" - so clear it.  (<cnormal is NOT in that
+            //list: it has just RE-JOINED everyone, hence the rejoinedDropMode guard below.)
             //Deliberately NOT done for a PARTIAL command: "<creserve 3" only moves squadron 3, the rest
             //are still on .drop, and that is exactly how a player holds squadrons back during a drop run.
             //BAM_enterDropMode() passes order == drop, so this can never fight with entering drop mode.
-            if (order != CoverAGOrders.drop && indxs.Count == 0 && numFoundIndxs > 0 && BAM_getplayerBombAimMode_enum(player) == BAM_BombAimMode.Drop_When_I_Drop)
+            //And rejoinedDropMode guards the case where "<cnormal" just RE-JOINED groups to the drop:
+            //then the condition below would otherwise be true again (order != drop, no #s, everyone
+            //found) and would switch off a drop that is very much still in force.
+            if (order != CoverAGOrders.drop && indxs.Count == 0 && numFoundIndxs > 0 && !rejoinedDropMode && BAM_getplayerBombAimMode_enum(player) == BAM_BombAimMode.Drop_When_I_Drop)
             {
                 BAM_playerAimMode[player] = BAM_BombAimMode.None;
                 coverOrdersBeforeDrop.Remove(player);   //they have overridden us; there is nothing left to restore

@@ -333,6 +333,58 @@
  *     the airgroup, so a leak is permanent for the life of the server, not just the mission. [CODE]
  *
  *
+ *   ------------------------------------------------------------------------------------------------
+ *   8b.  <cdrop - ORDER & SCOPE RULES (how it interacts with <cstrict/<creserve/<cnormal)
+ *   ------------------------------------------------------------------------------------------------
+ *   <cdrop is a BOMB AIM MODE (it lives on the Tab-4-4-4-4-6 targeting menu) that also sets airgroup
+ *   ORDERS, because it has to: .drop means "hold your bombs and wait for the leader".  It is therefore
+ *   the one menu mode that collides with the <cnormal/<cstrict/<creserve/<cattack/<cescort/<cloiter
+ *   family.  The rules below are what keep the two from fighting:
+ *
+ *   SCOPE.  There are two ways in, and they mean different things:
+ *     - ALL GROUPS  : bare "<cdrop" in chat, or the Tab-4-4-4-4-6 menu (the menu can only express
+ *                     all-groups).  Recorded as coverOrdersBeforeDrop[player].Item2 == true.
+ *     - SELECTIVE   : "<cdrop 3 6".  Item2 == false.  This is the "only these squadrons join the
+ *                     drop" order, exactly like "<creserve 3" but for drop mode.
+ *   Each player's pre-drop orders are snapshotted when drop mode is entered, so leaving it puts
+ *   everyone back where they were.  The scope rides along with the snapshot because it decides how
+ *   the OTHER order commands below are interpreted.
+ *
+ *   ENTERING (BAM_enterDropMode).  A bare all-groups <cdrop SKIPS groups sitting on a hold-fire order
+ *   (<cstrict, <creserve, <cloiter): they were explicitly told to hold fire, and a blanket drop order
+ *   must not overrule that.  Name them ("<cdrop 2") and they come in.  Re-arming an existing <cdrop
+ *   in chat is also how you widen a selective scope to all-groups - a selective re-arm never narrows
+ *   an all-groups scope, since the menu label applies to everyone.
+ *
+ *   <cstrict / <creserve WHILE IN DROP MODE.  These just overwrite .drop for the named (or all)
+ *   groups, as they always have.  That is the documented way to hold squadrons back out of a drop.
+ *   The position listing then shows [[[STRICT]]] / [[[RESERVED]]] rather than [[[DROP-WHEN-I-DROP]]],
+ *   which is correct - they are NOT waiting to drop any more.
+ *
+ *   <cnormal AFTER a <cstrict/<creserve WHILE IN DROP MODE.  This is the subtle one, and the reason
+ *   the scope is remembered.  <cnormal means "you may bomb again", so under an ALL-GROUPS drop scope
+ *   the group RE-JOINS drop mode - note this is exactly what rescues the <cstrict group a bare
+ *   <cdrop REFUSED to convert (the bare <cdrop above skips it, so Tab-4-4-4-4-6 can leave a squadron
+ *   entered as <cstrict sitting OUTSIDE the drop; the <cnormal puts it back in).
+ *   Under a SELECTIVE "<cdrop 3 6" scope a <cnormal means "fly normal, stay out of the drop": the
+ *   player has asked for a specific set of squadrons on this run, and <cnormal is not an invitation
+ *   for a squadron that was never in the set.  A selective "<cnormal 2" is likewise always plain
+ *   normal - naming one squadron is not an all-groups command.
+ *   The SNAPSHOT IS NOT TOUCHED by the re-join.  It holds the order to restore when drop mode ends,
+ *   and for a re-joined group the honest answer is still its original pre-drop order; writing .drop
+ *   into it would make BAM_leaveDropMode restore .drop and the group would never bomb again.
+ *
+ *   LEAVING (BAM_leaveDropMode).  Only groups whose order is STILL .drop are restored from the
+ *   snapshot; anything the player changed in the meantime (a <creserve N, importantly) is left
+ *   exactly as they set it, and a group that appeared after the drop started falls back to normal.
+ *   NOTE the setCoverAircraftAirGroupsOrders() side effect: a bare all-groups <cattack/<cstrict/
+ *   <cescort/<cloiter also CLEARS the aim mode back to None and discards the snapshot, because the
+ *   Tab-4 label would otherwise still read "Drop When I Drop" when nobody is on .drop any more.  That
+ *   is deliberately NOT done for a PARTIAL command - "<creserve 3" is the documented way to hold
+ *   squadrons back DURING a drop run and must not switch the mode off - and NOT done for a bare
+ *   <cnormal either, because that command has just RE-JOINED everyone (see above).                [CODE]
+ *
+ *
  *   ================================================================================================
  *   9.  OPEN ISSUES - instrumentation in place, diagnosis pending test data
  *   ================================================================================================

@@ -620,6 +620,13 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
                 if (!held.Item2) coverOrdersBeforeDrop[player] = new Tuple<Dictionary<AiAirGroup, CoverAGOrders>, bool>(held.Item1, true);
             }
             setCoverAircraftAirGroupsOrders(player, msg, CoverAGOrders.drop, "were ordered to DROP WHEN YOU DROP - they will hold their bombs and, the moment you let your first bomb go, release everything at the same time.", skipHoldFire: msg.Trim().Length == 0);
+            turnOffCoverDropWatch(player);  //<cdrop RE-ARM - the previous pass stood the watcher down, so a timer from
+                                            //it (and its coverDropLastLeaderBombCount seed) is no longer valid.  armCoverDropWatch
+                                            //does this too, but doing it explicitly guarantees the stale count is gone BEFORE the
+                                            //new seed is read, so a re-arm can never fire on a count left over from the old pass.
+            armCoverDropWatch(player);      //<cdrop RE-ARM - WITHOUT this a re-issued <cdrop armed the groups but left no timer,
+                                            //so the leader's next drop was never detected (2026-10-02G: third run dropped, <cdropnow
+                                            //needed).  armCoverDropWatch re-seeds the count & clears the "already fired" latch.
             BAM_forceFormationRefresh(player);  //<cdrop Step D - cancel any transient menu-cycle attack run NOW (see helper)
             return;
         }
@@ -1755,6 +1762,23 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
 
             COVER_DropWatchTimer[player] = new System.Threading.Timer(
                 coverDropWatch_obj, player, dueTime: 100, period: COVER_DropWatchPeriod_ms);
+
+            //DIAGNOSTIC - prove the watcher is actually live.  A re-arm that silently skipped this call
+            //leaves the leader's next drop undetected and is indistinguishable from "the leader's count
+            //never moved", so stamp the moment we armed, what we seeded, and how many groups are on .drop.
+            if (mainmission.ON_TESTSERVER)
+            {
+                int onDrop = 0;
+                List<AiAirGroup> dropGroups = new List<AiAirGroup>(coverAircraftAirGroupsActive.Keys);
+                foreach (AiAirGroup agD in dropGroups)
+                {
+                    if (agD == null) continue;
+                    if (coverAircraftAirGroupsActive[agD] != player) continue;
+                    if (coverAircraftAirGroupsOrders.ContainsKey(agD) && coverAircraftAirGroupsOrders[agD] == CoverAGOrders.drop) onDrop++;
+                }
+                Console.WriteLine("COVER <cdrop ARM: {0} watcher started, seed bombs={1}, {2} group(s) on DROP WHEN I DROP",
+                    player.Name(), coverDropLastLeaderBombCount.ContainsKey(player) ? coverDropLastLeaderBombCount[player] : -1, onDrop);
+            }
         }
         catch (Exception ex) { Console.WriteLine("Cover armCoverDropWatch ERROR! " + ex.ToString()); }
     }
@@ -1836,11 +1860,19 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
                     break;
                 }
             }
-            if (!stillWanted) { turnOffCoverDropWatch(player); return; }
+            if (!stillWanted)
+            {
+                if (mainmission.ON_TESTSERVER)
+                    Console.WriteLine("COVER <cdrop STANDDOWN: {0} - no group on DROP WHEN I DROP orders anymore, watcher stopped", player != null ? player.Name() : "(null)");
+                turnOffCoverDropWatch(player);
+                return;
+            }
 
             AiAircraft pa = player.Place() as AiAircraft;
             if (pa == null || pa.AirGroup() == null)
             {
+                if (mainmission.ON_TESTSERVER)
+                    Console.WriteLine("COVER <cdrop STANDDOWN: {0} - leader out of an aircraft, watcher stopped", player != null ? player.Name() : "(null)");
                 turnOffCoverDropWatch(player);   //leader out of his aircraft - nothing to follow
                 return;
             }
@@ -3903,7 +3935,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 "** <creserve OR <cr - stay in RESERVE, joined with you; do not join the current ground attack. Stay in formation, but fighters/sturmovik will leave formation to defend against enemy approaching closely.",
                 "** <cstrict OR <cs - squadrons fly in rigid STRICT, close formation with you, all aircraft at your altitude, close to you (ignoring <cdist), ignores all other action, & ordered to ignore even direct attacks and simply fly in formation with you.",
                 "** <cloiter OR <cl - LOITER in place, circling. Will defend if attacked, but otherwise remain out of the action and awaiting further orders.",
-                "** <cdrop OR <cdro OR Tab-4-4-4-4-6 (Cover Targeting cycles to 'Drop When I Drop') - DROP WHEN I DROP: they hold their bombs and fly in tight formation with you, and the moment you let your first bomb go they release everything at the same time - just as ww2 crews did, with only the leader carrying a bombsight. Squadrons still further back will catch up to your line and release there. <cdrop always covers ALL your cover groups (squadron numbers after it are ignored) - use <creserve 3 to hold particular squadrons back. Wait until every group shows GND ATTACK on the chat display, then they are awaiting your drop. Re-issue <cdrop to re-arm them for another run.",
+                "** <cdrop OR <cdro OR Tab-4-4-4-4-6 (Cover Targeting cycles to 'Drop When I Drop') - DROP WHEN I DROP: aircraft hold their bombs and fly in tight formation with you, and the moment you let your first bomb go they release everything at the same time - just as ww2 crews did, with only the leader carrying a bombsight. Squadrons still further back will catch up to your line and release there. <cdrop always covers ALL your cover groups (squadron numbers after it are ignored) - use <creserve 3 to hold particular squadrons back. Wait until every group shows GND ATTACK on the chat display, then they are awaiting your drop. After a release they are armed for ONE run only - to do another, cycle the Tab-4-4-4-4-6 Cover Targeting back to another mode and then to 'Drop When I Drop' again (this re-arms the drop detection). <cdropnow below is the reliable immediate release.",
                 "** <cdropnow OR <cbomb - order an IMMEDIATE release from every squadron now, whatever order they are on. Squadrons sitting on <creserve are held back; everything else goes, including <cstrict squadrons.",
                 "<chelp6 for more..."
             };

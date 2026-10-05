@@ -535,6 +535,9 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
         coverAircraftAirGroupsReleased.Remove(airGroup);
         coverAircraftAirGroupsBayWaitSince.Remove(airGroup);   //<cdrop Step C8 - same leak class as the rest
         coverDropPassLogged.Remove(airGroup);            //<cdrop Step D - and its log throttle with it
+        coverRtbLogged.Remove(airGroup);                 //<cdrop Step D - and its RTB probe throttle with it
+        coverRtbNotified.Remove(airGroup);               //<cdrop Step G - one-shot RTB notice latch, same leak class
+        coverPreOpenLast.Remove(airGroup);               //<cdrop Step F - pre-open nodupe snapshot, same leak class
         coverAircraftAirGroupsLoiterPoint.Remove(airGroup);
         airgroupTargets.Remove(airGroup);
         airgroupGroundTargets.Remove(airGroup);
@@ -1808,6 +1811,27 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
     public static bool cdDropPreOpenBays = true;
     public double coverDropPreOpen_m = 10000;
 
+    //<cdrop 2026/10 Step F - PRE-OPEN NODUPE.  Step C5 re-issues the formation+decoy plan EVERY
+    //keepAircraftOnTask_recurs cycle (~5-16s), and each re-issue re-anchors the fake GATTACK_POINT
+    //10km ahead of the group's CURRENT position.  On a straight-and-level hold the engine therefore
+    //never settles into "just follow the leader" - it is perpetually mid-climb/mid-turn toward a
+    //point that keeps moving.  The 2026-10-02H log is the proof: PREOPEN: 2469 fired 12 times in
+    //2 minutes (03:00:13..03:02:19, ~11s apart) on a steady run, and that same single-ship group is
+    //the one that went RTB with 18 bombs.  So: only re-issue when the geometry actually changed -
+    //leader heading moved, leader climbed/dived, or the release plan was lost.  Everything else
+    //keeps the plan that is already in force, letting the engine settle.
+    public double coverPreOpenNodupeHeading_deg = 5;    //re-issue if the leader turned this much
+    public double coverPreOpenNodupeAlt_m = 30;         //re-issue if the leader's altitude changed this much
+    public double coverPreOpenNodupeSpeed_mps = 10;     //re-issue if the leader's airspeed changed this much
+    public double coverPreOpenNodupeMaxAge_s = 60;      //hard failsafe: re-issue anyway this long after the last one
+                                                       //(so the 8-leg NORMFLY tail can never run out on a long
+                                                       // straight hold - the whole point of the tail is to
+                                                       // outlast the hold, and a stale plan defeats that)
+    //last pre-open plan issued per group: (leader pos, leader heading-unit-x, leader heading-unit-y,
+    //leader speed mps, leader altitude m, issue time UTC).  Cleared by forgetAirGroup().
+    Dictionary<AiAirGroup, Tuple<Point3d, double, double, double, double, DateTime>> coverPreOpenLast =
+        new Dictionary<AiAirGroup, Tuple<Point3d, double, double, double, double, DateTime>>();
+
     //we latch after the first drop so one leader pass = one formation release.  Reset by <cdrop.
     Dictionary<Player, bool> coverDropAlreadyFired = new Dictionary<Player, bool>();
     Dictionary<Player, Point3d> coverDropLinePoint = new Dictionary<Player, Point3d>();
@@ -2065,17 +2089,60 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
 
     Dictionary<AiAirGroup, DateTime> coverRtbLogged = new Dictionary<AiAirGroup, DateTime>();
 
+    //2026/10 Step G - one-shot-per-episode PLAYER notice that a group went RTB on its own.  A group
+    //in task .RETURN will not open its bays, drop, or ground-attack (CloDNotes 1f - and the owner's
+    //years-ago attempts confirm forced re-issue does not recover it), so the player deserves to know
+    //on the first detection, not 15 minutes later when <cpos finally shows it.  Latched: fired once
+    //per RTB episode, re-armed when the group leaves .RETURN, so it can re-fire for a NEW episode.
+    //Cleared by forgetAirGroup().  Only sent for ENGINE RTB - never for a group WE released
+    //home (coverAircraftAirGroupsReleased), which the player already knows about.
+    Dictionary<AiAirGroup, bool> coverRtbNotified = new Dictionary<AiAirGroup, bool>();
+
     //<cdrop 2026/10 Step D - RTB PROBE.  An airgroup in task .RETURN will neither open its bomb bays
     //nor release, so a group that has quietly gone RTB looks exactly like a group ignoring us - and
     //we do not yet know WHY the engine flips them (CloDNotes 1f lists the candidates).  Log enough
     //state to tell them apart next time.  Throttled to one line per group per 30s.
     public void cdRtbProbe(AiAirGroup airGroup, Player player)
     {
-        if (!mainmission.ON_TESTSERVER) return;
         try
         {
             if (airGroup == null) return;
-            if (airGroup.getTask() != AiAirGroupTask.RETURN) { coverRtbLogged.Remove(airGroup); return; }
+            if (airGroup.getTask() != AiAirGroupTask.RETURN)
+            {
+                //not RTB (anymore) - clear both the log throttle and the player-notice latch so a
+                //future RTB episode reports again.
+                coverRtbLogged.Remove(airGroup);
+                coverRtbNotified.Remove(airGroup);
+                return;
+            }
+
+            bool releasedByUs = (coverAircraftAirGroupsReleased.ContainsKey(airGroup) && coverAircraftAirGroupsReleased[airGroup]);
+
+            //STEP G - tell the player ONCE per episode, and only when the ENGINE flipped it
+            //(not a group we deliberately sent home).  The console probe below is testserver-only,
+            //but the player notice is a plain information message and is correct on any server.
+            if (!releasedByUs && player != null && GamePlay != null && !coverRtbNotified.ContainsKey(airGroup))
+            {
+                coverRtbNotified[airGroup] = true;
+                int bom = CoverCalcs.bombCount(airGroup);
+                int numAC = 0;
+                string typeName = "";
+                if (airGroup.GetItems() != null && airGroup.GetItems().Length > 0)
+                {
+                    numAC = airGroup.GetItems().Length;
+                    AiAircraft ta = airGroup.GetItems()[0] as AiAircraft;
+                    if (ta != null) typeName = CoverCalcs.GetAircraftType(ta);
+                }
+                string arm = (isBomberArmed(airGroup)) ? "Has bombs" : "No bombs";
+                string cannon = (cannonsEmpty(airGroup)) ? ", cannon empty" : "";
+                string m = ">>>Your cover group " + numAC.ToString() + "x" + typeName + " (" + arm + cannon + ") has gone RTB on its own - it will NOT drop bombs or carry out ground attacks from now on. It will keep flying while it can. <cpos shows it, <cland releases it.";
+                GamePlay.gpLogServer(new Player[] { player }, m, new object[] { });
+                Console.WriteLine("COVER RTB NOTICE: {0} informed {1} - engine RTB, not releasedByUs (bombs={2})",
+                    airGroup.Name(), (player != null ? player.Name() : "(null)"), bom);
+            }
+
+            //STEP D - console probe, testserver only, 30s throttle (unchanged behaviour).
+            if (!mainmission.ON_TESTSERVER) return;
             DateTime last;
             if (coverRtbLogged.TryGetValue(airGroup, out last) && (DateTime.UtcNow - last).TotalSeconds < 30) return;
             coverRtbLogged[airGroup] = DateTime.UtcNow;
@@ -2093,7 +2160,7 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
             if (player != null && player.Place() != null) distToLeader = CoverCalcs.CalculatePointDistance(airGroup.Pos(), player.Place().Pos());
             Console.WriteLine("COVER RTB: {0} is in task .RETURN - waypoints={1} current={2} bombs={3} fuel={4:F0} distToLeader={5:n0}m releasedByUs={6}",
                 airGroup.Name(), (rwps != null ? rwps.Length : 0), cur, CoverCalcs.bombCount(airGroup), fuel, distToLeader,
-                (coverAircraftAirGroupsReleased.ContainsKey(airGroup) && coverAircraftAirGroupsReleased[airGroup]));
+                releasedByUs);
         }
         catch (Exception ex) { }
     }
@@ -2121,6 +2188,30 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
             return false;
         }
         catch (Exception ex) { Console.WriteLine("Cover dropPlanStillInForce ERROR! " + ex.ToString()); return true; }
+    }
+
+    //Whole-plan variant for the pre-open nodupe gate (Step F).  dropPlanStillInForce() above only
+    //scans from the CURRENT waypoint forward, so it briefly reads "gone" the moment the engine
+    //passes the GATTACK_POINT waypoint - exactly the moment the pre-open plan is healthiest - and
+    //that would force a needless re-issue on its own.  For the nodupe question we want the simpler
+    //test the comment promises: is there an attack waypoint ANYWHERE in the plan?  Same returns-true
+    //on-error contract, so a transient failure never tears down a healthy plan.
+    public bool preOpenAttackWaypointPresent(AiAirGroup airGroup)
+    {
+        try
+        {
+            if (airGroup == null) return false;
+            AiWayPoint[] wps = airGroup.GetWay();
+            if (wps == null || wps.Length == 0) return false;
+            for (int i = 0; i < wps.Length; i++)
+            {
+                AiAirWayPoint w = wps[i] as AiAirWayPoint;
+                if (w == null) continue;
+                if (w.Action == AiAirWayPointType.GATTACK_POINT || w.Action == AiAirWayPointType.GATTACK_TARG) return true;
+            }
+            return false;
+        }
+        catch (Exception ex) { Console.WriteLine("Cover preOpenAttackWaypointPresent ERROR! " + ex.ToString()); return true; }
     }
 
     //Second half of <cdrop: the leader has dropped, so walk each of his airgroups and decide whether it
@@ -2430,6 +2521,50 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
             if (player == null || airGroup == null || leader == null) return;
             if (airGroup.GetItems() == null || airGroup.GetItems().Length == 0) return;
 
+            //<cdrop 2026/10 Step F - NODUPE.  Do not re-anchor the whole formation+decoy plan when
+            //the leader is still flying the same heading at the same altitude/speed: the plan that
+            //is already in force still points at the right place, and re-issuing it is exactly what
+            //kept the engine from settling (log 02H - 12 re-issues in 2 min on a steady run).  Each
+            //condition below FORCES a re-issue when the geometry it depends on has actually moved:
+            //   - leader turned more than coverPreOpenNodupeHeading_deg   -> decoy point is stale
+            //   - leader climbed/dived > coverPreOpenNodupeAlt_m          -> formation point is stale
+            //   - leader speed changed > coverPreOpenNodupeSpeed_mps      -> legs' speed law is stale
+            //   - the attack waypoint is no longer in the plan            -> plan was lost/overwritten
+            //   - the doors closed while armed                            -> re-arm the decoy now
+            //   - the plan is older than coverPreOpenNodupeMaxAge_s       -> hard failsafe: the
+            //     8-leg NORMFLY tail must get re-anchored so it can never run out on a long hold
+            //An RTB group is left ALONE: re-issuing a plan at a group in task .RETURN does not pull
+            //it back out (CloDNotes 1f) and only adds churn - the RTB notice (Step G) owns that case.
+            if (airGroup.getTask() == AiAirGroupTask.RETURN) return;
+            Vector3d ldV2 = leader.Vwld();
+            double lv2 = CoverCalcs.CalculatePointDistance(ldV2);
+            double hdgX = 0, hdgY = 0;
+            if (lv2 > 0.1) { hdgX = ldV2.x / lv2; hdgY = ldV2.y / lv2; }
+            Point3d ldPos = leader.Pos();
+            bool doorsOpen = (coverDropBayDoorPos(airGroup) >= coverDropBayOpenThreshold);
+            Tuple<Point3d, double, double, double, double, DateTime> prev;
+            bool hasPrev = coverPreOpenLast.TryGetValue(airGroup, out prev);
+            if (hasPrev)
+            {
+                double dh = Math.Acos(Math.Max(-1.0, Math.Min(1.0, prev.Item2 * hdgX + prev.Item3 * hdgY))) * 57.29577951308232;
+                if (!preOpenAttackWaypointPresent(airGroup))
+                {
+                    //plan lost - re-issue (always)
+                }
+                else if (doorsOpen && (dh <= coverPreOpenNodupeHeading_deg)
+                    && Math.Abs(ldPos.z - prev.Item5) <= coverPreOpenNodupeAlt_m
+                    && Math.Abs(lv2 - prev.Item4) <= coverPreOpenNodupeSpeed_mps
+                    && (DateTime.UtcNow - prev.Item6).TotalSeconds < coverPreOpenNodupeMaxAge_s)
+                {
+                    //geometry unchanged and the plan is healthy - keep what is flying
+                    if (mainmission.ON_TESTSERVER)
+                        Console.WriteLine("COVER <cdrop PREOPEN SKIP: {0} no re-issue - hdg {1:F1}d, alt {2:F0}m, vel {3:F0}, age {4:F0}s, bay={5:F3} (plan in force)",
+                            airGroup.Name(), dh, Math.Abs(ldPos.z - prev.Item5), Math.Abs(lv2 - prev.Item4),
+                            (DateTime.UtcNow - prev.Item6).TotalSeconds, coverDropBayDoorPos(airGroup));
+                    return;
+                }
+            }
+
             List<AiWayPoint> wps = new List<AiWayPoint>();
 
             //1. the ordinary formation waypoint, so they track the leader exactly as they do normally
@@ -2463,8 +2598,12 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
 
             //3. a long run behind it, so they never run out of plan - an airgroup with no waypoints
             //   switches itself to RTB, and an RTB group will neither open its bays nor drop
-            //   (CloDNotes 1f).
-            for (int i = 1; i <= 6; i++)
+            //   (CloDNotes 1f).  2026/10-02H: extended from 6 legs (20-80km) to 8 legs (30-100km) after
+            //   2469 went RTB with 18 bombs at the tail of the 6-leg chain (waypoints=3 current=2).  The
+            //   tail must outlast the worst-case hold duration (a player can sit in DWID for many
+            //   minutes) plus the ~5-6s re-issue cadence, so 8 legs at 10km spacing gives ~70km of
+            //   slack - more than enough for any realistic hold.
+            for (int i = 1; i <= 8; i++)
             {
                 double gap_m = coverDropPreOpen_m + 2000 + i * 10000;
                 Point3d wp = new Point3d(ap.x + dir.x * gap_m, ap.y + dir.y * gap_m, ap.z);
@@ -2474,9 +2613,23 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
             }
 
             airGroup.SetWay(wps.ToArray());
+            //record the leader geometry this plan was built against, for the next cycle's nodupe gate
+            coverPreOpenLast[airGroup] = Tuple.Create<Point3d, double, double, double, double, DateTime>(
+                new Point3d(ldPos.x, ldPos.y, ldPos.z), hdgX, hdgY, lv2, ldPos.z, DateTime.UtcNow);
             if (mainmission.ON_TESTSERVER)
-                Console.WriteLine("COVER <cdrop PREOPEN: {0} formation waypoint + fake GATTACK_POINT {1:n0}m ahead, {2} bombs, bay={3:F3}, waypoints={4}",
-                    airGroup.Name(), coverDropPreOpen_m, CoverCalcs.bombCount(airGroup), coverDropBayDoorPos(airGroup), wps.Count);
+            {
+                int cw = airGroup.GetCurrentWayPoint();
+                int nw = airGroup.GetWay() != null ? airGroup.GetWay().Length : -1;
+                string cwAct = "?";
+                try
+                {
+                    if (nw > 0 && cw >= 0 && cw < nw && (airGroup.GetWay()[cw] as AiAirWayPoint) != null)
+                        cwAct = (airGroup.GetWay()[cw] as AiAirWayPoint).Action.ToString();
+                }
+                catch (Exception exCw) { }
+                Console.WriteLine("COVER <cdrop PREOPEN: {0} formation waypoint + fake GATTACK_POINT {1:n0}m ahead, {2} bombs, bay={3:F3}, waypoints={4}, currWay={5}/{6} act={7}",
+                    airGroup.Name(), coverDropPreOpen_m, CoverCalcs.bombCount(airGroup), coverDropBayDoorPos(airGroup), nw, cw, nw, cwAct);
+            }
         }
         catch (Exception ex) { Console.WriteLine("Cover dropPreOpenBays_airGroup ERROR! " + ex.ToString()); }
     }
@@ -3774,7 +3927,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             listCoverAircraftCurrentlyAvailable((ArmiesE)player.Army(), player);
 
         }
-        else if (msg.StartsWith("<cp")) //<cpos
+        else if (msg.StartsWith("<cpos")) //<cpos
         {
             if (player == null) return;
             GamePlay.gpLogServer(new Player[] { player }, ">>>Please use Tab-4-4-4-4 menu for controlling your Cover/Bomber Aircraft when possible", null);

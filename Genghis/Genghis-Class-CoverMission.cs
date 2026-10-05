@@ -533,6 +533,8 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
         coverAircraftAirGroupsDropIssued.Remove(airGroup);
         coverAircraftAirGroupsDroppedThisPass.Remove(airGroup);  //<cdrop one-issue-per-pass latch - same leak class as the hold-off above
         coverAircraftAirGroupsReleased.Remove(airGroup);
+        coverAircraftAirGroupsBayWaitSince.Remove(airGroup);   //<cdrop Step C8 - same leak class as the rest
+        coverDropPassLogged.Remove(airGroup);            //<cdrop Step D - and its log throttle with it
         coverAircraftAirGroupsLoiterPoint.Remove(airGroup);
         airgroupTargets.Remove(airGroup);
         airgroupGroundTargets.Remove(airGroup);
@@ -618,6 +620,7 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
                 if (!held.Item2) coverOrdersBeforeDrop[player] = new Tuple<Dictionary<AiAirGroup, CoverAGOrders>, bool>(held.Item1, true);
             }
             setCoverAircraftAirGroupsOrders(player, msg, CoverAGOrders.drop, "were ordered to DROP WHEN YOU DROP - they will hold their bombs and, the moment you let your first bomb go, release everything at the same time.", skipHoldFire: msg.Trim().Length == 0);
+            BAM_forceFormationRefresh(player);  //<cdrop Step D - cancel any transient menu-cycle attack run NOW (see helper)
             return;
         }
 
@@ -638,6 +641,47 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
 
         armCoverDropWatch(player);  //start watching the leader's bomb count
         setCoverAircraftAirGroupsOrders(player, msg, CoverAGOrders.drop, "were ordered to DROP WHEN YOU DROP - they will hold their bombs and, the moment you let your first bomb go, release everything at the same time.", skipHoldFire: msg.Trim().Length == 0);
+        BAM_forceFormationRefresh(player);  //<cdrop Step D - cancel any transient menu-cycle attack run NOW (see helper)
+    }
+
+    //<cdrop Step D - re-issue an immediate formation (FOLLOW) flight plan to every cover group this
+    //player owns.  This mirrors exactly what keepAircraftOnTask_recurs() writes for
+    //orders == CoverAGOrders.drop (the <cdrop / <cstrict branch: FOLLOW, altDiff -3 +/- 15).  The
+    //Tab-4 menu cycle passes THROUGH Drop_Flare_Point_Here_and_Target_it, which points the player's
+    //bomb point at their CURRENT position (see BAM_toggleBombAimMode); if the ~16s AI tick fires on
+    //that transient the groups pick up a GATTACK_POINT run at a point that is already behind them, so
+    //they turn round and release before the player has even finished selecting DROP WHEN I DROP.
+    //Clearing the target dictionaries (done on every toggle) does NOT replace a flight plan that is
+    //already being flown, so we overwrite it here, immediately.  Groups still inside their 25s
+    //post-release hold-off are SKIPPED, so a re-arm can never clobber a release in progress.
+    public void BAM_forceFormationRefresh(Player player)
+    {
+        if (player == null) return;
+        try
+        {
+            if (player.Place() == null || (player.Place() as AiAircraft) == null) return;
+            AiAirGroup targetAirGroup = (player.Place() as AiAircraft).AirGroup();
+            if (targetAirGroup == null) return;
+
+            List<AiAirGroup> saveCAAGA = new List<AiAirGroup>(coverAircraftAirGroupsActive.Keys);
+            int refreshed = 0;
+            foreach (AiAirGroup airGroup in saveCAAGA)
+            {
+                if (airGroup == null) continue;
+                if (!coverAircraftAirGroupsActive.ContainsKey(airGroup)) continue;
+                if (coverAircraftAirGroupsActive[airGroup] != player) continue;
+                if (airGroup.GetItems() == null || airGroup.GetItems().Length == 0) continue;
+                //Never overwrite a release plan that is still inside its hold window - the bombs may not
+                //have gone yet (see coverAircraftAirGroupsDropIssued / coverDropHoldFlightPlan_s).
+                if (coverAircraftAirGroupsDropIssued.ContainsKey(airGroup) &&
+                    (DateTime.UtcNow - coverAircraftAirGroupsDropIssued[airGroup]).TotalSeconds < coverDropHoldFlightPlan_s) continue;
+
+                EscortUpdateWaypoints(player, airGroup, targetAirGroup, AiAirWayPointType.FOLLOW, altDiff_m: -3, AltDiff_range_m: 15, nodupe: true, orders: CoverAGOrders.drop);
+                refreshed++;
+            }
+            if (refreshed > 0) Console.WriteLine("COVER <cdrop: " + refreshed + " group(s) given an immediate formation plan on entering DROP WHEN I DROP (cancels any transient menu-cycle attack run)");
+        }
+        catch (Exception ex) { Console.WriteLine("Cover BAM_forceFormationRefresh ERROR! " + ex.ToString()); }
     }
 
     //<cdrop - turn DROP WHEN I DROP off again, restoring the orders that were in force when it was
@@ -724,8 +768,7 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
         else if (BAM_getplayerBombAimMode_enum(player) == BAM_BombAimMode.Drop_When_I_Drop)
         {
             GamePlay.gpLogServer(new Player[] { player }, "DROP WHEN I DROP is ON. Your bombers hold their bombs and fly tight formation with you, then release everything the moment you drop.", null);
-            GamePlay.gpLogServer(new Player[] { player }, "They release once per pass, so cycle this back to OFF and on again to re-arm them for another run. Use <creserve to hold squadrons back, or <cdropnow for an immediate release.", null);
-            GamePlay.gpLogServer(new Player[] { player }, "NOTE: on a server set to unlimited ammo this cannot work at all - use <cdropnow instead.", null);
+            GamePlay.gpLogServer(new Player[] { player }, "Wait until every group shows GND ATTACK on the chat display, then they are awaiting your drop. Re-issue <cdrop to re-arm them for another run.", null);
             removeLastBombPoint = false;  //this mode does not use the player's bomb drop point
         }
 
@@ -1414,6 +1457,16 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
     public readonly double coverAGSpeedRatioMax = 1.15;
     public readonly double coverAGSpeedRatioNewWeight = 0.3;  //weight of the newest sample in the rolling average (~7 samples to settle)
 
+    //2026/10 - Step A4: the OLD sampler clamped out-of-band samples and folded them into the
+    //rolling average - a mid-turn transient (ag_vel < 0.85 x lastAsked because the a/c is still
+    //turning/climbing toward the previous command) poisoned the estimate for ~7 cycles.  Two
+    //changes: (1) samples outside the trust band are DISCARDED (not clamped-in); (2) a sample is
+    //only "honest" when the a/c is actually cruising AT the commanded speed - when it is
+    //transiently far from it, it is a transient, not a delivery shortfall.  The denominator is
+    //also now the FINAL clamped command, not the pre-clamp value.
+    public readonly double coverAGSpeedRatioTransientDelta_mps = 4.0;  //|ag_vel - lastAsked| threshold for "cruising"
+    public int coverAGSpeedRatioDiscardedCount = 0;  //diagnostic: samples discarded by the two rules above
+
     //<cdrop - snapshot of each player's airgroup orders, taken when DROP WHEN I DROP is switched
     //on, so switching it off again can put everyone back where they were.  Only groups whose order
     //is STILL .drop are reverted - so a <creserve N issued while drop mode is on is left alone.
@@ -1605,10 +1658,55 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
     public Dictionary<Player, System.Threading.Timer> COVER_DropWatchTimer = new Dictionary<Player, System.Threading.Timer>();
     public readonly int COVER_DropWatchPeriod_ms = 750; //0.75 sec - leader's drop detected within ~1 sec
 
-    //how close to the leader an airgroup must be to drop immediately rather than waiting for the line.
-    //Roughly "within an airfield's distance" - inside this they are close enough that dropping now
-    //puts the bombs on the same stretch of ground the leader is aiming at.
-    public double coverDropImmediateDist_m = 1500;
+    //<cdrop 2026/10 Step C4 - this is now only a SAFETY FLOOR, not the main gate.  The main gate is the
+    //bay lead-in in coverDropReleasePass: an airgroup is told to drop when it comes within
+    //coverDropBayLead_s x its OWN speed SHORT of the leader's drop line, so the bomb bays are open by
+    //the time it arrives on the line.  This floor catches a group practically touching the leader, so
+    //nothing can ever be left holding its bombs if the along-track maths is ever off.  It used to be
+    //1500m and WAS the main gate - which is exactly why "drop when I drop" released 5-15s late and
+    //the stick landed well past the leader's (2026/10 DROPTRACE bay= columns).
+    public double coverDropImmediateDist_m = 300;
+
+    //<cdrop 2026/10 Step C7 - HOW FAR BEHIND the group the release GATTACK_POINT sits.  The reference
+    //   test (Genghis\Reliable-instant-bomb-drop) used 10m behind and reported 50m behind behaves the
+    //   same, so the distance genuinely does not matter - kept at 50m for a little separation from
+    //   the zero-length leading NORMFLY (see CloDNotes 1, "WAYPOINT SPACING").
+    public double coverDropAttackGap_m = 50;
+
+    //<cdrop 2026/10 tunables (all public so they can be tweaked in one place).
+    //HOW FAR AHEAD of the leader's drop line an airgroup may be and still be told to drop.  A group
+    //further ahead than this is SKIPPED for the pass - see coverDropReleasePass().
+    public double coverDropMaxAhead_m = 1000;
+
+    //HOW FAR SHORT of the drop line we command the release so the bomb bays have time to open.  Only
+    //used for a group whose doors are NOT already open; with the doors open the release is instant and
+    //a lead would just bias the stick short of the leader's line.  Measured: ~6s (Wellington),
+    //~10-15s (Ju-88) - see the DROPTRACE "bay=" column.
+    public double coverDropBayLead_s = 6;
+
+    //BOMB-BAY DOORS: there is no write-parameter API on AiAircraft (CloDNotes 4/9b), so the only lever
+    //   on the door cycle is to keep an attack waypoint live so the engine opens the doors itself, and
+    //   then WAIT until A_BombBayDoor actually reads open before releasing.
+    public double coverDropBayOpenThreshold = 0.98;   //A_BombBayDoor at/above this counts as OPEN
+    //escape hatch: normally a group is released as soon as its doors are open, with NO timeout, so a
+    //   group held back for its doors is never skipped.  But if the doors never register open at all we
+    //   must not hold its bombs forever - issue anyway after this long, and log it loudly.
+    public double coverDropBayWaitFallback_s = 30;
+    //a group we deliberately HELD BACK for its doors will have flown on well past the line, so it gets
+    //   this much more room than a group that was ready at the time.
+    public double coverDropMaxAheadWait_m = 3000;
+
+    //PRE-OPEN the bomb bays: while DROP WHEN I DROP is armed we keep each bomber pointed at a decoy
+    //GATTACK_POINT this far ahead (re-issued every cycle, so they never reach it) purely to hold the
+    //bays open, then swap to the real release geometry the instant the leader drops.  The engine only
+    //opens the bays once an attack waypoint is current, and there is no write-parameter API on
+    //AiAircraft (CloDNotes 4/9b), so this is the only lever we have on the 5-15s door cycle.
+    //ON by default: this is now the PROVEN mechanism (see the reference test in
+    //Genghis\Reliable-instant-bomb-drop) rather than an experiment - keeping an attack waypoint live is
+    //what makes every bomber type dump its whole load.  The risk it carries is bomb-run attitude
+    //instead of tight formation, which is worth watching in a test session.
+    public static bool cdDropPreOpenBays = true;
+    public double coverDropPreOpen_m = 10000;
 
     //we latch after the first drop so one leader pass = one formation release.  Reset by <cdrop.
     Dictionary<Player, bool> coverDropAlreadyFired = new Dictionary<Player, bool>();
@@ -1694,6 +1792,15 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
                 if (agH == null) continue;
                 if (!coverAircraftAirGroupsActive.ContainsKey(agH)) { coverAircraftAirGroupsDropIssued.Remove(agH); continue; }
                 if (coverAircraftAirGroupsActive[agH] == player) coverAircraftAirGroupsDropIssued.Remove(agH);
+            }
+            //<cdrop Step C8 - and stop timing their bomb-bay doors, player by player, for the same
+            //reason (the dictionary is keyed by airgroup across ALL players).
+            List<AiAirGroup> bayWaiters = new List<AiAirGroup>(coverAircraftAirGroupsBayWaitSince.Keys);
+            foreach (AiAirGroup agB in bayWaiters)
+            {
+                if (agB == null) continue;
+                if (!coverAircraftAirGroupsActive.ContainsKey(agB)) { coverAircraftAirGroupsBayWaitSince.Remove(agB); continue; }
+                if (coverAircraftAirGroupsActive[agB] == player) coverAircraftAirGroupsBayWaitSince.Remove(agB);
             }
         }
         catch (Exception ex) { Console.WriteLine("Cover turnOffCoverDropWatch ERROR! " + ex.ToString()); }
@@ -1789,6 +1896,108 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
         catch (Exception ex) { Console.WriteLine("Cover coverDropWatch ERROR! " + ex.ToString()); }
     }
 
+    //<cdrop 2026/10 Step C8 - WHEN did we start holding this group back because its doors were shut?
+    //cleared as soon as it is released, and on re-arm.  A group that is in here has flown on while it
+    //waited, so it gets a much more generous "too far ahead" bound than one that was ready at the time.
+    Dictionary<AiAirGroup, DateTime> coverAircraftAirGroupsBayWaitSince = new Dictionary<AiAirGroup, DateTime>();
+
+    //<cdrop 2026/10 Step D - the release pass used to be made entirely of SILENT continues.  In log
+    //02F the player dropped, "detect" fired, and no group was ever told to release - with nothing at
+    //all in the log to say which of the (many) skip conditions swallowed it.  cdDropPassLog() makes
+    //every decision self-describing, throttled to one line per group per 5s so a 750ms poll cannot flood.
+    Dictionary<AiAirGroup, DateTime> coverDropPassLogged = new Dictionary<AiAirGroup, DateTime>();
+    public void cdDropPassLog(AiAirGroup airGroup, string why, bool always = false)
+    {
+        if (!mainmission.ON_TESTSERVER) return;
+        try
+        {
+            if (airGroup == null) return;
+            if (!always)
+            {
+                DateTime last;
+                if (coverDropPassLogged.TryGetValue(airGroup, out last) && (DateTime.UtcNow - last).TotalSeconds < 5) return;
+            }
+            coverDropPassLogged[airGroup] = DateTime.UtcNow;
+            Console.WriteLine("COVER <cdrop PASS: {0} - {1}", airGroup.Name(), why);
+        }
+        catch (Exception ex) { }
+    }
+
+    //A_BombBayDoor of the group's first aircraft, or -1 if it cannot be read.  READ ONLY - there is no
+    //write-parameter API on AiAircraft (CloDNotes 4/9b), so this is how we know when the doors are open.
+    public double coverDropBayDoorPos(AiAirGroup airGroup)
+    {
+        try
+        {
+            if (airGroup == null) return -1;
+            if (airGroup.GetItems() == null || airGroup.GetItems().Length == 0) return -1;
+            AiAircraft a = airGroup.GetItems()[0] as AiAircraft;
+            if (a == null) return -1;
+            return a.getParameter(part.ParameterTypes.A_BombBayDoor, 0);
+        }
+        catch (Exception ex) { return -1; }
+    }
+
+    Dictionary<AiAirGroup, DateTime> coverRtbLogged = new Dictionary<AiAirGroup, DateTime>();
+
+    //<cdrop 2026/10 Step D - RTB PROBE.  An airgroup in task .RETURN will neither open its bomb bays
+    //nor release, so a group that has quietly gone RTB looks exactly like a group ignoring us - and
+    //we do not yet know WHY the engine flips them (CloDNotes 1f lists the candidates).  Log enough
+    //state to tell them apart next time.  Throttled to one line per group per 30s.
+    public void cdRtbProbe(AiAirGroup airGroup, Player player)
+    {
+        if (!mainmission.ON_TESTSERVER) return;
+        try
+        {
+            if (airGroup == null) return;
+            if (airGroup.getTask() != AiAirGroupTask.RETURN) { coverRtbLogged.Remove(airGroup); return; }
+            DateTime last;
+            if (coverRtbLogged.TryGetValue(airGroup, out last) && (DateTime.UtcNow - last).TotalSeconds < 30) return;
+            coverRtbLogged[airGroup] = DateTime.UtcNow;
+            AiWayPoint[] rwps = airGroup.GetWay();
+            int cur = airGroup.GetCurrentWayPoint();
+            double fuel = -1;
+            if (airGroup.GetItems() != null && airGroup.GetItems().Length > 0)
+            {
+                AiAircraft fa = airGroup.GetItems()[0] as AiAircraft;
+                //NB: there is no ParameterTypes.Fuel in this build; S_FuelReserve is the closest readable proxy for
+                //"is it running dry", which is one of the candidate causes of a group going RTB.
+                if (fa != null) { try { fuel = fa.getParameter(part.ParameterTypes.S_FuelReserve, 0); } catch (Exception exF) { } }
+            }
+            double distToLeader = -1;
+            if (player != null && player.Place() != null) distToLeader = CoverCalcs.CalculatePointDistance(airGroup.Pos(), player.Place().Pos());
+            Console.WriteLine("COVER RTB: {0} is in task .RETURN - waypoints={1} current={2} bombs={3} fuel={4:F0} distToLeader={5:n0}m releasedByUs={6}",
+                airGroup.Name(), (rwps != null ? rwps.Length : 0), cur, CoverCalcs.bombCount(airGroup), fuel, distToLeader,
+                (coverAircraftAirGroupsReleased.ContainsKey(airGroup) && coverAircraftAirGroupsReleased[airGroup]));
+        }
+        catch (Exception ex) { }
+    }
+
+    //Is this group still flying OUR release plan?  We issued NORMFLY + GATTACK_POINT + a long
+    //NORMFLY + a tail.  If no GATTACK_POINT/GATTACK_TARG is anywhere in its current plan, something
+    //else rewrote it (a plain FOLLOW plan) and the release will never happen - see the Step C3
+    //self-heal in coverDropReleasePass().  Returns TRUE on any error, so a transient failure never
+    //triggers a needless re-issue that would restart the bomb-bay cycle.
+    public bool dropPlanStillInForce(AiAirGroup airGroup)
+    {
+        try
+        {
+            if (airGroup == null) return false;
+            AiWayPoint[] wps = airGroup.GetWay();
+            if (wps == null || wps.Length == 0) return false;
+            int cw = airGroup.GetCurrentWayPoint();
+            if (cw < 0) return false;
+            for (int i = cw; i < wps.Length; i++)
+            {
+                AiAirWayPoint w = wps[i] as AiAirWayPoint;
+                if (w == null) continue;
+                if (w.Action == AiAirWayPointType.GATTACK_POINT || w.Action == AiAirWayPointType.GATTACK_TARG) return true;
+            }
+            return false;
+        }
+        catch (Exception ex) { Console.WriteLine("Cover dropPlanStillInForce ERROR! " + ex.ToString()); return true; }
+    }
+
     //Second half of <cdrop: the leader has dropped, so walk each of his airgroups and decide whether it
     //pulls now or waits until it reaches the drop line.
     //  - close to the leader, or already at/ahead of the line  ->  drop now
@@ -1810,29 +2019,52 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
         {
             if (airGroup == null || airGroup.GetItems() == null || airGroup.GetItems().Length == 0) continue;
             if (coverAircraftAirGroupsActive[airGroup] != player) continue;
-            if (!coverAircraftAirGroupsOrders.ContainsKey(airGroup) || coverAircraftAirGroupsOrders[airGroup] != CoverAGOrders.drop) continue;
+            if (!coverAircraftAirGroupsOrders.ContainsKey(airGroup) || coverAircraftAirGroupsOrders[airGroup] != CoverAGOrders.drop)
+            {
+                cdDropPassLog(airGroup, "SKIP: not on DROP WHEN I DROP orders (on " + (coverAircraftAirGroupsOrders.ContainsKey(airGroup) ? coverAircraftAirGroupsOrders[airGroup].ToString() : "no order set") + ")");
+                continue;
+            }
 
             //only the ones that can actually bomb.  Skip torps: a torpedo pulled off a GATTACK_POINT
             //at formation altitude is a dud, and the He-111 torpedo conversions have their own attack
             //logic we don't want to disturb here.
-            if (!isBomberArmed(airGroup)) continue;
-            if (airGroup.hasTorpedos()) continue;
+            if (!isBomberArmed(airGroup)) { cdDropPassLog(airGroup, "SKIP: has no bombs to release"); continue; }
+            if (airGroup.hasTorpedos()) { cdDropPassLog(airGroup, "SKIP: carries torpedoes"); continue; }
 
             //<cdrop - ONE ISSUE PER PASS.  If we have already handed this group its release plan for
             //this pass, leave it alone completely: do not re-issue, and do not count it as
             //outstanding either.  (Re-issuing is what caused the control blackout - see the comment
             //on coverAircraftAirGroupsDroppedThisPass.)  A latched group is DONE, so it must not
             //set issuedAnyThisPass, or the watcher would never stand down.
-            if (coverAircraftAirGroupsDroppedThisPass.ContainsKey(airGroup)) continue;
+            if (coverAircraftAirGroupsDroppedThisPass.ContainsKey(airGroup)) { cdDropPassLog(airGroup, "SKIP: already released this pass (one release per pass - re-arm with <cdrop)"); continue; }
 
             //The 25s hold-off: our release plan stays in force and keepAircraftOnTask_recurs()
             //early-returns while this is set.  It is written ONCE now and never refreshed, so it
             //expires naturally after coverDropHoldFlightPlan_s and formation control resumes.
             if (coverAircraftAirGroupsDropIssued.ContainsKey(airGroup))
             {
-                if ((nowUtc - coverAircraftAirGroupsDropIssued[airGroup]).TotalSeconds < coverDropHoldFlightPlan_s)
+                double heldFor_s = (nowUtc - coverAircraftAirGroupsDropIssued[airGroup]).TotalSeconds;
+                if (heldFor_s < coverDropHoldFlightPlan_s)
                 {
                     issuedAnyThisPass = true;   //just issued, still holding the plan - keep the watcher alive
+
+                    //<cdrop 2026/10 Step C3 - SELF-HEAL.  The 2026-10-02 logs show the release plan
+                    //being replaced by a plain 3-waypoint FOLLOW plan a few seconds after issue, which
+                    //the 25s hold-off in keepAircraftOnTask_recurs() is supposed to make impossible:
+                    //one Ju-88 was back on FOLLOW ~6s after issue, and one Wellington never released at
+                    //all (its bay= stayed 0.000 for 30s).  If the group still has bombs and its plan no
+                    //longer contains an attack waypoint, the plan was lost - put it back.  Re-issuing
+                    //restarts the bay cycle, so only do it once the plan is demonstrably gone (past 3s,
+                    //so we are not fighting the issue itself) and inside a bounded window, which also
+                    //stops this from looping.
+                    if (heldFor_s > 3 && heldFor_s < 15 && isBomberArmed(airGroup) && !dropPlanStillInForce(airGroup))
+                    {
+                        AiAirGroup ag3 = airGroup;
+                        Timeout(0.05, () => dropBombsNow_airGroup(ag3, leaderAircraft != null ? leaderAircraft.AirGroup() : null));
+                        coverAircraftAirGroupsDropIssued[airGroup] = nowUtc;   //restart the window for the new plan
+                        if (mainmission.ON_TESTSERVER)
+                            Console.WriteLine("COVER <cdrop: RE-ASSERTED the lost release plan for " + airGroup.Name() + " (" + heldFor_s.ToString("F1") + "s after issue, " + CoverCalcs.bombCount(airGroup) + " bombs left)");
+                    }
                     continue;
                 }
                 coverAircraftAirGroupsDropIssued.Remove(airGroup);
@@ -1844,9 +2076,69 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
             //how far PAST the drop line are we?  +ve = at/ahead of it, -ve = still behind it
             double pastLine_m = (ap.x - lineP.x) * lineD.x + (ap.y - lineP.y) * lineD.y;
 
-            bool dropNow = (distToLeader_m <= coverDropImmediateDist_m) || (pastLine_m >= 0);
+            //<cdrop 2026/10 Step C8 - WAIT FOR THE BOMB-BAY DOORS.  This is the whole point of the reference
+            //test in Genghis\Reliable-instant-bomb-drop: if the release plan arrives while the doors
+            //are still shut, the attack waypoint is consumed before they open, the engine works out
+            //an "already passed" solution, and the group lets go ONE salvo and latches - which is
+            //exactly the 54->51 we kept seeing.  With the doors ALREADY OPEN (which cdDropPreOpenBays
+            //arranges by keeping an attack waypoint live) it dumps its WHOLE load the moment the
+            //GATTACK_POINT is reached.  So: release groups whose doors are open, and WAIT for the rest
+            //with no timeout - the watcher re-polls every 750ms.  The only timeout is a deadlock
+            //escape for a type whose door parameter never moves at all.
+            double bayPos = coverDropBayDoorPos(airGroup);
+            bool doorsOpen = (bayPos >= coverDropBayOpenThreshold);
+            bool everWaited = coverAircraftAirGroupsBayWaitSince.ContainsKey(airGroup);
+            if (!doorsOpen)
+            {
+                if (!everWaited) { coverAircraftAirGroupsBayWaitSince[airGroup] = nowUtc; everWaited = true; }
+                double waited_s = (nowUtc - coverAircraftAirGroupsBayWaitSince[airGroup]).TotalSeconds;
+                if (waited_s < coverDropBayWaitFallback_s)
+                {
+                    anyStillArmed = true;   //keep the watcher alive; we come back the instant it opens
+                    cdDropPassLog(airGroup, "HELD: bomb-bay doors shut, bay=" + bayPos.ToString("F3") + " (waited " + waited_s.ToString("F0") + "s)");
+                    continue;               //NOTE: deliberately before the ahead-gate - we are the ones
+                                            //holding it, so we must not then blame it for being late
+                }
+                if (mainmission.ON_TESTSERVER)
+                    Console.WriteLine("COVER <cdrop: {0} bomb-bay doors never opened (bay={1:F3}) after {2:F0}s - releasing anyway",
+                        airGroup.Name(), bayPos, waited_s);
+            }
 
-            if (!dropNow) { anyStillArmed = true; continue; }  //further back - wait for the line
+            //<cdrop 2026/10 - too far AHEAD of the leader's drop line.  Releasing out there plants the
+            //stick a long way in front of the leader's, outside the formation, and the group is still
+            //moving further away, so waiting never helps - skip it for this pass.  Deliberately does
+            //NOT set anyStillArmed: a group this far ahead will never close, so the watcher should stand
+            //down instead of polling forever.  (An aircraft AHEAD but within coverDropMaxAhead_m still
+            //drops with the leader, which is what the player asked for.)
+            double maxAhead_m = everWaited ? coverDropMaxAheadWait_m : coverDropMaxAhead_m;
+            if (pastLine_m > maxAhead_m)
+            {
+                cdDropPassLog(airGroup, "SKIP: " + pastLine_m.ToString("F0") + "m ahead of the drop line (limit " + maxAhead_m.ToString("F0") + "m)");
+                continue;
+            }
+
+            //<cdrop 2026/10 Step C4 - BAY LEAD-IN.  The engine opens the bomb bays over several seconds
+            //before it lets go (measured from the DROPTRACE bay= column: ~0 -> 1 over ~3-6s on a
+            //Wellington, ~10-15s on a Ju-88), so a group commanded the instant it REACHES the line
+            //still releases late and its stick lands well past the leader's.  So command the release
+            //this far SHORT of the line that the door cycle finishes as the group arrives on it.
+            //lead_m is derived from the group's OWN speed, so a fast group automatically gets a
+            //longer lead.  pastLine_m is +ve at/ahead of the line, so >= -lead_m means "abreast, or
+            //within one door-cycle of it".
+            double grpSpeed_mps = CoverCalcs.CalculatePointDistance(airGroup.Vwld());
+            if (grpSpeed_mps < 1) grpSpeed_mps = 1;
+            double lead_m = doorsOpen ? 0 : (coverDropBayLead_s * grpSpeed_mps);
+
+            //plus coverDropImmediateDist_m as a pure safety floor for a group practically on top of
+            //the leader (see its comment above - it is 300m, not the old 1500m).
+            bool dropNow = (pastLine_m >= -lead_m) || (distToLeader_m <= coverDropImmediateDist_m);
+
+            if (!dropNow)
+            {
+                anyStillArmed = true;
+                cdDropPassLog(airGroup, "WAIT: " + (-pastLine_m).ToString("F0") + "m short of the drop line (bay " + (doorsOpen ? "open" : "shut") + ", lead " + lead_m.ToString("F0") + "m, " + distToLeader_m.ToString("F0") + "m from you)");
+                continue;
+            }  //further back - wait for the lead line
 
             //game objects want touching on the mission thread, not on the timer thread.
             //NB a small non-zero delay, as elsewhere in this file - not Timeout(0, ...).
@@ -1854,13 +2146,19 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
             Timeout(0.05, () => dropBombsNow_airGroup(ag2, leaderAircraft != null ? leaderAircraft.AirGroup() : null));
             coverAircraftAirGroupsDropIssued[airGroup] = nowUtc;
             coverAircraftAirGroupsDroppedThisPass[airGroup] = player;   //once per pass - never refresh this
+            coverAircraftAirGroupsBayWaitSince.Remove(airGroup);   //it is away - stop timing its doors
             issuedAnyThisPass = true;
         }
 
         //stand down once this player has nothing left to watch: nobody still waiting for the line, and
         //nobody we just told to drop still inside its release window.  (coverAircraftAirGroupsDropIssued
         //is keyed by airgroup across ALL players, so don't test its overall Count here.)
-        if (!anyStillArmed && !issuedAnyThisPass) turnOffCoverDropWatch(player);
+        if (!anyStillArmed && !issuedAnyThisPass)
+        {
+            if (mainmission.ON_TESTSERVER)
+                Console.WriteLine("COVER <cdrop PASS: watcher standing down for {0} - nobody waiting, nothing issued", player != null ? player.Name() : "(null)");
+            turnOffCoverDropWatch(player);
+        }
     }
 
     //<cdropnow / <cbomb - tell the player's cover/bomber airgroups to pull their release NOW, whatever
@@ -1914,6 +2212,12 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
             }
 
             if (told > 0) GamePlay.gpLogServer(new Player[] { player }, told + " group(s) ordered to DROP NOW.", null);
+            //2026/10 - Step B1: the AI has to open its bomb bays before it can release, and that takes a
+            //few seconds (~6s measured on Wellingtons - the DROPTRACE bay= column confirms it per type).
+            //So if the player wants the sticks to land together, he should let HIS first bomb go shortly
+            //after issuing the command, not at the same instant.  Only shown when something actually
+            //went, so it never spams for an empty squadrons list.
+            if (told > 0) GamePlay.gpLogServer(new Player[] { player }, "Bomber groups need ~6 seconds to open their bomb bays - let your first bomb go a moment after this for the sticks to land together.", null);
             if (held > 0) GamePlay.gpLogServer(new Player[] { player }, held + " group(s) held back on <creserve.", null);
             if (nothing > 0) GamePlay.gpLogServer(new Player[] { player }, nothing + " group(s) had nothing to drop (no bombs, or torpedoes).", null);
             if (told == 0 && held == 0 && nothing == 0) GamePlay.gpLogServer(new Player[] { player }, "No cover airgroups available to drop.", null);
@@ -1951,8 +2255,20 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
             }
             double leadDist = -1;
             if (leader != null) leadDist = CoverCalcs.CalculatePointDistance(airGroup.Pos(), leader.Pos());
-            Console.WriteLine("DROPTRACE {0} t={1:HH:mm:ss.fff} grp={2} bombs={3} cw={4}/{5} act={6} distToWp={7:N0} leadDist={8:N0}",
-                tag, DateTime.UtcNow, airGroup.Name(), CoverCalcs.bombCount(airGroup), cw, nWp, act, distToWp, leadDist);
+            //2026/10 - Step B1: A_BombBayDoor on the group's FIRST aircraft - the ~6s door cycle is the
+            //whole of the <cdrop release latency the player sees, so this column tells us exactly when the
+            //doors opened relative to the moment the bomb count fell.  (Also reveals the value convention -
+            //open = 1? 0? a 0..1 position? - before the B4 prefill via C_BombBayDoor is trusted.)  The
+            //parameter may be -1/unset on some types, in which case it just prints -1 and costs nothing.
+            double bayDoor = -1;
+            try
+            {
+                if (airGroup.GetItems() != null && airGroup.GetItems().Length > 0 && (airGroup.GetItems()[0] as AiAircraft) != null)
+                    bayDoor = (airGroup.GetItems()[0] as AiAircraft).getParameter(part.ParameterTypes.A_BombBayDoor, 0);
+            }
+            catch (Exception exBayRead) { }
+            Console.WriteLine("DROPTRACE {0} t={1:HH:mm:ss.fff} grp={2} bombs={3} cw={4}/{5} act={6} distToWp={7:N0} leadDist={8:N0} bay={9:F3}",
+                tag, DateTime.UtcNow, airGroup.Name(), CoverCalcs.bombCount(airGroup), cw, nWp, act, distToWp, leadDist, bayDoor);
         }
         catch (Exception ex) { Console.WriteLine("Cover dropTrace ERROR! " + ex.ToString()); }
     }
@@ -1974,56 +2290,257 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
         }
     }
 
-    public void dropBombsNow_airGroup(AiAirGroup airGroup, AiAirGroup leader = null)
+    //<cdrop 2026/10 Step E - PRE-OPEN WITHOUT LOSING THE FORMATION.  Log 02F showed the decoy plan
+    //REPLACING the formation plan entirely: because it carried no waypoint targeting the leader, the
+    //group simply flew at a point 10km away and the tight formation fell apart (leadDist drifting
+    //160 -> 670 -> 826m in the DROPTRACE lines), and on one flight they stopped tracking the player's
+    //climb altogether.  So the pre-open plan is now the NORMAL formation waypoint FIRST - the same one
+    //EscortUpdateWaypoints writes, .Target = the leader's aircraft, ~5-6km out on the leader's line -
+    //with the fake GATTACK_POINT behind it purely to keep the engine in attack mode so the doors open.
+    //The moment the release is ordered, dropBombsNow_airGroup() overwrites all of this anyway.
+    public void dropPreOpenBays_airGroup(Player player, AiAirGroup airGroup, AiAirGroup leader)
+    {
+        try
+        {
+            if (player == null || airGroup == null || leader == null) return;
+            if (airGroup.GetItems() == null || airGroup.GetItems().Length == 0) return;
+
+            List<AiWayPoint> wps = new List<AiWayPoint>();
+
+            //1. the ordinary formation waypoint, so they track the leader exactly as they do normally
+            Tuple<AiAirWayPoint, AiAirWayPoint, double> fx = EscortPosWaypoint(player, airGroup, leader, AiAirWayPointType.FOLLOW, -3, 15, true, CoverAGOrders.drop);
+            double vel = 80;
+            if (fx != null)
+            {
+                if (fx.Item3 > 1) vel = fx.Item3;
+                if (fx.Item1 != null) wps.Add(fx.Item1);
+            }
+            if (vel < 40) vel = 40;
+            if (vel > 175) vel = 175;
+            if (wps.Count == 0)
+            {
+                Point3d here = airGroup.Pos();
+                AiAirWayPoint fb = new AiAirWayPoint(ref here, vel);
+                fb.Action = AiAirWayPointType.NORMFLY;
+                wps.Add(fb);
+            }
+
+            //2. the fake GATTACK_POINT coverDropPreOpen_m ahead, purely to hold the bomb bays open
+            Vector3d ldV = leader.Vwld();
+            double vlen = CoverCalcs.CalculatePointDistance(ldV);
+            Point3d dir = new Point3d(0, 1, 0);
+            if (vlen > 0.1) dir = new Point3d(ldV.x / vlen, ldV.y / vlen, 0);
+            Point3d ap = airGroup.Pos();
+            Point3d attackPos = new Point3d(ap.x + dir.x * coverDropPreOpen_m, ap.y + dir.y * coverDropPreOpen_m, ap.z);
+            AiAirWayPoint awp = new AiAirWayPoint(ref attackPos, vel);
+            awp.Action = AiAirWayPointType.GATTACK_POINT;
+            wps.Add(awp);
+
+            //3. a long run behind it, so they never run out of plan - an airgroup with no waypoints
+            //   switches itself to RTB, and an RTB group will neither open its bays nor drop
+            //   (CloDNotes 1f).
+            for (int i = 1; i <= 6; i++)
+            {
+                double gap_m = coverDropPreOpen_m + 2000 + i * 10000;
+                Point3d wp = new Point3d(ap.x + dir.x * gap_m, ap.y + dir.y * gap_m, ap.z);
+                AiAirWayPoint w = new AiAirWayPoint(ref wp, vel);
+                w.Action = AiAirWayPointType.NORMFLY;
+                wps.Add(w);
+            }
+
+            airGroup.SetWay(wps.ToArray());
+            if (mainmission.ON_TESTSERVER)
+                Console.WriteLine("COVER <cdrop PREOPEN: {0} formation waypoint + fake GATTACK_POINT {1:n0}m ahead, {2} bombs, bay={3:F3}, waypoints={4}",
+                    airGroup.Name(), coverDropPreOpen_m, CoverCalcs.bombCount(airGroup), coverDropBayDoorPos(airGroup), wps.Count);
+        }
+        catch (Exception ex) { Console.WriteLine("Cover dropPreOpenBays_airGroup ERROR! " + ex.ToString()); }
+    }
+
+    public void dropBombsNow_airGroup(AiAirGroup airGroup, AiAirGroup leader = null, double runInOverride_m = -1, bool announceAsDrop = true)
     {
         try
         {
             if (airGroup == null || airGroup.GetItems() == null || airGroup.GetItems().Length == 0) return;
 
+            //2026/10 - Step A3: the plan used to pin the group's OWN instantaneous speed and heading
+            //(with an 80 m/s floor!) for the whole 25s hold-off.  That is why in the log the bombers
+            //"speed up a little and change course a little" right after a release - the group was on
+            //the 55-65 m/s formation law but this plan stamped 80+ m/s along its own (slightly
+            //off-axis) heading - and then keepAircraftOnTask_recurs() resumes and they "revert to
+            //normal".  So: keep the formation speed and use the LEADER's heading, so the stick lands
+            //where the leader's stick lands.  (An 80 m/s floor on the release legs is also wrong for
+            //a slow leader - if the leader is at 52 m/s, the group must be at 52 m/s for the bombs
+            //to hit together.)
             Vector3d vwld = airGroup.Vwld();
-            double vel = CoverCalcs.CalculatePointDistance(vwld);
-            if (vel < 80) vel = 80;
+            double vel = 0;
+            bool haveFormationSpeed = false;
+            if (coverAGSpeedRequested.ContainsKey(airGroup))
+            {
+                vel = coverAGSpeedRequested[airGroup];   //the last speed the formation law asked this group for
+                if (vel > 1) haveFormationSpeed = true;
+            }
+            if (!haveFormationSpeed)
+            {
+                vel = CoverCalcs.CalculatePointDistance(vwld);   //fallback: what it was already doing
+                if (vel < 1) vel = 80;
+            }
+            //Mild crash-protection floor: a cover group must never be commanded below ~40 m/s in the
+            //air (see the floors in CurrentPosWaypoint/BomberPosWaypoint, Step A2).
+            if (vel < 40) vel = 40;
             if (vel > 170) vel = 170;
 
-            double vlen = CoverCalcs.CalculatePointDistance(vwld);
+            //Heading: the leader's if we know it, otherwise the group's own.
+            Vector3d dirV = vwld;
+            if (leader != null && leader.GetItems() != null && leader.GetItems().Length > 0)
+            {
+                dirV = leader.Vwld();
+                if (CoverCalcs.CalculatePointDistance(dirV) < 0.5) dirV = vwld;
+            }
+            double vlen = CoverCalcs.CalculatePointDistance(dirV);
             Point3d dir = new Point3d(0, 1, 0);
-            if (vlen > 0.1) dir = new Point3d(vwld.x / vlen, vwld.y / vlen, 0);
+            if (vlen > 0.1) dir = new Point3d(dirV.x / vlen, dirV.y / vlen, 0);
 
             Point3d apos = airGroup.Pos();
             List<AiWayPoint> newWaypoints = new List<AiWayPoint>();
 
-            //1. NORMFLY at exactly where it is now, so the next point becomes current immediately
+            //1. THE LEADING WAYPOINT.  A plain NORMFLY at the aircraft's OWN position, so that the next
+            //   waypoint becomes current immediately.  This is verbatim what the reference test
+            //   (Genghis\Reliable-instant-bomb-drop\bombdrop_test20-return.cs, changeWP()) issues, so
+            //   it is what we had always done - the .FOLLOW variant tried in Step C6 was a wrong
+            //   guess and has been reverted.
+            //   attack_m is the GATTACK_POINT's distance along the heading; NEGATIVE = behind the
+            //   group.  The reference test used 10m behind and found 50m behind behaved the same, so
+            //   the distance genuinely does not matter - what matters is that the bomb-bay doors are
+            //   ALREADY OPEN when this plan arrives (see cdDropPreOpenBays / the wait in
+            //   coverDropReleasePass).
+            double attack_m = (runInOverride_m >= 0) ? runInOverride_m : -coverDropAttackGap_m;
             Point3d wp0pos = new Point3d(apos.x, apos.y, apos.z);
             AiAirWayPoint wp0 = new AiAirWayPoint(ref wp0pos, vel);
             wp0.Action = AiAirWayPointType.NORMFLY;
             newWaypoints.Add(wp0);
 
-            //2. GATTACK_POINT a short distance ahead.  ~35m: confirmed to give an immediate release, and
-            //   comfortably far enough apart not to be swallowed by one slow game tick
-            //   (see Genghis-Class-CloDNotes.cs section 1, "WAYPOINT SPACING").
-            Point3d wp1pos = new Point3d(apos.x + dir.x * 35, apos.y + dir.y * 35, apos.z);
+            //2. THE RELEASE POINT.  2026/10 Step C2: this used to sit 35m ahead of the group.  That is so close
+            //   that the engine's release solution comes out "already passed", and it then drops ONE
+            //   salvo per a/c and latches - measured three times in the 2026-10-02 logs (Wellington
+            //   54->51, and one run with no release at all).  The PROVEN path (BomberPosWaypoint, used
+            //   for the Knickebein / flare / bomb-point modes, which DOES drop a full stick) aims at a
+            //   REAL point the group has to fly TO.  So the release is now a genuine run-in of
+            //   coverDropReleaseRunIn_m along the leader's heading.  The price is that the stick lands
+            //   ~coverDropReleaseRunIn_m past the leader's line, which is exactly what
+            //   coverDropBayLead_s exists to compensate for.  See CloDNotes 1 + the 2026/10 logs.
+            //   2026/10 - Step B2: on the TEST server cdDropPlanTestModeEnum overrides this, so the
+            //   run-in can be compared at 600m / 2000m (GATTACK_POINT_FAR) against the GATTACK_TARG
+            //   variants without a rebuild.  OFF = production.
+            //Step C5 PRE-OPEN passes coverDropPreOpen_m here (runInOverride_m): the very same plan shape,
+            //but aimed a long way AHEAD so the engine opens the bomb bays without them ever reaching
+            //the point.  That is the pre-open attack leg the reference .mis carried.
+            Point3d wp1pos = new Point3d(apos.x + dir.x * attack_m, apos.y + dir.y * attack_m, apos.z);
+            AiAirWayPointType wp1Action = AiAirWayPointType.GATTACK_POINT;
+            AiAirWayPointGAttackPasses wp1Passes = AiAirWayPointGAttackPasses.AUTO;
+            AiAirWayPointGAttackType wp1Type = AiAirWayPointGAttackType.AUTO;
+            if (mainmission.ON_TESTSERVER && cdDropPlanTestModeEnum != cdDropPlanTestMode.OFF)
+            {
+                if (cdDropPlanTestModeEnum == cdDropPlanTestMode.GATTACK_TARG_ALLOUT ||
+                    cdDropPlanTestModeEnum == cdDropPlanTestMode.GATTACK_TARG_FAR)
+                {
+                    wp1Action = AiAirWayPointType.GATTACK_TARG;
+                    wp1Passes = AiAirWayPointGAttackPasses.ALL_OUT;
+                    wp1Type = AiAirWayPointGAttackType.AUTO;
+                }
+                else if (cdDropPlanTestModeEnum == cdDropPlanTestMode.GATTACK_POINT_FAR)
+                {
+                    attack_m = 2000;   //the production recipe, just a long run-in
+                }
+                else //(the GATTACK_POINT enum value; OFF is excluded above) - no-release control
+                {
+                    wp1Action = AiAirWayPointType.NORMFLY;
+                }
+                if (cdDropPlanTestModeEnum == cdDropPlanTestMode.GATTACK_TARG_FAR) attack_m = 2000;
+                wp1pos = new Point3d(apos.x + dir.x * attack_m, apos.y + dir.y * attack_m, apos.z);
+            }
             AiAirWayPoint wp1 = new AiAirWayPoint(ref wp1pos, vel);
-            wp1.Action = AiAirWayPointType.GATTACK_POINT;
+            wp1.Action = wp1Action;
+
+            //2026/10 Step C7 - TYPE/PASSES ARE DELIBERATELY NOT SET HERE, a deliberate reversal of Step C.
+            //   Step C copied GAttackPasses=AUTO / GAttackType=LEVEL onto this waypoint to match
+            //   BomberPosWaypoint, on the theory that the missing fields explained the one-salvo
+            //   latch.  The reference test settles it:  changeWP() in
+            //   Genghis\Reliable-instant-bomb-drop\bombdrop_test20-return.cs sets NEITHER field, never
+            //   calls setTask, and still made EVERY bomber type dump its whole load.  So these fields
+            //   were never the cause; the only variable that matters is the bomb-bay doors being open
+            //   BEFORE this plan arrives.  Only the test modes below still set them.
+            if (wp1Action == AiAirWayPointType.GATTACK_TARG)
+            {
+                wp1.GAttackPasses = wp1Passes;
+                wp1.GAttackType = wp1Type;
+                //deliberately NOT setting wp1.Target: CloDNotes 1c says the sim picks whatever it
+                //finds near the point - for a leader-release that is exactly what we want (the
+                //stick lands on the leader's own position).
+            }
             newWaypoints.Add(wp1);
 
-            //3. then a run of ordinary points continuing along the same heading, purely so they do NOT run
-            //out of waypoints before keepAircraftOnTask_recurs() takes over - an airgroup with an empty
-            //flight plan switches itself to RTB mode and is then useless to us for good.
+            //3. A long NORMFLY continuing along the same heading.  The reference test put its 3rd waypoint
+            //   20km out and then several more at 10km intervals; BomberPosWaypoint uses a single 30km
+            //   leg for the same reason ("most types need to continue straight for a while after
+            //   attack for it to work").  We keep the 30km leg plus the short tail in step 4.
+            Point3d wp2pos = new Point3d(apos.x + dir.x * (attack_m + 30000), apos.y + dir.y * (attack_m + 30000), apos.z);
+            AiAirWayPoint wp2 = new AiAirWayPoint(ref wp2pos, vel);
+            wp2.Action = AiAirWayPointType.NORMFLY;
+            newWaypoints.Add(wp2);
+
+            //4. then a run of ordinary points continuing along the same heading, purely so they do NOT
+            //run out of waypoints before keepAircraftOnTask_recurs() takes over - an airgroup with an
+            //empty flight plan switches itself to RTB mode and is then useless to us for good.
             for (int i = 1; i <= 8; i++)
             {
-                Point3d wpn = new Point3d(apos.x + dir.x * (35 + i * 1500), apos.y + dir.y * (35 + i * 1500), apos.z);
+                //the run starts AFTER both the release point and the 30km leg, so the sim always has a
+                //leg left to fly through
+                double gap_m = attack_m + 31500 + i * 1500;
+                Point3d wpn = new Point3d(apos.x + dir.x * gap_m, apos.y + dir.y * gap_m, apos.z);
                 AiAirWayPoint wp = new AiAirWayPoint(ref wpn, vel);
                 wp.Action = AiAirWayPointType.NORMFLY;
                 newWaypoints.Add(wp);
             }
 
             airGroup.SetWay(newWaypoints.ToArray());
-            airGroup.setTask(AiAirGroupTask.FLY_WAYPOINT, null);
+            //Step C7: NO setTask() call.  The reference test never calls it either, and the proven
+            //ground-attack path (BomberUpdateWaypoints) returns before its own setTask for exactly this
+            //reason - so the release plan is left alone, the same way the path that already worked is.
+
+            //2026/10 - B4 placeholder: the AI's ~6s door cycle is the whole release latency.  We would
+            //like to pre-open the bay via C_BombBayDoor (40), but the IL proves there is NO write
+            //parameter API on AiAircraft - only getParameter(ParameterTypes, Int32) (probed
+            //gameWorld.dll 2026/10: AiAircraft's public instance methods are ...getParameter,
+            //RearmPlane, RefuelPlane, hitLimb... - no setParameter).  So B4 can only LOG the door
+            //position now; if the value convention is later found in an IL dump / a new API, the real
+            //write can slot in here.  ON_TESTSERVER only; cdDropPrefillBombBayDoors stays false.
+            if (mainmission.ON_TESTSERVER && cdDropPrefillBombBayDoors)
+            {
+                try
+                {
+                    foreach (AiActor ba in airGroup.GetItems())
+                    {
+                        if (ba == null || (ba as AiAircraft) == null) continue;
+                        AiAircraft baa = ba as AiAircraft;
+                        double d0 = baa.getParameter(part.ParameterTypes.A_BombBayDoor, 0);
+                        Console.WriteLine("COVER <cdrop B4: {0} bayDoor A={1:F3} (write API not available - see notes)", baa.Name(), d0);
+                    }
+                }
+                catch (Exception exBay) { Console.WriteLine("COVER <cdrop B4 prefill doors ERROR: " + exBay.Message); }
+            }
 
             if (mainmission.ON_TESTSERVER)
             {
-                Console.WriteLine("COVER <cdrop: {0} told to DROP now, {1} bombs, at {2:n0} {3:n0}",
-                    airGroup.Name(), CoverCalcs.bombCount(airGroup), apos.x, apos.y);
+                if (announceAsDrop)
+                    Console.WriteLine("COVER <cdrop: {0} told to DROP now, {1} bombs, at {2:n0} {3:n0} [plan={4} vel={5:F1} formationVel={6} dirLead={7} runIn={8:n0}]",
+                        airGroup.Name(), CoverCalcs.bombCount(airGroup), apos.x, apos.y,
+                        cdDropPlanTestModeEnum.ToString(), vel, haveFormationSpeed,
+                        (leader != null && leader.GetItems() != null && leader.GetItems().Length > 0), attack_m);
+                else
+                    Console.WriteLine("COVER <cdrop PREOPEN: {0} decoy attack point {1:n0}m ahead to hold the bomb bays open, {2} bombs, bay={3:F3}",
+                        airGroup.Name(), attack_m, CoverCalcs.bombCount(airGroup),
+                        (airGroup.GetItems().Length > 0 && (airGroup.GetItems()[0] as AiAircraft) != null)
+                            ? (airGroup.GetItems()[0] as AiAircraft).getParameter(part.ParameterTypes.A_BombBayDoor, 0) : -1);
                 dropTraceLadder(airGroup, leader);
             }
         }
@@ -3151,7 +3668,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
         }
         //<cfdist - the front/back counterpart to <cdist.  <cdist sets the lateral (left/right) spread;
         //this nudges the formation along the leader's heading, so "<cfdist 10" asks them to ride 10m
-        //further ahead of him and "<cfdist -10" 10m further back.  Bare "<cfdist" = back to zero.
+        //ahead of him and "<cfdist -10" 10m behind.  Bare "<cfdist" = back to zero.  +/-3km max.
         else if (msg.StartsWith("<cfdist"))
         {
             double fbd_m = 0;
@@ -3168,11 +3685,11 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             }
             else
             {
-                //keep it sane - anything beyond +/-1km is not a formation any more
-                if (fbd_m > 1000) fbd_m = 1000;
-                if (fbd_m < -1000) fbd_m = -1000;
+                //keep it sane - anything beyond +/-3km is not a formation any more
+                if (fbd_m > 3000) fbd_m = 3000;
+                if (fbd_m < -3000) fbd_m = -3000;
                 coverFrontBackDist_m[player] = fbd_m;
-                string fbstr = (fbd_m > 0 ? fbd_m.ToString("F0") + "m further ahead of you" : fbd_m < 0 ? Math.Abs(fbd_m).ToString("F0") + "m further behind you" : "back to your own position");
+                string fbstr = (fbd_m > 0 ? fbd_m.ToString("F0") + "m ahead of you" : fbd_m < 0 ? Math.Abs(fbd_m).ToString("F0") + "m behind you" : "back to your own position");
                 GamePlay.gpLogServer(new Player[] { player }, ">>>Cover aircraft front/back offset is now " + fbstr + " (<cfdist again to change it)", new object[] { });
             }
 
@@ -3222,7 +3739,16 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             //<cdrop - set the BAM mode too, so the Tab-4-4-4-4-6 "Cover Targeting [..]" label shows
             //what is actually happening.  BAM_enterDropMode does the snapshot + orders + watcher.
             BAM_playerAimMode[player] = BAM_BombAimMode.Drop_When_I_Drop;
-            BAM_enterDropMode(player, msg_orig.Substring(6).Trim());   //"<cdrop 3 6" => msg "3 6"; bare "<cdrop" => every group
+            //<cdrop 2026/10 Step C9 - the chat command is now a PURE ALIAS for the Tab-4 menu: it always means
+            //EVERY group, and any squadron numbers after it are ignored.  The selective "<cdrop 3 6"
+            //scope is gone: it let the chat command and the menu label disagree about who was armed,
+            //and in log 02F a <cdrop that looked bare had armed only some squadrons - which is exactly
+            //how a pass ends up with "detect" firing and nothing being released.  <creserve is still the
+            //way to hold particular squadrons back.
+            string cdropArgsIgnored = msg_orig.Substring(6).Trim();
+            BAM_enterDropMode(player, "");   //blank msg = all groups, exactly what the menu sends
+            if (cdropArgsIgnored.Length > 0 && GamePlay != null)
+                GamePlay.gpLogServer(new Player[] { player }, ">>>COVER: <cdrop always covers ALL your cover groups - squadron numbers after it are ignored. Use <creserve 3 to hold particular squadrons back.", new object[] { });
             if (isOnRepairMission(player)) GamePlay.gpLogServer(new Player[] { player }, ">>>Note: on a repair/restock mission your cover aircraft fly a fixed formation and this will have no effect", new object[] { });
 
         }
@@ -3376,7 +3902,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 "** <creserve OR <cr - stay in RESERVE, joined with you; do not join the current ground attack. Stay in formation, but fighters/sturmovik will leave formation to defend against enemy approaching closely.",
                 "** <cstrict OR <cs - squadrons fly in rigid STRICT, close formation with you, all aircraft at your altitude, close to you (ignoring <cdist), ignores all other action, & ordered to ignore even direct attacks and simply fly in formation with you.",
                 "** <cloiter OR <cl - LOITER in place, circling. Will defend if attacked, but otherwise remain out of the action and awaiting further orders.",
-                "** <cdrop OR <cdro OR Tab-4-4-4-4-6 (Cover Targeting cycles to 'Drop When I Drop') - DROP WHEN I DROP: they hold their bombs and fly in tight formation with you, and the moment you let your first bomb go they release everything at the same time - just as ww2 crews did, with only the leader carrying a bombsight. Squadrons still further back will catch up to your line and release there. They release once per pass, so re-issue <cdrop to re-arm them for another run. Use <creserve 3 to hold particular squadrons back, or <cdrop 3 6 to put only those squadrons on this mode. NOTE: on a server set to unlimited ammo this cannot work at all - use <cdropnow instead.",
+                "** <cdrop OR <cdro OR Tab-4-4-4-4-6 (Cover Targeting cycles to 'Drop When I Drop') - DROP WHEN I DROP: they hold their bombs and fly in tight formation with you, and the moment you let your first bomb go they release everything at the same time - just as ww2 crews did, with only the leader carrying a bombsight. Squadrons still further back will catch up to your line and release there. <cdrop always covers ALL your cover groups (squadron numbers after it are ignored) - use <creserve 3 to hold particular squadrons back. Wait until every group shows GND ATTACK on the chat display, then they are awaiting your drop. Re-issue <cdrop to re-arm them for another run.",
                 "** <cdropnow OR <cbomb - order an IMMEDIATE release from every squadron now, whatever order they are on. Squadrons sitting on <creserve are held back; everything else goes, including <cstrict squadrons.",
                 "<chelp6 for more..."
             };
@@ -3433,7 +3959,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 "** <cover 4 3 heavy x3 - launch a flight of 3 aircraft type #4, loaded with heavy bombs, and repeat this command 3 times",
                 "** <cland 2 4 5 release group #2, #4, and #5.  Get group # from Tab-4 menu or <cpos. <cland (or Tab-4 menu) alone lands all aircraft.",
                 "** <cdist 200 - set cover formation distance 200% normal. <cdist 50 - set cover distance 50% normal. <cdist 1000 - cover distance 10X normal",
-                "** <cfdist 10 - set your cover formation to ride 10m further AHEAD of you (negative = further behind, e.g. <cfdist -100). <cfdist alone resets to your own position. This is the front/back counterpart to <cdist, which sets the left/right spread.",
+                "** <cfdist 10 - set your cover formation to ride 10m AHEAD of you (negative = behind, e.g. <cfdist -100). <cfdist alone resets to your own position. Range is +/-3000m. This is the front/back counterpart to <cdist, which sets the left/right spread.",
                 "<chelp3 for more..."
             };
 
@@ -4988,6 +5514,10 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 
             //This is where we bid farewell to an aircraft if the player has died, left the server, disappeared, etc etc etc.
             //So we need to give it a flightplan make it land and/or fly off the map, then that's all she wrote.
+            //<cdrop Step D - is this group quietly in RTB?  It would neither open its bays nor release,
+            //and it looks from the outside exactly like a group ignoring us.
+            cdRtbProbe(airGroup, player);
+
             if (!coverAircraftAirGroupsActive.ContainsKey(airGroup))
             {
                 EscortMakeLand(airGroup, null);
@@ -5140,7 +5670,19 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             //See Genghis-Class-CloDNotes.cs section 2.
             if (coverAircraftAirGroupsDropIssued.ContainsKey(airGroup))
             {
-                if ((DateTime.UtcNow - coverAircraftAirGroupsDropIssued[airGroup]).TotalSeconds < coverDropHoldFlightPlan_s) return;
+                double heldRec_s = (DateTime.UtcNow - coverAircraftAirGroupsDropIssued[airGroup]).TotalSeconds;
+                if (heldRec_s < coverDropHoldFlightPlan_s)
+                {
+                    //DIAGNOSTIC 2026/10: the logs show the release plan being replaced by a plain
+                    //3-waypoint FOLLOW plan a few seconds after issue, which this early-return is
+                    //supposed to prevent.  Printing every cycle proves whether the hold-off really is
+                    //firing or whether something else is rewriting the plan behind its back.
+                    if (mainmission.ON_TESTSERVER)
+                        Console.WriteLine("COVER <cdrop HOLD: {0} still holding its release plan, {1:F1}s of {2:F0}s left",
+                            airGroup.Name(), coverDropHoldFlightPlan_s - heldRec_s, coverDropHoldFlightPlan_s);
+                    return;
+                }
+                if (mainmission.ON_TESTSERVER) Console.WriteLine("COVER <cdrop HOLD: {0} release hold-off expired after {1:F1}s - formation control resumes", airGroup.Name(), heldRec_s);
                 coverAircraftAirGroupsDropIssued.Remove(airGroup);
             }
 
@@ -5170,6 +5712,31 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 
                 }
                 //Console.WriteLine("Cover KeepAconTask: 791919191");
+
+                //<cdrop 2026/10 Step C5 - PRE-OPEN THE BOMB BAYS.  There is no write-parameter API on
+                //AiAircraft (CloDNotes 4/9b), so the only lever we have on the 5-15s door cycle is to
+                //make the engine believe an attack is imminent: give the group a GATTACK_POINT a long
+                //way ahead, re-issued every cycle so they never actually reach it.  The DROPTRACE bay=
+                //column shows the doors follow the attack waypoint (0 -> 1 within a few seconds).
+                //When the leader drops, coverDropReleasePass() overwrites this with the real release
+                //geometry - and because the bays are already open the release should be near-instant.
+                //OFF by default (cdDropPreOpenBays) because it puts the group into bomb-run attitude
+                //instead of tight formation - A/B it in a test session before turning it on anywhere.
+                if (cdDropPreOpenBays && orders == CoverAGOrders.drop && !coverACContinuingFinalRun &&
+                    isBomberArmed(airGroup) && !airGroup.hasTorpedos() &&
+                    player != null && player.Place() != null && (player.Place() as AiAircraft) != null)
+                {
+                    AiAirGroup preOpenLeader = (player.Place() as AiAircraft).AirGroup();
+                    if (preOpenLeader != null && preOpenLeader != airGroup)
+                    {
+                        //game objects want touching on the mission thread, not on the timer thread
+                        AiAirGroup agPre = airGroup;
+                        AiAirGroup ldPre = preOpenLeader;
+                        Player plPre = player;
+                        Timeout(0.05, () => dropPreOpenBays_airGroup(plPre, agPre, ldPre));
+                        return;   //this cycle's plan IS formation+decoy - do not also write a formation plan
+                    }
+                }
 
                 Point3d newTargetPoint = new Point3d(-1, -1, -1);
 
@@ -5474,6 +6041,16 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                     aawpt = AiAirWayPointType.ESCORT;
                 }
             }
+
+            //2026/10 - hard guard: a heavy bomber must NEVER fly .ESCORT unless the player explicitly
+            //ordered it with <cescort.  .ESCORT makes the group follow the escorted actor's own path,
+            //staying above it like a fighter escort, and it can jettison bombs to get out of the way -
+            //neither is the tight formation flight we want bombers to do with the leader.  Several paths
+            //above can leave aawpt at the .ESCORT default (the fighter default set near the top of this
+            //method, and the spawn calls which pass it explicitly), so force it back to .FOLLOW here,
+            //just before the waypoints are written: a heavy bomber not specifically on <cescort simply
+            //follows the leader.
+            if (heavyBomber && orders != CoverAGOrders.escort && aawpt == AiAirWayPointType.ESCORT) aawpt = AiAirWayPointType.FOLLOW;
 
             EscortUpdateWaypoints(player, airGroup, (player.Place() as AiAircraft).AirGroup(), aawpt, altDiff_m: AltDiffPassed_m, AltDiff_range_m: AltDiffPassed_range_m, nodupe: true, orders: orders);
 
@@ -7276,9 +7853,16 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             Point3d playerAirGroupPos = airGroup.Pos();
             if (playerAirGroup != null) playerAirGroupPos = playerAirGroup.Pos();
 
-            double targetDist_m = CoverCalcs.CalculatePointDistance(airGroup.Pos(), playerAirGroupPos);
+            //<cfdist Option A, bomber path: the bomb AIMPOINT stays exactly as it was (BomberPosWaypoint
+            //targets newTargetPoint below and must not be shifted), but the run-in speed law measured
+            //"distance/angle to the leader" against the raw player position, so <cfdist did nothing on
+            //this path either.  Hand it the same virtual leader point.  playerAirGroup can be null (no
+            //live player group) - then leaderRef stays null and the call behaves exactly as before.
+            Point3d? leaderRef = null;
+            if (playerAirGroup != null) leaderRef = addFrontBackOffset(playerAirGroupPos, Vwld, getFrontBackDist(player));
+            double targetDist_m = CoverCalcs.CalculatePointDistance(airGroup.Pos(), (leaderRef.HasValue ? leaderRef.Value : playerAirGroupPos));
 
-            Tuple<double, double> ret = calcCoverSpeedToMatchMain(airGroup, playerAirGroup, Vwld, target_vel_mps, targetDist_m, heavyBomber, isSturmovik, true, orders, aawpttarget, player);
+            Tuple<double, double> ret = calcCoverSpeedToMatchMain(airGroup, playerAirGroup, Vwld, target_vel_mps, targetDist_m, heavyBomber, isSturmovik, true, orders, aawpttarget, player, leaderRef);
             double vel_mps = ret.Item1;
             double angleTargetToGroup = ret.Item2;
 
@@ -7942,7 +8526,20 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 
 
             if (vel_mps < 15) vel_mps = 70;  //help prevent crashes while a/c circling the airport waiting for main a/c to take off.  Or if it crashes, is dead, etc.
-            if (vel_mps < 55) vel_mps = 55;
+            //2026/10 - Step A2: the fixed 55 m/s floor here is replaced by a leader-relative one,
+            //for the same reason as in CurrentPosWaypoint above: the bomber path's waypoints also
+            //carry the formation speed, and a 55 m/s floor made bombers unable to match a leader
+            //flying 51-52 m/s - they sat 3-7 m/s ahead until the leader sped up.  The 70/maybe-<15
+            //crash-protection above still applies; the absolute floor is 40 and the leader-relative
+            //ceiling on it is 55 (as before), so a fast leader can ask for up to 55+ m/s.
+            double bpFloor_mps = 40;
+            if (playerAirGroup != null)
+            {
+                Vector3d plV = playerAirGroup.Vwld();
+                double plSpeed = CoverCalcs.CalculatePointDistance(plV);
+                if (plSpeed > 1) bpFloor_mps = Math.Min(55, plSpeed * 1.15);
+            }
+            if (vel_mps < bpFloor_mps) vel_mps = bpFloor_mps;
             if (vel_mps > 170) vel_mps = 170;
 
             double minDistance_m = 200;
@@ -8084,6 +8681,46 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
     }
 
 
+    //2026/10 - <cdrop B test (Step B2).  What a leader-release in <cdrop / <cdropnow hands the group:
+    //  GATTACK_POINT     - the old, hand-built immediate pair: NORMFLY at own position +
+    //                      GATTACK_POINT 35m ahead.  Log evidence 2026-10-02: a 3xWellington group
+    //                      released EXACTLY one bomb per a/c and never again for the rest of the
+    //                      mission, no matter how many times a fresh plan was issued (54 -> 51,
+    //                      then 51 forever).  The release IS adopted, so the plan works - the
+    //                      airframe just won't repeat it.  H1: the engine treats one immediate
+    //                      point-attack as one salvo per a/c and marks the attack complete.
+    //  GATTACK_TARG_ALLOUT - a GATTACK_TARG at the same 35m-ahead point with GAttackType = AUTO and
+    //                      GAttackPasses = ALL_OUT - the same pair the proven ground-attack path
+    //                      (BomberPosWaypoint) always sets on its non-dive bombers, which "has
+    //                      always worked well in previous versions".  .Target deliberately NOT
+    //                      set: the sim picks whatever it finds near the point (CloDNotes 1c), so
+    //                      the whole stick releases on the leader's own position - exactly what
+    //                      <cdrop wants.
+    //  GATTACK_TARG_FAR  - GATTACK_TARG + ALL_OUT at a point FAR AHEAD along the leader's heading
+    //                      instead of 35m: the "proper targeting" regime (CloDNotes 1) - the AI
+    //                      is supposed to fly on and run a full bomb pass at that point.  Expected
+    //                      result: a complete stick, centred on a point forward of the release -
+    //                      not on the leader's position.
+    //  OFF               - the GATTACK waypoint is simply a trailing NORMFLY: a control group, to
+    //                      confirm the group still releases nothing even with a full load intact.
+    //No effect unless ON_TESTSERVER - a production server always uses GATTACK_POINT, exactly as
+    //before this change.
+    public enum cdDropPlanTestMode { GATTACK_POINT, GATTACK_TARG_ALLOUT, GATTACK_TARG_FAR, GATTACK_POINT_FAR, OFF }
+    public static cdDropPlanTestMode cdDropPlanTestModeEnum = cdDropPlanTestMode.OFF;
+    public static int cdDropPlanTestMode_switches = 0;
+    public static int cdDropPlanTestMode_switchesAllowed = 5;
+
+    //2026/10 - B1/B4 bomb-bay experiment (Step B1).  ON_TESTSERVER only.
+    //Hypothesis: the release latency of ~6s seen on Wellingtons is the AI cycling the bomb bay
+    //doors itself; if the doors are already open when the GATTACK waypoint becomes current, the
+    //release should come sooner.  A_BombBayDoor (73, per CloDNotes section 4/6) is READ in the
+    //DROPTRACE ladder (the "bay=" column) so we can confirm when the doors open and what the value
+    //convention is.  B4's intended pre-open via C_BombBayDoor (40) is NOT yet possible: the IL proves
+    //AiAircraft has only getParameter - no setParameter - so this flag only LOGS the door position
+    //at issue time, it does not write anything.  Keep it false until a write API / value convention
+    //is established; the DROPTRACE bay= column will give us the convention first.
+    public static bool cdDropPrefillBombBayDoors = false;
+
     //targetAirGroup is (typically) the player who has the cover/escort a/c
     public AiAirWayPoint CurrentPosWaypoint(AiAirGroup airGroup, AiAirGroup targetAirGroup, AiAirWayPointType aawpt = AiAirWayPointType.AATTACK_FIGHTERS, double requested_vel_mps = -1)
     {
@@ -8100,6 +8737,27 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             double vel_mps = CoverCalcs.CalculatePointDistance(Vwld); //Not 100% sure mps is the right unit here?
             double save_vel = vel_mps;
             if (requested_vel_mps >= 0) vel_mps = requested_vel_mps; //if we pass a requested velocity along (as we do for escorts etc) then use that. -1 means, nothing special requested
+
+            //2026/10 - Step A2: the old fixed 55 m/s floor that used to live here was the primary
+            //cause of the observed "drift ahead and sit" behaviour: this is the FIRST waypoint
+            //written, and the speed on the CURRENT waypoint is the one the AI adopts immediately
+            //("when asking AI a/c to change speed it seems to help a lot to put the requested speed
+            //in the CURRENT waypoint, not the NEXT", see the note below).  With the floor at 55 m/s
+            //a formation leader at 51-52 m/s can never be matched - the group held 55 for ~10s of
+            //every ~16s cycle and netted +3..+7 m/s of separation per log (COVERSPEED,
+            //genghis-cover-log-2026-10-02B.log, fbDist 444 -> 1485 in ~2.5 min).  So the floor is
+            //now leader-relative: it still binds while the leader flies slowly enough to matter
+            //and thus still prevents the in-air stalls the fixed floor guarded against, but it no
+            //longer pins the group ahead of a slow leader.  The absolute floor is lowered to 40
+            //to leave the braking bands the room they actually need.
+            double cwFloor_mps = 40;
+            if (targetAirGroup != null)
+            {
+                Vector3d tV = targetAirGroup.Vwld();
+                double tSpeed = CoverCalcs.CalculatePointDistance(tV);
+                if (tSpeed > 1) cwFloor_mps = Math.Min(55, tSpeed * 1.15);
+            }
+            if (vel_mps < cwFloor_mps) vel_mps = cwFloor_mps;
             //when asking AI aircraft ot change speed, it seems to help a lot to put the requested speed in the current waypoint, not the NEXT waypoint.  If you don't
             //put it in the current waypoint, it waits until getting to the next waypoint to change speed.
             //Also . . .hard learned bit of info, the requested airspeed is (apparently?) in IAS *****NOT****** TAS.
@@ -8123,7 +8781,8 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             }
             */
 
-            if (vel_mps < 55) vel_mps = 55;
+            //2026/10 - the old `if (vel_mps < 55) vel_mps = 55;` that lived here is gone: see the
+            //leader-relative floor above (Step A2).  The >175 cap stays.
             if (vel_mps > 175) vel_mps = 175;
 
             Point3d CurrentPos = airGroup.Pos();
@@ -8237,20 +8896,28 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 
                 double target_vel_mps = CoverCalcs.CalculatePointDistance(targetVwld2);
 
-                targetDist_m = CoverCalcs.CalculatePointDistance(airGroup.Pos(), targetAirGroup.Pos());
-                Tuple<double, double> ret = calcCoverSpeedToMatchMain(airGroup, targetAirGroup, Vwld, target_vel_mps, targetDist_m, heavyBomber, false, false, orders, aawpt, player);
+                //<cfdist Option A: build the virtual leader point ONCE (player position + <cfdist along
+                //the leader's heading) and use it for BOTH the speed law and the waypoint base.  The old
+                //code applied the offset to the waypoint alone, which is invisible: a heavy-bomber FOLLOW
+                //waypoint sits ~5-6 km ahead with .Target = the player, and calcCoverSpeedToMatchMain()
+                //equilibrates on the leader's own position - so the formation never moved.  cfdist 0 ->
+                //leaderRef == targetAirGroup.Pos(), so nothing changes unless <cfdist is actually set.
+                Point3d leaderRef = addFrontBackOffset(targetAirGroup.Pos(), targetVwld, getFrontBackDist(player));
+
+                targetDist_m = CoverCalcs.CalculatePointDistance(airGroup.Pos(), leaderRef);
+                Tuple<double, double> ret = calcCoverSpeedToMatchMain(airGroup, targetAirGroup, Vwld, target_vel_mps, targetDist_m, heavyBomber, false, false, orders, aawpt, player, leaderRef);
                 vel_mps = ret.Item1;
                 double angleTargetToGroup = ret.Item2;
 
 
-                CurrentPos = targetAirGroup.Pos();
+                //<cfdist Option A: base the waypoint on leaderRef too, so the whole flight plan (this
+                //point, savePos_offset, LongPos and the trailing run) is centred on the virtual leader
+                //point.  The old standalone addFrontBackOffset() call is GONE - the offset is already in
+                //leaderRef, and re-applying it here would double it.  calcOffset_m() still does the
+                //lateral (left/right) shift, which is an independent axis.
+                CurrentPos = leaderRef;
                 Point3d savePos = CurrentPos;
                 CurrentPos = calcOffset_m(CurrentPos, airGroup, player, targetVwld, target_vel_mps, offsetDirection.left_right); //shift this airgroup a little left or right depending on which a/g it is and what other a/gs of its type are also flying with this player
-                //<cfdist - ...and calcOffset_m() only knows about the lateral axis.  Apply the player's
-                //<cfdist offset ALONG the leader's heading here, before savePos_offset, so that both
-                //the LongPos variants below and the target point itself inherit it.  targetVwld is the
-                //leader's velocity, i.e. the right axis for "ahead of / behind me".
-                CurrentPos = addFrontBackOffset(CurrentPos, targetVwld, getFrontBackDist(player));
 
                 Point3d savePos_offset = CurrentPos;
                 //GamePlay.gpLogServer(null, "PosE: " + savePos.x.ToString("F0") + " " + savePos.y.ToString("F0") + " " + savePos.z.ToString("F0") + ":"
@@ -8492,7 +9159,12 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
     //Calculate the speed needed for the cover group to catch up to and then fly along with the player/target group.
     //Speed up a lot when far behind, slow down when ahead, gradually match target a/c speed when close in front or behind
     //return new Tuple<double,double> (vel_mps, angleTargetToGroup);
-    public Tuple<double, double> calcCoverSpeedToMatchMain(AiAirGroup airGroup, AiAirGroup targetAirGroup, Vector3d Vwld, double target_vel_mps_TAS, double targetDist_m, bool heavyBomber, bool isSturmovik, bool hasGroundTarget, CoverAGOrders orders,  AiAirWayPointType aawpt, Player player)
+    //2026/10 - Step C (<cfdist, Option A): leaderRef lets the caller hand in the VIRTUAL leader point
+    //(the player's position + <cfdist along the player's heading).  Everything below then measures
+    //"distance to / angle to the leader" against THAT, so the speed law's resting point actually moves
+    //with <cfdist.  Without this the offset only nudged a ~5-6 km-ahead FOLLOW waypoint and had no
+    //visible effect.  leaderRef == null => exactly the old behaviour (targetAirGroup.Pos()).
+    public Tuple<double, double> calcCoverSpeedToMatchMain(AiAirGroup airGroup, AiAirGroup targetAirGroup, Vector3d Vwld, double target_vel_mps_TAS, double targetDist_m, bool heavyBomber, bool isSturmovik, bool hasGroundTarget, CoverAGOrders orders,  AiAirWayPointType aawpt, Player player, Point3d? leaderRef = null)
     {
         try
         {
@@ -8517,6 +9189,9 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 
             Point3d targetPos = new Point3d(0, 0, 0);
             if (targetAirGroup != null) targetPos = targetAirGroup.Pos();
+            //<cfdist Option A: when the caller supplied a virtual leader point, settle/converge on THAT
+            //(leader position + cfdist along the leader's heading) instead of the leader's raw position.
+            if (leaderRef != null) targetPos = leaderRef.Value;
 
             Point3d deltaPosTarget = new Point3d((airGroup.Pos().x - targetPos.x), (airGroup.Pos().y - targetPos.y), 0);
             /*
@@ -8688,6 +9363,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             //previous version - it goes in before the clamps, so the [45,175] limits still bound it.
             double coverSpeedRatio = 1.0;
             double coverLastAsked = 0;
+            int coverRatioDiscardedThisCycle = 0;
             try
             {
                 if (coverAGSpeedRequested.ContainsKey(airGroup))
@@ -8696,11 +9372,34 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                     coverLastAsked = lastAsked;
                     if (lastAsked > 5 && ag_vel_mps > 5)
                     {
-                        double observed = ag_vel_mps / lastAsked;
-                        if (observed < coverAGSpeedRatioMin) observed = coverAGSpeedRatioMin;
-                        if (observed > coverAGSpeedRatioMax) observed = coverAGSpeedRatioMax;
-                        double prevRatio = coverAGSpeedRatio.ContainsKey(airGroup) ? coverAGSpeedRatio[airGroup] : 1.0;
-                        coverAGSpeedRatio[airGroup] = (prevRatio * (1.0 - coverAGSpeedRatioNewWeight)) + (observed * coverAGSpeedRatioNewWeight);
+                        //2026/10 - Step A4, gate 1 (transient): a sample is only "honest" when the
+                        //aircraft is actually cruising AT the speed it was last commanded for.  While
+                        //it is still turning/climbing toward that command, |ag_vel - lastAsked| is a
+                        //transient, not a delivery shortfall, and folding it in poisoned the estimate
+                        //(genghis-cover-log-2026-10-02B.log: the ratio ratcheted 1.085 -> 1.137 through
+                        //a braking phase and then stayed high into the next acceleration).
+                        if (Math.Abs(ag_vel_mps - lastAsked) <= coverAGSpeedRatioTransientDelta_mps)
+                        {
+                            double observed = ag_vel_mps / lastAsked;
+                            //gate 2 (out-of-band): a ratio beyond the trust band is NOT a real delivery
+                            //fraction - clamp it INTO the average and it lingers for ~7 samples.  Discard
+                            //it instead; the stored estimate is left exactly where it was.
+                            if (observed < coverAGSpeedRatioMin || observed > coverAGSpeedRatioMax)
+                            {
+                                coverRatioDiscardedThisCycle++;
+                                coverAGSpeedRatioDiscardedCount++;
+                            }
+                            else
+                            {
+                                double prevRatio = coverAGSpeedRatio.ContainsKey(airGroup) ? coverAGSpeedRatio[airGroup] : 1.0;
+                                coverAGSpeedRatio[airGroup] = (prevRatio * (1.0 - coverAGSpeedRatioNewWeight)) + (observed * coverAGSpeedRatioNewWeight);
+                            }
+                        }
+                        else
+                        {
+                            coverRatioDiscardedThisCycle++;
+                            coverAGSpeedRatioDiscardedCount++;
+                        }
                     }
                 }
                 if (coverAGSpeedRatio.ContainsKey(airGroup))
@@ -8710,15 +9409,23 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                     if (coverSpeedRatio > coverAGSpeedRatioMax) coverSpeedRatio = coverAGSpeedRatioMax;
                     vel_mps = vel_mps / coverSpeedRatio;
                 }
-                coverAGSpeedRequested[airGroup] = vel_mps;
+                //NB the denominator is NOT stored here any more - see Step A4 below the clamps.  The old
+                //line stored the pre-clamp value, so a clamped cycle (e.g. the <15 => 75 ground guard)
+                //poisoned the next sample by exactly that clamp ratio.
             }
             catch (Exception ex) { Console.WriteLine("Cover speed ratio calibration ERROR: " + ex.ToString()); }
 
-            if (mainmission.ON_TESTSERVER) Console.WriteLine("Cover speed ratio: {0} at {1:N0}m (last asked {2:N0}, actually flew {3:N0}, ratio {4:F3}, now asking {5:N0} for a wanted {6:N0})", airGroup.Name(), targetDist_m, coverLastAsked, ag_vel_mps, coverSpeedRatio, vel_mps, vel_mps * coverSpeedRatio);
+            if (mainmission.ON_TESTSERVER) Console.WriteLine("Cover speed ratio: {0} at {1:N0}m (last asked {2:N0}, actually flew {3:N0}, ratio {4:F3}, now asking {5:N0} for a wanted {6:N0}, discarded this cycle {7})", airGroup.Name(), targetDist_m, coverLastAsked, ag_vel_mps, coverSpeedRatio, vel_mps, vel_mps * coverSpeedRatio, coverRatioDiscardedThisCycle);
 
             if (vel_mps < 45) vel_mps = 45;
             if (vel_mps > 175) vel_mps = 175;
             if (target_vel_mps_TAS < 15 && vel_mps < 75) vel_mps = 75;  //faster speed here to help prevent crashes while a/c circling the airport waiting for main a/c to take off.  Or if it crashes, is dead, etc.
+
+            //2026/10 - Step A4, gate 3 (denominator): coverAGSpeedRequested now stores the FINAL clamped
+            //command - the speed actually written to the waypoints - not the pre-clamp value.  The ratio
+            //learn step divides the group's actual speed by this, so if a clamp fired this cycle the
+            //denominator was previously wrong by exactly that clamp and the next sample was biased.
+            coverAGSpeedRequested[airGroup] = vel_mps;
 
             //DIAGNOSTIC (ON_TESTSERVER) - one line per group per ~16s cycle summarising every stage of
             //the speed decision, so the formation oscillation can be read off directly instead of

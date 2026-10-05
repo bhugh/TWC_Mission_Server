@@ -66,11 +66,19 @@
  *
  *   - In the FMB waypoint menu, GATTACK_POINT GREYS OUT both TYPE and PASSES - they cannot be
  *     selected, and the engine ignores them.  GATTACK_TARG makes them available.              [GAME]
- *     => do NOT bother setting GAttackType / GAttackPasses on a GATTACK_POINT waypoint.  A plan
- *        to use GAttackPasses.ALL_OUT to force a full release is a NO-OP on a point waypoint.
+ *     => In the FMB they cannot be set on a point waypoint, and using GAttackPasses.ALL_OUT to
+ *        force a full release is a NO-OP on a point waypoint.  SEE THE CAVEAT BELOW: the proven
+ *        ground-attack path nevertheless writes AUTO/LEVEL on its point waypoints, and the <cdrop
+ *        path now does the same (Step C) - whether that is what fixes the 1-bomb latch is under
+ *        test, not established.
  *   - AiAirWayPoint.GAttackPasses = {AUTO=0, _1=1, _2=2, _3=3, _4=4, ALL_OUT=5}                [IL]
  *     AiAirWayPoint.GAttackType   = {AUTO=0, LEVEL=1, DIVE=2, TOP_MAST=3, SHALLOW_DIVE=4}    [IL]
  *     Both are public FIELDS on AiAirWayPoint; only settable usefully on GATTACK_TARG.         [IL]
+ *     CAVEAT 2026/10 - SUPERSEDED, see 1e.  For a while we copied BomberPosWaypoint's
+ *     GAttackPasses=AUTO / GAttackType=LEVEL onto the <cdrop release waypoint on the theory that the
+ *     missing fields caused the one-salvo latch.  The reference test settles it: it sets NEITHER
+ *     field and still dumps every bomber's whole load, so those fields were never the cause and
+ *     Step C7 has REVERTED them.  TYPE/PASSES remain irrelevant to a point waypoint, as first noted.
  *   - RELEASE IS ALL-OR-NOTHING: tested with NORMFLY then successive GATTACK_POINTs, every
  *     aircraft with bombs dropped its WHOLE load on the first attack point - Weltingtons,
  *     Blenheims, all of them - regardless of how many passes were set, and regardless of whether
@@ -90,6 +98,38 @@
  *   - FMB CAVEAT: making a mission and playing it straight away on the same machine sometimes
  *     behaves differently from a real multiplayer server.  Worth re-confirming anything crucial
  *     (BombSpacing was checked on the server and behaved the same).                           [GAME]
+ *
+ *   - 2026/10 LOG-B FINDING - the all-or-nothing claim above was measured on the FMB/mission path
+ *     (waypoints the .mis already carried).  It does NOT necessarily transfer to the runtime case:
+ *     when CLoD hand-builds the immediate pair and SetWay()s it MID-FLIGHT, at the group's own
+ *     position, with a ~35m gap, a 3xWellington group released EXACTLY ONE bomb per a/c and then
+ *     LATCHED - 54 -> 51, and 51 forever for the rest of the mission, through 21 re-issues of a
+ *     fresh plan.  The bays closed around the 51 remaining bombs and never reopened.  The release
+ *     was adopted (the plan is visible on the group), so it is not a rejected waypoint - it is the
+ *     engine treating one immediate point-attack as one salvo per a/c and then marking the attack
+ *     done.  H1: the GATTACK_POINT immediate pair is a no-repeat salvo.  Under test (see the
+ *     cdDropPlanTestMode enum in Genghis-Class-CoverMission.cs): GATTACK_TARG with
+ *     GAttackType=AUTO + GAttackPasses=ALL_OUT, at the same point and also far ahead, to see
+ *     whether those settings - which are greyed out in FMB for GATTACK_POINT but are settable on
+ *     GATTACK_TARG, and are exactly what the proven ground-attack path always sets - force a full
+ *     stick instead.  A runtime-spawned airgroup also has NO BombSpacing (see 1d), which is the
+ *     classic signature of a single-bomb-per-aircraft salvo; so 1d and this finding may be the same
+ *     defect seen from two angles.                                                            [GAME]
+ *   - 2026/10 STEP C (applied - and it did NOT fix this on its own): dropBombsNow_airGroup now
+ *     writes GAttackPasses=AUTO + GAttackType=LEVEL on its GATTACK_POINT waypoint, exactly as the
+ *     proven path does, so TYPE/PASSES are no longer a difference between <cdrop and the
+ *     Knickebein / flare-point path.  The 2026-10-02 logs still show a Wellington group going
+ *     54 -> 51 (ONE salvo) and latching, and one run with NO release at all.                    [GAME]
+ *   - 2026/10 STEP C2 (applied, then SUPERSEDED - see 1e): the theory at this point was that what was
+ *     left was the RELEASE GEOMETRY, and the release was changed to a 600m run-in.  The reference
+ *     test later showed the geometry is NOT the variable (10m and 50m behave identically, and 600m
+ *     did not fix it either), so C2's geometry is no longer treated as the fix.
+ *   - 2026/10 STEPS C7 + C8 (applied) - the real answer, and it is the doors:  dropBombsNow_airGroup
+ *     now reproduces the reference test's plan exactly (NORMFLY at its own position, GATTACK_POINT
+ *     50m behind, long trailing NORMFLY) and, crucially, sets NEITHER GAttackPasses/GAttackType and
+ *     no longer calls setTask - so Step C's TYPE/PASSES change has been reverted.  The doors are held
+ *     open beforehand by cdDropPreOpenBays, and coverDropReleasePass() then WAITS (no timeout) until
+ *     the group's A_BombBayDoor reads open before releasing.  Full details in 1e.                [CODE]
  *
  *
  *   ================================================================================================
@@ -121,6 +161,86 @@
  *   - Set at spawn time, so it applies for that aircraft's whole life.  There is no way to
  *     change it once the aircraft exists, and no runtime control for it.                        [GAME]
  *
+ *
+ *   ================================================================================================
+ *   1e.  THE PROVEN FULL-LOAD RELEASE RECIPE  (the "reliable instant bomb drop")
+ *   ================================================================================================
+ *
+ *   - REFERENCE TEST, kept in the repo:  Genghis\Reliable-instant-bomb-drop\  (bombdrop_test20-
+ *     return.mis + bombdrop_test20-return.cs).  A full-mission-builder mission built by the mission
+ *     owner, and the ONLY configuration found so far in which EVERY bomber type dumps its WHOLE load
+ *     on demand.  Types covered: Blenheim MkI/MkIV, Ju-88C/A, Wellington MkIc, He-111P, BR-20M,
+ *     Do-17Z.                                                                                 [GAME]
+ *
+ *   - THE SEQUENCE, exactly as the test does it:
+ *       #1  Give the group a GATTACK_POINT a LONG way ahead (the .mis used one ~41km out).
+ *       #2  ALL types reliably OPEN their bomb-bay doors once they are ~10km from that point.
+ *       #3  WAIT until the doors are fully open.
+ *       #4  THEN issue a fresh flight plan:
+ *               waypoint 1:  NORMFLY        at the group's CURRENT position (zero length)
+ *               waypoint 2:  GATTACK_POINT  10-50m BEHIND it
+ *               waypoint 3:  NORMFLY        ~10-20km further on, plus a few more like it
+ *           Every bomber then dropped its full load THE MOMENT waypoint 2 was reached, all squadrons
+ *           simultaneously.  10m and 50m behind were both tested and behaved the same.        [GAME]
+ *
+ *   - WHY it works, and why ours did not - this is the whole answer to the "one salvo then latch"
+ *     problem, and it retires several earlier theories:
+ *       * The RELEASE GEOMETRY IS NOT THE VARIABLE.  We have now tried 0m, 35m, 600m and 2000m of
+ *         run-in; the reference test found 10m and 50m identical.  Distance does not matter, which
+ *         retires Steps C2 and C6 as "the fix" (their geometry was not wrong, just irrelevant).
+ *       * TYPE / PASSES ARE NOT THE VARIABLE.  The reference test sets NEITHER GAttackPasses nor
+ *         GAttackType, and never calls setTask - yet it works on every type.  Step C's attempt to
+ *         copy BomberPosWaypoint's AUTO/LEVEL onto the release waypoint has therefore been REVERTED
+ *         (Step C7).  §1b's "TYPE/PASSES are a no-op on a point waypoint" was not wrong - it was
+ *         simply never the problem.
+ *       * THE DOORS ARE THE VARIABLE.  Our plan arrives while the bays are still shut; the engine
+ *         consumes the attack waypoint, opens the doors 3-15s later (Wellington ~3-6s, Ju-88
+ *         ~10-15s, measured from the DROPTRACE bay= column), and by then the release point is BEHIND
+ *         the aircraft - an "already passed" solution, so it lets go once and marks the attack done.
+ *         That is precisely the 54 -> 51 in the 2026-10-02 logs, and the one run with no release at
+ *         all (its doors never finished opening before the plan was replaced).                [GAME]
+ *
+ *   - SO, IN CODE:  cdDropPreOpenBays (ON) keeps an attack waypoint live ~coverDropPreOpen_m (10km)
+ *     ahead of each armed group, re-issued every cycle so it is never reached, and
+ *     coverDropReleasePass() WAITS - with no timeout, as the mission owner specified - until that
+ *     group's A_BombBayDoor actually reads open (coverDropBayOpenThreshold) before issuing the
+ *     release.  A group whose door parameter never moves is released anyway after
+ *     coverDropBayWaitFallback_s, purely as a deadlock escape.                              [CODE]
+ *
+ *   - STILL OPEN: keeping an attack waypoint live puts the group into bomb-run attitude rather than
+ *     tight formation.  That is the price of the only mechanism known to work; worth watching for a
+ *     test session.                                                                      [CODE]
+ *
+ *   ================================================================================================
+ *   1f.  TASK .RETURN (RTB) - WHY A GROUP WILL NOT OPEN ITS BAYS OR RELEASE
+ *   ================================================================================================
+ *
+ *   - OBSERVED: once an airgroup is in task .RETURN it will not open its bomb bays and will not drop,
+ *     even when we hand it a GATTACK_POINT plan.  Sometimes the correct task shows briefly and then
+ *     reverts to .RETURN.  This has been seen with GATTACK_POINT and GATTACK_AREA plans, and also
+ *     with the plain <cdrop release.                                                      [GAME]
+ *
+ *   - SO IT MATTERS TWICE OVER for <cdrop:  a group that has gone RTB looks, from the outside,
+ *     exactly like a group that is ignoring us, and it can never be recovered by another waypoint -
+ *     EscortMakeLand/coverACContinuingFinalRun comment already notes that "once in that mode you
+ *     can't get them back out for love nor money".
+ *
+ *   - WHY THEY DO IT IS STILL AN OPEN MYSTERY.  The candidates we can think of, none of them yet
+ *     proven:  low fuel;  damage;  running out of waypoints (no current waypoint);  a formation that
+ *     has split up too far;  abrupt direction changes leaving them "upset".  It also happens when
+ *     none of those should apply.  Any of these is easy to CONFIRM or KILL with the log, which is
+ *     why cdRtbProbe() exists now.                                                       [GAME]
+ *
+ *   - THE PROBE (ON_TESTSERVER):  keepAircraftOnTask_recurs() calls cdRtbProbe() every cycle, which
+ *     logs any cover group sitting in task .RETURN - name, waypoint count, current waypoint index,
+ *     bombs left, FUEL, distance to the leader, and whether WE released it (i.e. whether the switch
+ *     was ours via EscortMakeLand at >42km, or the engine did it to itself).  One line per group
+ *     per 30s.  That last field is the important one: "releasedByUs=False" means the engine
+ *     switched them and we have a genuine mystery to chase.                                [CODE]
+ *
+ *   - PREVENTION, meanwhile:  the code now never issues a short or empty flight plan.  An airgroup
+ *     with no waypoints switches itself to RTB, so both the release plan and the pre-open decoy plan
+ *     carry a long tail of NORMFLY points.                                               [CODE]
  *
  *   ================================================================================================
  *   2.  THE ~16 SECOND WAYPOINT OVERWRITE  (a silent-failure trap)
@@ -179,6 +299,14 @@
  *     This is why the manual <cdropnow / <cbomb command exists - it is the only way to run a
  *     drop formation on an unlimited-ammo server.
  *
+ *   - *** SERVER MAINTAINERS: DO NOT SET THIS SERVER TO UNLIMITED AMMO. ***  <cdrop's whole design
+ *     depends on noticing the LEADER's bomb count fall, and on an unlimited-ammo server it can never
+ *     happen, so the automatic release simply never fires and every squadron silently holds its
+ *     bombs.  This is a server configuration requirement, not a player setting, so the warning to
+ *     players has been REMOVED from the chat messages and from <chelp (2026/10) - the live server is
+ *     never in that mode, so telling players about it was only noise.  If you ever need unlimited
+ *     ammo here, expect <cdrop to be non-functional and use <cdropnow instead.          [CODE]
+ *
  *   - hasBombs() is separately SUSPECT: it has been seen reporting "Has bombs" for an aircraft
  *     that had already released its whole load.  Treat it as unreliable for anything that
  *     matters; prefer CoverCalcs.bombCount().                                                  [GAME]
@@ -195,8 +323,14 @@
  *              S_GunReserve  = 107
  *              S_GunClipReserve = 108
  *              S_Bombenabwurfgerat = 112   (German: "bomb release mechanism")
- *       C_  = control, writable
+ *       C_  = control (the C_ prefix says CONTROL - NOT proven writable)
  *              C_BombBayDoor = 40, C_BombSight
+ *     NB "writable" was assumed from the C_ prefix.  IL-verified 2026/10: AiAircraft's public
+ *     instance methods are getParameter(ParameterTypes,Int32), RearmPlane, RefuelPlane, hitLimb,
+ *     cutLimb, hitNamed, hitSelfNamed, SayToGroup, ...  There is NO setParameter / write-parameter
+ *     method at all.  So C_-prefixed parameters are NOT actually writable through the API as
+ *     exposed - the "writable" claim must be treated as unverified until a write path is found.
+ *     (This kills the Step-B4 "pre-open the bomb bays via C_BombBayDoor" plan; see section 9b.)  [IL]
  *       A_  = animated / actual position
  *              A_BombBayDoor = 73
  *       I_  = instrument readout
@@ -313,6 +447,41 @@
  *     should fly WITH the leader.
  *   - FIX 2: apply the convergence override only when !inFront, so the braking bands survive.
  *
+ *   *** 2026/10 LOG-B FINDINGS - THREE MORE CAUSES OF "DRIFT AHEAD AND SIT", PLUS A HARD GUARD. ***
+ *   A 3xWellington run (genghis-cover-log-2026-10-02B.log, leader at 51-56 m/s) showed the group
+ *   closing from 3.4km behind, crossing to IN FRONT, then drifting out to 1.5km AHEAD and sitting
+ *   there - until the player's own speed rose above ~56 m/s, whereupon the gap finally closed.
+ *   pacePlayer was NEVER false (the .ESCORT runaway of the bullet above did not fire), so this is a
+ *   different defect, and the log shows three independent causes:
+ *   - CAUSE A - the fixed 55 m/s FLOOR in CurrentPosWaypoint() / BomberPosWaypoint().  This is the
+ *     FIRST waypoint written and its speed is the one the AI adopts immediately, so for ~10s of every
+ *     ~16s cycle the group was forced to >= 55 m/s no matter what the bands asked.  At a 51-52 m/s
+ *     leader that is +3..+7 m/s of net separation, which is almost exactly the 444 -> 1485 m drift
+ *     measured.  FIX (done): the floor is now leader-relative - 40 m/s absolute, or Min(55,
+ *     leader_speed * 1.15) when a leader is known.  It still binds for a slow leader (the in-air
+ *     stall it guarded against) but can no longer pin the group ahead of a slow one.
+ *   - CAUSE B - the in-front AIM POINT lead.  In EscortPosWaypoint(), when a group is already ahead
+ *     (angleTargetToGroup 120..240) the target point is pushed FURTHER ahead by targetVwld2 * 90 or
+ *     * 120 - i.e. 90-120 SECONDS of the leader's RAW instantaneous velocity (up to ~10.8km at 90
+ *     m/s).  That points a group that is already ahead at a point yet further ahead.  This is the
+ *     remembered "aim at where it should be in N seconds" approach - present, but with N far too
+ *     large, derived from raw velocity (so it swings on turns), and its SIGN inverted when in front.
+ *     DEFERRED by decision: run one test-server session after CAUSE A is fixed and read the log
+ *     before choosing the in-front lead sign (aim at the leader vs ~10s behind vs capped-30s-ahead).
+ *   - CAUSE C - the per-airgroup ratio sampler (below) folded TRANSIENTS and OUT-OF-BAND samples
+ *     into the rolling average, so the estimate ratcheted to its 1.15 clamp through a braking phase
+ *     and stayed high into the next acceleration, fighting the bands in both directions; and it
+ *     stored the PRE-clamp command as the denominator, biasing the next sample whenever a clamp
+ *     fired.  FIX (done, Step A4): samples outside |ag_vel - lastAsked| <= 4 m/s are DISCARDED,
+ *     out-of-band ratios are discarded rather than clamped-in, and coverAGSpeedRequested now stores
+ *     the FINAL clamped command.  A "discarded this cycle N" counter is on the COVERSPEED line.
+ *   - HARD GUARD (done, Step A1): a heavy bomber is now forced OFF .ESCORT (back to .FOLLOW) before
+ *     its waypoints are written unless the player explicitly set <cescort.  .ESCORT makes the group
+ *     follow the escorted actor's own path, staying above it like a fighter, and it can jettison
+ *     bombs to get clear - neither is the tight formation flight a cover bomber should do.  Several
+ *     paths could leave aawpt at the .ESCORT default (the fighter default near the top of
+ *     keepAircraftOnTask_recurs, and the spawn calls), so the guard sits at the very last moment.
+ *
  *   *** WHY ONE GLOBAL bias IS THE WRONG ANSWER ***                                         [CODE]
  *   - The ~2% shortfall in section 7 is an AVERAGE, and it MOVES - with altitude, with aircraft
  *     type, and most of all with bomb load: a bomber that has just dumped its load is aerodynamically
@@ -412,6 +581,26 @@
  *   - Suspected fix (NOT yet done - awaiting data): replace the near-field bands with a single
  *     symmetric proportional law on front/back offset, deadbanded ~30-50m, keyed to <cfdist, keep
  *     the big catch-up bands only beyond ~1200m, and retire coverFormationSpeedBias.
+ *   - <cfdist 2026/10 (Step C, "Option A"): <cfdist did nothing because the offset was applied to
+ *     the escort WAYPOINT only.  A heavy-bomber FOLLOW waypoint sits ~5-6 km ahead with
+ *     .Target = the player, and calcCoverSpeedToMatchMain() equilibrates on the leader's RAW
+ *     position - so a +-1000m nudge on the waypoint never moved the resting point.  Now both the
+ *     escort path (EscortPosWaypoint) and the bomber run-in path build ONE "virtual leader point"
+ *     = player position + <cfdist along the player's heading, and feed it BOTH to the waypoint
+ *     base AND to calcCoverSpeedToMatchMain() (new optional leaderRef parameter).  So <cfdist now
+ *     shifts where the formation actually sits, ahead (+) or behind (-), with everything else
+ *     unchanged; cfdist 0 => leaderRef == the player position => old behaviour exactly.  The bomb
+ *     AIMPOINT is deliberately never shifted.                                                   [CODE]
+ *   - 2026/10 STATUS - what HAS changed vs this list, and what is deliberately held for the next log:
+ *       * DONE (Step A2): the 55 m/s floor is now leader-relative (40 absolute / Min(55, leader*1.15)).
+ *       * DONE (Step A4): the ratio sampler now DISCARDS transients (|ag_vel - lastAsked| > 4 m/s) and
+ *         out-of-band samples instead of folding them in, and stores the final clamped command as its
+ *         denominator.  A "discarded this cycle N" counter is on the COVERSPEED line.
+ *       * DONE (Step A1): heavy bombers are forced off .ESCORT back to .FOLLOW unless <cescort.
+ *       * DEFERRED by decision (Step A5): the in-front aim-point lead (the 90/120 s targetVwld2 lead in
+ *         EscortPosWaypoint) is NOT yet changed.  Run one test-server session after the A2/A4/A1 fixes
+ *         and read the log before choosing the in-front lead sign (aim at the leader vs ~10s behind vs
+ *         capped-30s-ahead).  The proportional near-field law above stays not-done, for the same reason.
  *
  *   *** (b) <cdrop / <cdropnow RELEASE LATENCY. ***
  *   - Our own latency is under a second: a 750ms bombCount() poll plus Timeout(0.05).  So the
@@ -422,15 +611,83 @@
  *     position.  The trailing NORMFLYs are 1500m apart (~20s each), which bounds the worst case. [??]
  *   - If confirmed, the fix is to shorten the leg the aircraft is already flying.  If instead the
  *     new GATTACK_POINT becomes current within a tick and the bombs STILL do not go, the delay is
- *     in the AI's release logic and no waypoint trick will help - the way out would then be a
- *     WRITABLE bomb-release parameter, since C_-prefixed types are writable (see section 4).
+ *     in the AI's release logic and no waypoint trick will help.  NOTE 2026/10: the once-suspected
+ *     "writable bomb-release parameter" is NOT available - IL proves AiAircraft has no setParameter
+ *     (section 4), so the C_-prefixed "writable" assumption was wrong.  The release latency we have
+ *     measured is the ~6s BOMB BAY DOOR cycle, and the only lever on it is to TIME the player's own
+ *     release (Step B1's chat note) or, eventually, to find a real door write path in the IL.
+ *   - 2026/10 STATUS - release latency: confirmed to be the BOMB BAY DOOR cycle (~6s on Wellingtons),
+ *     not a plan-adoption problem (the release IS adopted, per the DROPTRACE nWp/cw columns).  Step A3
+ *     made the release legs inherit the FORMATION speed and the LEADER's heading instead of the group's
+ *     own 80 m/s-stamped heading, so they no longer "speed up a little and change course a little" after
+ *     a release.  Step B1 (a) reads A_BombBayDoor into the DROPTRACE "bay=" column so the exact door
+ *     timing and value convention are measurable; (b) tells the player in chat that bombers need ~6s to
+ *     open their bays, so they should let their own first bomb go a moment AFTER the release command.
+ *     Step B4 is a LOG-ONLY placeholder (flag, OFF by default): IL proves there is no write-parameter
+ *     API (AiAircraft has no setParameter), so it cannot pre-open the bays yet - it only logs the door
+ *     position.  The bay= column in DROPTRACE is what first has to tell us the value convention and
+ *     when the doors actually open, before any real pre-open can be attempted.
  *
  *   - DIAGNOSTICS ADDED, both ON_TESTSERVER only:  COVERSPEED logs every stage of the speed
- *     decision for one group per cycle, including the effective multiplier and whether the strict
- *     override fired;  DROPTRACE logs a release-latency ladder (detect, issue, +1/3/6/10/15/20/30s)
- *     with the group's CURRENT waypoint index, action and distance to it.
+ *     decision for one group per cycle, including the effective multiplier, whether the strict
+ *     override fired, and how many ratio samples were discarded this cycle;  DROPTRACE logs a
+ *     release-latency ladder (detect, issue, +1/3/6/10/15/20/30s) with the group's CURRENT waypoint
+ *     index, action, distance to it, and the first aircraft's A_BombBayDoor value.
  *   - Deliberately UNCHANGED for the baseline run: the band values, COVER_DropWatchPeriod_ms (750),
- *     coverFormationSpeedBias, coverDropImmediateDist_m and the 1500m trailing waypoint spacing.
+ *     coverFormationSpeedBias, coverDropImmediateDist_m, the 1500m trailing waypoint spacing, and the
+ *     in-front aim-point lead (Step A5, see above).
+ *   - Step C 2026/10 additions: (i) <cfdist now shifts the speed-law reference (see above);
+ *     (ii) dropBombsNow_airGroup writes GAttackPasses=AUTO / GAttackType=LEVEL on its point waypoint
+ *     to match the proven path; (iii) BAM_forceFormationRefresh() re-issues a FOLLOW formation plan
+ *     the instant DROP WHEN I DROP is entered, so a transient Tab-4 menu click onto the flare-point
+ *     entry can no longer leave the groups flying a spurious GATTACK_POINT run (they used to turn
+ *     round and release before the player finished selecting).  Groups inside the 25s release
+ *     hold-off are skipped, so a re-arm never clobbers a release in progress.
+ *
+ *   *** 2026/10 LOG EVIDENCE (Wellingtons log 02D, Ju-88s log 02E) and STEPS C3/C4/C5. ***
+ *   - CONFIRMED, <cfdist: "seems to work fine" on both types after the Option A change above.
+ *   - CONFIRMED, the one-salvo latch is STILL THERE on a Wellington after Step C:  54 -> 51 twice,
+ *     and once with no release at all (bay= stayed 0.000 for the whole 30s ladder).  Step C2 is the
+ *     response - see section 1.
+ *   - CONFIRMED, Ju-88s DO release more than one salvo through <cdrop (96 -> 75 -> 63 and
+ *     96 -> 69 -> 63 in log E), i.e. the one-salvo latch is not universal - it is a Wellington /
+ *     heavy-bomber-on-a-35m-point behaviour, which is what pointed Step C2 at the geometry.
+ *   - FOUND, the release plan is sometimes OVERWRITTEN inside its own 25s hold-off.  In three of five
+ *     drops the group was back on a plain 3-waypoint FOLLOW plan 3-6s after issue (DROPTRACE cw=1/3
+ *     act=FOLLOW), which keepAircraftOnTask_recurs() should have been early-returning through.  One
+ *     Wellington never released at all, which is consistent with this.                           [GAME]
+ *   - STEP C3 (applied): dropPlanStillInForce() checks whether the group is still flying a plan that
+ *     contains an attack waypoint; if not, and it still has bombs, the release plan is re-asserted
+ *     once (bounded to 3-15s after issue, so it cannot loop and cannot fight the original issue).
+ *     keepAircraftOnTask_recurs() now also logs "<cdrop HOLD" every cycle it early-returns, so the
+ *     next log proves whether the hold-off really is firing.                                    [CODE]
+ *   - MEASURED, the bomb-bay cycle is the whole release latency and it is TYPE dependent:  from the
+ *     bay= column, a Wellington goes 0 -> 1 over ~3-6s (first bombs ~+5s) and a Ju-88 over ~10-15s
+ *     (first bombs ~+13s).  Nothing in the code waited for this, so the AI's stick was always
+ *     landing 5-15s of flight PAST the leader's line.                                          [GAME]
+ *   - STEP C4 (applied): the release is now commanded when the group is coverDropBayLead_s (6s) x
+ *     its OWN speed SHORT of the drop line, so the doors are open as it arrives on the line.  The
+ *     old gate - "within 1500m of the leader OR at the line" - fired immediately for everyone in
+ *     formation, which is precisely what made it late;  coverDropImmediateDist_m is now a 300m
+ *     safety floor only.  coverDropMaxAhead_m (1000m) skips a group that is too far AHEAD: the stick
+ *     would land well in front of the leader's and it will never close the gap.                 [CODE]
+ *   - STEP C5 (applied, OFF by default - cdDropPreOpenBays): the only lever on the door cycle is to
+ *     make the engine think an attack is imminent, so while <cdrop is armed each bomber is handed a
+ *     GATTACK_POINT coverDropPreOpen_m (8km) ahead, re-issued every cycle so it never reaches it.
+ *     The doors follow the attack waypoint, so they stay open, and the real release issued by
+ *     coverDropReleasePass() should then be near-instant.  RISK: this is bomb-run attitude, not
+ *     tight formation, so it must be A/B'd in a test session before being enabled anywhere.     [CODE]
+ *   - <cfdist limits raised to +/-3000m (was +/-1000m), and the wording dropped "further".         [CODE]
+ *   - STEP C7 + C8 (applied, and this is the important one - full write-up in section 1e):  the
+ *     mission owner proved in the FMB that the ONLY thing that makes every bomber type dump its whole
+ *     load is the bomb-bay doors being OPEN BEFORE the release plan arrives.  So the release plan
+ *     now mirrors the reference test exactly (NORMFLY at own position, GATTACK_POINT 50m BEHIND,
+ *     long trailing NORMFLY), the TYPE/PASSES writes and the setTask call are REMOVED, the doors are
+ *     held open continuously by cdDropPreOpenBays (ON, 10km decoy), and the release pass WAITS - with
+ *     no timeout - for A_BombBayDoor to read open before letting a group go.  A group whose door
+ *     parameter never moves is released anyway after coverDropBayWaitFallback_s as a deadlock escape.
+ *     The bay lead-in (C4) is now applied ONLY when a group's doors are not yet open, since with them
+ *     open the release is instant and a lead would bias the stick short of the leader's line.   [CODE]
  *
  *
  *   ================================================================================================

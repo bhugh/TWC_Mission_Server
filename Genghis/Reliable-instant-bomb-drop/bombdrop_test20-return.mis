@@ -1,0 +1,167 @@
+﻿[PARTS]
+  core.100
+  bob.100
+  tobruk.100
+[MAIN]
+  fileversion 2
+  MAP Land$English_Channel_1940
+  DespawnAfterLandingTimeout 600
+  BattleArea 0 0 350000 300000 10000
+  TIME 12.0000002905726
+  WeatherIndex 0
+  CloudsHeight 1000
+  BreezeActivity 10
+  ThermalActivity 10
+  player BoB_RAF_B_218Sqn.210
+[GlobalWind_0]
+  Power 0.000 19.167 0.000
+  BottomBound 0.00
+  TopBound 1600.00
+  GustPower 1
+  GustAngle 44
+[GlobalWind_1]
+  Power 25.000 0.000 0.000
+  BottomBound 1450.00
+  TopBound 7000.00
+  GustPower 5
+  GustAngle 44
+[GlobalWind_2]
+  Power 0.000 0.000 0.000
+  BottomBound 6950.00
+  TopBound 6950.00
+  GustPower 5
+  GustAngle 44
+[splines]
+[AirGroups]
+  BoB_RAF_B_218Sqn.01
+  BoB_RAF_B_218Sqn.22
+  BoB_RAF_B_218Sqn.21
+  BoB_RAF_B_218Sqn.11
+  BoB_RAF_B_218Sqn.31
+  BoB_RAF_B_218Sqn.02
+  BoB_RAF_B_218Sqn.04
+  BoB_RAF_B_218Sqn.08
+[BoB_RAF_B_218Sqn.01]
+  Flight0  1
+  Class Aircraft.BlenheimMkI
+  Formation LINEABREAST
+  CallSign 26
+  Fuel 100
+  Weapons 1 1 5 0 0
+  Detonator Bomb.Bomb_GP_40lb_MkIII 0 30 11
+  Detonator Bomb.Bomb_GP_250lb_MkIV 0 30 11
+  Skill 1 0.95 0.95 0.84 0.84 0.95 0.89 0.89
+  Aging 0
+[BoB_RAF_B_218Sqn.01_Way]
+  NORMFLY 75925.87 19893.57 2000.00 300.00
+  GATTACK_POINT 34549.73 19981.93 2000.00 300.00
+  NORMFLY 9748.37 20802.73 2000.00 300.00
+[BoB_RAF_B_218Sqn.22]
+  Flight1  11
+  Class Aircraft.BlenheimMkIV_Late
+  Formation LINEABREAST
+  CallSign 30
+  Fuel 100
+  Weapons 1 1 5 1 2
+  Skill 0.84 0.53 0.53 0.37 0.37 0.53 0.53 0.53
+  Aging 0
+[BoB_RAF_B_218Sqn.22_Way]
+  NORMFLY 75919.74 18754.93 2000.00 300.00
+  NORMFLY 57786.30 17921.15 2000.00 300.00
+  NORMFLY 9490.39 18743.52 2000.00 300.00
+[BoB_RAF_B_218Sqn.21]
+  Flight0  1
+  Class tobruk:Aircraft.Ju-88C-1
+  Formation LINEABREAST
+  CallSign 26
+  BombSpacing 0
+  Fuel 14
+  Weapons 1 1 1 1 2
+  Detonator Bomb.SC-50_GradeII_J 1 -1 14
+  Skill 1 0.95 0.95 0.84 0.84 0.95 0.89 0.89
+  Aging 0
+[BoB_RAF_B_218Sqn.21_Way]
+  NORMFLY 75919.50 20341.81 2000.00 300.00
+  GATTACK_POINT 34524.57 21251.15 2000.00 300.00
+  NORMFLY 9734.52 23833.10 2000.00 300.00
+[BoB_RAF_B_218Sqn.11]
+  Flight0  1
+  Class Aircraft.Ju-88A-1
+  Formation LINEABREAST
+  CallSign 30
+  BombSpacing 0
+  Fuel 100
+  Weapons 1 1 1 1 1 4
+  Detonator Bomb.SC-500_GradeIII_K 0 -1 14
+  Detonator Bomb.SC-250_Type1_J 2 -1 14
+  Detonator Bomb.SC-50_GradeII_J 1 -1 14
+  Skill 1 0.95 0.95 0.84 0.84 0.95 0.89 0.89
+  Aging 0
+[BoB_RAF_B_218Sqn.11_Way]
+  NORMFLY 75928.37 20139.55 2000.00 300.00
+  GATTACK_POINT 34506.34 20586.88 2000.00 300.00
+  NORMFLY 9748.48 22213.21 2000.00 300.00
+[BoB_RAF_B_218Sqn.31]
+  Flight0  1
+  Class Aircraft.WellingtonMkIc
+  Formation LINEABREAST
+  CallSign 28
+  BombSpacing 0
+  Fuel 22
+  Weapons 1 1 2
+  Detonator Bomb.Bomb_GP_250lb_MkIV 0 30 11
+  Detonator Bomb.Bomb_GP_1000lb_MkI 3 0 0
+  Detonator Bomb.Bomb_GP_500lb_MkIV 3 0 11
+  Skill 1 0.95 0.95 0.84 0.84 0.95 0.89 0.89
+  Aging 0
+[BoB_RAF_B_218Sqn.31_Way]
+  NORMFLY 75909.10 20723.03 2000.00 300.00
+  GATTACK_POINT 34583.07 21704.31 2000.00 300.00
+  NORMFLY 9725.58 24785.29 2000.00 300.00
+[BoB_RAF_B_218Sqn.02]
+  Flight1  11
+  Class Aircraft.He-111P-2
+  Formation LINEABREAST
+  CallSign 26
+  BombSpacing 0
+  Fuel 100
+  Weapons 1 1 1 1 1 3
+  Detonator Bomb.SC-50_GradeII_J 1 -1 14
+  Skill 0.84 0.53 0.53 0.37 0.37 0.53 0.53 0.53
+  Aging 0
+[BoB_RAF_B_218Sqn.02_Way]
+  NORMFLY 75933.28 19614.79 2000.00 300.00
+  GATTACK_POINT 34555.11 19390.39 2000.00 300.00
+  NORMFLY 25614.65 19714.01 2000.00 300.00
+[BoB_RAF_B_218Sqn.04]
+  Flight2  21
+  Class Aircraft.BR-20M
+  Formation LINEABREAST
+  CallSign 30
+  BombSpacing 20
+  Fuel 100
+  Weapons 1 1 1 2
+  Skill 0.84 0.53 0.53 0.37 0.37 0.53 0.53 0.53
+  Aging 0
+[BoB_RAF_B_218Sqn.04_Way]
+  NORMFLY 75932.12 19328.32 2000.00 300.00
+  GATTACK_POINT 34521.57 18689.48 2000.00 300.00
+  NORMFLY 25624.55 19134.91 2000.00 300.00
+[BoB_RAF_B_218Sqn.08]
+  Flight3  31
+  Class Aircraft.Do-17Z-2
+  Formation LINEABREAST
+  CallSign 28
+  BombSpacing 20
+  Fuel 100
+  Weapons 1 1 1 1 1 1 3 1
+  Skill 0.84 0.53 0.53 0.37 0.37 0.53 0.53 0.53
+  Aging 0
+[BoB_RAF_B_218Sqn.08_Way]
+  NORMFLY 75912.30 19062.02 2000.00 300.00
+  GATTACK_POINT 34409.57 17881.97 2000.00 300.00
+  NORMFLY 25590.78 18312.20 2000.00 300.00
+[CustomChiefs]
+[Stationary]
+[Buildings]
+[BuildingsLinks]

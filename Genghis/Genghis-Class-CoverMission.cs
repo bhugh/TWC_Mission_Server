@@ -3878,10 +3878,11 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 "** NEAREST ENEMY TO BOMB DROP POINT - note point of your next bomb drop and target for ground/naval enemies near that point.",
                 "** DROP FLARE & TARGET FLARE DROP POINT - at the moment you press the button to select this option, you drop a flare.  Cover aircraft will attack the flare point.",
                 "** DROP FLARE & TARGET ENEMIES NEAR DROP POINT - at the moment you press the button to select this option, you drop a second flare.  Cover aircraft will attack enemies near that point.",
+                "** DROP WHEN I DROP - they hold their bombs and fly with you, and the moment you drop, they drop too. Same as <cdrop. Wait until every group shows GND ATTACK on the chat display, then they are awaiting your drop.",
                 "IMPORTANT NOTE: Sturmovik/ground attack aircraft & Dive Bombers require 'NEAREST ENEMY' target points to ground attack/dive bomb. See <chelp7.",
                 "For all \"ENEMIES NEAR\" targeting: If no enemy is found near the specified point, bombers will generally hold their fire and revert to 'Follow'. Watch your CHAT display for clues as to current target or failure to locate targets.",
                 "For KNICKEBEIN point targets, you need to check Recon Reports for exact coordinates to target - ideally before you leave home base",
-                "BOMB and FLARE drop targeting are more flexible. You can fly to the enemy, drop a bomb or flare to indicate your desired target point, and cover aircraft will target it (or enemies near it, ifor 'NEAREST ENEMY' targeting).",
+                "BOMB, FLARE, and DROP WHEN I DROP targeting are more flexible. You can fly to the enemy, drop a bomb or flare to indicate your desired target point, and cover aircraft will target it (or enemies near it, for 'NEAREST ENEMY' targeting), or just DROP WHEN I DROP.",
                 "<chelp7 for more..."
             };
 

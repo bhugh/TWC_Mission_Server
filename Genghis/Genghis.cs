@@ -10341,9 +10341,11 @@ public class Mission : AMission, IMainMission
 
     public bool doesNestedListContain(List<List<string>> Actions, string needle)
     {
+        if (Actions == null || needle == null) return false;
+
         foreach (List<string> l in Actions)
         {
-            if (l.Contains(needle)) return true;
+            if (l != null && l.Contains(needle)) return true;
         }
         return false;
     }
@@ -29300,38 +29302,54 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
         Console.WriteLine("execAction 1:" + shortName);
         string origName = shortName;
         Console.WriteLine("execAction 2");
-		
-        bool stopai = stopAI(shortName);		
+
+        bool stopai = stopAI(shortName);
         bool tcull = false; //tobrukCullAI(shortName);
         bool rcall = false; //recentlyCalled(shortName, 60);
-		
-		if (override_stopai) stopai = false;
-		
-		
-		//Replace red or blue fighter actions with another random action from the list,
-		//to mix things up
-		bool redFighter =doesNestedListContain(redFighterActions, shortName);
-		bool blueFighter =doesNestedListContain(blueFighterActions, shortName);
-		
-		List<string> newAction  = new List<string>{shortName};
-		
-		if (blueFighter) newAction = Calcs.randSTR(blueFighterActions);
-		if (redFighter) newAction = Calcs.randSTR(redFighterActions);
-		
-		shortName = newAction[0];
-		
-		Console.WriteLine("execAction 3: {0} stopAI: {1}", shortName, stopai);
-        
-		AiAction action = GamePlay.gpGetAction(shortName);
-		
-        if (action != null && !stopai && !tcull && !rcall)
+
+        if (override_stopai) stopai = false;
+
+
+        //Replace red or blue fighter actions with another random action from the list,
+        //to mix things up
+        bool redFighter = doesNestedListContain(redFighterActions, shortName);
+        bool blueFighter = doesNestedListContain(blueFighterActions, shortName);
+
+        List<string> newAction = new List<string> { shortName };
+
+        if (blueFighter) newAction = Calcs.randSTR(blueFighterActions);
+        if (redFighter) newAction = Calcs.randSTR(redFighterActions);
+
+        //randSTR picks a whole sub-list; guard against an empty/null one before indexing
+        if (newAction == null || newAction.Count == 0)
         {
-            Console.WriteLine(origin +": Activating action " + action.Name + " from trigger " + shortName + ": origName: " + origName + " origin: " + origin + "Override StopAI: {0}", override_stopai);
-            action.Do();
-        }  else
-        {
-            Console.WriteLine(origin + ": Skipping action " + action.Name + " " + shortName + " because null: {0} many players: {1} tobrukCull: {2} toorecentlycalled: {3} ", action==null, stopai, tcull, rcall);
+            Console.WriteLine(origin + ": Skipping action; replacement list for trigger " + origName + " was empty. stopAI: " + stopai);
+            return;
         }
+
+        shortName = newAction[0];
+
+        Console.WriteLine("execAction 3: " + shortName + " stopAI: " + stopai);
+
+        AiAction action = GamePlay.gpGetAction(shortName);
+
+        //No action of this name in the .mis file.  This is normal for triggers that are
+        //handled purely as objective/time hooks, so just log it and carry on.
+        //NOTE: never touch action.Name before this null check - that was the NRE source.
+        if (action == null)
+        {
+            Console.WriteLine(origin + ": No action named " + shortName + " (trigger: " + origName + ") - nothing to do. null: True many players: " + stopai + " tobrukCull: " + tcull + " toorecentlycalled: " + rcall);
+            return;
+        }
+
+        if (stopai || tcull || rcall)
+        {
+            Console.WriteLine(origin + ": Skipping action " + action.Name + " " + shortName + " because too many players: " + stopai + " tobrukCull: " + tcull + " toorecentlycalled: " + rcall);
+            return;
+        }
+
+        Console.WriteLine(origin + ": Activating action " + action.Name + " from trigger " + shortName + " origName: " + origName + " origin: " + origin + " Override StopAI: " + override_stopai);
+        action.Do();
     }
 
 //Save results to file that will be read by the WatchDog program.  1= red win, 2 = blue win, 3= tie
@@ -33959,9 +33977,14 @@ GroundStationary[] gs = GamePlay.gpGroundStationarys(250000, 252000, 1000); //Fi
     }
 	public static List<string> randSTR(List<List<string>> strings)
     {
+        if (strings == null || strings.Count == 0) return new List<string>();
+
         //Random clc_random = new Random();
-		int choice = clc_random.Next(strings.Count);
-		Console.WriteLine("randSTR: {0} {1} {2}", strings.Count, choice, strings[choice][0]); 
+        int choice = clc_random.Next(strings.Count);
+
+        if (strings[choice] == null || strings[choice].Count == 0) return new List<string>();
+
+        Console.WriteLine("randSTR: {0} {1} {2}", strings.Count, choice, strings[choice][0]);
         return strings[choice];
     }
     public static void Randomize<T>(T[] items)

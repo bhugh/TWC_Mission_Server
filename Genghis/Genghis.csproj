@@ -1,0 +1,72 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    DESIGN-TIME ONLY project: for IDE IntelliSense (VS Code C# Dev Kit / OmniSharp).
+    NOT a build project - CLoD compiles the mission itself (one assembly per mission),
+    so the build truth stays Genghis\check-compile.ps1 (Ctrl+Shift+B). See AGENTS.md.
+
+    Genghis-only explicit <Compile> list: the repo root has duplicate mission copies
+    (Campaign21, Tobruk_Campaign, Testing, M001-M003, "Fresh Input File" backups) that
+    redefine Mission / Calcs / CoverCalcs, so a repo-wide SDK glob yields thousands of
+    bogus duplicate-type errors.
+
+    Matches check-compile.ps1: skips *-initsubmission*.cs (separate CLoD missions,
+    they redefine Mission/Calcs). Genghis-Class-TacviewRecorder.cs IS included here
+    (for go-to-definition) even though check-compile skips it (TacviewCore is internal
+    in TacviewRecorder.dll -> CS0122); expect that one known error on that file only,
+    not a real problem.
+  -->
+
+  <PropertyGroup>
+    <TargetFramework>net481</TargetFramework>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Genghis</RootNamespace>
+    <AssemblyName>Genghis</AssemblyName>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Nullable>disable</Nullable>
+    <LangVersion>7.3</LangVersion>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+
+  <!-- CLoD install path: default matches check-compile.ps1 auto-detect order.
+       Override per-machine via: dotnet build -p:CloDInstallPath="D:\...\parts\core" -->
+  <PropertyGroup>
+    <CloDInstallPath Condition="'$(CloDInstallPath)' == ''">C:\Program Files (x86)\Steam\steamapps\common\IL-2 Sturmovik Cliffs of Dover Blitz\parts\core</CloDInstallPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="Genghis.cs" />
+    <Compile Include="Genghis-Class-AerialInterceptRadar.cs" />
+    <Compile Include="Genghis-Class-AirToSurfaceVesselRadar.cs" />
+    <Compile Include="Genghis-Class-CloDNotes.cs" />
+    <Compile Include="Genghis-Class-CoverMission.cs" />
+    <Compile Include="Genghis-Class-Knickebein.cs" />
+    <Compile Include="Genghis-Class-MakeLandingGround.cs" />
+    <Compile Include="Genghis-Class-MoveBombTarget.cs" />
+    <Compile Include="Genghis-Class-ObjectiveRepairMissions.cs" />
+    <Compile Include="Genghis-Class-SkinCheckMission.cs" />
+    <Compile Include="Genghis-Class-StatsMission.cs" />
+    <Compile Include="Genghis-Class-SupplyMission.cs" />
+    <Compile Include="Genghis-Class-TacviewImplMission.cs" />
+    <Compile Include="Genghis-Class-TacviewRecorder.cs" />
+    <Compile Include="Genghis-Class-ThreadLoad.cs" />
+  </ItemGroup>
+
+  <!-- Managed engine assemblies (same set as check-compile.ps1 references) -->
+  <ItemGroup>
+    <Reference Include="Maddox"><HintPath>$(CloDInstallPath)\maddox.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="part"><HintPath>$(CloDInstallPath)\part.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="GameWorld"><HintPath>$(CloDInstallPath)\GameWorld.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="gamePlay"><HintPath>$(CloDInstallPath)\gamePlay.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="gamePages"><HintPath>$(CloDInstallPath)\gamePages.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="CloDMissionCommunicator"><HintPath>$(CloDInstallPath)\CloDMissionCommunicator.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="Strategy"><HintPath>$(CloDInstallPath)\Strategy.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="core"><HintPath>$(CloDInstallPath)\core.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="HostView"><HintPath>$(CloDInstallPath)\HostView.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="Campaign"><HintPath>$(CloDInstallPath)\Campaign.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="antlr.runtime"><HintPath>$(CloDInstallPath)\antlr.runtime.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="WSteam"><HintPath>$(CloDInstallPath)\WSteam.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="TacviewRecorder"><HintPath>TacviewRecorder.dll</HintPath><Private>false</Private></Reference>
+  </ItemGroup>
+
+</Project>

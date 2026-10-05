@@ -79,6 +79,16 @@ Primary - in-repo, auto-discovers Genghis\*.cs so it cannot silently skip a new 
 Skips *-initsubmission*.cs and Genghis-Class-TacviewRecorder.cs (pre-existing issues, see its header).
 Baseline verified 2026-10-05: 0 errors, ~64 warnings (-ShowWarnings; suppressed by default).
 
+IDE/design-time project (Genghis\Genghis.csproj):
+
+    dotnet build Genghis\Genghis.csproj
+
+Registered in TWC_Mission_Server.sln for VS Code / C# Dev Kit / OmniSharp IntelliSense.
+Targets net481 because the CloD engine DLLs are built against .NET Framework 4.8.1.
+Expected baseline: 2 errors (CS0122 for TacviewCore in Genghis-Class-TacviewRecorder.cs -
+pre-existing, TacviewCore is internal in TacviewRecorder.dll) and ~50 warnings.
+NOT the build truth - always use check-compile.ps1 for that.
+
 Alternative - the older CoverCheck harness, still valid:
 
     cd %TEMP%\CoverCheck ; dotnet build

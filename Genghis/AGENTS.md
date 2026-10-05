@@ -29,6 +29,20 @@ An alternative harness exists at `%TEMP%\CoverCheck\CoverCheck.csproj`, but its 
 hand-maintained and currently omits `Genghis-Class-CloDNotes.cs` and
 `Genghis-Class-TacviewImplMission.cs`, so it will not catch errors in those two files.
 
+## Design-time project for IDE IntelliSense
+
+`Genghis.csproj` (in this folder) is a **design-time-only** project registered in
+`TWC_Mission_Server.sln` for VS Code / C# Dev Kit / OmniSharp IntelliSense.
+
+```
+dotnet build Genghis\Genghis.csproj
+```
+
+- Targets `net481` because the CloD engine DLLs are built against .NET Framework 4.8.1.
+- Expected baseline: **2 errors** (CS0122 for `TacviewCore` in `Genghis-Class-TacviewRecorder.cs`
+  — `TacviewCore` is internal in the prebuilt `TacviewRecorder.dll`) and ~50 warnings.
+- **Not the build truth** — always use `check-compile.ps1` for that.
+
 ## Files deliberately excluded by the check
 
 - `*-initsubmission*.cs` - separate CloD missions; they redefine `Mission` / `Calcs`.

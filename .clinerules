@@ -15,3 +15,6 @@
  - NEVER `dotnet build` the repo TWC_Mission_Server.csproj - it is SDK-style and globs EVERY .cs in the
    tree, including the duplicate mission copies under Campaign21\, Tobruk_Campaign\ and Testing\, which
    redefine Mission / Calcs / CoverCalcs and yield thousands of duplicate-type errors.
+ - Genghis\Genghis.csproj is DESIGN-TIME ONLY (IDE IntelliSense, registered in TWC_Mission_Server.sln).
+   Not the build truth - use check-compile.ps1 for that. Targets net481 (CloD DLLs built against .NET 4.8.1).
+   Two known CS0122 errors in Genghis-Class-TacviewRecorder.cs (TacviewCore internal) are expected.

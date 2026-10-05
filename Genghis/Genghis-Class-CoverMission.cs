@@ -1376,11 +1376,11 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
     //Returns shift_m (amount to shift this group right or left, in meters +/right or -/left), position slot (1 slot for each aircraft earlier on this list than this one, sorted into even=+/right and odd=-/left positions), the position of this airgroup in the list of its type for this player (bombers OR fighters), the position of this airgroup overall for this player (counting Bomber Groups AND fighter groups).
     //This is a simple/easy routine & we want to recalc it each time the cover/bomber a/c position & course is recalculated because it can change over time as aircraft or airgroups are added or crash/shot down, etc
 
-    //Position of the PLAYER within their formation line: -N = N slots to the LEFT of centre, +N = right, 0 = centre.
+    //Position of the PLAYER within their formation line: -N = N slots to the LEFT of center, +N = right, 0 = center.
     //Set by autoPlayerFormationPosition() (re-rolled when the formation size changes significantly,
     //see aircraftPositionAndNumber), or manually by <cplayer N.  0 is allowed randomly - the point is
     //that it is unpredictable which slot the player sits in, so an attacking pilot can't just aim at
-    //the centre.  (The old code used ran.Next(-2,2) which was asymmetric - never +2 - and did not
+    //the center.  (The old code used ran.Next(-2,2) which was asymmetric - never +2 - and did not
     //scale with formation size.)
     Dictionary<Player, int> playerFormationPosition = new Dictionary<Player, int>();//position of the PLAYER within the bomber formation.
     Dictionary<Player, int> playerFormationPositionCount = new Dictionary<Player, int>();//the formation size (same-type group count) last rolled against - used to detect "significant change" for re-rolling
@@ -1389,7 +1389,7 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
     public int getPlayerFormationPosition(Player player)
     {
         if (player == null) return 0;
-        if (!playerFormationPosition.ContainsKey(player)) playerFormationPosition[player] = 0; //centre until aircraftPositionAndNumber does the first auto roll
+        if (!playerFormationPosition.ContainsKey(player)) playerFormationPosition[player] = 0; //center until aircraftPositionAndNumber does the first auto roll
         return playerFormationPosition[player];
     }
 
@@ -1398,11 +1398,11 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
     public int autoPlayerFormationPosition(Player player, int sameTypeCount)
     {
         if (player == null) return 0;
-        if (sameTypeCount <= 1) return 0; //nothing to sit off-centre from
+        if (sameTypeCount <= 1) return 0; //nothing to sit off-center from
         int maxOff = sameTypeCount / 3;  //6 -> 2, 4 -> 1, 3 -> 1
         if (maxOff < 1) maxOff = 1;
-        if (maxOff > 2) maxOff = 2; //cap: even a huge flight only ever needs the player 2 slots off centre
-        int spot = ran.Next(-maxOff, maxOff + 1); //0 (centre) is allowed - unpredictability is the point
+        if (maxOff > 2) maxOff = 2; //cap: even a huge flight only ever needs the player 2 slots off center
+        int spot = ran.Next(-maxOff, maxOff + 1); //0 (center) is allowed - unpredictability is the point
         //Never the very end slot: at least one group must sit outside the player on the long side.
         int endLimit = sameTypeCount - 1;
         if (spot > endLimit) spot = endLimit;
@@ -3828,8 +3828,10 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
         {
             if (player == null) return;
             string arg = msg_orig.Substring(8).Trim();
-            //Live same-type group count (bombers if the player is flying bombers, fighters otherwise)
-            bool ptype = (player.Place() is AiAircraft pac) && (isHeavyBomber(pac) || isDiveBomber(pac));
+            //Live same-type group count (bombers if the player is flying bombers, fighters otherwise).
+            //C#5-safe cast (as + null check) - the server compiler is C#5-era and rejects `is X y` patterns.
+            AiAircraft pac = player.Place() as AiAircraft;
+            bool ptype = (pac != null) && (isHeavyBomber(pac) || isDiveBomber(pac));
             int pcount = 0;
             foreach (AiAirGroup ag in coverAircraftAirGroupsActive.Keys)
             {
@@ -3842,7 +3844,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             if (arg.Length == 0)
             {
                 int spot = playerFormationPosition.ContainsKey(player) ? playerFormationPosition[player] : 0;
-                string side = spot > 0 ? spot + " slot(s) RIGHT of centre" : spot < 0 ? Math.Abs(spot) + " slot(s) LEFT of centre" : "dead centre";
+                string side = spot > 0 ? spot + " slot(s) RIGHT of center" : spot < 0 ? Math.Abs(spot) + " slot(s) LEFT of center" : "dead center";
                 string mode = isAutoFormationPosition(player) ? " (automatic)" : " (manual - use <cplayer auto to go back to automatic)";
                 GamePlay.gpLogServer(new Player[] { player }, ">>>You are sitting " + side + " in your " + pcount + " group formation" + mode + " (<cplayer 0 / <cplayer -2 / <cplayer 2 / <cplayer auto)", new object[] { });
             }
@@ -3858,7 +3860,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 catch (Exception ex) { n = -1000; }
                 if (n == -1000)
                 {
-                    GamePlay.gpLogServer(new Player[] { player }, ">>>Usage: <cplayer [slots] - e.g. <cplayer 0 (centre), <cplayer -2 (2 slots left), <cplayer 2 (2 slots right), <cplayer auto (back to automatic).  Bare <cplayer just reports your current slot.", new object[] { });
+                    GamePlay.gpLogServer(new Player[] { player }, ">>>Usage: <cplayer [slots] - e.g. <cplayer 0 (cente4), <cplayer -2 (2 slots left), <cplayer 2 (2 slots right), <cplayer auto (back to automatic).  Bare <cplayer just reports your current slot.", new object[] { });
                 }
                 else
                 {
@@ -3866,7 +3868,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                     if (n > endLimit) n = endLimit;
                     if (n < -endLimit) n = -endLimit;
                     setPlayerFormationPosition(player, n);
-                    string side = n > 0 ? n + " slot(s) RIGHT of centre" : n < 0 ? Math.Abs(n) + " slot(s) LEFT of centre" : "dead centre";
+                    string side = n > 0 ? n + " slot(s) RIGHT of center" : n < 0 ? Math.Abs(n) + " slot(s) LEFT of center" : "dead center";
                     GamePlay.gpLogServer(new Player[] { player }, ">>>Your formation slot is now " + side + " (manual - <cplayer auto to go back to automatic)", new object[] { });
                 }
             }
@@ -4139,7 +4141,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 "** <cdist 200 - set cover formation distance 200% normal. <cdist 50 - set cover distance 50% normal. <cdist 1000 - cover distance 10X normal",
                 "   Note: <cdist does NOT apply while DROP WHEN I DROP is on - those groups fly a fixed tight spread instead. Use <cfdist to slide the formation forward/back of you in any mode.",
                 "** <cfdist 10 - set your cover formation to ride 10m AHEAD of you (negative = behind, e.g. <cfdist -100). <cfdist alone resets to your own position. Range is +/-3000m. This is the front/back counterpart to <cdist, which sets the left/right spread.",
-                "** <cplayer - report your slot in the formation line. <cplayer 0 = dead centre, <cplayer -2 = 2 slots left, <cplayer 2 = 2 slots right. <cplayer auto = back to automatic (random slot, re-rolled when the formation size changes a lot).  By default your slot is randomised so attacking pilots can't just aim at the centre.",
+                "** <cplayer - report your slot in the formation line. <cplayer 0 = dead center, <cplayer -2 = 2 slots left, <cplayer 2 = 2 slots right. <cplayer auto = back to automatic (random slot, re-rolled when the formation size changes a lot).  By default your slot is randomised so attacking pilots can't just aim at the center.",
                 "<chelp3 for more..."
             };
 
@@ -8879,7 +8881,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
     //  GATTACK_TARG_FAR  - GATTACK_TARG + ALL_OUT at a point FAR AHEAD along the leader's heading
     //                      instead of 35m: the "proper targeting" regime (CloDNotes 1) - the AI
     //                      is supposed to fly on and run a full bomb pass at that point.  Expected
-    //                      result: a complete stick, centred on a point forward of the release -
+    //                      result: a complete stick, centered on a point forward of the release -
     //                      not on the leader's position.
     //  OFF               - the GATTACK waypoint is simply a trailing NORMFLY: a control group, to
     //                      confirm the group still releases nothing even with a full load intact.
@@ -9091,7 +9093,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 
 
                 //<cfdist Option A: base the waypoint on leaderRef too, so the whole flight plan (this
-                //point, savePos_offset, LongPos and the trailing run) is centred on the virtual leader
+                //point, savePos_offset, LongPos and the trailing run) is centered on the virtual leader
                 //point.  The old standalone addFrontBackOffset() call is GONE - the offset is already in
                 //leaderRef, and re-applying it here would double it.  calcOffset_m() still does the
                 //lateral (left/right) shift, which is an independent axis.

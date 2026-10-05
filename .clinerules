@@ -12,6 +12,12 @@
      pwsh -NoProfile -ExecutionPolicy Bypass -File .\Genghis\check-compile.ps1
    Run from TWC_Mission_Server\. Exit 0 = OK, 1 = compile errors, 2 = could not run.
    Baseline: 0 errors, ~64 warnings (suppressed by default; -ShowWarnings to list).
+ - MISSION CODE MUST STAY C#5: check-compile.ps1 pins `/langversion:5` to match the CLoD mission
+   compiler (C#5-era, runs on the server). C#6/7+ syntax (e.g. pattern matching `x is AiAircraft y`,
+   string interpolation `$"..."`, `out var`, `?.`, `nameof`) compiles locally on a modern SDK if you
+   edit by hand but the SERVER rejects it at deploy time (CS1026/CS1002/CS1525 or CS8026). Use old
+   idioms: `as` + null check, string concatenation, named `out` vars. Genghis.csproj's LangVersion 7.3
+   is IDE-only and does NOT apply here.
  - NEVER `dotnet build` the repo TWC_Mission_Server.csproj - it is SDK-style and globs EVERY .cs in the
    tree, including the duplicate mission copies under Campaign21\, Tobruk_Campaign\ and Testing\, which
    redefine Mission / Calcs / CoverCalcs and yield thousands of duplicate-type errors.

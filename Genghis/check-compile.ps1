@@ -120,6 +120,13 @@ $cscArgs += '/nologo'
 $cscArgs += '/target:library'
 $cscArgs += '/nostdlib+'      # csc is run bare, so there are no implicit framework references
 $cscArgs += '/unsafe'
+# Pin the C# language version to match the CLoD mission compiler, which is C#5-era.  Without this,
+# Roslyn defaults to its newest language (C#13+ on a modern SDK) and silently accepts modern syntax
+# (e.g. C#7 pattern-matching like `x is AiAircraft pac`) that the server compiler then rejects at deploy
+# time (CS1026/CS1002/CS1525).  C#5 keeps us CLoD-safe; the repo's design-time csproj pins 7.3 for
+# IntelliSense only - that pin is NOT honored here because we call csc directly.  Raise to 5/6 only
+# if a feature genuinely can't be expressed in C#5 and the server is confirmed to accept it.
+$cscArgs += '/langversion:5'
 if (-not $ShowWarnings) { $cscArgs += '/warn:0' }
 if (Test-Path $Out) { Remove-Item $Out -Force }
 $cscArgs += "/out:$Out"

@@ -66,9 +66,31 @@ Only the files within ./Genghis are actively being developed in now and should b
 - Wrap event hooks (`OnBattleStarted`, `OnPlaceEnter`, `OnActorDestroyed`, etc.) in try/catch and write errors to `Console.WriteLine` / `GamePlay.gpLogServer`.
 
 ## Compile & test gate
-- Build check: `dotnet build` the `%TEMP%\CoverCheck\CoverCheck.csproj` harness against the CloD DLLs. Required: `0 Error(s)`.
-- Warnings (e.g. CS0429/CS0219) should not rise; baseline is ~243 and is considered acceptable.
-- Behavior changes affecting formation/speed/spacing require an in-game sanity pass for the relevant command (e.g. `<cn`, `<cst`, `<ce`, `<ca`, `<cr`, `<clo`).
+
+CloD compiles every .cs sharing a mission name into ONE assembly, so the check must cover
+Genghis\*.cs together - never the repo .csproj (SDK-style, globs the whole tree including the
+duplicate Campaign21 / Tobruk_Campaign / Testing copies -> thousands of duplicate-type errors).
+
+Primary - in-repo, auto-discovers Genghis\*.cs so it cannot silently skip a new file:
+
+    pwsh -NoProfile -ExecutionPolicy Bypass -File .\Genghis\check-compile.ps1
+
+(run from TWC_Mission_Server\). Exit 0 = OK, 1 = errors, 2 = could not run.
+Skips *-initsubmission*.cs and Genghis-Class-TacviewRecorder.cs (pre-existing issues, see its header).
+Baseline verified 2026-10-05: 0 errors, ~64 warnings (-ShowWarnings; suppressed by default).
+
+Alternative - the older CoverCheck harness, still valid:
+
+    cd %TEMP%\CoverCheck ; dotnet build
+
+  * CAVEAT: it lives in %TEMP% (volatile, outside the repo) and its <Compile> list is hand-maintained.
+    It currently omits Genghis-Class-CloDNotes.cs and Genghis-Class-TacviewImplMission.cs, so it will
+    NOT catch errors in those two files. Baseline: 0 errors, 253 warnings.
+  * Prefer check-compile.ps1 unless you specifically need this harness.
+
+- Required: 0 Error(s) in whichever gate you use.
+- Behavior changes affecting formation/speed/spacing require an in-game sanity pass for the relevant
+  command (e.g. `<cn`, `<cst`, `<ce`, `<ca`, `<cr`, `<clo`, `<cdrop`).
 
 ## Quick command map
 - `<cn`/`<cnormal>` engage air + bomb as ordered

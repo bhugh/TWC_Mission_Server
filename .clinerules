@@ -1,5 +1,17 @@
 # TWC Mission Server Cline Rules
 
- - only look at and edit .cs files in the current directory, not parent directories or subdirectories
- - Generally the only relevant files will be genghis.cs and the current working file
- - ask for permission before accessing any other files
+ - This repo holds several INDEPENDENT campaigns/projects, one per subdirectory: Genghis (the active
+   one), Campaign21, M001, M002, M003, Testing, Tobruk_Campaign. They are related in various ways but are
+   separate and self-contained - never root around in a sibling campaign (e.g. Campaign21) while working
+   on Genghis; its code is a different, older campaign, not the thing being edited.
+ - Genghis\ is the actively developed project. Genghis.cs plus the Genghis-Class-*.cs files in that same
+   folder are the working set. Ask before touching anything else.
+ - Full layout, module map and known pitfalls: see .clinerules-long in this folder.
+
+ - After editing any .cs in Genghis\, verify it compiles:
+     pwsh -NoProfile -ExecutionPolicy Bypass -File .\Genghis\check-compile.ps1
+   Run from TWC_Mission_Server\. Exit 0 = OK, 1 = compile errors, 2 = could not run.
+   Baseline: 0 errors, ~64 warnings (suppressed by default; -ShowWarnings to list).
+ - NEVER `dotnet build` the repo TWC_Mission_Server.csproj - it is SDK-style and globs EVERY .cs in the
+   tree, including the duplicate mission copies under Campaign21\, Tobruk_Campaign\ and Testing\, which
+   redefine Mission / Calcs / CoverCalcs and yield thousands of duplicate-type errors.

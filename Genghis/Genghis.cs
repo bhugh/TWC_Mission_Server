@@ -10944,8 +10944,10 @@ public class Mission : AMission, IMainMission
                     //string res = TWCCoverMission.listPositionCurrentCoverAircraft(player);
                     //string res = covermission.listPositionCurrentCoverAircraft(player);
                     covermis_listOn = covermission.toggleregularDisplay_listPositionCurrentCoverAircraft(player);
-
-
+                    if (covermis_listOn)
+                        twcLogServerP(player, ">>>Cover position display is now ON (repeats every ~20s).");
+                    else
+                        twcLogServerP(player, ">>>Cover position display is now OFF.");
                 }
                 //setMainMenu(player);
                 setSubMenu4(player); //stay on this menu so you can tap it repeatedly
@@ -13557,7 +13559,9 @@ public class Mission : AMission, IMainMission
             for (int i = 1; i <= maxi; i++)
             {
                 double oldTopBound = topBound;
-                bottomBound = topBound - random.NextDouble() * 50; //you have to overlap the layers by a little -at least 1 meter or FMB makes it 50 meters always.  The next bottomBound is just a bit lower than the previous topBound
+                //bottomBound = topBound - random.NextDouble() * 50; //you have to overlap the layers by a little -at least 1 meter or FMB makes it 50 meters always.  The next bottomBound is just a bit lower than the previous topBound
+                //2026-10 - experiment, trying to overlap layers 100-150m instead of 0-50m, to make the transitions smoother
+                bottomBound = topBound - random.NextDouble() * 50 - 100;
                 //double baseAlt_m = Math.Pow(powernum, i) * 100; //ranges up to about 20000-ish
                 //So this chart: https://www.quora.com/Does-the-wind-get-stronger-the-higher-the-altitude
                 //Shows wind speed grows relatively linearly with altitude, up to about 10000m (jet stream), when it starts to decrease.

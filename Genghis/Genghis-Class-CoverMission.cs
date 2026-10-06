@@ -1876,6 +1876,11 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
             coverDropAlreadyFired[player] = false;
             coverDropLinePoint.Remove(player);
             coverDropLineDir.Remove(player);
+            //Clear the per-pass latch and release-hold entries for THIS player's groups.
+            //These are now cleared by armCoverDropWatch (after re-arm) rather than turnOffCoverDropWatch.
+            coverAircraftAirGroupsDroppedThisPass.Clear();
+            coverAircraftAirGroupsDropIssued.Clear();
+            coverAircraftAirGroupsBayWaitSince.Clear();
 
             COVER_DropWatchTimer[player] = new System.Threading.Timer(
                 coverDropWatch_obj, player, dueTime: 100, period: COVER_DropWatchPeriod_ms);
@@ -1914,35 +1919,10 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
             coverDropLinePoint.Remove(player);
             coverDropLineDir.Remove(player);
             coverDropLastLeaderBombCount.Remove(player);
-            //Release the per-pass latch and the release-hold entries for THIS player's groups.
-            //armCoverDropWatch() calls us first, so re-arming with <cdrop cleanly re-opens the pass
-            //and they may drop again.  The hold-off entries must go player-by-player (the dictionary
-            //is keyed by airgroup across ALL players): clearing it wholesale would lift another
-            //player's drop protection, letting keepAircraftOnTask_recurs() overwrite their release
-            //flight plan before the bombs go.  Both are also cleared per-group by forgetAirGroup()
-            //when the group itself goes away - this is the player-level equivalent.
-            List<AiAirGroup> latchedThisPass = new List<AiAirGroup>(coverAircraftAirGroupsDroppedThisPass.Keys);
-            foreach (AiAirGroup agL in latchedThisPass)
-            {
-                if (agL == null) continue;
-                if (coverAircraftAirGroupsDroppedThisPass[agL] == player) coverAircraftAirGroupsDroppedThisPass.Remove(agL);
-            }
-            List<AiAirGroup> heldRelease = new List<AiAirGroup>(coverAircraftAirGroupsDropIssued.Keys);
-            foreach (AiAirGroup agH in heldRelease)
-            {
-                if (agH == null) continue;
-                if (!coverAircraftAirGroupsActive.ContainsKey(agH)) { coverAircraftAirGroupsDropIssued.Remove(agH); continue; }
-                if (coverAircraftAirGroupsActive[agH] == player) coverAircraftAirGroupsDropIssued.Remove(agH);
-            }
-            //<cdrop Step C8 - and stop timing their bomb-bay doors, player by player, for the same
-            //reason (the dictionary is keyed by airgroup across ALL players).
-            List<AiAirGroup> bayWaiters = new List<AiAirGroup>(coverAircraftAirGroupsBayWaitSince.Keys);
-            foreach (AiAirGroup agB in bayWaiters)
-            {
-                if (agB == null) continue;
-                if (!coverAircraftAirGroupsActive.ContainsKey(agB)) { coverAircraftAirGroupsBayWaitSince.Remove(agB); continue; }
-                if (coverAircraftAirGroupsActive[agB] == player) coverAircraftAirGroupsBayWaitSince.Remove(agB);
-            }
+            //NOTE: No longer clearing coverAircraftAirGroupsDropIssued (25s hold-off), coverAircraftAirGroupsDroppedThisPass (one-salvo latch),
+            //or coverAircraftAirGroupsBayWaitSince (C8 door timer) here.  The stand-down after a successful release should not cancel
+            //the 25s hold that protects the release plan (Bug A).  armCoverDropWatch will clear them on re-arm.
+            //Also, the per-pass latch and door-timers must be cleared player-by-player. They are handled in armCoverDropWatch.
         }
         catch (Exception ex) { Console.WriteLine("Cover turnOffCoverDropWatch ERROR! " + ex.ToString()); }
     }
@@ -2550,6 +2530,14 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
                 if (!preOpenAttackWaypointPresent(airGroup))
                 {
                     //plan lost - re-issue (always)
+                }
+                //Skip re-issue if the leader is too low (below 150m below the group) - prevents unsafe low-altitude attacks
+                double leaderZ = ldPos.z;
+                double groupZ = prev.Item5;
+                if (leaderZ < groupZ - 150.0)
+                {
+                    //Too low - force re-issue to maintain safety margin
+                    return;
                 }
                 else if (doorsOpen && (dh <= coverPreOpenNodupeHeading_deg)
                     && Math.Abs(ldPos.z - prev.Item5) <= coverPreOpenNodupeAlt_m
@@ -3944,6 +3932,11 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
         {
             if (player == null) return;
             GamePlay.gpLogServer(new Player[] { player }, ">>>Please use Tab-4-4-4-4 menu for controlling your Cover/Bomber Aircraft when possible", null);
+            bool currentlyOn = isOn_Display_listPositionCurrentCoverAircraft(player);
+            if (currentlyOn)
+                GamePlay.gpLogServer(new Player[] { player }, ">>>Cover position display is currently ON (repeats every ~20s).", null);
+            else
+                GamePlay.gpLogServer(new Player[] { player }, ">>>Cover position display is currently OFF.  Tab-4-4-4-8 to turn it ON.", null);
             listPositionCurrentCoverAircraft(player);
 
         }
@@ -4200,7 +4193,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
         else if (msg.StartsWith("<chelp7"))
         {
             string[] helpMessages = {
-                "COVER FIGHTER & BOMBER SYSTEM - HELP PAGE 6/6",
+                "COVER FIGHTER & BOMBER SYSTEM - POINT vs NEAREST ENEMY TARGETING - HELP PAGE 6/6",
                 "** Targeting by POINT (Knickebein, bomb, or flare point) is good for heavy bombers who can blanket an AREA with ordnance.",
                 "** Target by NEAREST ENEMY (to Knickebein, bomb, or flare point) is required for dive bombers and sturmovik aircraft to operate correctly & target effectively.",
                 "** With a NEAREST ENEMY target, dive bombers and sturmovik aircraft, will actually do a dive bomb or close ground attack. Without it, they will simply drop from altitude.",
@@ -4223,18 +4216,27 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
         {
             string[] helpMessages = {
                 "COVER FIGHTER & BOMBER SYSTEM - GROUND ATTACK MODES - HELP PAGE 6/7",
-                "Tab-4-4-4-4-7 has several modes of ground attack for your bombers & fighter-bombers:",
+                "Tab-4-4-4-4-6 has several modes of ground attack for your bombers & fighter-bombers:",
                 "KNICKEBEIN POINT - attack the position of the current Knickebein point (<khelp for info on the KB system)",
                 "** NEAREST ENEMY TO KNICKEBEIN POINT - find an enemy ground vehicle, ship, AA gun, train, or other ground object near the Knickebein Point and attack it.",
                 "** NEXT BOMB DROP POINT - when you drop your NEXT bomb, the cover aircraft will note that point and attack it.",
                 "** NEAREST ENEMY TO BOMB DROP POINT - note point of your next bomb drop and target for ground/naval enemies near that point.",
-                "** DROP FLARE & TARGET FLARE DROP POINT - at the moment you press the button to select this option, you drop a flare.  Cover aircraft will attack the flare point.",
+                "** DROP FLARE & TARGET FLARE DROP POINT - at the moment you press the button to select this option, you drop a flare.  Cover aircraft will attack the flare point.",                
                 "** DROP FLARE & TARGET ENEMIES NEAR DROP POINT - at the moment you press the button to select this option, you drop a second flare.  Cover aircraft will attack enemies near that point.",
-                "** DROP WHEN I DROP - they hold their bombs and fly with you, and the moment you drop, they drop too. Same as <cdrop. Wait until every group shows GND ATTACK on the chat display, then they are awaiting your drop.",
+                "DROP WHEN I DROP: aircraft hold their bombs and fly in tight formation with you, and the moment you let your first bomb go they release everything at the same time - just as ww2 crews did, with only the leader carrying a bombsight. Squadrons with you or ahead will release immediately. Squadrons further back will catch up to your line and release there.",
+
+                "** DROP WHEN I DROP - Wait until every group shows GND ATTACK on the chat display, then their bombay doors are open and are awaiting your drop. Chat commands <cdropnow or <cbomb are alternatives ways to trigger the drop. Chat command <cdrop is a shortcut to enter DWID mode.",
+                "** DROP WHEN I DROP - After entering this mode, only your *first* bomb will trigger other bombers to release. If you want to trigger again, exit and re-enter DWID mode, or use <cdropnow.",
+
+                "** DROP WHEN I DROP Bombing accurately in DWID mdoe is very challenging. Bombers will drop long or short of you depending on relative altitude, speed, and other factors.  They won't drop if their altitude is too low - if, depending on their bomb load and fuzes, they will damage themselves. And so on.",
+                
                 "IMPORTANT NOTE: Sturmovik/ground attack aircraft & Dive Bombers require 'NEAREST ENEMY' target points to ground attack/dive bomb. See <chelp7.",
+
                 "For all \"ENEMIES NEAR\" targeting: If no enemy is found near the specified point, bombers will generally hold their fire and revert to 'Follow'. Watch your CHAT display for clues as to current target or failure to locate targets.",
                 "For KNICKEBEIN point targets, you need to check Recon Reports for exact coordinates to target - ideally before you leave home base",
                 "BOMB, FLARE, and DROP WHEN I DROP targeting are more flexible. You can fly to the enemy, drop a bomb or flare to indicate your desired target point, and cover aircraft will target it (or enemies near it, for 'NEAREST ENEMY' targeting), or just DROP WHEN I DROP.",
+
+                "NOTE REGARDING RTB MODE: Aircraft will go into [RTB] mode when damaged, low on fuel, and for other reasons of their own. Once in [RTB] mode they will not target, attack, or drop bombs.  They will follow you as usual and circle any enemies or ground targets given, without attacking.",
                 "<chelp7 for more..."
             };
 
@@ -4253,10 +4255,9 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 "** <cattack OR <ca - ATTACK ground targets if instructed by Tab-4 menu; fighters/sturmovik will vigorously attack any enemy aircraft they see rather than waiting for them to approach.",
                 "** <cescort OR <ce - ESCORT you: stay with you & vigorously defend you from enemy aircraft near you, turn and fight nearby enemies, leaving formation if necessary (even bombers); discontinue ground attacks.",
                 "** <creserve OR <cr - stay in RESERVE, joined with you; do not join the current ground attack. Stay in formation, but fighters/sturmovik will leave formation to defend against enemy approaching closely.",
-                "** <cstrict OR <cs - squadrons fly in rigid STRICT, close formation with you, all aircraft at your altitude, close to you (ignoring <cdist), resets front/back offset to 0 and clamps spread to 100% if wider, ignores all other action, & ordered to ignore even direct attacks and simply fly in formation with you.",
-                "** <cloiter OR <cl - LOITER in place, circling. Will defend if attacked, but otherwise remain out of the action and awaiting further orders.",
-                "** <cdrop OR <cdro OR Tab-4-4-4-4-6 (Cover Targeting cycles to 'Drop When I Drop') - DROP WHEN I DROP: aircraft hold their bombs and fly in tight formation with you, and the moment you let your first bomb go they release everything at the same time - just as ww2 crews did, with only the leader carrying a bombsight. Squadrons still further back will catch up to your line and release there. <cdrop always covers ALL your cover groups (squadron numbers after it are ignored) - use <creserve 3 to hold particular squadrons back. Wait until every group shows GND ATTACK on the chat display, then they are awaiting your drop. After a release they are armed for ONE run only - to do another, cycle the Tab-4-4-4-4-6 Cover Targeting back to another mode and then to 'Drop When I Drop' again (this re-arms the drop detection). <cdropnow below is the reliable immediate release.",
-                "** <cdropnow OR <cbomb - order an IMMEDIATE release from every squadron now, whatever order they are on. Squadrons sitting on <creserve are held back; everything else goes, including <cstrict squadrons.",
+                "** <cstrict OR <cs - squadrons fly in rigid STRICT, close formation with you, all aircraft at your altitude, close to you (ignoring <cdist), resets front/back offset to 0 and clamps spread to 100% if wider, ignores all other action, no ground targeting, & ordered to ignore even direct attacks and simply fly in formation with you.",
+                "** <cloiter OR <cl - LOITER in place, circling. Will defend if attacked, but otherwise remain out of the action and awaiting further orders.",                
+                "** <cdropnow OR <cbomb - when in DROP WHEN I DROP mode, order an IMMEDIATE release from every squadron now, whatever order they are on. Squadrons sitting on <creserve are held back; everything else goes, including <cstrict squadrons. See <chelp6 for details.",
                 "<chelp6 for more..."
             };
 

@@ -2987,40 +2987,27 @@ public string listPositionCurrentCoverAircraft(Player player = null, bool displa
                 {
 
                     double dis_m = CoverCalcs.CalculatePointDistance(playerPlace.Pos(), aircraft.Pos());
+                    double dis_mi = (CoverCalcs.meters2miles(dis_m));
+                    int dis_10 = (int)dis_mi;
                     double bearing = CoverCalcs.CalculateGradientAngle(playerPlace.Pos(), aircraft.Pos());
                     double bearing_10 = CoverCalcs.GetDegreesIn10Step(bearing);
                     string ang = "A" + alt_angels.ToString("F0") + " ";
+                    string mi = dis_mi.ToString("F0") + "mi";
+                    string mi_10 = dis_10.ToString("F0") + "mi";
+                    double vel_mph = CoverCalcs.meterspsec2milesphour(CoverCalcs.distance(airGroup.Vwld().x, airGroup.Vwld().y));
+                    double vel_kph = CoverCalcs.miles2meters(vel_mph) / 1000;
+                    string vel = ((double)(CoverCalcs.RoundInterval(vel_mph * 1, 5)) / 1).ToString("F0") + "mph";
                     string numAC = airGroup.GetItems().Length.ToString();
-                    string mi;
-                    string mi_10;
-                    string vel;
 
-                    if (player.Army() == 2) //metric for the Germanos . . .
+                    if (player.Army() == 2) //metric for the Germanos . . . 
                     {
-                        //2026/10 - <cpos precision: a group 1.2km away reads "1k" at F0 and is
-                        //indistinguishable from a km-scale offset. Under 10km (or 10mi) show one
-                        //decimal so the player can tell a 0.3mi escort from a 3mi one at a glance.
-                        //Above that the old F0 truncation and the 30km-to-10km rounding are unchanged.
-                        double dis_km = dis_m / 1000.0;
-                        mi = (dis_km < 10.0) ? dis_km.ToString("F1") + "k" : (dis_m / 1000.0).ToString("F0") + "k";
-                        mi_10 = (dis_km < 10.0) ? dis_km.ToString("F1") + "k"
-                                            : (dis_m > 30000 ? ((double)(CoverCalcs.RoundInterval(dis_m, 10000)) / 1000).ToString("F0") + "k"
-                                            : (dis_m / 1000.0).ToString("F0") + "k");
+                        mi = (dis_m / 1000).ToString("F0") + "k";
+                        mi_10 = mi;
+                        if (dis_m > 30000) mi_10 = ((double)(CoverCalcs.RoundInterval(dis_m, 10000)) / 1000).ToString("F0") + "k";
 
-                        //ft = alt_km.ToString("F2") + "k ";
+                        //ft = alt_km.ToString("F2") + "k ";                                        
                         ang = ((double)(CoverCalcs.RoundInterval(alt_km * 10, 1)) / 10).ToString("F1") + "k ";
-                        double vel_kph = CoverCalcs.miles2meters(CoverCalcs.meterspsec2milesphour(CoverCalcs.distance(airGroup.Vwld().x, airGroup.Vwld().y))) / 1000;
                         vel = ((double)(CoverCalcs.RoundInterval(vel_kph * 10, 5)) / 10).ToString("F0") + "kph";
-                    }
-                    else //imperial for British
-                    {
-                        double vel_mph = 0; // declare before use
-                        double dis_mi = CoverCalcs.meters2miles(dis_m);
-                        mi = (dis_mi < 10.0) ? dis_mi.ToString("F1") + "mi" : dis_mi.ToString("F0") + "mi";
-                        mi_10 = (dis_mi < 10.0) ? dis_mi.ToString("F1") + "mi" : ((int)dis_mi).ToString("F0") + "mi";
-
-                        vel_mph = CoverCalcs.meterspsec2milesphour(CoverCalcs.distance(airGroup.Vwld().x, airGroup.Vwld().y));
-                        vel = ((double)(CoverCalcs.RoundInterval(vel_mph * 1, 5)) / 1).ToString("F0") + "mph";
                     }
                     msg = "#" + count.ToString() + " " + mi_10 + bearing_10.ToString("F0") + "°" + ang + " " + vel + heading_10.ToString("F0") + "°" + " - " + numAC + "x" + CoverCalcs.GetAircraftType(aircraft);
                 }
@@ -4057,13 +4044,6 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
         else if (msg.StartsWith("<cstrict") || msg.StartsWith("<cstr") || msg.StartsWith("<cst") || msg.StartsWith("<cs"))
         { //strict - ignore all else & just fly in formation with the player (<cstrict, <cstr, <cst)
             setCoverAircraftAirGroupsOrders(player, msg, CoverAGOrders.strict, "were ordered to fly in STRICT, close formation with you, at same altitude, and ignore all other action.");
-            //2026/10 - <cstrict clamp: zero front/back offset and clamp spread to 100% if wider
-            if (coverFrontBackDist_m.ContainsKey(player) && coverFrontBackDist_m[player] != 0)
-                coverFrontBackDist_m.Remove(player); //remove resets getFrontBackDist() to 0; leaves 0 if already absent
-            if (playerShiftFactor_pct.ContainsKey(player.Name()) && playerShiftFactor_pct[player.Name()] > 100)
-                setShiftFactor(player, 100); //clamp down; leave alone if already <=100
-            if (coverFrontBackDist_m.ContainsKey(player) && coverFrontBackDist_m[player] != 0 || playerShiftFactor_pct.ContainsKey(player.Name()) && playerShiftFactor_pct[player.Name()] > 100)
-                GamePlay.gpLogServer(new Player[] { player }, ">>>Formation spread reset to 0, clamped to 100% under <cstrict.", new object[] { });
 
         }
         else if (msg.StartsWith("<cescort") || msg.StartsWith("<ces") || msg.StartsWith("<ce"))
@@ -4253,7 +4233,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 "** <cattack OR <ca - ATTACK ground targets if instructed by Tab-4 menu; fighters/sturmovik will vigorously attack any enemy aircraft they see rather than waiting for them to approach.",
                 "** <cescort OR <ce - ESCORT you: stay with you & vigorously defend you from enemy aircraft near you, turn and fight nearby enemies, leaving formation if necessary (even bombers); discontinue ground attacks.",
                 "** <creserve OR <cr - stay in RESERVE, joined with you; do not join the current ground attack. Stay in formation, but fighters/sturmovik will leave formation to defend against enemy approaching closely.",
-                "** <cstrict OR <cs - squadrons fly in rigid STRICT, close formation with you, all aircraft at your altitude, close to you (ignoring <cdist), resets front/back offset to 0 and clamps spread to 100% if wider, ignores all other action, & ordered to ignore even direct attacks and simply fly in formation with you.",
+                "** <cstrict OR <cs - squadrons fly in rigid STRICT, close formation with you, all aircraft at your altitude, close to you (ignoring <cdist), ignores all other action, & ordered to ignore even direct attacks and simply fly in formation with you.",
                 "** <cloiter OR <cl - LOITER in place, circling. Will defend if attacked, but otherwise remain out of the action and awaiting further orders.",
                 "** <cdrop OR <cdro OR Tab-4-4-4-4-6 (Cover Targeting cycles to 'Drop When I Drop') - DROP WHEN I DROP: aircraft hold their bombs and fly in tight formation with you, and the moment you let your first bomb go they release everything at the same time - just as ww2 crews did, with only the leader carrying a bombsight. Squadrons still further back will catch up to your line and release there. <cdrop always covers ALL your cover groups (squadron numbers after it are ignored) - use <creserve 3 to hold particular squadrons back. Wait until every group shows GND ATTACK on the chat display, then they are awaiting your drop. After a release they are armed for ONE run only - to do another, cycle the Tab-4-4-4-4-6 Cover Targeting back to another mode and then to 'Drop When I Drop' again (this re-arms the drop detection). <cdropnow below is the reliable immediate release.",
                 "** <cdropnow OR <cbomb - order an IMMEDIATE release from every squadron now, whatever order they are on. Squadrons sitting on <creserve are held back; everything else goes, including <cstrict squadrons.",

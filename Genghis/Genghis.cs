@@ -11483,7 +11483,7 @@ public class Mission : AMission, IMainMission
 				twcLogServer(new Player[] { player }, "Welcome to " + CAMPAIGN_ID + ", " + player.Name(), new object[] { });
                 showTimeLeft(player: player);
                 twcLogServer(new Player[] { player }, "How to fly: Use chat command <help & read detailed briefing on Map/Flags Page", new object[] { });
-                twcLogServer(new Player[] { player }, ">>>>> Major new update to <cover! Check <chelp, <chelp5 <<<<<", new object[] { });
+                twcLogServer(new Player[] { player }, ">>>>> Major new update to <cover! Check <chelp2, <chelp5, <chelp6 <<<<<", new object[] { });
                 twcLogServer(new Player[] { player }, "===========================================", new object[] { });
                 twcLogServer(new Player[] { player }, ".", new object[] { });
                 twcLogServer(new Player[] { player }, ".", new object[] { });
@@ -13529,11 +13529,13 @@ public class Mission : AMission, IMainMission
             double windir_xy_rad = Calcs.DegreesToRadians(270.0 - windir_gnd_hdg_deg); //in radians, in the XYZ coordinate system where (1,0) = 0 degrees, (0,1) is 90 degrees etc.
             double windir_xy_rad_elev = windir_xy_rad;
             double bottomBound = 0;
-            double topBound = 240; //next bottombound can be 90% of this, which we assume means phasing in the next wind speed from that point up, and so 240-24 = 216 which (WE HOPE!) is safely higher than the highest airfield/surface elevation in game. That high point appears to be around 200 meters near Upavon and also around 190 meters near Biggin Hill.  However the highest AIRFIELDS appear to be Biggin Hill at 186 and Yatesbury at 170.
-                                   //Reason this is important is: Ground wind even just 3-4 m/s can cause weather cocking etc.  
-                                   //It IS possible to take off etc with ground wind as high as 6 m/s or so but 1-2-3 m/2 is more reasonable.
-                                   //The wind will be in effect until the elevation of the topBound and/or bottomBound of the next layer
-                                   //So we want to avoid ANY high speed wind at the elevation where an airfield might be.
+            double topBound = 250; //next bottombound can be 90% of this, which we assume means phasing in the next wind speed from that point up, and so 240-24 = 216 which (WE HOPE!) is safely higher than the highest airfield/surface elevation in game. That high point appears to be around 200 meters near Upavon and also around 190 meters near Biggin Hill.  However the highest AIRFIELDS appear to be Biggin Hill at 186 and Yatesbury at 170.
+            //Reason this is important is: Ground wind even just 3-4 m/s can cause weather cocking etc.  
+            //It IS possible to take off etc with ground wind as high as 6 m/s or so but 1-2-3 m/2 is more reasonable.
+            //The wind will be in effect until the elevation of the topBound and/or bottomBound of the next layer
+            //So we want to avoid ANY high speed wind at the elevation where an airfield might be.
+
+            //UPDATE 2026/09: There appears to be no "transition" between the topBound and bottomBound of the next layer.  So we can just use the topBound of the next layer as the bottomBound of this layer.  It's always just abrupt.
 
             string nl = Environment.NewLine;
             string s = "";
@@ -13559,9 +13561,11 @@ public class Mission : AMission, IMainMission
             for (int i = 1; i <= maxi; i++)
             {
                 double oldTopBound = topBound;
-                //bottomBound = topBound - random.NextDouble() * 50; //you have to overlap the layers by a little -at least 1 meter or FMB makes it 50 meters always.  The next bottomBound is just a bit lower than the previous topBound
-                //2026-10 - experiment, trying to overlap layers 100-150m instead of 0-50m, to make the transitions smoother
-                bottomBound = topBound - random.NextDouble() * 50 - 100;
+                bottomBound = topBound - random.NextDouble() * 25 + 25; //you have to overlap the layers by a little -at least 1 meter or FMB makes it 50 meters always.  The next bottomBound is just a bit lower than the previous topBound
+                //2026-10 - experiment, trying to overlap layers 100-150m instead of 0-50m, to make the transitions smoother - result, it didn't work at all, reverting.
+
+                if (topBound <300) bottomBound = topBound - 5; //try to avoid wind changes/windshear near the ground.
+                
                 //double baseAlt_m = Math.Pow(powernum, i) * 100; //ranges up to about 20000-ish
                 //So this chart: https://www.quora.com/Does-the-wind-get-stronger-the-higher-the-altitude
                 //Shows wind speed grows relatively linearly with altitude, up to about 10000m (jet stream), when it starts to decrease.

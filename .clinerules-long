@@ -102,6 +102,33 @@ Alternative - the older CoverCheck harness, still valid:
 - Behavior changes affecting formation/speed/spacing require an in-game sanity pass for the relevant
   command (e.g. `<cn`, `<cst`, `<ce`, `<ca`, `<cr`, `<clo`, `<cdrop`).
 
+## SERVER LOGS — where to find and read them
+
+- Log file generated at `\\DESKTOP-P96GK4V\Users\17024\Documents\1C SoftClub\il-2 sturmovik cliffs of dover\log_twc_Week_YYYY_WW.txt` (weekly rotation, new number each week). Each session starts with a header `!!!NEW LOG SESSION!!! [timestamp]`. (server config drives the path).
+- Naming: `log_twc_Week_YYYY_WW.txt` (one file per week, appended across sessions).
+- A server restart (mission reload) resets the log; gaps at session boundaries are expected.
+
+### Finding whether the `<cpos>` position display was turned off and why
+1. Extract all display ticks: `Select-String -Pattern ">>>> Your current speed" log_twc_Week_*.txt`
+2. Timestamps should be ~20s apart while armed. Any gap > 30s = turn-off event.
+3. Gaps to watch for:
+   - `[[[NO COVER AIRCRAFT - turning display off]]]` → auto-off, all cover groups gone.
+   - `****No Cover info...****` → player in a non-cover aircraft (checkout still on).
+   - **Silent gap** → the stale 10-min "final-run" timeout (see COVER MISSION NOTES below).
+4. Menu-8 (Tab-4-4-4-4-8) toggles now print `>>>Cover position display is now ON/OFF` and the `<cpos` state line tells current status.
+
+### COVER MISSION NOTES (Genghis-Class-CoverMission.cs)
+
+**10-minute "final run" timeout** (line ~5978) — armed when the player bails/crashes with cover bombers on `normal`/`attack` ground-target runs. After 10 min it releases those bombers (EscortMakeLand). The timeout is fire-and-forget (engine `Timeout()`), so it can stack multiple times per death ("set a few times rather than just the once").
+
+*Bug (2026-10-05, 18:48:34):* a stale timeout armed at 18:38:34 (player bail-out) fired at 18:48:34 — ten minutes later — and silently called `turnOffRegularDisplay`, killing the position display that a `<cover` re-checkout at 18:40:13 had just re-armed. The player found out only by the missing ticks and had to press Tab-4-4-4-4-8 (menu-8) at 18:57:06 to bring it back.
+
+*Fix applied (2026-10-06):* the callback now guards with `if (!coverAircraftAirGroupsActive.ContainsKey(airGroup)) return;` and the `turnOffRegularDisplay` call was removed — the display turns itself off on its next tick with the visible `[[[NO COVER AIRCRAFT...]]]` message when the last group is gone, and it stays on across re-checkouts.
+
+**Bug A – Pre-Open Drop Failure:** `armCoverDropWatch()` now clears `coverAircraftAirGroupsDroppedThisPass` / `coverAircraftAirGroupsBayWaitSince` on arm, so a successful release does not leave stale hold-off timers that block the next protective drop.
+
+**Low-altitude safety guard:** `dropPreOpenBays_airGroup` skips re-issue if the leader is less than 150m below the cover group's altitude.
+
 ## Quick command map
 - `<cn`/`<cnormal>` engage air + bomb as ordered
 - `<cst`/`<cstrict>` rigid wingman, hold position, match leader

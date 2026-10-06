@@ -49,3 +49,14 @@ dotnet build Genghis\Genghis.csproj
 - `Genghis-Class-TacviewRecorder.cs` - `TacviewCore` is internal in the prebuilt `TacviewRecorder.dll`.
 
 Both pre-existing and unrelated to the script. Full detail is in `check-compile.ps1`'s own header.
+## COVER MISSION NOTES (Genghis-Class-CoverMission.cs)
+
+**10-minute "final run" timeout** (line ~5978) — armed when the player bails/crashes with cover bombers on `normal`/`attack` ground-target runs. After 10 min it releases those bombers (EscortMakeLand). The timeout is fire-and-forget (engine `Timeout()`), so it can stack multiple times per death ("set a few times rather than just the once").
+
+*Bug (2026-10-05, 18:48:34):* a stale timeout armed at 18:38:34 (player bail-out) fired at 18:48:34 — ten minutes later — and silently called `turnOffRegularDisplay`, killing the position display that a `<cover` re-checkout at 18:40:13 had just re-armed. The player found out only by the missing ticks and had to press Tab-4-4-4-4-8 (menu-8) at 18:57:06 to bring it back.
+
+*Fix applied (2026-10-06):* the callback now guards with `if (!coverAircraftAirGroupsActive.ContainsKey(airGroup)) return;` and the `turnOffRegularDisplay` call was removed — the display turns itself off on its next tick with the visible `[[[NO COVER AIRCRAFT...]]]` message when the last group is gone, and it stays on across re-checkouts.
+
+**Bug A – Pre-Open Drop Failure:** `armCoverDropWatch()` now clears `coverAircraftAirGroupsDroppedThisPass` / `coverAircraftAirGroupsBayWaitSince` on arm, so a successful release does not leave stale hold-off timers that block the next protective drop.
+
+**Low-altitude safety guard:** `dropPreOpenBays_airGroup` skips re-issue if the leader is less than 150m below the cover group's altitude.

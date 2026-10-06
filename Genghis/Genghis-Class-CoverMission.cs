@@ -2115,7 +2115,7 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
                 }
                 string arm = (isBomberArmed(airGroup)) ? "Has bombs" : "No bombs";
                 string cannon = (cannonsEmpty(airGroup)) ? ", cannon empty" : "";
-                string m = ">>>Your cover group " + numAC.ToString() + "x" + typeName + " (" + arm + cannon + ") has gone RTB on its own - it will NOT drop bombs or carry out ground attacks from now on. It will keep flying while it can. <cpos shows it, <cland releases it.";
+                string m = ">>>Your cover group " + numAC.ToString() + "x" + typeName + " (" + arm + cannon + ") has gone RTB for some reason - it will NOT drop bombs or carry out ground attacks from now on. It will keep flying while it can. You can release it via <cland if desired.";
                 GamePlay.gpLogServer(new Player[] { player }, m, new object[] { });
                 Console.WriteLine("COVER RTB NOTICE: {0} informed {1} - engine RTB, not releasedByUs (bombs={2})",
                     airGroup.Name(), (player != null ? player.Name() : "(null)"), bom);
@@ -3936,7 +3936,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             if (currentlyOn)
                 GamePlay.gpLogServer(new Player[] { player }, ">>>Cover position display is currently ON (repeats every ~20s).", null);
             else
-                GamePlay.gpLogServer(new Player[] { player }, ">>>Cover position display is currently OFF.  Tab-4-4-4-8 to turn it ON.", null);
+                GamePlay.gpLogServer(new Player[] { player }, ">>>Cover position display is currently OFF.  Tab-4-4-4-4-8 to turn it ON.", null);
             listPositionCurrentCoverAircraft(player);
 
         }
@@ -4332,6 +4332,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 "** Tab-4-4-4-4 menu OR Chat Commands <cover OR <cover Beau OR <cover 3 OR <cover 3 6 AS:",
                 "Launch a cover squadron of aircraft name or type # indicated. Optional: Add # of aircraft to launch, formation type, heavy (bombs), and x2 or x3 to repeat the command.",
                 "** Tab-4 menu OR command <clist: List available cover fighters & ID#; <cpos - position of your current fighters",
+                "** Once COVER aircraft are launched, a regular chat display updates you with their position and status. Tab-4-4-4-4-8 toggles the display on/off.",
                 "** Tab-4-4-4-4-7: Set cover aircraft ground attack mode/target",
                 "** <cnormal, <cstrict, <cescort, <cattack, <creserve & <cloiter 1 3: Give standing orders to e.g. squadrons 1 & 3 (details @ <chelp5)",
                 "** Tab-4 menu OR command <cland: Release cover fighters to land (IMPORTANT!)",
@@ -5979,14 +5980,26 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                     {
                         //This is to let any bombers on their bomb runs just continue it for 10 more minutes after the main a/c (live pilot) has been
                         //killed or crashed.  So they will continue and maybe hit the target, then be released.
-                        //Timeout is bit of  kludge here, waiting 10 minutes this timer will be set a few times rather than just the once                    
+                        //Timeout is bit of  kludge here, waiting 10 minutes this timer will be set a few times rather than just the once
                         coverAircraftAirGroupsReleased[airGroup] = false;
                         Timeout(10 * 60, () =>
                           {
+                              //STALE-TIMER GUARD (2026-10-06): 10-min final-run timeouts cannot be
+                              //cancelled and are armed repeatedly while the pilot is out of the plane,
+                              //so by the time one fires the group may already have been landed/
+                              //forgotten (forgetAirGroup() removes those keys) - blindly rewriting the
+                              //TargetPoint/Released entries would re-insert them, and the
+                              //position display should never be turned off from here: if the player has
+                              //since started a new flight (checked out new cover), the display is
+                              //legitimately running (that call is what silently killed it at 18:48:34,
+                              //2026-10-05, after a <cover re-checkout at 18:40:13, forcing the player to
+                              //find Tab-4-4-4-4-8 at 18:57:06 to bring it back).  If there truly is no
+                              //cover left, the display turns itself off on its next tick WITH the visible
+                              //"[[[NO COVER AIRCRAFT - turning display off]]]" message (count == 0 path).
+                              if (!coverAircraftAirGroupsActive.ContainsKey(airGroup)) return;
                               coverAircraftAirGroupsTargetPoint[airGroup] = new Point3d(-1, -1, -1);
                               coverAircraftAirGroupsReleased[airGroup] = true;
                               EscortMakeLand(airGroup, null);
-                              turnOffRegularDisplay_listPositionCurrentCoverAircraft(player);
                           });
                     }
                     else
@@ -8565,7 +8578,9 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                         //do this if #1. We haven't found an actor target, #2. It isn't with the preferred mo #3. Sometimes randomly just for variety
                         int ml = 0;
                         
-                        if (!tempFlakTarget && (
+                        if ( ( !tempFlakTarget || ran.Next(5) ==2 || (tempFlakTarget && closest_m > preferredMove_m *  1.25) ) 
+                        
+                            && (
                                 !diveTarget  || (Obj_radius > 0 && closest_m > Obj_radius * 1.2) || closest_m > maxMove_m /2.0 || (ran.Next(3) == 0)
                                 || (ran.Next(2) == 0 && isAA))  //one time in 3, choose a ground stationary instead of an actor, even if the actor was found; make it one in two if it is AA.
                         )
@@ -8606,6 +8621,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 											if (stationaries.Count == 0) break;
 											//int newStaIndex = ran.Next(stationaries.Length - 1);
 											var gg = stationaries[i];
+                                            ml = 0;
 											//if (gg != null && gg.IsAlive && (newTarget == null ||
 											//    (Math.Pow(gg.pos.x - pos.x, 2) + Math.Pow(gg.pos.y - pos.y, 2) <
 											//    Math.Pow(newTarget.Pos().x - pos.x, 2) + Math.Pow(newTarget.Pos().y - pos.y, 2)))) 
@@ -8721,8 +8737,8 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                             }
                         }
 
-                        //If the found gg was low quality and the ACTOR was pretty good, we can stick with the ACTOR instead
-                        if (stationaryDiveTarget && newTarget != null && ml < 2 && closest_m < maxMove_m / 2.0) newGroundTarget = null;
+                        //If the found gg was low quality and the ACTOR was pretty good, we can stick with the ACTOR instead, most of the time
+                        if (stationaryDiveTarget && newTarget != null && ((ml < 1 && ran.Next(0,3)>0) || (ml < 2  && ran.Next(0,2)>0)) && closest_m < maxMove_m / 2.0 && ran.Next(0,9) > 0) newGroundTarget = null;
                     
 
                         //if we FOUND a target we reset targetPointNoEnemiesFound_time so others can also search

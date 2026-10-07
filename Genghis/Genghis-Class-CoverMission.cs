@@ -2082,6 +2082,32 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
     //home (coverAircraftAirGroupsReleased), which the player already knows about.
     Dictionary<AiAirGroup, bool> coverRtbNotified = new Dictionary<AiAirGroup, bool>();
 
+    //<cdrop 2026/10 Helper for the RTB probe.  Health comes straight off each a/c - the same source
+    //the <cpos line uses for its "(87:100)" column (listPositionCurrentCoverAircraft) - rather than
+    //StatsMission's damage store, which this probe cannot reach.  healthStr is a colon-joined
+    //per-a/c health%; damagedCount is how many a/c are below 100% (M_Health < 1).  Never throws.
+    public void coverGroupHealth(AiAirGroup airGroup, out string healthStr, out int damagedCount)
+    {
+        healthStr = "";
+        damagedCount = 0;
+        try
+        {
+            if (airGroup == null || airGroup.GetItems() == null) return;
+            int hCount = 0;
+            foreach (AiActor act in airGroup.GetItems())
+            {
+                AiAircraft a = act as AiAircraft;
+                if (a == null) continue;
+                double health = a.getParameter(ParameterTypes.M_Health, 0);
+                if (health < 1) damagedCount++;
+                if (hCount > 0) healthStr += ":";
+                healthStr += string.Format("{0:N0}", Math.Floor(health * 100));
+                hCount++;
+            }
+        }
+        catch (Exception ex) { }
+    }
+
     //<cdrop 2026/10 Step D - RTB PROBE.  An airgroup in task .RETURN will neither open its bomb bays
     //nor release, so a group that has quietly gone RTB looks exactly like a group ignoring us - and
     //we do not yet know WHY the engine flips them (CloDNotes 1f lists the candidates).  Log enough
@@ -2119,10 +2145,17 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
                 }
                 string arm = (isBomberArmed(airGroup)) ? "Has bombs" : "No bombs";
                 string cannon = (cannonsEmpty(airGroup)) ? ", cannon empty" : "";
-                string m = ">>>Your cover group " + numAC.ToString() + "x" + typeName + " (" + arm + cannon + ") has gone RTB for some reason - it will NOT drop bombs or carry out ground attacks from now on. It will keep flying while it can. You can release it via <cland if desired.";
+                //Health comes straight off the a/c parameters - the same source the <cpos line shows
+                //in its "(87:100)" column - rather than StatsMission's damage store, which this probe
+                //cannot reach.  If some a/c are below 100%, that names the otherwise-missing "reason".
+                string ntHealth;
+                int ntDamaged;
+                coverGroupHealth(airGroup, out ntHealth, out ntDamaged);
+                string reason = (ntDamaged > 0) ? "(" + ntDamaged + " of " + numAC + " aircraft damaged)" : "for some reason";
+                string m = ">>>Your cover group " + numAC.ToString() + "x" + typeName + " (" + arm + cannon + ") has gone RTB " + reason + " - it will NOT drop bombs or carry out ground attacks from now on. It will keep flying while it can. You can release it via <cland if desired.";
                 GamePlay.gpLogServer(new Player[] { player }, m, new object[] { });
-                                Console.WriteLine("COVER RTB NOTICE: {0} informed {1} - engine RTB, not releasedByUs (spawnBombs={2}, bombsNow={3})",
-                    airGroup.Name(), (player != null ? player.Name() : "(null)"), coverSpawnBombCount.ContainsKey(airGroup) ? coverSpawnBombCount[airGroup] : -1, bom);
+                Console.WriteLine("COVER RTB NOTICE: {0} informed {1} - engine RTB, not releasedByUs (spawnBombs={2}, bombsNow={3}, health={4}, damaged={5})",
+                    airGroup.Name(), (player != null ? player.Name() : "(null)"), coverSpawnBombCount.ContainsKey(airGroup) ? coverSpawnBombCount[airGroup] : -1, bom, ntHealth, ntDamaged);
                 // Nearest enemy airgroup distance
                 double nearestDist = -1;
                 try {
@@ -2150,24 +2183,7 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
                 }
                 catch (Exception ex) { }
 
-                // Damage flag from StatsMission
-                try {
-                    if (TWCStatsMission != null && airGroup.GetItems() != null) {
-                        int damagedCount = 0;
-                        foreach (AiActor ac in airGroup.GetItems()) {
-                            AiAircraft airc = ac as AiAircraft;
-                            if (airc != null) {
-                                // Check if aircraft has sustained damage
-                                // TWCStatsMission tracks selfDamageThisFlight per aircraft
-                                // We'll just log a general indicator if any damage was tracked
-                            }
-                        }
-                        if (damagedCount > 0) {
-                            Console.WriteLine("    Damage flag: " + damagedCount + " aircraft in group show damage");
-                        }
-                    }
-                }
-                catch (Exception ex) { }
+                //(Health/damage for this episode is reported once, in the COVER RTB NOTICE line above.)
             }
 
             //STEP D - console probe, testserver only, 30s throttle (unchanged behaviour).
@@ -2187,9 +2203,12 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
             }
             double distToLeader = -1;
             if (player != null && player.Place() != null) distToLeader = CoverCalcs.CalculatePointDistance(airGroup.Pos(), player.Place().Pos());
-            Console.WriteLine("COVER RTB: {0} is in task .RETURN - waypoints={1} current={2} bombs={3} fuel={4:F0} distToLeader={5:n0}m releasedByUs={6}",
+            string thHealth;
+            int thDamaged;
+            coverGroupHealth(airGroup, out thHealth, out thDamaged);
+            Console.WriteLine("COVER RTB: {0} is in task .RETURN - waypoints={1} current={2} bombs={3} fuel={4:F0} distToLeader={5:n0}m releasedByUs={6} health={7} damaged={8}",
                 airGroup.Name(), (rwps != null ? rwps.Length : 0), cur, CoverCalcs.bombCount(airGroup), fuel, distToLeader,
-                releasedByUs);
+                releasedByUs, thHealth, thDamaged);
         }
         catch (Exception ex) { }
     }
@@ -3199,8 +3218,8 @@ public string listPositionCurrentCoverAircraft(Player player = null, bool displa
                 {
 
                     AiAircraft a = act as AiAircraft;
-                    double health = a.getParameter(part.ParameterTypes.M_Health, 0);
-                    double namedDamage = a.getParameter(part.ParameterTypes.M_NamedDamage, 0);
+                    double health = a.getParameter(ParameterTypes.M_Health, 0);
+                    double namedDamage = a.getParameter(ParameterTypes.M_NamedDamage, 0);
 
                     if (health < 1)// || namedDamage > 0)
                     {
@@ -3208,7 +3227,7 @@ public string listPositionCurrentCoverAircraft(Player player = null, bool displa
                     }
                     //healthString += String.Format(" ({0:N0}:{1:N0})", Math.Round(health * 100) ,namedDamage*1000);
                     if (hCount > 0) healthString += ":";
-                    healthString += String.Format("{0:N0}", Math.Floor(health * 100));
+                    healthString += string.Format("{0:N0}", Math.Floor(health * 100));
                     hCount++;
                 }
 				if (mainmission.ON_TESTSERVER) Console.WriteLine("LCA #17");

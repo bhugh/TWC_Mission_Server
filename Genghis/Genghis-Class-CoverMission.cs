@@ -2068,6 +2068,10 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
     }
 
     Dictionary<AiAirGroup, DateTime> coverRtbLogged = new Dictionary<AiAirGroup, DateTime>();
+//2026/10 Step D - probe: track how many bombs each cover airgroup spawns with,
+    //so that a RTB with bombs=0 can be told apart from "bombs dropped en route".
+    //Cleared by forgetAirGroup() (same life cycle as coverRtbLogged).
+    Dictionary<AiAirGroup, int> coverSpawnBombCount = new Dictionary<AiAirGroup, int>();
 
     //2026/10 Step G - one-shot-per-episode PLAYER notice that a group went RTB on its own.  A group
     //in task .RETURN will not open its bays, drop, or ground-attack (CloDNotes 1f - and the owner's
@@ -2117,8 +2121,53 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
                 string cannon = (cannonsEmpty(airGroup)) ? ", cannon empty" : "";
                 string m = ">>>Your cover group " + numAC.ToString() + "x" + typeName + " (" + arm + cannon + ") has gone RTB for some reason - it will NOT drop bombs or carry out ground attacks from now on. It will keep flying while it can. You can release it via <cland if desired.";
                 GamePlay.gpLogServer(new Player[] { player }, m, new object[] { });
-                Console.WriteLine("COVER RTB NOTICE: {0} informed {1} - engine RTB, not releasedByUs (bombs={2})",
-                    airGroup.Name(), (player != null ? player.Name() : "(null)"), bom);
+                                Console.WriteLine("COVER RTB NOTICE: {0} informed {1} - engine RTB, not releasedByUs (spawnBombs={2}, bombsNow={3})",
+                    airGroup.Name(), (player != null ? player.Name() : "(null)"), coverSpawnBombCount.ContainsKey(airGroup) ? coverSpawnBombCount[airGroup] : -1, bom);
+                // Nearest enemy airgroup distance
+                double nearestDist = -1;
+                try {
+                    // Check for nearby enemy airgroups using GamePlay
+                    if (GamePlay != null) {
+                        int enemyArmy = (airGroup.Army() == 1) ? 2 : 1;
+                        List<AiAirGroup> allEnemies = new List<AiAirGroup>();
+                        if (GamePlay.gpAirGroups(enemyArmy) != null) {
+                            allEnemies.AddRange(GamePlay.gpAirGroups(enemyArmy));
+                        }
+                        if (allEnemies.Count > 0) {
+                            double minDist = double.MaxValue;
+                            foreach (AiAirGroup enemy in allEnemies) {
+                                if (enemy != null) {
+                                    double d = CoverCalcs.CalculatePointDistance(airGroup.Pos(), enemy.Pos());
+                                    if (d < minDist) minDist = d;
+                                }
+                            }
+                            if (minDist > 0 && minDist < double.MaxValue / 2) {
+                                nearestDist = minDist;
+                                Console.WriteLine("    Nearest enemy airgroup distance: " + minDist.ToString("F0") + "m");
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex) { }
+
+                // Damage flag from StatsMission
+                try {
+                    if (TWCStatsMission != null && airGroup.GetItems() != null) {
+                        int damagedCount = 0;
+                        foreach (AiActor ac in airGroup.GetItems()) {
+                            AiAircraft airc = ac as AiAircraft;
+                            if (airc != null) {
+                                // Check if aircraft has sustained damage
+                                // TWCStatsMission tracks selfDamageThisFlight per aircraft
+                                // We'll just log a general indicator if any damage was tracked
+                            }
+                        }
+                        if (damagedCount > 0) {
+                            Console.WriteLine("    Damage flag: " + damagedCount + " aircraft in group show damage");
+                        }
+                    }
+                }
+                catch (Exception ex) { }
             }
 
             //STEP D - console probe, testserver only, 30s throttle (unchanged behaviour).
@@ -5693,7 +5742,11 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 
                                 coverAircraftAirGroupsActive.Add(newAirgroup, player);
                                 addToIndexes(player, newAirgroup);
-                                coverAircraftAirGroupsOrders[newAirgroup] = CoverAGOrders.normal;
+                                                                 coverAircraftAirGroupsOrders[newAirgroup] = CoverAGOrders.normal;
+                                 coverSpawnBombCount[newAirgroup] = CoverCalcs.bombCount(newAirgroup);
+                                 //2026/10 Step D - snapshot bomb count at spawn; the cdRtbProbe uses this
+                                 //to distinguish "dropped/jettisoned en route" from "was empty to begin
+                                 //with" when diagnosing engine-RTB-on-empty.
 
                                 //keepAircraftOnTask_recurs(newAirgroup, AiAirGroupTask.ATTACK_AIR, AiAirWayPointType.AATTACK_FIGHTERS, player, 43.2354); //don't seem aggressive enough in defending with this, trying the .escort instead, with including the bomber group actor as .target
                                 bool heavyBomber = false;

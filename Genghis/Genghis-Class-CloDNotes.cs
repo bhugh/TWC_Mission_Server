@@ -547,6 +547,7 @@
  *   snapshot; anything the player changed in the meantime (a <creserve N, importantly) is left
  *   exactly as they set it, and a group that appeared after the drop started falls back to normal.
  *   NOTE the setCoverAircraftAirGroupsOrders() side effect: a bare all-groups <cattack/<cstrict/
+*   STRONG LEAD: The setCoverAircraftAirGroupsOrders() side effect clears aim mode and snapshot - this is powerful and must be used deliberately to avoid accidentally disabling bomb-aiming.  The Side effect is INSIDE setCoverAircraftAirGroupsOrders, not BAM_leaveDropMode or any other function.  Always check whether your code calls setCoverAircraftAirGroupsOrders with a non-drop order - they'll clear everything you might want to restore for drop mode.
  *   <cescort/<cloiter also CLEARS the aim mode back to None and discards the snapshot, because the
  *   Tab-4 label would otherwise still read "Drop When I Drop" when nobody is on .drop any more.  That
  *   is deliberately NOT done for a PARTIAL command - "<creserve 3" is the documented way to hold

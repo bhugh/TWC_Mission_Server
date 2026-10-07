@@ -1428,7 +1428,7 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
         if (player == null) return 0;
         if (ps == -1000) return playerFormationPosition.ContainsKey(player) ? playerFormationPosition[player] : 0;
         playerFormationPosition[player] = ps;
-        if (ps != 0) playerFormationPositionAuto[player] = false; //manual pin - turn off auto re-rolls (0 alone does NOT pin: auto can legally roll 0)
+        playerFormationPositionAuto[player] = false; //manual pin - turn off auto re-rolls
         return playerFormationPosition[player];
     }
 
@@ -2151,11 +2151,15 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
                 string ntHealth;
                 int ntDamaged;
                 coverGroupHealth(airGroup, out ntHealth, out ntDamaged);
-                string reason = (ntDamaged > 0) ? "(" + ntDamaged + " of " + numAC + " aircraft damaged)" : "for some reason";
+                string reason;
+                if (ntDamaged > 0) reason = "(" + ntDamaged + " of " + numAC + " aircraft damaged)";
+                else if (isBomberArmed(airGroup) && !hasAmmoForAttack(airGroup)) reason = "out of ammo for attack";
+                else if (!hasFuelForRTB(airGroup)) reason = "low fuel";
+                else reason = "for some reason";
                 string m = ">>>Your cover group " + numAC.ToString() + "x" + typeName + " (" + arm + cannon + ") has gone RTB " + reason + " - it will NOT drop bombs or carry out ground attacks from now on. It will keep flying while it can. You can release it via <cland if desired.";
                 GamePlay.gpLogServer(new Player[] { player }, m, new object[] { });
-                Console.WriteLine("COVER RTB NOTICE: {0} informed {1} - engine RTB, not releasedByUs (spawnBombs={2}, bombsNow={3}, health={4}, damaged={5})",
-                    airGroup.Name(), (player != null ? player.Name() : "(null)"), coverSpawnBombCount.ContainsKey(airGroup) ? coverSpawnBombCount[airGroup] : -1, bom, ntHealth, ntDamaged);
+                Console.WriteLine("COVER RTB NOTICE: {0} informed {1} - engine RTB, not releasedByUs (spawnBombs={2}, bombsNow={3}, health={4}, damaged={5}, reason={6})",
+                    airGroup.Name(), (player != null ? player.Name() : "(null)"), coverSpawnBombCount.ContainsKey(airGroup) ? coverSpawnBombCount[airGroup] : -1, bom, ntHealth, ntDamaged, reason);
                 // Nearest enemy airgroup distance
                 double nearestDist = -1;
                 try {
@@ -4934,6 +4938,22 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
         if (coverACInfo[airGroup].StartedWithCannons && !airGroup.hasCourseCannon()) return true;
         return false;
     }        
+//Helper: true if the airgroup has ammo for attack (bombs or torpedos)
+    private bool hasAmmoForAttack(AiAirGroup airGroup)
+    {
+        if (airGroup == null) return false;
+        return airGroup.hasBombs() || airGroup.hasTorpedos();
+    }
+
+    //Helper: true if the airgroup has enough fuel to RTB (check first aircraft's fuel)
+    private bool hasFuelForRTB(AiAirGroup airGroup)
+    {
+        if (airGroup == null) return false;
+        if (airGroup.GetItems().Length == 0) return false;
+        AiAircraft aircraft = airGroup.GetItems()[0] as AiAircraft;
+        if (aircraft == null) return false;
+        return aircraft.Fuel() > 0;
+    }
     public bool isStrikeAircraftWithBombs(AiAirGroup airGroup)
     {
         if (airGroup == null) return false;
@@ -5124,6 +5144,8 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
         {
             if (player == null || GamePlay == null) return ret;
 
+            int skippedHoldFire = 0; // counter for groups skipped due to hold-fire order
+
             string newmsg = msg.Replace(",", " ").Replace("(", " ").Replace(")", " ").Replace("[", " ").Replace("]", " ").Replace("  ", " ").Replace("  ", " ").Replace("  ", " ").Trim(); // remove the comma, parentheses etc
 
             var indxs = new List<int>();
@@ -5160,7 +5182,11 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                     //<creserve, <cloiter): they were told to hold fire, and a blanket drop must not
                     //overrule that.  Explicit "<cdrop 2" still pulls them in (skipHoldFire is false).
                     //Groups already on .drop are never skipped (they ARE the drop).
-                    if (skipHoldFire && order == CoverAGOrders.drop && coverAircraftAirGroupsOrders.ContainsKey(airGroup) && coverAircraftAirGroupsOrders[airGroup] != CoverAGOrders.drop && ordersHoldFire(coverAircraftAirGroupsOrders[airGroup])) continue;
+                    if (skipHoldFire && order == CoverAGOrders.drop && coverAircraftAirGroupsOrders.ContainsKey(airGroup) && coverAircraftAirGroupsOrders[airGroup] != CoverAGOrders.drop && ordersHoldFire(coverAircraftAirGroupsOrders[airGroup]))
+                    {
+                        skippedHoldFire++;
+                        continue;
+                    }
                     coverAircraftAirGroupsOrders[airGroup] = order;
                     ret.Add(airGroup);
                     foundIndxs += count.ToString() + " ";
@@ -5182,6 +5208,12 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             }
 
             GamePlay.gpLogServer(new Player[] { player }, numFoundIndxs.ToString() + " groups of cover aircraft " + orderDescription + " (#{0})", new object[] { String.Join(" #", foundIndxs.Trim()) });
+
+            // WARNING: Groups were skipped due to hold-fire orders
+            if (skippedHoldFire > 0)
+            {
+                GamePlay.gpLogServer(new Player[] { player }, $"<<WARNING>> {skippedHoldFire} groups were skipped due to hold-fire orders ({foundIndxs.Trim()})", new object[] { });
+            }
 
             //<cdrop - if the player has just overridden EVERYONE out of DROP WHEN I DROP (a bare
             //<cattack, <cstrict, <cescort, <cloiter - i.e. orders that cannot mean "join the drop"),
@@ -5511,6 +5543,24 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             //if (numAC + numCheckedOut > maximumCheckoutsAllowedAtOnce_BomberPilots) numAC = maximumCheckoutsAllowedAtOnce_BomberPilots - numCheckedOut;
 
             int acRemaining_wholemission_before = acAvailableToPlayer_num(player);
+
+            //NEW-SORTIE RESET: clear everything from previous sortie if we've been away and checking out again.
+            //Sets player to a clean slate, resetting all cover-related settings for a fresh flight.
+            bool wasNonDefault = false;
+            if (!mainmission.ON_TESTSERVER && !isOnRepairMission(player) && numCheckedOut_before == 0)
+            {
+                if (playerShiftFactor_pct.ContainsKey(player.Name()) && playerShiftFactor_pct[player.Name()] > 100) wasNonDefault = true; //<cdist wider than default
+                if (coverFrontBackDist_m.ContainsKey(player) && coverFrontBackDist_m[player] != 0) wasNonDefault = true; //<cfdist not zero
+                if (BAM_playerAimMode.ContainsKey(player) && BAM_playerAimMode[player] != BAM_BombAimMode.None) wasNonDefault = true; // bomb aim mode set
+                if (coverOrdersBeforeDrop.ContainsKey(player)) wasNonDefault = true; //anything in snapshot means <cnormal re-joined to drop mode
+                if (playerShiftFactor_pct.ContainsKey(player.Name()) && playerShiftFactor_pct[player.Name()] > 100) playerShiftFactor_pct[player.Name()] = 100; //clamp spread down
+                if (coverFrontBackDist_m.ContainsKey(player) && coverFrontBackDist_m[player] != 0) coverFrontBackDist_m.Remove(player); //reset <cfdist
+                if (BAM_playerAimMode.ContainsKey(player)) BAM_playerAimMode[player] = BAM_BombAimMode.None; //reset bomb aim mode
+                coverOrdersBeforeDrop.Remove(player); //clear the snapshot
+                setAutoFormationPosition(player); //re-enable auto slot rolling
+            }
+            if (wasNonDefault && GamePlay != null)
+                GamePlay.gpLogServer(new Player[] { player }, ">>>New sortie - cover settings reset: <cdist, <cfdist, and aim mode cleared.", new object[] { });
 
             if (numCheckedOut_before == 0) BAM_resetBombAimMode(player);
             int numCheckedOut_now = 0;
@@ -9277,7 +9327,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
         //Console.WriteLine("Escort UpdateWaypoints");
         List<AiAirWayPoint> NewWaypoints = new List<AiAirWayPoint>();
         //NewWaypoints.Add(CurrentPosWaypoint(airGroup, targetAirGroup, aawpt));
-        Tuple<AiAirWayPoint, AiAirWayPoint, double> aaWPs = EscortPosWaypoint(player, airGroup, targetAirGroup, aawpt, altDiff_m, AltDiff_range_m, nodupe);
+        Tuple<AiAirWayPoint, AiAirWayPoint, double> aaWPs = EscortPosWaypoint(player, airGroup, targetAirGroup, aawpt, altDiff_m, AltDiff_range_m, nodupe, orders);
         AiAirWayPoint aawp2 = aaWPs.Item1;
         AiAirWayPoint aawp3 = aaWPs.Item2;
         if (aawp2 != null && aawp2.Action != null) aawpt = aawp2.Action;

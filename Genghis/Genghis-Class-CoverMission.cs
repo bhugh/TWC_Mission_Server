@@ -467,7 +467,8 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
     public bool BAM_isMyPositionPoint(Player player)
     {
         if (player == null) return false;
-        return (BAM_getplayerBombAimMode_enum(player) == BAM_BombAimMode.Drop_Flare_Point_Here_and_Target_it || BAM_getplayerBombAimMode_enum(player) == BAM_BombAimMode.Nearest_Enemy_to_Flare_Point);
+        return (BAM_getplayerBombAimMode_enum(player) == BAM_BombAimMode.Drop_Flare_Point_Here_and_Target_it || BAM_getplayerBombAimMode_enum(player) == BAM_BombAimMode.Nearest_Enemy_to_Flare_Point
+            || BAM_getplayerBombAimMode_enum(player) == BAM_BombAimMode.Drop_When_I_Drop_Nearest_Enemy);
     }
     public bool BAM_isKnickebeinPoint(Player player)
     {
@@ -592,6 +593,16 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
                {
                    Calcs.loadCratersAndSmoke(GamePlay, mainmission, player.Place().Pos().x, player.Place().Pos().y, 0, "BuildingFireSmall");  //this is the smallest type of smoke  "BuildingFireLarge" a bit larger.  Smoke1 Smoke2 BigSitySmoke etc all larger yet
                });
+            }
+            else { GamePlay.gpLogServer(new Player[] { player }, "COVER ERROR! Couldn't find your position because you are not in an aircraft.", null); }
+        }
+        else if (bam == BAM_BombAimMode.Drop_When_I_Drop_Nearest_Enemy)
+        {
+            if (player != null && player.Place() != null)
+            {
+                PBP_saveBombPoint(player, player.Place().Pos());
+                // Set the point instantly - no wait for bomb to fall, this mode sets the point based on player position immediately
+                Calcs.loadCratersAndSmoke(GamePlay, mainmission, player.Place().Pos().x, player.Place().Pos().y, 0, "BuildingFireSmall");  //immediate visual feedback
             }
             else { GamePlay.gpLogServer(new Player[] { player }, "COVER ERROR! Couldn't find your position because you are not in an aircraft.", null); }
         }
@@ -781,6 +792,13 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
         else if (BAM_getplayerBombAimMode_enum(player) == BAM_BombAimMode.Drop_When_I_Drop)
         {
             GamePlay.gpLogServer(new Player[] { player }, "DROP WHEN I DROP is ON. Your bombers hold their bombs and close to tight formation with you (a fixed close spread - <cdist is ignored in this mode), then release everything the moment you drop.", null);
+            GamePlay.gpLogServer(new Player[] { player }, "Wait until every group shows GND ATTACK on the chat display, then they are awaiting your drop. Re-issue <cdrop to re-arm them for another run.", null);
+            removeLastBombPoint = false;  //this mode does not use the player's bomb drop point
+        }
+        else if (BAM_getplayerBombAimMode_enum(player) == BAM_BombAimMode.Drop_When_I_Drop_Nearest_Enemy)
+        {
+            GamePlay.gpLogServer(new Player[] { player }, "DROP WHEN I DROP NEAREST ENEMY is ON. Your bombers hold their bombs and close to tight formation with you (a fixed close spread - <cdist is ignored in this mode), then release everything the moment you drop.", null);
+            GamePlay.gpLogServer(new Player[] { player }, "After you drop, cover bombers will aim at the nearest enemy ground object to your current position.", null);
             GamePlay.gpLogServer(new Player[] { player }, "Wait until every group shows GND ATTACK on the chat display, then they are awaiting your drop. Re-issue <cdrop to re-arm them for another run.", null);
             removeLastBombPoint = false;  //this mode does not use the player's bomb drop point
         }

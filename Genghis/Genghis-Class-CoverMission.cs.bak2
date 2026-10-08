@@ -456,7 +456,7 @@ public class CoverMission : AMission, ICoverMission
 //answers "WHEN do they bomb", so it drives the airgroup ORDERS instead (see BAM_enterDropMode()).
 //Keep it immediately before None so the existing cycle order (None -> Knickebein -> ... -> Flare)
 //is unchanged and everybody's muscle memory still works.
-public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Point, Bomb_Explosion_Point, Nearest_Enemy_to_Bomb_Explosion, Drop_Flare_Point_Here_and_Target_it, Nearest_Enemy_to_Flare_Point, Drop_When_I_Drop, Drop_When_I_Drop_Nearest_Enemy, None };
+public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Point, Bomb_Explosion_Point, Nearest_Enemy_to_Bomb_Explosion, Drop_Flare_Point_Here_and_Target_it, Nearest_Enemy_to_Flare_Point, Drop_When_I_Drop, None };
 
     public bool BAM_isBombPoint(Player player)
     {
@@ -566,8 +566,7 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
             else if (bam == BAM_BombAimMode.Nearest_Enemy_to_Bomb_Explosion) bam = BAM_BombAimMode.Drop_Flare_Point_Here_and_Target_it;
             else if (bam == BAM_BombAimMode.Drop_Flare_Point_Here_and_Target_it) bam = BAM_BombAimMode.Nearest_Enemy_to_Flare_Point;
             else if (bam == BAM_BombAimMode.Nearest_Enemy_to_Flare_Point) bam = BAM_BombAimMode.Drop_When_I_Drop;
-            else if (bam == BAM_BombAimMode.Drop_When_I_Drop) bam = BAM_BombAimMode.Drop_When_I_Drop_Nearest_Enemy;
-            else if (bam == BAM_BombAimMode.Drop_When_I_Drop_Nearest_Enemy) bam = BAM_BombAimMode.None;
+            else if (bam == BAM_BombAimMode.Drop_When_I_Drop) bam = BAM_BombAimMode.None;
             else if (bam == BAM_BombAimMode.None) bam = BAM_BombAimMode.Knickebein_Point;
         }
 
@@ -1450,11 +1449,6 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
     float defaultAmtToShiftForEachFighter_m = 30;
     float defaultAmtVerticleShift_m = 40;
 
-    //2026/10 Step C - EscortPosWaypoint aim-ahead & <cfdist along-track cap tunables, all in one place:
-    double coverAimAhead_s = 12;           //heavy-bomber waypoint aim-ahead, seconds of leader travel (was 20-60s general, 90-120s for the "far & angled" case - deleted)
-    double coverCfdistCapSlack_m = 500;    //max absolute along-track slack allowed around the commanded <cfdist, metres
-    double coverCfdistCapSlack_s = 10;     //...or this many seconds of leader travel, whichever is smaller
-
     public float setShiftFactor(Player player, string shiftFactor_s)
     {
         float shiftFactor = 100;
@@ -1551,25 +1545,6 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
     public Dictionary<Player, Tuple<Dictionary<AiAirGroup, CoverAGOrders>, bool>> coverOrdersBeforeDrop = new Dictionary<Player, Tuple<Dictionary<AiAirGroup, CoverAGOrders>, bool>>();
 
     //<cfdist - this player's front/back offset, or 0 if they never set one.
-    //2026/10 - THE one place every upward speed floor comes from (bpFloor, cwFloor, the
-    //dropPreOpen/release-plan clamps): floor = 0.75 x LEADER speed, clamped into [40,55] m/s.
-    //  - 0.75x (NOT the old 1.15x or the fixed 55): the floor sits BELOW the leader, so it can
-    //    never force the group to fly faster than the leader it is matching - the old rules did
-    //    exactly that (1.15x up to the 55 cap; fixed 55 for any leader below 55 m/s), which is
-    //    what "JU-87s kept faster than the player" and the drift-ahead-and-sit bug were.
-    //  - 40 absolute: in-air stall guard, and the floor when the leader is unknown/stopped.
-    //  - 55 absolute: never raises the floor above the old fixed-55 cap for fast leaders - the
-    //    floor is never worse than before, and strictly better for leaders below ~74 m/s.
-    //leaderSpeed_mps should be the LEADER's horizontal speed (CalculatePointDistance of Vwld).
-    public double coverSpeedFloor_mps(double leaderSpeed_mps)
-    {
-        double floor_mps = leaderSpeed_mps * 0.75;
-        if (floor_mps < 40) floor_mps = 40;
-        if (floor_mps > 55) floor_mps = 55;
-        return floor_mps;
-    }
-
-
     public double getFrontBackDist(Player player)
     {
         if (player != null && coverFrontBackDist_m.ContainsKey(player)) return coverFrontBackDist_m[player];
@@ -2705,9 +2680,7 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
                 if (fx.Item3 > 1) vel = fx.Item3;
                 if (fx.Item1 != null) wps.Add(fx.Item1);
             }
-            //2026/10 unified upward floor (coverSpeedFloor_mps): 0.75 x LEADER speed clamped [40,55].
-            double leaderFloor_mps = coverSpeedFloor_mps(leader == null ? 0 : CoverCalcs.CalculatePointDistance(leader.Vwld()));
-            if (vel < leaderFloor_mps) vel = leaderFloor_mps;
+            if (vel < 40) vel = 40;
             if (vel > 175) vel = 175;
             if (wps.Count == 0)
             {
@@ -2796,9 +2769,7 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
             }
             //Mild crash-protection floor: a cover group must never be commanded below ~40 m/s in the
             //air (see the floors in CurrentPosWaypoint/BomberPosWaypoint, Step A2).
-            //2026/10 unified upward floor (coverSpeedFloor_mps): 0.75 x LEADER speed clamped [40,55].
-            double leaderFloor_mps = coverSpeedFloor_mps(leader == null ? 0 : CoverCalcs.CalculatePointDistance(leader.Vwld()));
-            if (vel < leaderFloor_mps) vel = leaderFloor_mps;
+            if (vel < 40) vel = 40;
             if (vel > 170) vel = 170;
 
             //Heading: the leader's if we know it, otherwise the group's own.
@@ -6367,24 +6338,6 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                     if (airgroupTargetPoints.ContainsKey(airGroup)) airgroupTargetPoints.Remove(airGroup);       
                 }
 
-
-                //2026/10 Step D - ATTACK-TERMINATION GATE (heavy & dive bombers only).  Their
-                //GAttackPasses is ._1 (one pass only), but this routine re-issues their attack plan
-                //every ~16s and a FRESH PLAN = A FRESH PASS - which would silently defeat ._1
-                //(bombs 54 -> 51 -> 51 ... for ever).  Once their bombs are GONE the attack run is
-                //genuinely over (their guns are not worth strafing passes with): clear the target
-                //exactly like the bam gate above and fall through to the formation/escort plan
-                //below.  Sturmoviks & fighters (AUTO passes) are deliberately NOT gated - they keep
-                //strafing after the drop, as requested.  isBomberArmed also covers torpedos.
-                if (!isBomberArmed(airGroup) && (isHeavyBomber(airGroup) || isDiveBomber(airGroup)))
-                {
-                    bombing = false;
-                    newTargetPoint = new Point3d(-1, -1, -1);
-                    if (airgroupTargets.ContainsKey(airGroup)) airgroupTargets.Remove(airGroup);
-                    if (airgroupGroundTargets.ContainsKey(airGroup)) airgroupGroundTargets.Remove(airGroup);
-                    if (airgroupTargetPoints.ContainsKey(airGroup)) airgroupTargetPoints.Remove(airGroup);
-                }
-
                 //Console.WriteLine("Cover KeepAconTask: 444");
                 //If the a/c was previous targeted at a point, and the point is still the same, and we are closer then 5km to it, and haven't bombed yet, and still flying towards it, then DON'T CHANGE IT
                 //This hopefully will increase the accuracy of bombers by not messing with their final run-in
@@ -9141,15 +9094,12 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             //flying 51-52 m/s - they sat 3-7 m/s ahead until the leader sped up.  The 70/maybe-<15
             //crash-protection above still applies; the absolute floor is 40 and the leader-relative
             //ceiling on it is 55 (as before), so a fast leader can ask for up to 55+ m/s.
-            //2026/10 unified via coverSpeedFloor_mps: 0.75 x LEADER speed clamped [40,55] (the
-            //old Min(55, 1.15x) sat ABOVE leader speed and forced the group faster than a slow
-            //leader - the drift-ahead-and-sit bug).
             double bpFloor_mps = 40;
             if (playerAirGroup != null)
             {
                 Vector3d plV = playerAirGroup.Vwld();
                 double plSpeed = CoverCalcs.CalculatePointDistance(plV);
-                if (plSpeed > 1) bpFloor_mps = coverSpeedFloor_mps(plSpeed);
+                if (plSpeed > 1) bpFloor_mps = Math.Min(55, plSpeed * 1.15);
             }
             if (vel_mps < bpFloor_mps) vel_mps = bpFloor_mps;
             if (vel_mps > 170) vel_mps = 170;
@@ -9199,12 +9149,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 
             Console.WriteLine(String.Format("CBCW: newtargetpoint as sent to AiAirWayPoint: ({0:F0} {1:F0} {2:F0} target mps: {3:F0} main mps: {4:F0})  ", newPos.x, newPos.y, newPos.z, vel_mps, target_vel_mps));
 
-            //2026/10 Step D - passes rule, set ONCE at the aim point (before any branching):
-            //heavy & dive bombers get ONE pass (._1) - they drop their full stick and their guns
-            //are not worth strafing passes with; Sturmoviks & fighters keep AUTO (drop, then strafe,
-            //repeated passes) - as requested from the 2026/10 test flights.  Was AUTO for everyone,
-            //with per-branch overrides below.
-            (nextWP as AiAirWayPoint).GAttackPasses = (isHeavyBomber(airGroup) || isDiveBomber(airGroup)) ? AiAirWayPointGAttackPasses._1 : AiAirWayPointGAttackPasses.AUTO;  //can do ._1 ._2 ._3 ._4 OR ALL_OUT
+            (nextWP as AiAirWayPoint).GAttackPasses = AiAirWayPointGAttackPasses.AUTO;  //can do ._1 ._2 ._3 ._4 OR ALL_OUT.  But it is hard to say if it really affects the AI behavior much?
             (nextWP as AiAirWayPoint).GAttackType = AiAirWayPointGAttackType.LEVEL;
             //if (ran.Next(2)==0) (nextWP as AiAirWayPoint).GAttackType = AiAirWayPointGAttackType.DIVE;  //change to dive for 50% of bombers
 
@@ -9228,21 +9173,17 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 				//Console.WriteLine ("(newGroundTarget as AiActor): {0} {1} {2}", (newGroundTarget as AiActor), (newGroundTarget as AiActor).Pos().x, (newGroundTarget as AiActor).Pos().y);
 				Console.WriteLine ("(newGroundTarget as AiActor): {0}", (newGroundTarget as AiActor));
 
-                Console.WriteLine(String.Format("CBCW: waypoint info of DIVETARGET {0:F0} {1:F0} {2:F0} action: {3} target: {4} passes: {5}", nextWP.P.x, nextWP.P.y, nextWP.P.z, (nextWP as AiAirWayPoint).Action, (nextWP as AiAirWayPoint).Target, (nextWP as AiAirWayPoint).GAttackPasses));
+                Console.WriteLine(String.Format("CBCW: waypoint info of DIVETARGET {0:F0} {1:F0} {2:F0} action: {3} target: {4}", nextWP.P.x, nextWP.P.y, nextWP.P.z, (nextWP as AiAirWayPoint).Action, (nextWP as AiAirWayPoint).Target));
 				
                 //(nextWP as AiAirWayPoint).Action = AiAirWayPointType.GATTACK_POINT; //OK< that didn't work AT ALL
                 (nextWP as AiAirWayPoint).Action = AiAirWayPointType.GATTACK_TARG;  //keep action same
 
-                Console.WriteLine(String.Format("CBCW: waypoint info of DIVETARGET {0:F0} {1:F0} {2:F0} action: {3} target: {4} passes: {5}", nextWP.P.x, nextWP.P.y, nextWP.P.z, (nextWP as AiAirWayPoint).Action, (nextWP as AiAirWayPoint).Target, (nextWP as AiAirWayPoint).GAttackPasses));
+                Console.WriteLine(String.Format("CBCW: waypoint info of DIVETARGET {0:F0} {1:F0} {2:F0} action: {3} target: {4}", nextWP.P.x, nextWP.P.y, nextWP.P.z, (nextWP as AiAirWayPoint).Action, (nextWP as AiAirWayPoint).Target));
 				
                 if (isDiveBomber(airGroup)) (nextWP as AiAirWayPoint).GAttackType = AiAirWayPointGAttackType.DIVE;
 				else (nextWP as AiAirWayPoint).GAttackType = AiAirWayPointGAttackType.AUTO;
                 //Console.WriteLine("set target to ground");
-                //2026/10 Step D - the old ALL_OUT override here hit EVERY non-dive-bomber with a
-                //ground target: Wellingtons (should be ._1 one pass - no useful strafing guns) AND
-                //Sturmoviks/fighters (should be AUTO - drop then strafe, repeated passes).  Type
-                //rule instead: heavy -> ._1 (already set at the aim point above), everyone else -> AUTO.
-                if (!isDiveBomber(airGroup)) (nextWP as AiAirWayPoint).GAttackPasses = isHeavyBomber(airGroup) ? AiAirWayPointGAttackPasses._1 : AiAirWayPointGAttackPasses.AUTO; //can do AUTO _1, _2, _3, _4
+				if (!isDiveBomber(airGroup))(nextWP as AiAirWayPoint).GAttackPasses = AiAirWayPointGAttackPasses.ALL_OUT; //can do AUTO _1, _2, _3, _4
 				Console.WriteLine("CBCW: 2");
             }
             //case where the target is a point, just target the point (for dive bombers, we always search for divetarget ,even if the target is a point.  Bec. otherwise they won't dive. But if we can't find diveTarget, we can still target the point. So his applies to divebombers where no object found plus ALL point targets)
@@ -9371,16 +9312,12 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             //and thus still prevents the in-air stalls the fixed floor guarded against, but it no
             //longer pins the group ahead of a slow leader.  The absolute floor is lowered to 40
             //to leave the braking bands the room they actually need.
-            //2026/10 unified via coverSpeedFloor_mps: 0.75 x LEADER speed clamped [40,55].  The
-            //old Min(55, 1.15x) was a floor ABOVE leader speed - it forced the group to fly faster
-            //than the leader whenever 1.15x < 55, pinning them ahead of a slow leader (the
-            //drift-ahead-and-sit behaviour), and it still pinned 55 for leaders up to 55 m/s.
             double cwFloor_mps = 40;
             if (targetAirGroup != null)
             {
                 Vector3d tV = targetAirGroup.Vwld();
                 double tSpeed = CoverCalcs.CalculatePointDistance(tV);
-                if (tSpeed > 1) cwFloor_mps = coverSpeedFloor_mps(tSpeed);
+                if (tSpeed > 1) cwFloor_mps = Math.Min(55, tSpeed * 1.15);
             }
             if (vel_mps < cwFloor_mps) vel_mps = cwFloor_mps;
             //when asking AI aircraft ot change speed, it seems to help a lot to put the requested speed in the current waypoint, not the NEXT waypoint.  If you don't
@@ -9548,53 +9485,71 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 //GamePlay.gpLogServer(null, "PosE: " + savePos.x.ToString("F0") + " " + savePos.y.ToString("F0") + " " + savePos.z.ToString("F0") + ":"
                 //   + CurrentPos.x.ToString("F0") + " " + CurrentPos.y.ToString("F0") + " " + CurrentPos.z.ToString("F0"), new object[] { });
 
+                double current_vel_mps = CoverCalcs.CalculatePointDistance(Vwld); 
                 if (heavyBomber) //ok, tried this for ALL aircraft but it didn't go so well
                 {
-                    //2026/10 Step C - ONE short aim-ahead (coverAimAhead_s, 12s): the old general
-                    //lead was 20-60s and the "far & angled" alternate point added 90-120s more -
-                    //at 70 m/s that put the waypoint 1.4-8.4km AHEAD of the leader, which both made
-                    //them mill around the point and completely swamped any negative <cfdist
-                    //(cfdist -3000 + 60s x 70m/s = +1200m PAST you - the "0.5km instead of 3000m"
-                    //report).  CloDNotes also found the alternate point's sign inverted when they
-                    //were already in front, i.e. it pushed them further ahead the more they had
-                    //overshot, so it is GONE entirely.
-                    CurrentPos.x += targetVwld2.x * coverAimAhead_s;
-                    CurrentPos.y += targetVwld2.y * coverAimAhead_s;
+                    if (current_vel_mps < 60) //We set the target waypoint closer if the cover a/c speed is lower, and quite a bit further out of it's going faster
+                    {
+
+                        //if ahead of the main ac & more than 400 meters away, try setting target point a lot further ahead
+                        //Otherwise when they get up there near the point they seem to mill around a bit.
+                        //Also trying more dramatically reducing their speed when they get too far ahead
+                        //Note that the alternate target point will also apply if they are far behind & facing away from the main
+                        //a/c.  However in that situation I don't think the exact target point makes much difference.
+                        //11 seconds at 83mps/300kph is about 900 meters; 60 seconds about 5km
+                        if (targetDist_m > 400 && angleTargetToGroup > 120 && angleTargetToGroup < 240)
+                        {
+                            CurrentPos.x += targetVwld2.x * 90; //Aim for a point slightly ahead of the main aircraft, let's say 20 seconds travel time
+                            CurrentPos.y += targetVwld2.y * 90; //20 seconds didn't work too well; they get there & they fly kind of randomly.  Try 60 seconds if a/c going fast
+                        }
+                        else
+                        {
+                            CurrentPos.x += targetVwld2.x * 20; //Aim for a point slightly ahead of the main aircraft, let's say 20 seconds travel time if the a/c is going quite slow.  This would be, say, the main a/c is injured and RTB.
+                            CurrentPos.y += targetVwld2.y * 20; //20 seconds didn't work too well; they get there & they fly kind of randomly. 
+                        }
+
+
+                        //sO THIS didn't work - they just climb & dive way too abruptly, not over the next 20 or 60 seconds or whatever
+                        double targetVwldZ = targetVwld5.z;
+                        //also match the climb/dive of the target a/c, but limit it to relatively normal climb/dive rate of 7 mps.
+                        if (targetVwldZ > 8) targetVwldZ = 8;
+                        if (targetVwldZ < -7) targetVwldZ = -7;
+                        //CurrentPos.z += targetVwldZ * 20; //20 seconds didn't work too well; they get there & they fly kind of randomly.                             
+                        //^ trying just keeping it at main a/c current altitude instead of adjusting for current a/c climb or dive
+
+                    }
+                    else
+                    {
+                        //if ahead of the main ac & more than 400 meters away, try setting target point a lot further ahead
+                        //11 seconds at 83mps/300kph is about 900 meters; 60 seconds about 5km
+                        if (targetDist_m > 400 && angleTargetToGroup > 120 && angleTargetToGroup < 240)
+                        {
+                            CurrentPos.x += targetVwld2.x * 120; //Aim for a point slightly ahead of the main aircraft, let's say 20 seconds travel time
+                            CurrentPos.y += targetVwld2.y * 120; //20 seconds didn't work too well; they get there & they fly kind of randomly.  Try 60 seconds if a/c going fast
+                        }
+                        else
+                        {
+
+                            CurrentPos.x += targetVwld2.x * 60; //Aim for a point slightly ahead of the main aircraft, let's say 20 seconds travel time
+                            CurrentPos.y += targetVwld2.y * 60; //20 seconds didn't work too well; they get there & they fly kind of randomly.  Try 60 seconds if a/c going fast
+                        }
+
+
+                        double targetVwldZ = targetVwld5.z;
+                        //also match the climb/dive of the target a/c, but limit it to relatively normal climb/dive rate of 7 mps.
+                        if (targetVwldZ > 8) targetVwldZ = 8;
+                        if (targetVwldZ < -8) targetVwldZ = -8;
+                        //CurrentPos.z += targetVwldZ * 20; //try just 20 seconds alt here, rather than 60
+                        //^ trying just keeping it at main a/c current altitude instead of adjusting for current a/c climb or dive
+
+                    }
+
                 }
                 else //not a heavy bomber, ie fighters
                 {
                     //2021/06 - was 5 here,  trying it at 45
                     CurrentPos.x += targetVwld2.x * -10; //for fighters let's try setting a point a littler BEHIND the main a/c
                     CurrentPos.y += targetVwld2.y * -10;
-                }
-
-                //2026/10 Step C - <cfdist CAP (along-track): whenever the player has commanded a
-                //front/back offset, the commanded offset is the BINDING constraint.  Project the
-                //waypoint onto the leader's horizontal heading and clamp its along-track distance
-                //from the leader to cfdist +/- slack, slack = min(coverCfdistCapSlack_m,
-                //coverCfdistCapSlack_s x leader speed).  cfdist == 0 keeps the free aim-ahead with
-                //no cap (milling protection unchanged), and the fighters' sit-behind lead above is
-                //also capped when cfdist IS set, so the command is honoured for every aircraft type.
-                double cfdistCmd_m = getFrontBackDist(player);
-                if (cfdistCmd_m != 0 && target_vel_mps > 1)
-                {
-                    double ux = targetVwld2.x / target_vel_mps; //unit horizontal heading -
-                    double uy = targetVwld2.y / target_vel_mps; //target_vel_mps = CalculatePointDistance = x/y only
-                    Point3d leadPos = targetAirGroup.Pos();
-                    double along_m = (CurrentPos.x - leadPos.x) * ux + (CurrentPos.y - leadPos.y) * uy;
-                    double slack_m = Math.Min(coverCfdistCapSlack_m, coverCfdistCapSlack_s * target_vel_mps);
-                    if (along_m > cfdistCmd_m + slack_m)
-                    {
-                        double fix_m = along_m - (cfdistCmd_m + slack_m);
-                        CurrentPos.x -= ux * fix_m;
-                        CurrentPos.y -= uy * fix_m;
-                    }
-                    else if (along_m < cfdistCmd_m - slack_m)
-                    {
-                        double fix_m = along_m - (cfdistCmd_m - slack_m);
-                        CurrentPos.x -= ux * fix_m;
-                        CurrentPos.y -= uy * fix_m;
-                    }
                 }
 
                 //CurrentPos.z = targetAirGroup.Pos().z + altDiff_m + ran.NextDouble() * 2 * AltDiff_range_m - AltDiff_range_m;

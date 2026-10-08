@@ -2367,6 +2367,22 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
         lineD = coverDropLineDir[player];
         PBP_saveBombPoint(player, player.Place().Pos());
 
+        // DWID-NE: clear stale targets so bombers immediately re-pick enemies near the
+        // actual drop point instead of keeping wrong targets from the fake forward point.
+        if (BAM_getplayerBombAimMode_enum(player) == BAM_BombAimMode.Drop_When_I_Drop_Nearest_Enemy)
+        {
+            targetPointNoEnemiesFound_time.Clear();
+            foreach (AiAirGroup ag in new List<AiAirGroup>(airgroupTargetPoints.Keys))
+            {
+                if (coverAircraftAirGroupsActive.ContainsKey(ag) && coverAircraftAirGroupsActive[ag] == player)
+                {
+                    if (airgroupTargets.ContainsKey(ag)) airgroupTargets.Remove(ag);
+                    if (airgroupGroundTargets.ContainsKey(ag)) airgroupGroundTargets.Remove(ag);
+                    if (airgroupTargetPoints.ContainsKey(ag)) airgroupTargetPoints.Remove(ag);
+                }
+            }
+        }
+
         DateTime nowUtc = DateTime.UtcNow;
         bool anyStillArmed = false;
         bool issuedAnyThisPass = false;
@@ -3287,7 +3303,7 @@ public string listPositionCurrentCoverAircraft(Player player = null, bool displa
                 //In cases where the pilot has set a target point and type of "nearest enemy" but the a/c has not found
                 //a ground actor/stationary as a target. Only when FOLLOW AND BAM is nearest enemy
                 //AND armed AND not set on RESERVE/FOLLOW
-                else if ((action.Contains("FOLLOW") || action.Contains("NORMFLY")) && BAM_isNearestEnemy(player) && isBomberArmed(airGroup) && !ordersAreHoldFire)
+                else if ((action.Contains("FOLLOW") || action.Contains("NORMFLY")) && BAM_isNearestEnemy(player) && isBomberArmed(airGroup) && !ordersAreDrop && !ordersAreHoldFire)
                 {
 
                     if (distToTarget_m < 15000)
@@ -6333,7 +6349,8 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 //instead of tight formation - A/B it in a test session before turning it on anywhere.
                 if (cdDropPreOpenBays && orders == CoverAGOrders.drop && !coverACContinuingFinalRun &&
                     isBomberArmed(airGroup) && !airGroup.hasTorpedos() &&
-                    player != null && player.Place() != null && (player.Place() as AiAircraft) != null)
+                    player != null && player.Place() != null && (player.Place() as AiAircraft) != null &&
+                    !(BAM_getplayerBombAimMode_enum(player) == BAM_BombAimMode.Drop_When_I_Drop_Nearest_Enemy && coverDropAlreadyFired.ContainsKey(player) && coverDropAlreadyFired[player] && !ordersAreDrop))
                 {
                     AiAirGroup preOpenLeader = (player.Place() as AiAircraft).AirGroup();
                     if (preOpenLeader != null && preOpenLeader != airGroup)

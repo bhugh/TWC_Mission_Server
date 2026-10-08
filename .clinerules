@@ -1,6 +1,10 @@
 # TWC Mission Server Cline Rules
 
-Before doing anything, CAREFULLY check whether you are in ACT MODE that allows editing and writing to files or some other mode (such as PLAN MODE or ARCHITECT MODE) that does not allow file writing or changes. UNLESS YOU ARE IN ACT MODE, do not try to write or change files in any way.  Simply inform the user of the plan, in detail, in the chat.
+Before doing anything, CAREFULLY check whether you are in ACT MODE that allows editing and writing to files or some other mode (such as PLAN MODE or ARCHITECT MODE) that does not allow file writing or changes. UNLESS YOU ARE IN ACT MODE, do not try to write or change files in any way. 
+
+- If you are in PLAN or ARCHITECT mode: Simply inform the user of the plan, in detail, in the chat. Create and present a plan that can be implemented by a different, less intelligent worker.
+
+- If you are in ACT MODE: Follow the test plan exactly, step by step, with no deviation.  If problems arise or changes to the plan seem necessary, stop and ask the user how to proceed.  Do not make any changes to the plan without asking first. Before beginning, write the plan to a file in the genghis directory called plan-[date-time].md so that we can continue if interrupted. As you work through this plan step by step, mark each completed step with "[COMPLETED-date-time]".
 
 - This repo holds several INDEPENDENT campaigns/projects, one per subdirectory: Genghis (the active
    one), Campaign21, M001, M002, M003, Testing, Tobruk_Campaign. They are related in various ways but are

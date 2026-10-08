@@ -479,6 +479,7 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
     {
         if (player == null) return false;
         return (BAM_getplayerBombAimMode_enum(player) == BAM_BombAimMode.Nearest_Enemy_to_Bomb_Explosion || BAM_getplayerBombAimMode_enum(player) == BAM_BombAimMode.Nearest_Enemy_to_Knickebein_Point
+            || BAM_getplayerBombAimMode_enum(player) == BAM_BombAimMode.Drop_When_I_Drop_Nearest_Enemy
             || BAM_getplayerBombAimMode_enum(player) == BAM_BombAimMode.Nearest_Enemy_to_Flare_Point);
     }
     public bool BAM_isPoint(Player player)

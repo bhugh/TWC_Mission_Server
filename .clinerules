@@ -1,6 +1,8 @@
 # TWC Mission Server Cline Rules
 
- - This repo holds several INDEPENDENT campaigns/projects, one per subdirectory: Genghis (the active
+Before doing anything, CAREFULLY check whether you are in ACT MODE that allows editing and writing to files or some other mode (such as PLAN MODE or ARCHITECT MODE) that does not allow file writing or changes. UNLESS YOU ARE IN ACT MODE, do not try to write or change files in any way.  Simply inform the user of the plan, in detail, in the chat.
+
+- This repo holds several INDEPENDENT campaigns/projects, one per subdirectory: Genghis (the active
    one), Campaign21, M001, M002, M003, Testing, Tobruk_Campaign. They are related in various ways but are
    separate and self-contained - never root around in a sibling campaign (e.g. Campaign21) while working
    on Genghis; its code is a different, older campaign, not the thing being edited.

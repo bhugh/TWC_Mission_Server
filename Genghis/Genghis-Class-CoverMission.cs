@@ -600,7 +600,6 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
         {
             if (player != null && player.Place() != null)
             {
-                PBP_saveBombPoint(player, player.Place().Pos());
                 // Set the point instantly - no wait for bomb to fall, this mode sets the point based on player position immediately
                 Calcs.loadCratersAndSmoke(GamePlay, mainmission, player.Place().Pos().x, player.Place().Pos().y, 0, "BuildingFireSmall");  //immediate visual feedback
             }
@@ -2365,6 +2364,7 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
         if (!coverDropLinePoint.ContainsKey(player) || !coverDropLineDir.ContainsKey(player)) return;
         lineP = coverDropLinePoint[player];
         lineD = coverDropLineDir[player];
+        PBP_saveBombPoint(player, player.Place().Pos());
 
         DateTime nowUtc = DateTime.UtcNow;
         bool anyStillArmed = false;
@@ -2545,6 +2545,7 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
             }
             catch (Exception ex) { }
 
+            PBP_saveBombPoint(player, player.Place().Pos());
             List<AiAirGroup> groups = new List<AiAirGroup>(coverAircraftAirGroupsActive.Keys);
             foreach (AiAirGroup airGroup in groups)
             {
@@ -3994,6 +3995,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             {
                 closeStaticActors = allStaticActors.ToList(); 
             }
+        PBP_saveBombPoint(player, player.Place().Pos());
             //Finding actors we're going to range wider 1500. meters IN reality maybe we could look up the objective radius.  But actors nearby will be flak, etc etc etc.  All helpful.            
             foreach (AiActor act in closeStaticActors) {
 				Console.WriteLine(string.Format("Actor: {0} {1} {5} {2:N0} {3:N0} army: {4}", act.Name(), (act as AiCart).InternalTypeName(), act.Pos().x, act.Pos().y, act.Army() , Calcs.correctedSectorNameDoubleKeypad(mainmission, act.Pos())));

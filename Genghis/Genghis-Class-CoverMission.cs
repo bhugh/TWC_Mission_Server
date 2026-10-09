@@ -4287,7 +4287,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 }
                 else
                 {
-                    int endLimit = Math.Max(1, pcount/2 - 1);
+                    int endLimit = Math.Max(1, pcount/2);
                     if (n > endLimit) n = endLimit;
                     if (n < -endLimit) n = -endLimit;
                     setPlayerFormationPosition(player, n);

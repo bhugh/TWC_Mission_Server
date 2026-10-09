@@ -1696,7 +1696,20 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
         if (playerSpot > maxSpot) playerSpot = maxSpot;
         if (playerSpot < -maxSpot) playerSpot = -maxSpot;
 
-        foreach (AiAirGroup ag in coverAircraftAirGroupsActive.Keys)
+        //2026/10 Step 1: derive the alternation order from a STABLE sort instead of raw
+        //Dictionary .Keys enumeration order.  .NET Dictionary order is an implementation detail
+        //that changes on rehash when groups are added/removed, so a group could flip to the
+        //opposite side when membership changed ("always trying to change position").  Owner-
+        //filtered ONLY here - the per-iteration type filter and the allcount/count tallies stay
+        //in the loop bodies below, so behavior is otherwise identical; ONLY order is stable now.
+        List<AiAirGroup> step1_orderedGroups = coverAircraftAirGroupsActive
+            .Where(kvp => kvp.Value == player)
+            .Select(kvp => kvp.Key)
+            .OrderBy(agk => agk.ID())
+            .ThenBy(agk => agk.Name())
+            .ToList();
+
+        foreach (AiAirGroup ag in step1_orderedGroups)
         {
             if (coverAircraftAirGroupsActive[ag] != player) continue;  //owner-filter fix: was [airGroup], so it never filtered by owner
             if (airGroup.GetItems() == null || airGroup.GetItems().Length == 0) continue;
@@ -1741,7 +1754,7 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
         {
             int spotAcSlots = 0;
             int spotGroups = 0;
-            foreach (AiAirGroup ag2 in coverAircraftAirGroupsActive.Keys)
+            foreach (AiAirGroup ag2 in step1_orderedGroups)
             {
                 if (coverAircraftAirGroupsActive[ag2] != player) continue;
                 if (ag2.GetItems() == null || ag2.GetItems().Length == 0) continue;
@@ -1752,7 +1765,7 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
             }
             shift_m -= Math.Sign(playerSpot) * spotAcSlots * shiftamt;
         }
-        //if (mainmission.ON_TESTSERVER) GamePlay.gpLogServer(new Player[] { player }, "ACPos: {0:F1} {1} {2} {3} : {4} ", new object[] { shift_m, pos, count, allcount, airGroup.Name() }); 
+        if (mainmission.ON_TESTSERVER) GamePlay.gpLogServer(new Player[] { player }, "ACPos: {0:F1} {1} {2} {3} : {4} ", new object[] { shift_m, pos, count, allcount, airGroup.Name() });
 
         return new Tuple<double, int, int, int>(shift_m, pos, count, allcount);
 
@@ -9726,7 +9739,23 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             if(mainmission.ON_TESTSERVER) {
 				try
 				{
-					Console.WriteLine("Cover: EscortPosWaypoint - returning: {0} {1} {2:n0}/{3:n0} {4:n0} LONG: {5:n0}/{6:n0} {7:n0} Dist: {8:n0} Currpos: {9:n0}/{10:n0} {11:n0} for " + airGroup.Name() + " to " + targetAirGroup.Name() + " player at {12:n0}/{13:n0} {14:n0}", new object[] { (aaWP as AiAirWayPoint).Action, (aaWP as AiAirWayPoint).Speed, aaWP.P.x, aaWP.P.y, aaWP.P.z, aaWP2.P.x, aaWP2.P.y, aaWP2.P.z, targetDist_m, airGroup.Pos().x, airGroup.Pos().y, airGroup.Pos().z, targetAirGroup.Pos().x, targetAirGroup.Pos().y, targetAirGroup.Pos().z });
+					//2026/10 Step 0b: decompose the COMMAND (aaWP.P) and the ACTUAL Currpos (airGroup.Pos())
+					//into along-track (leader heading) & lateral (perpendicular) offsets vs the leader, so one log
+					//line shows whether the command is stable while the a/c hunts (tracking bug) or the command
+					//itself swings (slot bug). C#5 only; heading from targetAirGroup.Vwld() (targetVwld2 is out of scope here).
+					double step0_hx = targetAirGroup.Vwld().x, step0_hy = targetAirGroup.Vwld().y;
+					double step0_hmag = Math.Sqrt(step0_hx * step0_hx + step0_hy * step0_hy);
+					if (step0_hmag < 0.001) step0_hmag = 0.001; //avoid div-by-zero when leader is stopped
+					double step0_ux = step0_hx / step0_hmag, step0_uy = step0_hy / step0_hmag; //leader heading unit vector
+					double step0_cdx = aaWP.P.x - targetAirGroup.Pos().x;
+					double step0_cdy = aaWP.P.y - targetAirGroup.Pos().y;
+					double step0_cmdAlong = step0_cdx * step0_ux + step0_cdy * step0_uy; //along leader heading
+					double step0_cmdLat = -step0_cdx * step0_uy + step0_cdy * step0_ux; //perpendicular (left +)
+					double step0_adx = airGroup.Pos().x - targetAirGroup.Pos().x;
+					double step0_ady = airGroup.Pos().y - targetAirGroup.Pos().y;
+					double step0_actAlong = step0_adx * step0_ux + step0_ady * step0_uy;
+					double step0_actLat = -step0_adx * step0_uy + step0_ady * step0_ux;
+					Console.WriteLine("Cover: EscortPosWaypoint - returning: {0} {1} {2:n0}/{3:n0} {4:n0} LONG: {5:n0}/{6:n0} {7:n0} Dist: {8:n0} Currpos: {9:n0}/{10:n0} {11:n0} for " + airGroup.Name() + " to " + targetAirGroup.Name() + " player at {12:n0}/{13:n0} {14:n0} STEP0 cmdAlong/Lat: {15:n0}/{16:n0} actAlong/Lat: {17:n0}/{18:n0}", new object[] { (aaWP as AiAirWayPoint).Action, (aaWP as AiAirWayPoint).Speed, aaWP.P.x, aaWP.P.y, aaWP.P.z, aaWP2.P.x, aaWP2.P.y, aaWP2.P.z, targetDist_m, airGroup.Pos().x, airGroup.Pos().y, airGroup.Pos().z, targetAirGroup.Pos().x, targetAirGroup.Pos().y, targetAirGroup.Pos().z, step0_cmdAlong, step0_cmdLat, step0_actAlong, step0_actLat });
 				} catch (Exception ex) { Console.WriteLine("Cover: EscortPosWaypoint ERROR printing to console - " + ex.ToString()); }
 			}
             

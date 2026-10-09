@@ -1739,9 +1739,40 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
             //player is always spot 0
             //we put some groups left, some right depending on what "playerspot" is.
             //This little formula works out for playerspot=0, 1, -1, 2, -2, 3, -3, etc.
+            /*
 		    if ( (count % 2 == 0 && (playerSpot>=0 && count/2 >= playerSpot) ) 
             || (count % 2 == 1 && (playerSpot<0 && count/2 >= -playerSpot) )
             )
+            {
+                totalRight += ag.GetItems().Length;// ag.NOfAirc;
+                pos = totalRight;
+                totalRightAG++;
+                posAG = totalRightAG;
+
+            }
+            else
+            {
+                totalLeft += ag.GetItems().Length;// ag.NOfAirc;
+                pos = -totalLeft;
+                totalLeftAG++;
+                posAG = totalLeftAG;
+
+            }
+            if (ag == airGroup) break;
+            */
+
+            //The player's spot
+            if (count == playerSpot + sameTypeCount/2)
+            {
+                count ++;
+            }
+
+
+            //The others go either left OR right of the player
+            //Doing them in the same order always means if the player
+            //moves places everything just slides left/right smoothly
+            //If one group goes missing, everything just closes up smoothly.
+            if ( count < playerSpot + sameTypeCount/2)
             {
                 totalRight += ag.GetItems().Length;// ag.NOfAirc;
                 pos = totalRight;

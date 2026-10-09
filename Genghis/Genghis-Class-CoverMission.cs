@@ -3003,6 +3003,7 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
         {
             COVER_ListPositionTimer[player].Dispose();
             COVER_ListPositionTimer.Remove(player);
+            if (mainmission.ON_TESTSERVER) Console.WriteLine("CoverDisplay: OFF (manual toggle) for " + player.Name());
             return false;
         }
         COVER_ListPositionTimer[player] = new System.Threading.Timer(
@@ -3011,6 +3012,7 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
            player, //bool is whether or not thMO_BRAdvanceBumrushPhaseTimer must be restarted; ie TRUE = an interrupted timer/early restart 
            dueTime: 100, //wait time @ first startup (ms).  
            period: COVER_ListPositionTimerPeriod_ms);
+        if (mainmission.ON_TESTSERVER) Console.WriteLine("CoverDisplay: ON (manual toggle) for " + player.Name());
         return true;
 
     }
@@ -3028,6 +3030,7 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
         if (COVER_ListPositionTimer.ContainsKey(player)) return;
         bool ret = toggleregularDisplay_listPositionCurrentCoverAircraft(player);
         if (!ret) toggleregularDisplay_listPositionCurrentCoverAircraft(player);
+        if (mainmission.ON_TESTSERVER) Console.WriteLine("CoverDisplay: ON (turnOnRegularDisplay) for " + player.Name());
     }
 
     public void turnOffRegularDisplay_listPositionCurrentCoverAircraft(Player player = null)
@@ -3037,6 +3040,8 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
         if (isOn_Display_listPositionCurrentCoverAircraft(player))
             ret = toggleregularDisplay_listPositionCurrentCoverAircraft(player);
         if (ret) toggleregularDisplay_listPositionCurrentCoverAircraft(player);
+        if (mainmission.ON_TESTSERVER && ret)
+            Console.WriteLine("CoverDisplay: OFF (turnOffRegularDisplay) for " + player.Name());
     }
 
     public void listPositionCurrentCoverAircraft_obj(object ob)

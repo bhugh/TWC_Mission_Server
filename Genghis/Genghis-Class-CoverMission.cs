@@ -1469,7 +1469,9 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
     float defaultAmtVerticleShift_m = 40;
 
     //2026/10 Step C - EscortPosWaypoint aim-ahead & <cfdist along-track cap tunables, all in one place:
-    double coverAimAhead_s = 12;           //heavy-bomber waypoint aim-ahead, seconds of leader travel (was 20-60s general, 90-120s for the "far & angled" case - deleted)
+    double coverAimAhead_s = 90;           //heavy-bomber waypoint aim-ahead, seconds of leader travel (was 20-60s general). Note that this is NOT a point that a/c ever reaches.  It is not a "goal point" the aircraft flies to. It merely defines the line the aircraft will fly along.  If the a/c ever reaches this point, it is VERY BAD.  So the time should be long enough that the a/c will never reach this point.
+    //The aircraft's course will be recomputed whenever keepAircraftOnTask_recurs so this number should FAR larger than 
+    //the length of the keepAircraftOnTask_recurs() cycle
     double coverCfdistCapSlack_m = 500;    //max absolute along-track slack allowed around the commanded <cfdist, metres
     double coverCfdistCapSlack_s = 10;     //...or this many seconds of leader travel, whichever is smaller
 
@@ -1640,7 +1642,7 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
         return getShiftFactor(player);
     }
 
-    public Tuple<double, int, int, int> aircraftPositionAndNumber(AiAirGroup airGroup, Player player)
+    public Tuple<double, int, int, int, int> aircraftPositionAndNumber(AiAirGroup airGroup, Player player)
     {
         //Blenheim wingspan is 17m;     JU88 18m; HE111 22.5m; DO217 19 m; Wellington 26 m
         //Beaufighter 17 m; HE110 16.25
@@ -1653,9 +1655,16 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
         int totalLeft = 1; //1 for the position taken in the center by the player's bomber
         //note this isn't actually technically the CENTER any more; it is the player's
         //position.  We might pile on more a/c to the left or right first, before alternating
+
+        int totalRightAG = 1; //1 for the position taken in the center by the player's bomber; also keeps the first left & first right a/c from occupying the same spot ( in the center )
+        int totalLeftAG = 1; //1 for the position taken in the center by the player's bomber
+        //note this isn't actually technically the CENTER any more; it is the player's
+        //position.  We might pile on more a/c to the left or right first, before alternating
+
         int count = 0;  //count of a/c of this type (fighter or bomber)
         int allcount = 0; //count of all a/c for this player
         int pos = 0;
+        int posAG = 0;
         bool type = isHeavyBomber(airGroup) || isDiveBomber(airGroup); //whether bomber or fighter
 
         //Pre-pass: count this player's groups of the same type, so autoPlayerFormationPosition can
@@ -1730,11 +1739,16 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
             {
                 totalRight += ag.GetItems().Length;// ag.NOfAirc;
                 pos = totalRight;
+                totalRightAG++;
+                posAG = totalRightAG;
             }
             else
             {
                 totalLeft += ag.GetItems().Length;// ag.NOfAirc;
                 pos = -totalLeft;
+                totalLeftAG++;
+                posAG = totalLeftAG;
+
             }
             if (ag == airGroup) break;
         }
@@ -1765,15 +1779,17 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
             }
             shift_m -= Math.Sign(playerSpot) * spotAcSlots * shiftamt;
         }
-        if (mainmission.ON_TESTSERVER) GamePlay.gpLogServer(new Player[] { player }, "ACPos: {0:F1} {1} {2} {3} : {4} ", new object[] { shift_m, pos, count, allcount, airGroup.Name() });
+        if (mainmission.ON_TESTSERVER) GamePlay.gpLogServer(new Player[] { player }, "ACPos: {0:F1} {1} {2} {3} {4} : {5} ", new object[] { shift_m, pos, count, allcount, posAG, airGroup.Name() });
 
-        return new Tuple<double, int, int, int>(shift_m, pos, count, allcount);
+        return new Tuple<double, int, int, int, int>(shift_m, pos, count, allcount, posAG);
 
 
     }
 
     //so, we shift the escort fighter or bomber aircraft left or right a bit to allow all groups to have some horizontal space.
     //When we go to bomber targeting mode (knickebein point ON), the bombers can't shift their target point left/right or they'll miss the target point.  And that target point is the same OR very close for all bomber groups.  So in that case we shift them up/down a bit  in altitude, so they can more easily avoid crashing into each other, while all still targeting the same target point.
+    //offsetDirection left_right actually shifts up/down as well - just by a "normal" amount
+    //offsetDirection up_down only shifts up/down, no left/right, and makes the up/down much larger as the formation moves outward.  This is used when e.g. bomber formations all converge on the same target point, so they can all avoid crashing into each other.  The are not sorted left/right but well sorted by altitude.
     public enum offsetDirection { left_right, up_down };
     public Point3d calcOffset_m(Point3d CurrentPos, AiAirGroup airGroup, Player player, Vector3d Vwld, double vel_mps, offsetDirection dir = offsetDirection.left_right, float amtToShiftWhenTargeting = 0)
     {
@@ -1784,7 +1800,7 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
         //double vertShiftFactor = 1.0f;
         //if (actype.ToLower().Contains("wellington")) vertShiftFactor = 3.0f;  //extra vertical shift for wellies
 
-        Tuple<double, int, int, int> shifts = aircraftPositionAndNumber(airGroup, player);
+        Tuple<double, int, int, int, int> shifts = aircraftPositionAndNumber(airGroup, player);
         double shift_m = shifts.Item1;
         //double shiftvert_m = shifts.Item2 * 40;
 
@@ -1797,7 +1813,8 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
         //below).  Math.Abs makes parity depend on the slot's DISTANCE from center rather than its
         //side, so both sides alternate symmetrically +-40m, left side running opposite phase to the
         //right side - "some a little higher, some a little lower", as the pattern always promised.
-        double shiftvert_m = (Math.Abs(shifts.Item2) % 2 * 2 * defaultAmtVerticleShift_m - defaultAmtVerticleShift_m) * (Math.Sign(shift_m)); //up-down-up-down pattern on each side, but swapped direction left/right sides
+        //--.Item5 is count of AIRGROUPS, before we were using count of ACs, which was wrong. 2026/10
+        double shiftvert_m = (Math.Abs(shifts.Item5) % 2 * 2 * defaultAmtVerticleShift_m - defaultAmtVerticleShift_m) * (Math.Sign(shift_m)); //up-down-up-down pattern on each side, but swapped direction left/right sides
         if (dir == offsetDirection.up_down) shiftvert_m *= Math.Abs(shifts.Item2); //when doing verticle shift, make it larger as we move "outward" - Abs, so the left side scales up instead of flipping sign
 
 
@@ -1810,6 +1827,8 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
             unit_vector_90deg_vel_m = new Point3d(-unit_vector_vel_m.y * shift_m, unit_vector_vel_m.x * shift_m, shiftvert_m); //this is a unit vector (1m) pointing 90 degrees rightwards of the a/c direction vector, multiplied by shift_m; also trying a vertical shift per airgroup to see if a bit of vertical separation helps avoid crashes
         else
             unit_vector_90deg_vel_m = new Point3d(0, 0, shiftvert_m); //this is a unit vector (1m) pointing 90 degrees upwards of the a/c direction vector, multiplied by shiftvert_m
+
+        if (mainmission.ON_TESTSERVER) GamePlay.gpLogServer(new Player[] { player }, "ACCalcOffset: {0:F1} {1:f1} {2:f1} {3:f1} {4:f1}: {5} ", new object[] { shift_m, shiftvert_m, unit_vector_90deg_vel_m.x, unit_vector_90deg_vel_m.y, unit_vector_90deg_vel_m.z, airGroup.Name() });
         return new Point3d(CurrentPos.x + unit_vector_90deg_vel_m.x, CurrentPos.y + unit_vector_90deg_vel_m.y, CurrentPos.z + unit_vector_90deg_vel_m.z); // now add this vector/point to the currentpos point).  
 
     }
@@ -9604,6 +9623,11 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 //GamePlay.gpLogServer(null, "PosE: " + savePos.x.ToString("F0") + " " + savePos.y.ToString("F0") + " " + savePos.z.ToString("F0") + ":"
                 //   + CurrentPos.x.ToString("F0") + " " + CurrentPos.y.ToString("F0") + " " + CurrentPos.z.ToString("F0"), new object[] { });
 
+                //Note that CurrentPos.X is NOT a point that a/c ever reaches.  It is not a "goal point" the aircraft needs to  fly to. It merely defines the line the aircraft will fly along.  If the a/c ever reaches this point, it is VERY BAD.  So the time coverAimAhead_s should be long enough that the a/c will never actually ***reach*** this point.
+                //Which point the aircraft actually *reaches* by the end of the keepAircraftOnTask_recurs() cycles is determined
+                // by this LINE (from the a/cs current position to CurrentPos), plus the aircraft's speed, vel_mps
+                //So if you want to change the point the a/c gets to along this line, change vel_mps but NOT CurrentPos.
+
                 if (heavyBomber) //ok, tried this for ALL aircraft but it didn't go so well
                 {
                     //2026/10 Step C - ONE short aim-ahead (coverAimAhead_s, 12s): the old general
@@ -9620,10 +9644,11 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 else //not a heavy bomber, ie fighters
                 {
                     //2021/06 - was 5 here,  trying it at 45
-                    CurrentPos.x += targetVwld2.x * -10; //for fighters let's try setting a point a littler BEHIND the main a/c
-                    CurrentPos.y += targetVwld2.y * -10;
+                    CurrentPos.x += targetVwld2.x * coverAimAhead_s; 
+                    CurrentPos.y += targetVwld2.y * coverAimAhead_s;
                 }
 
+                /*
                 //2026/10 Step C - <cfdist CAP (along-track): whenever the player has commanded a
                 //front/back offset, the commanded offset is the BINDING constraint.  Project the
                 //waypoint onto the leader's horizontal heading and clamp its along-track distance
@@ -9652,6 +9677,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                         CurrentPos.y -= uy * fix_m;
                     }
                 }
+                */
 
                 //CurrentPos.z = targetAirGroup.Pos().z + altDiff_m + ran.NextDouble() * 2 * AltDiff_range_m - AltDiff_range_m;
                 CurrentPos.z += altDiff_m + ran.NextDouble() * 2 * AltDiff_range_m - AltDiff_range_m; //now we're going to make the covers match climb/dive rates, too - why not

@@ -1700,7 +1700,7 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
         //2026/10 Step B: clamp the spot to the groups actually available (a manual <cplayer N is
         //unbounded today).  Mirrors autoPlayerFormationPosition's endLimit: at least one group must
         //remain outside the player on the long side.  Auto-rolled spots are already within this range.
-        int maxSpot = sameTypeCount - 1;
+        int maxSpot = sameTypeCount/2 + 1;
         if (maxSpot < 0) maxSpot = 0;
         if (playerSpot > maxSpot) playerSpot = maxSpot;
         if (playerSpot < -maxSpot) playerSpot = -maxSpot;
@@ -1735,12 +1735,19 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
             //0/+1/-1 all laid out identically - and pushed the fill the WRONG way for |spot| >= 2
             //(spot +2 shoved the first groups right, moving the player left of line center, opposite
             //the briefing).  The player's spot is now applied as a uniform group-width shift below.
-            if (count % 2 == 0)
+
+            //player is always spot 0
+            //we put some groups left, some right depending on what "playerspot" is.
+            //This little formula works out for playerspot=0, 1, -1, 2, -2, 3, -3, etc.
+		    if ( (count % 2 == 0 && (playerSpot>=0 && count/2 >= playerSpot) ) 
+            || (count % 2 == 1 && (playerSpot<0 && count/2 >= -playerSpot) )
+            )
             {
                 totalRight += ag.GetItems().Length;// ag.NOfAirc;
                 pos = totalRight;
                 totalRightAG++;
                 posAG = totalRightAG;
+
             }
             else
             {
@@ -1752,11 +1759,15 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
             }
             if (ag == airGroup) break;
         }
-        
 
         double shiftamt = amtToShiftForEachBomber_m;
         if (!type) shiftamt = amtToShiftForEachFighter_m;
         double shift_m = pos * shiftamt;
+
+        /*
+        
+
+
         //2026/10 Step B - <cplayer is GROUP-WIDTH aware: spot N means the player sits N group-slots
         //from line center, and a group-slot's width is that group's aircraft count x the per-slot
         //shift (a 3-ship steps 3x44m = 132m at default spread, a 2-ship 88m - NOT a flat 44m).
@@ -1779,6 +1790,8 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
             }
             shift_m -= Math.Sign(playerSpot) * spotAcSlots * shiftamt;
         }
+        */
+
         if (mainmission.ON_TESTSERVER) GamePlay.gpLogServer(new Player[] { player }, "ACPos: {0:F1} {1} {2} {3} {4} : {5} ", new object[] { shift_m, pos, count, allcount, posAG, airGroup.Name() });
 
         return new Tuple<double, int, int, int, int>(shift_m, pos, count, allcount, posAG);
@@ -4243,7 +4256,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 }
                 else
                 {
-                    int endLimit = Math.Max(1, pcount - 1);
+                    int endLimit = Math.Max(1, pcount/2 - 1);
                     if (n > endLimit) n = endLimit;
                     if (n < -endLimit) n = -endLimit;
                     setPlayerFormationPosition(player, n);

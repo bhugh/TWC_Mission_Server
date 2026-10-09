@@ -6350,7 +6350,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 if (cdDropPreOpenBays && orders == CoverAGOrders.drop && !coverACContinuingFinalRun &&
                     isBomberArmed(airGroup) && !airGroup.hasTorpedos() &&
                     player != null && player.Place() != null && (player.Place() as AiAircraft) != null &&
-                    !(BAM_getplayerBombAimMode_enum(player) == BAM_BombAimMode.Drop_When_I_Drop_Nearest_Enemy && coverDropAlreadyFired.ContainsKey(player) && coverDropAlreadyFired[player] && !ordersAreDrop))
+                    !(BAM_getplayerBombAimMode_enum(player) == BAM_BombAimMode.Drop_When_I_Drop_Nearest_Enemy && coverDropAlreadyFired.ContainsKey(player) && coverDropAlreadyFired[player]))
                 {
                     AiAirGroup preOpenLeader = (player.Place() as AiAircraft).AirGroup();
                     if (preOpenLeader != null && preOpenLeader != airGroup)

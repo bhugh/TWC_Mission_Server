@@ -582,47 +582,57 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
 
     public string BAM_toggleBombAimMode(Player player)
     {
-        if (player == null) return "(none)";
-        
-        // 1. Cycle through the options instantly for UI responsiveness
-        BAM_BombAimMode currentBam = BAM_getplayerBombAimMode_enum(player);
-        if (isOnRepairMission(player))
-        {
-            currentBam = BAM_BombAimMode.None;
-        }
-        else
-        {
-            if (currentBam == BAM_BombAimMode.Knickebein_Point) currentBam = BAM_BombAimMode.Nearest_Enemy_to_Knickebein_Point;
-            else if (currentBam == BAM_BombAimMode.Nearest_Enemy_to_Knickebein_Point) currentBam = BAM_BombAimMode.Bomb_Explosion_Point;
-            else if (currentBam == BAM_BombAimMode.Bomb_Explosion_Point) currentBam = BAM_BombAimMode.Nearest_Enemy_to_Bomb_Explosion;
-            else if (currentBam == BAM_BombAimMode.Nearest_Enemy_to_Bomb_Explosion) currentBam = BAM_BombAimMode.Drop_Flare_Point_Here_and_Target_it;
-            else if (currentBam == BAM_BombAimMode.Drop_Flare_Point_Here_and_Target_it) currentBam = BAM_BombAimMode.Nearest_Enemy_to_Flare_Point;
-            else if (currentBam == BAM_BombAimMode.Nearest_Enemy_to_Flare_Point) currentBam = BAM_BombAimMode.Drop_When_I_Drop;
-            else if (currentBam == BAM_BombAimMode.Drop_When_I_Drop) currentBam = BAM_BombAimMode.Drop_When_I_Drop_Nearest_Enemy;
-            else if (currentBam == BAM_BombAimMode.Drop_When_I_Drop_Nearest_Enemy) currentBam = BAM_BombAimMode.None;
-            else if (currentBam == BAM_BombAimMode.None) currentBam = BAM_BombAimMode.Knickebein_Point;
-        }
-
-        // Save the tentative choice so the dictionary reflects what text to return
-        BAM_playerAimMode[player] = currentBam;
-
-        // 2. Reset and start the 2-second debounce timer
-        if (_bamDebounceTokenSource != null)  _bamDebounceTokenSource.Cancel(); // Cancel any existing 2-second countdown
-        _bamDebounceTokenSource = new CancellationTokenSource();
-        CancellationToken token = _bamDebounceTokenSource.Token;
-
-        // Run the delay asynchronously so it doesn't freeze the game thread
-        Task.Delay(2000, token).ContinueWith(t =>
-        {
-            // Only execute if the player didn't click again during the 2 seconds
-            if (!t.IsCanceled)
+        try {
+            if (player == null) return "(none)";
+            
+            // 1. Cycle through the options instantly for UI responsiveness
+            BAM_BombAimMode currentBam = BAM_getplayerBombAimMode_enum(player);
+            if (isOnRepairMission(player))
             {
-                ApplyBombAimMode(player, currentBam);
+                currentBam = BAM_BombAimMode.None;
             }
-        }, TaskScheduler.FromCurrentSynchronizationContext()); // Ensures execution happens on the main thread if needed
+            else
+            {
+                if (currentBam == BAM_BombAimMode.Knickebein_Point) currentBam = BAM_BombAimMode.Nearest_Enemy_to_Knickebein_Point;
+                else if (currentBam == BAM_BombAimMode.Nearest_Enemy_to_Knickebein_Point) currentBam = BAM_BombAimMode.Bomb_Explosion_Point;
+                else if (currentBam == BAM_BombAimMode.Bomb_Explosion_Point) currentBam = BAM_BombAimMode.Nearest_Enemy_to_Bomb_Explosion;
+                else if (currentBam == BAM_BombAimMode.Nearest_Enemy_to_Bomb_Explosion) currentBam = BAM_BombAimMode.Drop_Flare_Point_Here_and_Target_it;
+                else if (currentBam == BAM_BombAimMode.Drop_Flare_Point_Here_and_Target_it) currentBam = BAM_BombAimMode.Nearest_Enemy_to_Flare_Point;
+                else if (currentBam == BAM_BombAimMode.Nearest_Enemy_to_Flare_Point) currentBam = BAM_BombAimMode.Drop_When_I_Drop;
+                else if (currentBam == BAM_BombAimMode.Drop_When_I_Drop) currentBam = BAM_BombAimMode.Drop_When_I_Drop_Nearest_Enemy;
+                else if (currentBam == BAM_BombAimMode.Drop_When_I_Drop_Nearest_Enemy) currentBam = BAM_BombAimMode.None;
+                else if (currentBam == BAM_BombAimMode.None) currentBam = BAM_BombAimMode.Knickebein_Point;
+            }
 
-        // Return the string immediately so the HUD text changes instantly
+            // Save the tentative choice so the dictionary reflects what text to return
+            BAM_playerAimMode[player] = currentBam;
+            
+            if (currentBam != BAM_BombAimMode.Nearest_Enemy_to_Bomb_Explosion) PBP_removePlayerLastBombOrMyPositionPoint(player); //Toggling bomb mode erases the last bomb drop location, except when switching bomb point=>actor
+
+            airgroupTargets = new Dictionary<AiAirGroup, AiActor>();
+            airgroupGroundTargets = new Dictionary<AiAirGroup, GroundStationary>();
+            airgroupTargetPoints = new Dictionary<AiAirGroup, Point3d>();
+
+            // 2. Reset and start the 2-second debounce timer
+            if (_bamDebounceTokenSource != null)  _bamDebounceTokenSource.Cancel(); // Cancel any existing 2-second countdown
+            _bamDebounceTokenSource = new CancellationTokenSource();
+            CancellationToken token = _bamDebounceTokenSource.Token;
+
+            // Run the delay asynchronously so it doesn't freeze the game thread
+            Task.Delay(2000, token).ContinueWith(t =>
+            {
+                // Only execute if the player didn't click again during the 2 seconds
+                if (!t.IsCanceled)
+                {
+                    ApplyBombAimMode(player, currentBam);
+                }
+            }, TaskScheduler.FromCurrentSynchronizationContext()); // Ensures execution happens on the main thread if needed
+
+            // Return the string immediately so the HUD text changes instantly
+            return BAM_getPlayerBombAimMode_string(player);
+        } catch (Exception ex) { Console.WriteLine("BAM_toggleBombAimMod ERROR: {0}", ex);
         return BAM_getPlayerBombAimMode_string(player);
+        }
     }
 
     private void ApplyBombAimMode(Player player, BAM_BombAimMode bam)
@@ -1843,6 +1853,7 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
         int totalLeftAG = 1; //1 for the position taken in the center by the player's bomber
         //note this isn't actually technically the CENTER any more; it is the player's
         //position.  We might pile on more a/c to the left or right first, before alternating
+        int playerCount = -1000;
 
         int count = 0;  //count of a/c of this type (fighter or bomber)
         int allcount = 0; //count of all a/c for this player
@@ -1948,6 +1959,7 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
             // -1 needed due to off-by-one issue, counts e.g. 0 to 3 for 4 items
             if (count == playerSpot + sameTypeCount/2 - 1)
             {
+                playerCount = count;
                 count ++;
             }
 
@@ -1956,7 +1968,8 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
             //Doing them in the same order always means if the player
             //moves places everything just slides left/right smoothly
             //If one group goes missing, everything just closes up smoothly.
-            if ( count < playerSpot + sameTypeCount/2)
+            //-1 needed due to off-by-one issue, counting starts at zero not one
+            if ( count < playerSpot + sameTypeCount/2 - 1 )
             {
                 totalRight += ag.GetItems().Length;// ag.NOfAirc;
                 pos = totalRight;
@@ -2007,7 +2020,7 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
         }
         */
 
-        if (mainmission.ON_TESTSERVER) GamePlay.gpLogServer(new Player[] { player }, "ACPos: {0:F1} {1} {2} {3} {4} : {5} ", new object[] { shift_m, pos, count, allcount, posAG, airGroup.Name() });
+        if (mainmission.ON_TESTSERVER) Console.WriteLine( "ACPos: {0:F1} {1} {2} {3} {4} : {5} ",  shift_m, pos, count, allcount, posAG, airGroup.Name());
 
         return new Tuple<double, int, int, int, int>(shift_m, pos, count, allcount, posAG);
 
@@ -2056,7 +2069,7 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
         else
             unit_vector_90deg_vel_m = new Point3d(0, 0, shiftvert_m); //this is a unit vector (1m) pointing 90 degrees upwards of the a/c direction vector, multiplied by shiftvert_m
 
-        if (mainmission.ON_TESTSERVER) GamePlay.gpLogServer(new Player[] { player }, "ACCalcOffset: {0:F1} {1:f1} {2:f1} {3:f1} {4:f1}: {5} ", new object[] { shift_m, shiftvert_m, unit_vector_90deg_vel_m.x, unit_vector_90deg_vel_m.y, unit_vector_90deg_vel_m.z, airGroup.Name() });
+        if (mainmission.ON_TESTSERVER) Console.WriteLine( "ACCalcOffset: {0:F1} {1:f1} {2:f1} {3:f1} {4:f1}: {5} ", shift_m, shiftvert_m, unit_vector_90deg_vel_m.x, unit_vector_90deg_vel_m.y, unit_vector_90deg_vel_m.z, airGroup.Name());
         return new Point3d(CurrentPos.x + unit_vector_90deg_vel_m.x, CurrentPos.y + unit_vector_90deg_vel_m.y, CurrentPos.z + unit_vector_90deg_vel_m.z); // now add this vector/point to the currentpos point).  
 
     }

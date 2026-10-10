@@ -10,6 +10,7 @@ using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -178,7 +179,7 @@ public class CoverMission : AMission, ICoverMission
     public Dictionary<AiAirGroup, CoverAGOrders> coverAircraftAirGroupsOrders = new Dictionary<AiAirGroup, CoverAGOrders>();
     public Dictionary<AiAirGroup, CoverACInfo> coverACInfo = new Dictionary<AiAirGroup, CoverACInfo>();
     public Dictionary<Player, Tuple<Point3d, DateTime>> PBP_playerBombPoint = new Dictionary<Player, Tuple<Point3d, DateTime>>(); //Last point player has bombed, along with the time it was set, which can be used to target the cover bombers
-    public Dictionary<Player, BAM_BombAimMode> BAM_playerAimMode = new Dictionary<Player, BAM_BombAimMode>(); //What Cover Bomber Aim Mode the player has selected
+    public ConcurrentDictionary<Player, BAM_BombAimMode> BAM_playerAimMode = new ConcurrentDictionary<Player, BAM_BombAimMode>(); //What Cover Bomber Aim Mode the player has selected
 
     public Dictionary<AiAirGroup, bool> coverAircraftAirGroupsReleased = new Dictionary<AiAirGroup, bool>(); //When pilots die, bombers can continue to attack for 5mins or so more; this sets the time to release them
 
@@ -516,11 +517,19 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
 
     public BAM_BombAimMode BAM_getplayerBombAimMode_enum(Player player)
     {
-        if (BAM_playerAimMode.ContainsKey(player)) return BAM_playerAimMode[player];
-        //else return BAM_BombAimMode.Knickebein_Point;  //KnIckebein_Point is the default aiming mode
         if (player == null) return BAM_BombAimMode.None;
-        BAM_playerAimMode[player] = BAM_BombAimMode.None;
-        return BAM_playerAimMode[player];  //NONE - ie, turned off - is the default aiming mode
+
+        // 1. Safely attempt to read the existing mode in a single thread-safe operation
+        //C#5: the out variable must be declared up front (the server compiler rejects inline "out T x").
+        BAM_BombAimMode existingMode;
+        if (BAM_playerAimMode.TryGetValue(player, out existingMode))
+        {
+            return existingMode;
+        }
+
+        // 2. If it doesn't exist, atomically add the default mode (None) and return it
+        // GetOrAdd guarantees that if another thread inserted a value first, we return that instead of overwriting it.
+        return BAM_playerAimMode.GetOrAdd(player, BAM_BombAimMode.None);
     }
 
     public string BAM_getPlayerBombAimMode_string(Player player)
@@ -534,7 +543,8 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
     public string BAM_resetBombAimMode(Player player)  //resets the mode to "none" with message
     {
         if (player == null) return "(none)";
-        BAM_playerAimMode[player] = BAM_BombAimMode.None;
+        //BAM_playerAimMode[player] = BAM_BombAimMode.None;
+        BAM_playerAimMode.AddOrUpdate(player, BAM_BombAimMode.None, (key, oldValue) => BAM_BombAimMode.None);
         return "(none; follow you)";
 
         Timeout(4.3, () =>
@@ -580,14 +590,19 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
     // Class-level fields to track timing and state
     private DateTime _bamLastClickTime = DateTime.MinValue;
     private BAM_BombAimMode _bamPendingMode = BAM_BombAimMode.None;
+    private ConcurrentBag<BAM_BombAimMode> prev_BAMs = new ConcurrentBag<BAM_BombAimMode> ();
 
     public string BAM_toggleBombAimMode(Player player)
     {
         try {
             if (player == null) return "(none)";
             
+            
             // 1. Cycle through options instantly for UI responsiveness
             BAM_BombAimMode currentBam = BAM_getplayerBombAimMode_enum(player);
+
+            prev_BAMs.Add(currentBam);
+
             if (isOnRepairMission(player))
             {
                 currentBam = BAM_BombAimMode.None;
@@ -606,7 +621,8 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
             }
 
             // Save the tentative choice so the dictionary reflects what text to return immediately
-            BAM_playerAimMode[player] = currentBam;
+            //BAM_playerAimMode[player] = currentBam;
+            BAM_playerAimMode.AddOrUpdate(player, currentBam, (key, oldValue) => currentBam);
 
             if (currentBam != BAM_BombAimMode.Nearest_Enemy_to_Bomb_Explosion) PBP_removePlayerLastBombOrMyPositionPoint(player); //Toggling bomb mode erases the last bomb drop location, except when switching bomb point=>actor
 
@@ -641,17 +657,32 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
     private void ApplyBombAimMode(Player player, BAM_BombAimMode bam)
     {
         if (player == null) return;
+        BAM_playerAimMode.AddOrUpdate(player, bam, (key, oldValue) => bam);
+        //BAM_playerAimMode[player] = bam; //just to be in the safe side...
+
+        //Display string for the mode just applied - this was BAM_toggleBombAimMode's return value
+        //before the message block below was split out into this method.
+        string s = BAM_getPlayerBombAimMode_string(player);
+        //Kept from the pre-split code: the flag the message branches below still set.  The PBP
+        //removal below is currently unconditional, so this is informational only for now.
+        bool removeLastBombPoint = true;
+
+        if (prev_BAMs.Contains(BAM_BombAimMode.Drop_When_I_Drop)) BAM_leaveDropMode(player);
+        
+                
 
         // Remove any existing targets
         airgroupTargets = new Dictionary<AiAirGroup, AiActor>();
         airgroupGroundTargets = new Dictionary<AiAirGroup, GroundStationary>();
         airgroupTargetPoints = new Dictionary<AiAirGroup, Point3d>();
+
+        if (bam == BAM_BombAimMode.Drop_When_I_Drop) BAM_enterDropMode(player);        
                 
         // Toggling bomb mode erases the last bomb drop location, except when switching bomb point => actor
-        if (bam != BAM_BombAimMode.Nearest_Enemy_to_Bomb_Explosion) 
-        {
-            PBP_removePlayerLastBombOrMyPositionPoint(player); 
-        }
+        //if (bam != BAM_BombAimMode.Nearest_Enemy_to_Bomb_Explosion) 
+        //{
+        PBP_removePlayerLastBombOrMyPositionPoint(player); 
+        //}
 
         if (bam == BAM_BombAimMode.Nearest_Enemy_to_Flare_Point || bam == BAM_BombAimMode.Drop_Flare_Point_Here_and_Target_it)
         {
@@ -700,6 +731,55 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
                 GamePlay.gpLogServer(new Player[] { player }, "COVER ERROR! Couldn't find your position because you are not in an aircraft.", null); 
             }
         }
+
+        
+        if (isOnRepairMission(player))
+        {
+            string m2 = String.Format("COVER: Cover airgroup targeting for repair/restock missions is always '{0}'", s);
+            GamePlay.gpLogServer(new Player[] { player }, m2, null);
+        }
+
+        string m = String.Format("COVER: Cover airgroup targeting mode switched to '{0}'", s);
+        GamePlay.gpLogServer(new Player[] { player }, m, null);
+        if (BAM_getplayerBombAimMode_enum(player) == BAM_BombAimMode.Nearest_Enemy_to_Knickebein_Point)
+            GamePlay.gpLogServer(new Player[] { player }, "Cover bombers will target any enemy object close to the Knickebein Target Point, within any nearby objective radius or up to 2500m out", null);
+        else if (BAM_getplayerBombAimMode_enum(player) == BAM_BombAimMode.Bomb_Explosion_Point)
+        {
+            GamePlay.gpLogServer(new Player[] { player }, "Cover bombers will target the point of your next bomb explosion.", null);
+            GamePlay.gpLogServer(new Player[] { player }, "Any previous target points you have set are now erased.", null);
+        }
+        else if (BAM_getplayerBombAimMode_enum(player) == BAM_BombAimMode.Nearest_Enemy_to_Bomb_Explosion)
+        {
+            GamePlay.gpLogServer(new Player[] { player }, "Cover bombers will target the nearest enemy object to the point of your next bomb explosion.", null);
+            removeLastBombPoint = false;
+
+        }
+        else if (BAM_getplayerBombAimMode_enum(player) == BAM_BombAimMode.Drop_Flare_Point_Here_and_Target_it)
+        {
+            GamePlay.gpLogServer(new Player[] { player }, "Flare dropped from your current location! Cover bombers will target the flare drop point.", null);
+            //GamePlay.gpLogServer(new Player[] { player }, "Any previous target points you have set are now erased.", null);
+
+        }
+        else if (BAM_getplayerBombAimMode_enum(player) == BAM_BombAimMode.Nearest_Enemy_to_Flare_Point)
+        {
+            GamePlay.gpLogServer(new Player[] { player }, "Cover bombers will target enemy ground objects nearest the flare drop point.", null);
+        }
+        //<cdrop - the one mode on this menu that is about WHEN, not WHERE.  No ground target is set
+        //for it at all; the release is aimed off the leader's own position when he lets his bombs go.
+        else if (BAM_getplayerBombAimMode_enum(player) == BAM_BombAimMode.Drop_When_I_Drop)
+        {
+            GamePlay.gpLogServer(new Player[] { player }, "DROP WHEN I DROP is ON. Your bombers hold their bombs and close to tight formation with you (a fixed close spread - <cdist is ignored in this mode), then release everything the moment you drop.", null);
+            GamePlay.gpLogServer(new Player[] { player }, "Wait until every group shows GND ATTACK on the chat display, then they are awaiting your drop. Re-issue <cdrop to re-arm them for another run.", null);
+            removeLastBombPoint = false;  //this mode does not use the player's bomb drop point
+        }
+        else if (BAM_getplayerBombAimMode_enum(player) == BAM_BombAimMode.Drop_When_I_Drop_Nearest_Enemy)
+        {
+            GamePlay.gpLogServer(new Player[] { player }, "DROP WHEN I DROP NEAREST ENEMY is ON. Your bombers hold their bombs and close to tight formation with you (a fixed close spread - <cdist is ignored in this mode), then release everything the moment you drop.", null);
+            GamePlay.gpLogServer(new Player[] { player }, "After you drop, cover bombers will aim at the nearest enemy ground object to your current position.", null);
+            GamePlay.gpLogServer(new Player[] { player }, "Wait until every group shows GND ATTACK on the chat display, then they are awaiting your drop. Re-issue <cdrop to re-arm them for another run.", null);
+            removeLastBombPoint = false;  //this mode does not use the player's bomb drop point
+        }
+
     }
 
 
@@ -946,58 +1026,6 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
         string s = BAM_toggleBombAimMode(player);
         BAM_BombAimMode now = BAM_getplayerBombAimMode_enum(player);
 
-        if (prev != now)
-        {
-            if (now == BAM_BombAimMode.Drop_When_I_Drop) BAM_enterDropMode(player);
-            else if (prev == BAM_BombAimMode.Drop_When_I_Drop) BAM_leaveDropMode(player);
-        }
-
-        if (isOnRepairMission(player))
-        {
-            string m2 = String.Format("COVER: Cover airgroup targeting for repair/restock missions is always '{0}'", s);
-            GamePlay.gpLogServer(new Player[] { player }, m2, null);
-        }
-
-        string m = String.Format("COVER: Cover airgroup targeting mode switched to '{0}'", s);
-        GamePlay.gpLogServer(new Player[] { player }, m, null);
-        if (BAM_getplayerBombAimMode_enum(player) == BAM_BombAimMode.Nearest_Enemy_to_Knickebein_Point)
-            GamePlay.gpLogServer(new Player[] { player }, "Cover bombers will target any enemy object close to the Knickebein Target Point, within any nearby objective radius or up to 2500m out", null);
-        else if (BAM_getplayerBombAimMode_enum(player) == BAM_BombAimMode.Bomb_Explosion_Point)
-        {
-            GamePlay.gpLogServer(new Player[] { player }, "Cover bombers will target the point of your next bomb explosion.", null);
-            GamePlay.gpLogServer(new Player[] { player }, "Any previous target points you have set are now erased.", null);
-        }
-        else if (BAM_getplayerBombAimMode_enum(player) == BAM_BombAimMode.Nearest_Enemy_to_Bomb_Explosion)
-        {
-            GamePlay.gpLogServer(new Player[] { player }, "Cover bombers will target the nearest enemy object to the point of your next bomb explosion.", null);
-            removeLastBombPoint = false;
-
-        }
-        else if (BAM_getplayerBombAimMode_enum(player) == BAM_BombAimMode.Drop_Flare_Point_Here_and_Target_it)
-        {
-            GamePlay.gpLogServer(new Player[] { player }, "Flare dropped from your current location! Cover bombers will target the flare drop point.", null);
-            //GamePlay.gpLogServer(new Player[] { player }, "Any previous target points you have set are now erased.", null);
-
-        }
-        else if (BAM_getplayerBombAimMode_enum(player) == BAM_BombAimMode.Nearest_Enemy_to_Flare_Point)
-        {
-            GamePlay.gpLogServer(new Player[] { player }, "Cover bombers will target enemy ground objects nearest the flare drop point.", null);
-        }
-        //<cdrop - the one mode on this menu that is about WHEN, not WHERE.  No ground target is set
-        //for it at all; the release is aimed off the leader's own position when he lets his bombs go.
-        else if (BAM_getplayerBombAimMode_enum(player) == BAM_BombAimMode.Drop_When_I_Drop)
-        {
-            GamePlay.gpLogServer(new Player[] { player }, "DROP WHEN I DROP is ON. Your bombers hold their bombs and close to tight formation with you (a fixed close spread - <cdist is ignored in this mode), then release everything the moment you drop.", null);
-            GamePlay.gpLogServer(new Player[] { player }, "Wait until every group shows GND ATTACK on the chat display, then they are awaiting your drop. Re-issue <cdrop to re-arm them for another run.", null);
-            removeLastBombPoint = false;  //this mode does not use the player's bomb drop point
-        }
-        else if (BAM_getplayerBombAimMode_enum(player) == BAM_BombAimMode.Drop_When_I_Drop_Nearest_Enemy)
-        {
-            GamePlay.gpLogServer(new Player[] { player }, "DROP WHEN I DROP NEAREST ENEMY is ON. Your bombers hold their bombs and close to tight formation with you (a fixed close spread - <cdist is ignored in this mode), then release everything the moment you drop.", null);
-            GamePlay.gpLogServer(new Player[] { player }, "After you drop, cover bombers will aim at the nearest enemy ground object to your current position.", null);
-            GamePlay.gpLogServer(new Player[] { player }, "Wait until every group shows GND ATTACK on the chat display, then they are awaiting your drop. Re-issue <cdrop to re-arm them for another run.", null);
-            removeLastBombPoint = false;  //this mode does not use the player's bomb drop point
-        }
 
         //if (removeLastBombPoint) PBP_removePlayerLastBombPoint(player); //Toggling bomb mode erases the last bomb drop location, except when switching point=>actor
 
@@ -4556,7 +4584,8 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
         { //drop - "drop when I drop": hold your bombs and fly with the leader, then pull your release when he pulls his (<cdrop, <cdro)
             //<cdrop - set the BAM mode too, so the Tab-4-4-4-4-6 "Cover Targeting [..]" label shows
             //what is actually happening.  BAM_enterDropMode does the snapshot + orders + watcher.
-            BAM_playerAimMode[player] = BAM_BombAimMode.Drop_When_I_Drop;
+            //BAM_playerAimMode[player] = BAM_BombAimMode.Drop_When_I_Drop;
+            BAM_playerAimMode.AddOrUpdate(player, BAM_BombAimMode.Drop_When_I_Drop, (key, oldValue) => BAM_BombAimMode.Drop_When_I_Drop);
             //<cdrop 2026/10 Step C9 - the chat command is now a PURE ALIAS for the Tab-4 menu: it always means
             //EVERY group, and any squadron numbers after it are ignored.  The selective "<cdrop 3 6"
             //scope is gone: it let the chat command and the menu label disagree about who was armed,
@@ -5668,7 +5697,8 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             //found) and would switch off a drop that is very much still in force.
             if (order != CoverAGOrders.drop && indxs.Count == 0 && numFoundIndxs > 0 && !rejoinedDropMode && BAM_getplayerBombAimMode_enum(player) == BAM_BombAimMode.Drop_When_I_Drop)
             {
-                BAM_playerAimMode[player] = BAM_BombAimMode.None;
+                //BAM_playerAimMode[player] = BAM_BombAimMode.None;
+                BAM_playerAimMode.AddOrUpdate(player, BAM_BombAimMode.None, (key, oldValue) => BAM_BombAimMode.None);
                 coverOrdersBeforeDrop.Remove(player);   //they have overridden us; there is nothing left to restore
             }
         }
@@ -5991,11 +6021,12 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             {
                 if (playerShiftFactor_pct.ContainsKey(player.Name()) && playerShiftFactor_pct[player.Name()] > 100) wasNonDefault = true; //<cdist wider than default
                 if (coverFrontBackDist_m.ContainsKey(player) && coverFrontBackDist_m[player] != 0) wasNonDefault = true; //<cfdist not zero
-                if (BAM_playerAimMode.ContainsKey(player) && BAM_playerAimMode[player] != BAM_BombAimMode.None) wasNonDefault = true; // bomb aim mode set
+                BAM_BombAimMode bamWas = BAM_BombAimMode.None;
+                if (BAM_playerAimMode.TryGetValue(player, out bamWas) && bamWas != BAM_BombAimMode.None) wasNonDefault = true; // bomb aim mode set - ConcurrentDictionary: single atomic read
                 if (coverOrdersBeforeDrop.ContainsKey(player)) wasNonDefault = true; //anything in snapshot means <cnormal re-joined to drop mode
                 if (playerShiftFactor_pct.ContainsKey(player.Name()) && playerShiftFactor_pct[player.Name()] > 100) playerShiftFactor_pct[player.Name()] = 100; //clamp spread down
                 if (coverFrontBackDist_m.ContainsKey(player) && coverFrontBackDist_m[player] != 0) coverFrontBackDist_m.Remove(player); //reset <cfdist
-                if (BAM_playerAimMode.ContainsKey(player)) BAM_playerAimMode[player] = BAM_BombAimMode.None; //reset bomb aim mode
+                BAM_playerAimMode.AddOrUpdate(player, BAM_BombAimMode.None, (key, oldValue) => BAM_BombAimMode.None); //reset bomb aim mode - thread-safe, adds None if no entry yet
                 coverOrdersBeforeDrop.Remove(player); //clear the snapshot
                 setAutoFormationPosition(player); //re-enable auto slot rolling
             }

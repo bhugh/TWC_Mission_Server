@@ -576,16 +576,17 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
         //the restore loop (it iterates live coverAircraftAirGroupsActive keys).
     }
 
-    // Class-level fields to track debouncing
-    private CancellationTokenSource _bamDebounceTokenSource;
-    private BAM_BombAimMode _tentativeBamMode; 
+
+    // Class-level fields to track timing and state
+    private DateTime _bamLastClickTime = DateTime.MinValue;
+    private BAM_BombAimMode _bamPendingMode = BAM_BombAimMode.None;
 
     public string BAM_toggleBombAimMode(Player player)
     {
         try {
             if (player == null) return "(none)";
             
-            // 1. Cycle through the options instantly for UI responsiveness
+            // 1. Cycle through options instantly for UI responsiveness
             BAM_BombAimMode currentBam = BAM_getplayerBombAimMode_enum(player);
             if (isOnRepairMission(player))
             {
@@ -604,34 +605,36 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
                 else if (currentBam == BAM_BombAimMode.None) currentBam = BAM_BombAimMode.Knickebein_Point;
             }
 
-            // Save the tentative choice so the dictionary reflects what text to return
+            // Save the tentative choice so the dictionary reflects what text to return immediately
             BAM_playerAimMode[player] = currentBam;
-            
+
             if (currentBam != BAM_BombAimMode.Nearest_Enemy_to_Bomb_Explosion) PBP_removePlayerLastBombOrMyPositionPoint(player); //Toggling bomb mode erases the last bomb drop location, except when switching bomb point=>actor
 
             airgroupTargets = new Dictionary<AiAirGroup, AiActor>();
             airgroupGroundTargets = new Dictionary<AiAirGroup, GroundStationary>();
             airgroupTargetPoints = new Dictionary<AiAirGroup, Point3d>();
+                
+            // Track exactly when this specific choice was made
+            DateTime thisClickTime = DateTime.UtcNow;
+            _bamLastClickTime = thisClickTime;
+            _bamPendingMode = currentBam;
 
-            // 2. Reset and start the 2-second debounce timer
-            if (_bamDebounceTokenSource != null)  _bamDebounceTokenSource.Cancel(); // Cancel any existing 2-second countdown
-            _bamDebounceTokenSource = new CancellationTokenSource();
-            CancellationToken token = _bamDebounceTokenSource.Token;
-
-            // Run the delay asynchronously so it doesn't freeze the game thread
-            Task.Delay(2000, token).ContinueWith(t =>
+            // 2. Schedule a check 2 seconds from now using your engine's native Timeout
+            Timeout(2.0, () =>
             {
-                // Only execute if the player didn't click again during the 2 seconds
-                if (!t.IsCanceled)
+                // If _bamLastClickTime matches thisClickTime, the player hasn't clicked anything else for 2 full seconds
+                if (_bamLastClickTime == thisClickTime && _bamPendingMode == currentBam)
                 {
                     ApplyBombAimMode(player, currentBam);
                 }
-            }, TaskScheduler.FromCurrentSynchronizationContext()); // Ensures execution happens on the main thread if needed
+            });
 
-            // Return the string immediately so the HUD text changes instantly
+            // Return the string immediately so the HUD text updates in real-time
             return BAM_getPlayerBombAimMode_string(player);
-        } catch (Exception ex) { Console.WriteLine("BAM_toggleBombAimMod ERROR: {0}", ex);
-        return BAM_getPlayerBombAimMode_string(player);
+
+        } catch (Exception ex) { 
+            Console.WriteLine("BAM_toggleBombAimMod ERROR: {0}", ex);
+            return BAM_getPlayerBombAimMode_string(player);
         }
     }
 

@@ -576,6 +576,126 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
         //the restore loop (it iterates live coverAircraftAirGroupsActive keys).
     }
 
+    // Class-level fields to track debouncing
+    private CancellationTokenSource _bamDebounceTokenSource;
+    private BAM_BombAimMode _tentativeBamMode; 
+
+    public string BAM_toggleBombAimMode(Player player)
+    {
+        if (player == null) return "(none)";
+        
+        // 1. Cycle through the options instantly for UI responsiveness
+        BAM_BombAimMode currentBam = BAM_getplayerBombAimMode_enum(player);
+        if (isOnRepairMission(player))
+        {
+            currentBam = BAM_BombAimMode.None;
+        }
+        else
+        {
+            if (currentBam == BAM_BombAimMode.Knickebein_Point) currentBam = BAM_BombAimMode.Nearest_Enemy_to_Knickebein_Point;
+            else if (currentBam == BAM_BombAimMode.Nearest_Enemy_to_Knickebein_Point) currentBam = BAM_BombAimMode.Bomb_Explosion_Point;
+            else if (currentBam == BAM_BombAimMode.Bomb_Explosion_Point) currentBam = BAM_BombAimMode.Nearest_Enemy_to_Bomb_Explosion;
+            else if (currentBam == BAM_BombAimMode.Nearest_Enemy_to_Bomb_Explosion) currentBam = BAM_BombAimMode.Drop_Flare_Point_Here_and_Target_it;
+            else if (currentBam == BAM_BombAimMode.Drop_Flare_Point_Here_and_Target_it) currentBam = BAM_BombAimMode.Nearest_Enemy_to_Flare_Point;
+            else if (currentBam == BAM_BombAimMode.Nearest_Enemy_to_Flare_Point) currentBam = BAM_BombAimMode.Drop_When_I_Drop;
+            else if (currentBam == BAM_BombAimMode.Drop_When_I_Drop) currentBam = BAM_BombAimMode.Drop_When_I_Drop_Nearest_Enemy;
+            else if (currentBam == BAM_BombAimMode.Drop_When_I_Drop_Nearest_Enemy) currentBam = BAM_BombAimMode.None;
+            else if (currentBam == BAM_BombAimMode.None) currentBam = BAM_BombAimMode.Knickebein_Point;
+        }
+
+        // Save the tentative choice so the dictionary reflects what text to return
+        BAM_playerAimMode[player] = currentBam;
+
+        // 2. Reset and start the 2-second debounce timer
+        if (_bamDebounceTokenSource != null)  _bamDebounceTokenSource.Cancel(); // Cancel any existing 2-second countdown
+        _bamDebounceTokenSource = new CancellationTokenSource();
+        CancellationToken token = _bamDebounceTokenSource.Token;
+
+        // Run the delay asynchronously so it doesn't freeze the game thread
+        Task.Delay(2000, token).ContinueWith(t =>
+        {
+            // Only execute if the player didn't click again during the 2 seconds
+            if (!t.IsCanceled)
+            {
+                ApplyBombAimMode(player, currentBam);
+            }
+        }, TaskScheduler.FromCurrentSynchronizationContext()); // Ensures execution happens on the main thread if needed
+
+        // Return the string immediately so the HUD text changes instantly
+        return BAM_getPlayerBombAimMode_string(player);
+    }
+
+    private void ApplyBombAimMode(Player player, BAM_BombAimMode bam)
+    {
+        if (player == null) return;
+
+        // Remove any existing targets
+        airgroupTargets = new Dictionary<AiAirGroup, AiActor>();
+        airgroupGroundTargets = new Dictionary<AiAirGroup, GroundStationary>();
+        airgroupTargetPoints = new Dictionary<AiAirGroup, Point3d>();
+                
+        // Toggling bomb mode erases the last bomb drop location, except when switching bomb point => actor
+        if (bam != BAM_BombAimMode.Nearest_Enemy_to_Bomb_Explosion) 
+        {
+            PBP_removePlayerLastBombOrMyPositionPoint(player); 
+        }
+
+        if (bam == BAM_BombAimMode.Nearest_Enemy_to_Flare_Point || bam == BAM_BombAimMode.Drop_Flare_Point_Here_and_Target_it)
+        {
+            if (player.Place() != null)
+            {
+                Point3d impactPoint = player.Place().Pos();
+                float timeToImpact_s = 0;
+                Calcs.SimulateDropWithWind(
+                    player: player,
+                    impactPoint: out impactPoint,
+                    timeToImpact_s: out timeToImpact_s
+                );
+                                
+                Timeout(timeToImpact_s, () =>
+                {
+                    PBP_saveBombPoint(player, impactPoint);
+                    Calcs.loadCratersAndSmoke(GamePlay, mainmission, impactPoint.x, impactPoint.y, 0, "BuildingFireSmall");
+                });
+            }
+            else 
+            { 
+                GamePlay.gpLogServer(new Player[] { player }, "COVER ERROR! Couldn't find your position because you are not in an aircraft.", null); 
+            }
+        }
+        else if (bam == BAM_BombAimMode.Drop_When_I_Drop_Nearest_Enemy)
+        {
+            if (player.Place() != null)
+            {
+                Point3d impactPoint = player.Place().Pos();
+                float timeToImpact_s = 0;
+                Calcs.SimulateDropWithWind(
+                    player: player,
+                    impactPoint: out impactPoint,
+                    timeToImpact_s: out timeToImpact_s
+                );
+
+                PBP_saveBombPoint(player, impactPoint);
+
+                Timeout(timeToImpact_s, () =>
+                {
+                    Calcs.loadCratersAndSmoke(GamePlay, mainmission, impactPoint.x, impactPoint.y, 0, "BuildingFireSmall");
+                });
+            }
+            else 
+            { 
+                GamePlay.gpLogServer(new Player[] { player }, "COVER ERROR! Couldn't find your position because you are not in an aircraft.", null); 
+            }
+        }
+    }
+
+
+
+
+
+
+    /*
+
     public string BAM_toggleBombAimMode(Player player)
     {
         if (player == null) return "(none)";
@@ -636,6 +756,7 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
                     Calcs.loadCratersAndSmoke(GamePlay, mainmission, player.Place().Pos().x, player.Place().Pos().y, 0, "BuildingFireSmall");  //this is the smallest type of smoke  "BuildingFireLarge" a bit larger.  Smoke1 Smoke2 BigSitySmoke etc all larger yet
                 });
                */
+               /*
             }
             else { GamePlay.gpLogServer(new Player[] { player }, "COVER ERROR! Couldn't find your position because you are not in an aircraft.", null); }
         }
@@ -669,6 +790,8 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
 
         return BAM_getPlayerBombAimMode_string(player);
     }
+
+    */
 
     //<cdrop - turn DROP WHEN I DROP on.  Called both from the Tab-4-4-4-4-6 menu (BAM cycle) and from
     //the <cdrop chat command, so the menu label and the actual orders can never disagree.

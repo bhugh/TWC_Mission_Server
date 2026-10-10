@@ -30756,6 +30756,226 @@ public static class Calcs
 
     }
 
+    // Constant parameters
+    private const float G = 9.80665f; // Acceleration due to gravity (m/s^2)
+
+    /// <summary>
+    /// Simulates the bomb trajectory until it hits the ground (y <= 0).
+    /// </summary>
+    /// <param name="initialAltitude">Initial height above ground in meters</param>
+    /// <param name="initialForwardSpeed">Aircraft true airspeed at release in m/s</param>
+    /// <param name="mass">Mass of the bomb in kg</param>
+    /// <param name="dragCoefficient">Drag coefficient (Cd), typically 0.15 to 0.45</param>
+    /// <param name="crossSectionalArea">Frontal area exposed to air in m^2</param>
+    /// <param name="airDensity">Air density in kg/m^3 (approx. 1.225 at sea level)</param>
+    /// <param name="dt">Time step size in seconds (e.g., 0.02 for 50fps accuracy)</param>
+    public static void SimulateDrop(
+        float initialAltitude, 
+        float initialForwardSpeed, 
+        float mass, 
+        float dragCoefficient, 
+        float crossSectionalArea, 
+        float airDensity = 1.225f, 
+        float dt = 0.02f)
+    {
+        // Initial state variables
+        float x = 0f;                    // Horizontal distance from release point
+        float y = initialAltitude;       // Vertical altitude
+        float vx = initialForwardSpeed;  // Horizontal velocity component
+        float vy = 0f;                   // Vertical velocity component
+
+        // Combined constant factor to minimize math inside the loop
+        float dragFactor = 0.5f * airDensity * dragCoefficient * crossSectionalArea / mass;
+
+        float time = 0f;
+
+        //Console.WriteLine($"Time(s) \t X (Dist m) \t Y (Alt m) \t Speed (m/s)");
+        //Console.WriteLine($"{time:F2} \t\t {x:F2} \t\t {y:F2} \t\t {vx:F2}");
+
+        // Loop runs until the bomb impacts the ground
+        while (y > 0f)
+        {
+            // 1. Calculate overall magnitude of velocity (V)
+            float speedSquared = (vx * vx) + (vy * vy);
+            float speed = (float)Math.Sqrt(speedSquared);
+
+            // 2. Calculate drag acceleration components
+            // Deceleration direction opposes the current velocity component vector
+            float axDrag = -dragFactor * speed * vx;
+            float ayDrag = -dragFactor * speed * vy;
+
+            // 3. Update velocities (add gravity to the vertical component)
+            vx += axDrag * dt;
+            vy += (-G + ayDrag) * dt;
+
+            // 4. Update positions
+            x += vx * dt;
+            y += vy * dt;
+
+            time += dt;
+
+            // Print output (Optional: can be optimized out or sampled less often for speed)
+            if (Math.Abs(time % 1.0f) < dt) 
+            {
+                //Console.WriteLine($"{time:F2} \t\t {x:F2} \t\t {y:F2} \t\t {speed:F2}");
+            }
+        }
+
+        // Exact impact moment (Y hit or passed zero)
+        //Console.WriteLine($"\nImpact reached at {time:F2} seconds.");
+        //Console.WriteLine($"Total Horizontal Range: {x:F2} meters.");
+    }
+
+    public static void SimulateDropWithWind(
+        Player player,
+        out Point3d impactPoint, 
+        out float timeToImpact_s,
+        float mass_kg = 100, 
+        float Cd=0.37F, 
+        float area_m2=0.053F
+        
+        )
+    {
+
+        impactPoint = new Point3d (0,0,0);
+        timeToImpact_s = 0;
+        if (player == null || player.Place() == null || player.Place() as AiAircraft == null) return;
+
+        SimulateDropWithWind (
+            player.Place() as AiAircraft,
+            impactPoint: out impactPoint, 
+            timeToImpact_s: out timeToImpact_s,
+            mass_kg: mass_kg, 
+            Cd: Cd, 
+            area_m2: area_m2 
+        
+
+
+        );
+    }
+
+     public static void SimulateDropWithWind(
+        AiAircraft aircraft,
+        out Point3d impactPoint, 
+        out float timeToImpact_s,
+        float mass_kg = 100, 
+        float Cd=0.37F, 
+        float area_m2=0.053F 
+        
+        )
+    {
+        impactPoint = new Point3d (0,0,0);
+        timeToImpact_s = 0;
+        if (aircraft == null || aircraft.AirGroup() == null) return;
+
+        SimulateDropWithWind (
+            releasePos: aircraft.Pos(),
+            acVel: aircraft.AirGroup().Vwld(),
+            mass_kg: mass_kg, 
+            Cd: Cd, 
+            area_m2: area_m2, 
+        
+            impactPoint: out impactPoint, 
+            timeToImpact_s: out timeToImpact_s
+
+        );
+    }
+
+    static maddox.core.WWeather mcWW = new maddox.core.WWeather();
+
+    /// <summary>
+    /// Computes the exact impact point and time to impact instantly using a 3D velocity vector.
+    /// </summary>
+    /// <param name="releasePos">Initial position (X=Right, Y=Altitude/Up, Z=Forward)</param>
+    /// <param name="acVel">Aircraft 3D velocity vector at release (vx, vy, vz)</param>
+    /// <param name="windVel">Horizontal wind vector (windVx, 0, windVz)</param>
+    /// <param name="mass">Bomb mass in kg</param>
+    /// <param name="Cd">Drag coefficient</param> 0.30 to 0.45 typical for ww2 munition
+    /// <param name="area_m2">Cross-sectional area (m^2)</param> 0.045 to 0.062 m² for typical ww2 100kg bomb
+    /// <param name="airDensity_kg_m3">Air density (kg/m^3, default 1.225)</param> 1.225 for sea level or 0.82 kg/m³ for mid-alt (12000ft...)
+    /// <param name="impactX">Output: Ground impact X coordinate</param>
+    /// <param name="impactZ">Output: Ground impact Z coordinate</param>
+    /// <param name="timeToImpact_s">Output: Total flight time in seconds</param>
+    public static void SimulateDropWithWind(
+        Point3d releasePos, 
+        maddox.GP.Vector3d acVel,         
+        out Point3d impactPoint, 
+        out float timeToImpact_s,
+        float mass_kg = 100, 
+        float Cd=0.37F, 
+        float area_m2=0.053F 
+        
+        )
+    {
+        float x0 = (float)releasePos.x;
+        float y0 = (float)releasePos.z; // Initial Altitude (y=altitude in this coordinate system)
+        float z0 = (float)releasePos.y;
+
+        float vx_ac = (float)acVel.x;
+        float vy_ac = (float)acVel.z; // Positive if climbing, negative if diving
+        float vz_ac = (float)acVel.y;
+
+        var windVel = new maddox.GP.Vector3d();
+        
+
+        bool res = mcWW.windGetStatisticalWindOnHeight(releasePos.z/2.0, out windVel);
+
+        float vx_wind = (float)windVel.x;
+        float vz_wind = (float)windVel.y;
+
+        float airDensity_kg_m3 = 1.225F;
+        if (y0>3000) airDensity_kg_m3 = (y0-3000.0F)/10000.0F * (0.82F-1.225F) + 1.225F;
+
+        // 1. Calculate ballistic air mass drag scaling factor
+        float k = 0.5f * airDensity_kg_m3 * Cd * area_m2 / mass_kg;
+
+        // 2. Linearize quadratic drag using velocity boundaries
+        // Relative initial velocity vector against the moving air mass
+        float relVx0 = vx_ac - vx_wind;
+        float relVy0 = vy_ac;
+        float relVz0 = vz_ac - vz_wind;
+        float vRelInitial = (float)Math.Sqrt((relVx0 * relVx0) + (relVy0 * relVy0) + (relVz0 * relVz0));
+        
+        // Terminal velocity proxy
+        float vTerminal = (float)Math.Sqrt(G / k); 
+        float vAvg = (vRelInitial + vTerminal) * 0.5f;
+        
+        // Unified linear drag coefficient
+        float c = k * vAvg; 
+
+        // 3. Analytically solve for Time to Impact (t) using Newton-Raphson
+        // Initial time guess assumes a vacuum trajectory (includes climb/dive rates)
+        float discriminant = (vy_ac * vy_ac) + (2f * G * y0);
+        float tEst = (vy_ac + (float)Math.Sqrt(discriminant)) / G;
+
+        // Run 3 static iterations for microsecond execution speeds
+        for (int i = 0; i < 3; i++)
+        {
+            float expTerm = (float)Math.Exp(-c * tEst);
+            
+            // Vertical position function: y(t) = 0
+            float f = y0 + ((vy_ac + (G / c)) / c) * (1f - expTerm) - (G / c) * tEst;
+            // Vertical velocity derivative: y'(t)
+            float fPrime = (vy_ac + (G / c)) * expTerm - (G / c);
+
+            tEst -= f / fPrime;
+        }
+        timeToImpact_s = tEst;
+
+        // 4. Calculate final horizontal positions based on ground velocity decay
+        float expDecay = (float)Math.Exp(-c * timeToImpact_s);
+        float velocityFactor = (1f - expDecay) / c;
+
+        // X and Z translate smoothly from initial ground speeds toward wind drift speeds
+        double resx = x0 + (vx_wind * timeToImpact_s) + ((vx_ac - vx_wind) * velocityFactor);
+        double resy = z0 + (vz_wind * timeToImpact_s) + ((vz_ac - vz_wind) * velocityFactor);
+
+        impactPoint= new Point3d(resx, resy, 0);
+         
+
+
+    }
+
 
 	
 	
@@ -32711,7 +32931,7 @@ GroundStationary[] gs = GamePlay.gpGroundStationarys(250000, 252000, 1000); //Fi
             catch (Exception ex)
             {
                 if (gg != null) Console.WriteLine("listStatics: Couldn't do something with name {0}", gg.Name);
-                else { Console.WriteLine("listStatics: couldn't do something ERROR"); }
+                else { Console.WriteLine("listStatics: couldn't do something ERROR: {0}", ex); }
             }
             count++;
         }

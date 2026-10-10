@@ -478,6 +478,17 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
         return (BAM_getplayerBombAimMode_enum(player) == BAM_BombAimMode.Bomb_Explosion_Point || BAM_getplayerBombAimMode_enum(player) == BAM_BombAimMode.Nearest_Enemy_to_Bomb_Explosion);
     }
 
+    public bool BAM_isPlayerSetPoint(Player player)
+    {
+        if (player == null) return false;
+        return (BAM_getplayerBombAimMode_enum(player) == BAM_BombAimMode.Bomb_Explosion_Point 
+            || BAM_getplayerBombAimMode_enum(player) == BAM_BombAimMode.Nearest_Enemy_to_Bomb_Explosion
+            || BAM_getplayerBombAimMode_enum(player) == BAM_BombAimMode.Drop_Flare_Point_Here_and_Target_it
+            || BAM_getplayerBombAimMode_enum(player) == BAM_BombAimMode.Nearest_Enemy_to_Flare_Point
+            || BAM_getplayerBombAimMode_enum(player) == BAM_BombAimMode.Drop_When_I_Drop_Nearest_Enemy                    
+        );
+    }
+
     public bool BAM_isMyPositionPoint(Player player)
     {
         if (player == null) return false;
@@ -601,13 +612,30 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
         {
             if (player != null && player.Place() != null)
             {
-                PBP_saveBombPoint(player, player.Place().Pos());
-                double wait = 10;
-                if (player.Place().Pos().z > 10) wait = player.Place().Pos().z / 120;  //person's terminal velocity is 50 m/s, we'll say something like a flare is a bit higher, say 120
-                Timeout(wait, () =>
-               {
-                   Calcs.loadCratersAndSmoke(GamePlay, mainmission, player.Place().Pos().x, player.Place().Pos().y, 0, "BuildingFireSmall");  //this is the smallest type of smoke  "BuildingFireLarge" a bit larger.  Smoke1 Smoke2 BigSitySmoke etc all larger yet
-               });
+                Point3d impactPoint = player.Place().Pos();
+                float timeToImpact_s = 0;   
+
+                Calcs.SimulateDropWithWind(
+                    player: player,
+                    impactPoint: out impactPoint,
+                    timeToImpact_s: out timeToImpact_s                                            
+                );                
+
+                Timeout(timeToImpact_s, () =>
+                {
+                    PBP_saveBombPoint(player, impactPoint);
+                    Calcs.loadCratersAndSmoke(GamePlay, mainmission, impactPoint.x, impactPoint.y, 0, "BuildingFireSmall");  //this is the smallest type of smoke  "BuildingFireLarge" a bit larger.  Smoke1 Smoke2 BigSitySmoke etc all larger yet
+                });
+
+                /*
+                    PBP_saveBombPoint(player, player.Place().Pos());
+                    double wait = 10;
+                    if (player.Place().Pos().z > 10) wait = player.Place().Pos().z / 120;  //person's terminal velocity is 50 m/s, we'll say something like a flare is a bit higher, say 120
+                    Timeout(wait, () =>
+                {
+                    Calcs.loadCratersAndSmoke(GamePlay, mainmission, player.Place().Pos().x, player.Place().Pos().y, 0, "BuildingFireSmall");  //this is the smallest type of smoke  "BuildingFireLarge" a bit larger.  Smoke1 Smoke2 BigSitySmoke etc all larger yet
+                });
+               */
             }
             else { GamePlay.gpLogServer(new Player[] { player }, "COVER ERROR! Couldn't find your position because you are not in an aircraft.", null); }
         }
@@ -616,7 +644,25 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
             if (player != null && player.Place() != null)
             {
                 // Set the point instantly - no wait for bomb to fall, this mode sets the point based on player position immediately
-                Calcs.loadCratersAndSmoke(GamePlay, mainmission, player.Place().Pos().x, player.Place().Pos().y, 0, "BuildingFireSmall");  //immediate visual feedback
+                //Calcs.loadCratersAndSmoke(GamePlay, mainmission, player.Place().Pos().x, player.Place().Pos().y, 0, "BuildingFireSmall");  //immediate visual feedback
+
+                Point3d impactPoint = player.Place().Pos();
+                float timeToImpact_s = 0;   
+
+                Calcs.SimulateDropWithWind(
+                    player: player,
+                    impactPoint: out impactPoint,
+                    timeToImpact_s: out timeToImpact_s                                            
+                ); 
+
+                PBP_saveBombPoint(player, impactPoint); //Save the bomb calculated landing point instantly, so <cover a/c can start choosing targets instantly
+
+                Timeout(timeToImpact_s, () => //still, we wait as normal to show the actual flare landing spot
+                {
+                   
+                    Calcs.loadCratersAndSmoke(GamePlay, mainmission, impactPoint.x, impactPoint.y, 0, "BuildingFireSmall");  //this is the smallest type of smoke  "BuildingFireLarge" a bit larger.  Smoke1 Smoke2 BigSitySmoke etc all larger yet
+                });
+
             }
             else { GamePlay.gpLogServer(new Player[] { player }, "COVER ERROR! Couldn't find your position because you are not in an aircraft.", null); }
         }
@@ -884,7 +930,7 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
             PBP_playerBombPoint[player] = new Tuple<Point3d, DateTime>(pos, DateTime.UtcNow);
             updated = true;
         }
-        if (updated && BAM_isBombPoint(player) && GamePlay != null)
+        if (updated && BAM_isPlayerSetPoint(player) && GamePlay != null)
         {
             GamePlay.gpLogServer(new Player[] { player }, "COVER {0} set new target point for cover bombers in sector {1} ", new object[] { player.Name(), Calcs.correctedSectorNameDoubleKeypad(this, pos) });
         }
@@ -3197,7 +3243,10 @@ public string listPositionCurrentCoverAircraft(Player player = null, bool displa
             string player_vel = ((double)(CoverCalcs.RoundInterval(player_vel_mph * 1, 5)) / 1).ToString("F0") + "mph";
             if (player.Army() == 2) player_vel = ((double)(CoverCalcs.RoundInterval(player_vel_kph * 1, 5)) / 1).ToString("F0") + "kph";
 
-            string smsg = ">>>> Your current speed: " + player_vel + ". Your current cover airgroups:";
+            //string smsg = ">>>> Your current speed: " + player_vel + ". Your current cover airgroups:";
+            string smsg = string.Format(">>>>Current speed: {0:N0} Position: {1} CDist: {2:N0} CFDist: {3:N0}", player_vel, getPlayerFormationPosition(player), getShiftFactor(player), getFrontBackDist(player))   ;
+            
+
             retmsg += smsg + nl;
 
 			if (mainmission.ON_TESTSERVER) Console.WriteLine("LCA #2");
@@ -4250,7 +4299,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             }
             if (!ok)
             {
-                GamePlay.gpLogServer(new Player[] { player }, ">>>Usage: <cfdist [metres] - positive to have your cover aircraft sit that many metres AHEAD of you, negative to sit behind.  For example <cfdist 10, or <cfdist -100.  Bare <cfdist resets to 0.", new object[] { });
+                GamePlay.gpLogServer(new Player[] { player }, ">>>Usage: <cfdist [meters] - positive to have your cover aircraft sit that many metres AHEAD of you, negative to sit behind.  For example <cfdist 10, or <cfdist -100.  Bare <cfdist resets to 0.", new object[] { });
             }
             else
             {
@@ -4388,13 +4437,30 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             {
                 GamePlay.gpLogServer(null, "FLARE DROPPED in sector {0}", new Object[] { Calcs.correctedSectorName(this, player.Place().Pos()) });
 
+                Point3d impactPoint = player.Place().Pos();
+                float timeToImpact_s = 0;   
 
+                Calcs.SimulateDropWithWind(
+                    player: player,
+                    impactPoint: out impactPoint,
+                    timeToImpact_s: out timeToImpact_s                                            
+                );
+                
+                Timeout(timeToImpact_s, () =>
+                {
+                    Calcs.loadCratersAndSmoke(GamePlay, mainmission, impactPoint.x, impactPoint.y, 0, "BuildingFireSmall");  //this is the smallest type of smoke  "BuildingFireLarge" a b
+                });
+
+                /*
                 double wait = 10;
                 if (player.Place().Pos().z > 10) wait = player.Place().Pos().z / 120;  //person's terminal velocity is 50 m/s, we'll say something like a flare is a bit higher, say 120
+
+
                 Timeout(wait, () =>
                 {
                     Calcs.loadCratersAndSmoke(GamePlay, mainmission, player.Place().Pos().x, player.Place().Pos().y, 0, "BuildingFireSmall");  //this is the smallest type of smoke  "BuildingFireLarge" a bit larger.  Smoke1 Smoke2 BigSitySmoke etc all larger yet
                 });
+                */
             }
             else { GamePlay.gpLogServer(new Player[] { player }, "COVER ERROR! Couldn't find your position because you are not in an aircraft.", null); }
         }

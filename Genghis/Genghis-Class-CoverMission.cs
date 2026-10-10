@@ -458,6 +458,20 @@ public class CoverMission : AMission, ICoverMission
 //is unchanged and everybody's muscle memory still works.
 public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Point, Bomb_Explosion_Point, Nearest_Enemy_to_Bomb_Explosion, Drop_Flare_Point_Here_and_Target_it, Nearest_Enemy_to_Flare_Point, Drop_When_I_Drop, Drop_When_I_Drop_Nearest_Enemy, None };
 
+Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_BombAimMode, string>()
+{
+   { BAM_BombAimMode.Knickebein_Point, "[[[KB]]]"},
+   { BAM_BombAimMode.Nearest_Enemy_to_Knickebein_Point, "[[KB-NE]]]"},
+   { BAM_BombAimMode.Bomb_Explosion_Point, "[[[BOMB]]]"},
+   { BAM_BombAimMode.Nearest_Enemy_to_Bomb_Explosion, "[[[BOMB-NE]]]"},
+   { BAM_BombAimMode.Drop_Flare_Point_Here_and_Target_it, "[[[FLARE]]]"},
+   { BAM_BombAimMode.Nearest_Enemy_to_Flare_Point, "[[[FLARE-NE]]]"},
+   { BAM_BombAimMode.Drop_When_I_Drop, "[[[DWID]]]"},
+   { BAM_BombAimMode.Drop_When_I_Drop_Nearest_Enemy, "[[[DWID-NE]]]"},
+   { BAM_BombAimMode.None, ""},
+    
+};
+
     public bool BAM_isBombPoint(Player player)
     {
         if (player == null) return false;
@@ -1762,7 +1776,8 @@ public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Poin
             */
 
             //The player's spot
-            if (count == playerSpot + sameTypeCount/2)
+            // -1 needed due to off-by-one issue, counts e.g. 0 to 3 for 4 items
+            if (count == playerSpot + sameTypeCount/2 - 1)
             {
                 count ++;
             }
@@ -3200,6 +3215,8 @@ public string listPositionCurrentCoverAircraft(Player player = null, bool displa
             double delay = 0.02;            
 
 			if (mainmission.ON_TESTSERVER) Console.WriteLine("LCA #3");
+
+            BAM_BombAimMode orders = BAM_getplayerBombAimMode_enum(player);
 			
             //This doesn't work - apparently the indexes thing is not really working
             //var agIndex = new Dictionary<int, AiAirGroup>();
@@ -3429,11 +3446,15 @@ public string listPositionCurrentCoverAircraft(Player player = null, bool displa
                 //Display some info about aircraft health
                 if (displayHealth) msg += " (" + healthString + ")";
                 if (ordersAreReserve) msg += " [[[RESERVED]]]";
-                if (ordersAreAttack) msg += " [[[ATTACK]]]";
-                if (ordersAreStrict) msg += " [[[STRICT]]]";
-                if (ordersAreEscort) msg += " [[[ESCORT]]]";
-                if (ordersAreLoiter) msg += " [[[LOITER]]]";
-                if (ordersAreDrop) msg += " [[[DROP-WHEN-I-DROP]]]";
+                else if (ordersAreAttack) msg += " [[[ATTACK]]]";
+                else if (ordersAreStrict) msg += " [[[STRICT]]]";
+                else if (ordersAreEscort) msg += " [[[ESCORT]]]";
+                else if (ordersAreLoiter) msg += " [[[LOITER]]]";
+                else if (orders != BAM_BombAimMode.None)
+                {
+                    msg += " " + BAM_BombAimModeNames[orders];
+                }
+                //if (ordersAreDrop) msg += " [[[DROP-WHEN-I-DROP]]]";
                 delay += 0.08; //was .06 but that seemed to cause stuttering?  Maybe needs 0.1 or even more
                 Timeout(delay, () =>
                 {
@@ -4579,7 +4600,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 "** <cdist 200 - set cover formation distance 200% normal. <cdist 50 - set cover distance 50% normal. <cdist 1000 - cover distance 10X normal",
                 "   Note: <cdist does NOT apply while DROP WHEN I DROP is on - those groups fly a fixed tight spread instead. Use <cfdist to slide the formation forward/back of you in any mode.",
                 "** <cfdist 10 - set your cover formation to ride 10m AHEAD of you (negative = behind, e.g. <cfdist -100). <cfdist alone resets to your own position. Range is +/-4000m. This is the front/back counterpart to <cdist, which sets the left/right spread.",
-                "** <cplayer - report your slot in the formation line. <cplayer 0 = dead center, <cplayer -2 = 2 slots left, <cplayer 2 = 2 slots right. <cplayer auto = back to automatic (random slot, re-rolled when the formation size changes a lot).  By default your slot is randomised so attacking pilots can't just aim at the center.",
+                "** <cplayer - change/report your slot in the formation line. <cplayer 0 = dead center, <cplayer -2 = 2 slots left, <cplayer 2 = 2 slots right. <cplayer auto = back to automatic (random slot, re-rolled when the formation size changes a lot).  By default your slot is randomised so attacking pilots can't just aim at the center.",
                 "<chelp3 for more..."
             };
 

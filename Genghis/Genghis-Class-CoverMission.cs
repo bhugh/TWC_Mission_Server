@@ -6489,6 +6489,15 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 return;
             }
 
+            //Single source of truth for alive cover groups.  If the group is no longer active it
+            //was already removed/landed - do NOT touch it anymore, especially NOT via
+            //airGroup.setTask() below, or we hit a NullReferenceException on a dead AiAirGroup
+            //(KeepAircraftOnTaskRECURS stack trace, 2026-10-10 23:46:50).
+            if (!coverAircraftAirGroupsActive.ContainsKey(airGroup))
+            {
+                return; //group is gone - nothing left to do for it
+            }
+
             //This is where we bid farewell to an aircraft if the player has died, left the server, disappeared, etc etc etc.
             //So we need to give it a flightplan make it land and/or fly off the map, then that's all she wrote.
             //<cdrop Step D - is this group quietly in RTB?  It would neither open its bays nor release,
@@ -6512,7 +6521,12 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 
             
             //if (!heavyBomber) actual_delay = delay * 4; //experiment, kinda worked?  but maybe 2* instead of 4*?
-            Timeout(actual_delay, () => keepAircraftOnTask_recurs(airGroup, task, aawpt, player, delay, heavyBomber, isStrikeAC, isPlayerStrikeAC, AltDiff_m, AltDiff_range_m, AltDiffBomber_m, AltDiffBomber_range_m, AltDiffPlayerEscort_m, AltDiffPlayerEscort_range_m));
+            //Only re-arm the heartbeat if this group is STILL active; otherwise a stale Timeout
+            //would fire on a dead airgroup and hit setTask() → NullReferenceException.
+            if (coverAircraftAirGroupsActive.ContainsKey(airGroup))
+            {
+                Timeout(actual_delay, () => keepAircraftOnTask_recurs(airGroup, task, aawpt, player, delay, heavyBomber, isStrikeAC, isPlayerStrikeAC, AltDiff_m, AltDiff_range_m, AltDiffBomber_m, AltDiffBomber_range_m, AltDiffPlayerEscort_m, AltDiffPlayerEscort_range_m));
+            }
             //if (mainmission.ON_TESTSERVER) Console.WriteLine("KAOTXX2 " + DateTime.UtcNow.ToString("T.fffffff"));
             if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("CVXX3 " + DateTime.UtcNow.ToString("T")); //Testing for potential causes of warping
 
@@ -6898,7 +6912,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 				if (heavyBomber &&  orders != CoverAGOrders.escort)
                 {
 
-                    airGroup.setTask(AiAirGroupTask.DEFENDING, playerAirGroup);
+                    if (airGroup != null && coverAircraftAirGroupsActive.ContainsKey(airGroup)) airGroup.setTask(AiAirGroupTask.DEFENDING, playerAirGroup);
                     task = AiAirGroupTask.DEFENDING;
                     tasktarget = playerAirGroup;
                     //Console.WriteLine("4ChangeTaskbomber (after): {0} " + airGroup.Name() + " to " + player.Name(), airGroup.getTask());
@@ -6908,8 +6922,11 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                     //airGroup.setTask(AiAirGroupTask.ATTACK_AIR, attackingAirGroup);
                     task = AiAirGroupTask.ATTACK_AIR;
                     tasktarget = attackingAirGroup;
-                    airGroup.changeGoalTarget(attackingAirGroup);
-                    airGroup.setTask(task, attackingAirGroup); 
+                    if (airGroup != null && coverAircraftAirGroupsActive.ContainsKey(airGroup))
+                    {
+                        airGroup.changeGoalTarget(attackingAirGroup);
+                        airGroup.setTask(task, attackingAirGroup);
+                    }
                     Console.WriteLine("4ChangeGoalTarget (after): {0} target: {1} for " + airGroup.Name() + " of " + player.Name(), airGroup.getTask(), attackingAirGroup.Name());
                     aawpt = AiAirWayPointType.AATTACK_FIGHTERS; //trying this, perhaps it will reinforce the current setTask instead of overriding.  2026/09/30
                     //aawpt = AiAirWayPointType.ATTACK_AIR; //THIS HELPS MAKE THEM DEFEND THE MAIN A/C
@@ -6978,7 +6995,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 //They will still shoot in self defense, but they won't go off chasing enemy a/c on their own.
                 if (!isOnRepairMission(player) && !isInStrictFormation(airGroup))
                 {
-                    airGroup.setTask(AiAirGroupTask.DEFENDING, playerAirGroup);
+                    if (airGroup != null && coverAircraftAirGroupsActive.ContainsKey(airGroup)) airGroup.setTask(AiAirGroupTask.DEFENDING, playerAirGroup);
                     task = AiAirGroupTask.DEFENDING;
                     tasktarget = playerAirGroup;
                 }
@@ -7067,7 +7084,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             if (task != AiAirGroupTask.DO_NOTHING)
             {
                 //perhaps we need to set the task AFTER the updatewaypoints thing has happened?               
-                airGroup.setTask(task, tasktarget);
+                if (airGroup != null && coverAircraftAirGroupsActive.ContainsKey(airGroup)) airGroup.setTask(task, tasktarget);
             }
 
             Console.WriteLine("8ChangeTask(after): task: {0} {1} tasktarget: {2} " + airGroup.Name() + " to " + player.Name(), airGroup.getTask(), task.ToString(), (tasktarget == null ? "none" : tasktarget.ToString()));            

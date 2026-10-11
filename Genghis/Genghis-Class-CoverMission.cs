@@ -676,7 +676,7 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
         airgroupGroundTargets = new Dictionary<AiAirGroup, GroundStationary>();
         airgroupTargetPoints = new Dictionary<AiAirGroup, Point3d>();
 
-        if (bam == BAM_BombAimMode.Drop_When_I_Drop) BAM_enterDropMode(player);        
+        if (bam == BAM_BombAimMode.Drop_When_I_Drop || bam == BAM_BombAimMode.Drop_When_I_Drop_Nearest_Enemy ) BAM_enterDropMode(player);        
                 
         // Toggling bomb mode erases the last bomb drop location, except when switching bomb point => actor
         //if (bam != BAM_BombAimMode.Nearest_Enemy_to_Bomb_Explosion) 
@@ -709,6 +709,7 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
         }
         else if (bam == BAM_BombAimMode.Drop_When_I_Drop_Nearest_Enemy)
         {
+            /*
             if (player.Place() != null)
             {
                 Point3d impactPoint = player.Place().Pos();
@@ -730,6 +731,7 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
             { 
                 GamePlay.gpLogServer(new Player[] { player }, "COVER ERROR! Couldn't find your position because you are not in an aircraft.", null); 
             }
+            */
         }
 
         
@@ -774,8 +776,8 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
         }
         else if (BAM_getplayerBombAimMode_enum(player) == BAM_BombAimMode.Drop_When_I_Drop_Nearest_Enemy)
         {
-            GamePlay.gpLogServer(new Player[] { player }, "DROP WHEN I DROP NEAREST ENEMY is ON. Your bombers hold their bombs and close to tight formation with you (a fixed close spread - <cdist is ignored in this mode), then release everything the moment you drop.", null);
-            GamePlay.gpLogServer(new Player[] { player }, "After you drop, cover bombers will aim at the nearest enemy ground object to your current position.", null);
+            GamePlay.gpLogServer(new Player[] { player }, "DROP WHEN I DROP NEAREST ENEMY is ON. Your bombers hold their bombs and then choose a ground enemy target the moment you next release a bomb (or <cdropnow).", null);
+            GamePlay.gpLogServer(new Player[] { player }, "They may need some lead time to find and target the enemy - best to position them 1-2km or more behind you. They will choose targets the moment you release, based on your predicted drop target. ", null);
             GamePlay.gpLogServer(new Player[] { player }, "Wait until every group shows GND ATTACK on the chat display, then they are awaiting your drop. Re-issue <cdrop to re-arm them for another run.", null);
             removeLastBombPoint = false;  //this mode does not use the player's bomb drop point
         }
@@ -912,7 +914,11 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
                 var held = coverOrdersBeforeDrop[player];
                 if (!held.Item2) coverOrdersBeforeDrop[player] = new Tuple<Dictionary<AiAirGroup, CoverAGOrders>, bool>(held.Item1, true);
             }
-            setCoverAircraftAirGroupsOrders(player, msg, CoverAGOrders.drop, "were ordered to DROP WHEN YOU DROP - they will hold their bombs and, the moment you let your first bomb go, release everything at the same time.", skipHoldFire: msg.Trim().Length == 0);
+            if ( BAM_getplayerBombAimMode_enum(player) == BAM_BombAimMode.Drop_When_I_Drop)
+            setCoverAircraftAirGroupsOrders(player, msg, CoverAGOrders.drop, "were ordered to DROP WHEN YOU DROP - they will hold their bombs and, the moment you let your first bomb go, release everything at the same time.", skipHoldFire: 
+            msg.Trim().Length == 0);
+            else if  (BAM_getplayerBombAimMode_enum(player) == BAM_BombAimMode.Drop_When_I_Drop_Nearest_Enemy)            setCoverAircraftAirGroupsOrders(player, msg, CoverAGOrders.drop, "were ordered to DROP WHEN YOU DROP - NEAREST ENEMY. They will hold their bombs and, the moment you let your first bomb go, target the nearest ground enemy to your target point.", skipHoldFire: 
+            msg.Trim().Length == 0);
             turnOffCoverDropWatch(player);  //<cdrop RE-ARM - the previous pass stood the watcher down, so a timer from
                                             //it (and its coverDropLastLeaderBombCount seed) is no longer valid.  armCoverDropWatch
                                             //does this too, but doing it explicitly guarantees the stale count is gone BEFORE the
@@ -940,8 +946,12 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
         coverOrdersBeforeDrop[player] = new Tuple<Dictionary<AiAirGroup, CoverAGOrders>, bool>(snap, msg.Trim().Length == 0);
 
         armCoverDropWatch(player);  //start watching the leader's bomb count
-        setCoverAircraftAirGroupsOrders(player, msg, CoverAGOrders.drop, "were ordered to DROP WHEN YOU DROP - they will hold their bombs and, the moment you let your first bomb go, release everything at the same time.", skipHoldFire: msg.Trim().Length == 0);
-        BAM_forceFormationRefresh(player);  //<cdrop Step D - cancel any transient menu-cycle attack run NOW (see helper)
+        if ( BAM_getplayerBombAimMode_enum(player) == BAM_BombAimMode.Drop_When_I_Drop)
+            setCoverAircraftAirGroupsOrders(player, msg, CoverAGOrders.drop, "were ordered to DROP WHEN YOU DROP - they will hold their bombs and, the moment you let your first bomb go, release everything at the same time.", skipHoldFire: 
+            msg.Trim().Length == 0);
+            else if ( BAM_getplayerBombAimMode_enum(player) == BAM_BombAimMode.Drop_When_I_Drop_Nearest_Enemy)            setCoverAircraftAirGroupsOrders(player, msg, CoverAGOrders.drop, "were ordered to DROP WHEN YOU DROP - NEAREST ENEMY. They will hold their bombs and, the moment you let your first bomb go, target the nearest ground enemy to your target point.", skipHoldFire: 
+            msg.Trim().Length == 0);
+         BAM_forceFormationRefresh(player);  //<cdrop Step D - cancel any transient menu-cycle attack run NOW (see helper)
     }
 
     //<cdrop Step D - re-issue an immediate formation (FOLLOW) flight plan to every cover group this
@@ -1875,12 +1885,12 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
         float amtToShiftForEachBomber_m = defaultAmtToShiftForEachBomber_m * shiftFactor;        
         float amtToShiftForEachFighter_m = defaultAmtToShiftForEachFighter_m * shiftFactor;
         
-        int totalRight = 1; //1 for the position taken in the center by the player's bomber; also keeps the first left & first right a/c from occupying the same spot ( in the center )
+        int totalRight = -1; //1 for the position taken in the center by the player's bomber; also keeps the first left & first right a/c from occupying the same spot ( in the center )
         int totalLeft = 1; //1 for the position taken in the center by the player's bomber
         //note this isn't actually technically the CENTER any more; it is the player's
         //position.  We might pile on more a/c to the left or right first, before alternating
 
-        int totalRightAG = 1; //1 for the position taken in the center by the player's bomber; also keeps the first left & first right a/c from occupying the same spot ( in the center )
+        int totalRightAG = 1; //-1 for the position taken in the center by the player's bomber; also keeps the first left & first right a/c from occupying the same spot ( in the center )
         int totalLeftAG = 1; //1 for the position taken in the center by the player's bomber
         //note this isn't actually technically the CENTER any more; it is the player's
         //position.  We might pile on more a/c to the left or right first, before alternating
@@ -1962,7 +1972,9 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
             numAGRight++;
             numACRight += ag.GetItems().Length;
             if (numAGRight >= playerSpot_formation-1) break;
-        }    
+        } 
+
+        if (mainmission.ON_TESTSERVER) Console.WriteLine("ACPosRIGHT: {0} {1}", numAGRight, numACRight);   
 
         foreach (AiAirGroup ag in step1_orderedGroups)
         {
@@ -2029,7 +2041,7 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
                 totalRight += ag.GetItems().Length;// ag.NOfAirc;                
                 totalRightAG++;                
                 posCount = count;
-                if (mainmission.ON_TESTSERVER) Console.WriteLine("ACPosL: right");
+                if (mainmission.ON_TESTSERVER) Console.WriteLine("ACPosL: right pos {0} PosAG {1} numACRight {2} NumAGRight {3} totalRight {4} totalRightAG {5}", pos, posAG, numACRight, numAGRight, totalRight, totalRightAG);
 
             }
             else
@@ -2039,7 +2051,7 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
                 totalLeftAG++;
                 posAG = -totalLeftAG;
                 posCount = count;
-                if (mainmission.ON_TESTSERVER) Console.WriteLine("ACPosL: left");
+                if (mainmission.ON_TESTSERVER) Console.WriteLine("ACPosL: left pos {0} PosAG {1}", pos, posAG);
 
             }
             if (ag == airGroup) break;
@@ -2077,7 +2089,7 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
         }
         */
 
-        if (mainmission.ON_TESTSERVER) Console.WriteLine( "ACPos: {0:F1} {1} {2} {3} {4} : {5} player/covercount: {6} {7}",  shift_m, pos, count, allcount, posAG, airGroup.Name(), playerCount, posCount  );
+        if (mainmission.ON_TESTSERVER) Console.WriteLine( "ACPos: {0:F1} {1} {2} {3} {4} : {5} player/covercount/_formation: {6} {7} {8}",  shift_m, pos, count, allcount, posAG, airGroup.Name(), playerCount, posCount, playerSpot_formation  );
 
         return new Tuple<double, int, int, int, int>(shift_m, pos, count, allcount, posAG);
 
@@ -2413,29 +2425,55 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
                 alreadyFired = true;
                 coverDropAlreadyFired[player] = true;
 
-                //record the line he dropped on: his position + his heading, both right now
-                Point3d p = pa.Pos();
-                Vector3d vwld = pa.AirGroup().Vwld();
-                double vlen = CoverCalcs.CalculatePointDistance(vwld);
-                Point3d dir = new Point3d(0, 1, 0);
-                if (vlen > 0.1) dir = new Point3d(vwld.x / vlen, vwld.y / vlen, 0);
-                coverDropLinePoint[player] = p;
-                coverDropLineDir[player] = dir;
+                if (BAM_getplayerBombAimMode_enum(player) == BAM_BombAimMode.Drop_When_I_Drop) {
+                    //record the line he dropped on: his position + his heading, both right now
+                    Point3d p = pa.Pos();
+                    Vector3d vwld = pa.AirGroup().Vwld();
+                    double vlen = CoverCalcs.CalculatePointDistance(vwld);
+                    Point3d dir = new Point3d(0, 1, 0);
+                    if (vlen > 0.1) dir = new Point3d(vwld.x / vlen, vwld.y / vlen, 0);
+                    coverDropLinePoint[player] = p;
+                    coverDropLineDir[player] = dir;
 
-                if (mainmission.ON_TESTSERVER)
-                    Console.WriteLine("COVER <cdrop: {0} dropped ({1}->{2} bombs).  Line at {3:n0} {4:n0}, heading {5:n0} {6:n0}",
-                        player.Name(), last, bombsNow, p.x, p.y, dir.x, dir.y);
+                    if (mainmission.ON_TESTSERVER)
+                        Console.WriteLine("COVER <cdrop: {0} dropped ({1}->{2} bombs).  Line at {3:n0} {4:n0}, heading {5:n0} {6:n0}",
+                            player.Name(), last, bombsNow, p.x, p.y, dir.x, dir.y);
 
-                //DIAGNOSTIC - stamp the moment we DETECTED the release, so the DROPTRACE "issue" lines
-                //that follow give us detect->issue latency on top of issue->actual-release latency.
-                if (mainmission.ON_TESTSERVER)
-                    Console.WriteLine("DROPTRACE detect t={0:HH:mm:ss.fff} player={1} bombs={2}->{3} immediateDist_m={4:N0}",
-                        DateTime.UtcNow, player.Name(), last, bombsNow, coverDropImmediateDist_m);
+                    //DIAGNOSTIC - stamp the moment we DETECTED the release, so the DROPTRACE "issue" lines
+                    //that follow give us detect->issue latency on top of issue->actual-release latency.
+                    if (mainmission.ON_TESTSERVER)
+                        Console.WriteLine("DROPTRACE detect t={0:HH:mm:ss.fff} player={1} bombs={2}->{3} immediateDist_m={4:N0}",
+                            DateTime.UtcNow, player.Name(), last, bombsNow, coverDropImmediateDist_m);
+                } else if (BAM_getplayerBombAimMode_enum(player) == BAM_BombAimMode.Drop_When_I_Drop_Nearest_Enemy)
+                {
+                    if (player.Place() != null)
+                    {
+                        Point3d impactPoint = player.Place().Pos();
+                        float timeToImpact_s = 0;
+                        Calcs.SimulateDropWithWind(
+                            player: player,
+                            impactPoint: out impactPoint,
+                            timeToImpact_s: out timeToImpact_s
+                        );
+
+                        PBP_saveBombPoint(player, impactPoint);
+
+                        Timeout(timeToImpact_s, () =>
+                        {
+                            Calcs.loadCratersAndSmoke(GamePlay, mainmission, impactPoint.x, impactPoint.y, 0, "BuildingFireSmall");
+                        });
+                    }
+                    else 
+                    { 
+                        GamePlay.gpLogServer(new Player[] { player }, "COVER ERROR! Couldn't find your position because you are not in an aircraft.", null); 
+                    }
+                    
+                }
             }
 
             if (!alreadyFired) return;  //he hasn't dropped yet - they just keep flying formation
 
-            coverDropReleasePass(player, pa);
+            if (BAM_getplayerBombAimMode_enum(player) == BAM_BombAimMode.Drop_When_I_Drop) coverDropReleasePass(player, pa);
         }
         catch (Exception ex) { Console.WriteLine("Cover coverDropWatch ERROR! " + ex.ToString()); }
     }
@@ -5694,7 +5732,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                     //ends, and the honest answer for a re-joined group is still its pre-drop order.  Writing
                     //.drop into it would make BAM_leaveDropMode restore .drop - i.e. the group would never
                     //bomb for the rest of the mission.
-                    if (order == CoverAGOrders.normal && indxs.Count == 0 && BAM_getplayerBombAimMode_enum(player) == BAM_BombAimMode.Drop_When_I_Drop && coverOrdersBeforeDrop.ContainsKey(player) && coverOrdersBeforeDrop[player].Item2)
+                    if (order == CoverAGOrders.normal && indxs.Count == 0 && ( BAM_getplayerBombAimMode_enum(player) == BAM_BombAimMode.Drop_When_I_Drop ||  BAM_getplayerBombAimMode_enum(player) == BAM_BombAimMode.Drop_When_I_Drop_Nearest_Enemy) && coverOrdersBeforeDrop.ContainsKey(player) && coverOrdersBeforeDrop[player].Item2)
                     {
                         coverAircraftAirGroupsOrders[airGroup] = CoverAGOrders.drop;
                         rejoinedDropMode = true;

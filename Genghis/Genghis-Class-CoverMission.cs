@@ -1885,6 +1885,8 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
         //note this isn't actually technically the CENTER any more; it is the player's
         //position.  We might pile on more a/c to the left or right first, before alternating
         int playerCount = -1000;
+        int posCount = -1000;
+
 
         int count = 0;  //count of a/c of this type (fighter or bomber)
         int allcount = 0; //count of all a/c for this player
@@ -1925,10 +1927,15 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
         //2026/10 Step B: clamp the spot to the groups actually available (a manual <cplayer N is
         //unbounded today).  Mirrors autoPlayerFormationPosition's endLimit: at least one group must
         //remain outside the player on the long side.  Auto-rolled spots are already within this range.
-        int maxSpot = sameTypeCount/2 + 1;
+        //+1 to account for the player's own group.
+        int maxSpot = (sameTypeCount + 1)/2;
         if (maxSpot < 0) maxSpot = 0;
         if (playerSpot > maxSpot) playerSpot = maxSpot;
         if (playerSpot < -maxSpot) playerSpot = -maxSpot;
+
+        int playerSpot_formation = playerSpot + (sameTypeCount +  1)/2;
+
+
 
         //2026/10 Step 1: derive the alternation order from a STABLE sort instead of raw
         //Dictionary .Keys enumeration order.  .NET Dictionary order is an implementation detail
@@ -1942,6 +1949,20 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
             .OrderBy(agk => agk.ID())
             .ThenBy(agk => agk.Name())
             .ToList();
+
+        int numACRight = 0;
+        int numAGRight = 0;
+        int count1 = 0;
+
+        foreach (AiAirGroup ag in step1_orderedGroups)
+        {
+            if (coverAircraftAirGroupsActive[ag] != player) continue;
+            if (ag.GetItems() == null || ag.GetItems().Length == 0) continue;
+            if ((isHeavyBomber(ag) || isDiveBomber(ag)) != type) continue;
+            numAGRight++;
+            numACRight += ag.GetItems().Length;
+            if (numAGRight >= playerSpot_formation-1) break;
+        }    
 
         foreach (AiAirGroup ag in step1_orderedGroups)
         {
@@ -1988,10 +2009,11 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
 
             //The player's spot
             // -1 needed due to off-by-one issue, counts e.g. 0 to 3 for 4 items
-            if (count == playerSpot + sameTypeCount/2 - 1)
+            if (count == playerSpot_formation)
             {
                 playerCount = count;
                 count ++;
+                if (mainmission.ON_TESTSERVER) Console.WriteLine("ACPosL: player");
             }
 
 
@@ -2000,12 +2022,14 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
             //moves places everything just slides left/right smoothly
             //If one group goes missing, everything just closes up smoothly.
             //-1 needed due to off-by-one issue, counting starts at zero not one
-            if ( count < playerSpot + sameTypeCount/2 - 1 )
+            if ( count < playerSpot_formation )
             {
-                totalRight += ag.GetItems().Length;// ag.NOfAirc;
-                pos = totalRight;
-                totalRightAG++;
-                posAG = totalRightAG;
+                pos = numACRight - totalRight;
+                posAG = numAGRight - totalRightAG;
+                totalRight += ag.GetItems().Length;// ag.NOfAirc;                
+                totalRightAG++;                
+                posCount = count;
+                if (mainmission.ON_TESTSERVER) Console.WriteLine("ACPosL: right");
 
             }
             else
@@ -2013,7 +2037,9 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
                 totalLeft += ag.GetItems().Length;// ag.NOfAirc;
                 pos = -totalLeft;
                 totalLeftAG++;
-                posAG = totalLeftAG;
+                posAG = -totalLeftAG;
+                posCount = count;
+                if (mainmission.ON_TESTSERVER) Console.WriteLine("ACPosL: left");
 
             }
             if (ag == airGroup) break;
@@ -2051,7 +2077,7 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
         }
         */
 
-        if (mainmission.ON_TESTSERVER) Console.WriteLine( "ACPos: {0:F1} {1} {2} {3} {4} : {5} ",  shift_m, pos, count, allcount, posAG, airGroup.Name());
+        if (mainmission.ON_TESTSERVER) Console.WriteLine( "ACPos: {0:F1} {1} {2} {3} {4} : {5} player/covercount: {6} {7}",  shift_m, pos, count, allcount, posAG, airGroup.Name(), playerCount, posCount  );
 
         return new Tuple<double, int, int, int, int>(shift_m, pos, count, allcount, posAG);
 
@@ -2864,7 +2890,7 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
                 AiAircraft pla = player.Place() as AiAircraft;
                 if (pla != null) leaderAG = pla.AirGroup();
             }
-            catch (Exception ex) { }
+            catch (Exception  ex) { }
 
             PBP_saveBombPoint(player, player.Place().Pos());
             List<AiAirGroup> groups = new List<AiAirGroup>(coverAircraftAirGroupsActive.Keys);
@@ -3411,7 +3437,7 @@ public string listPositionCurrentCoverAircraft(Player player = null, bool displa
             if (player.Army() == 2) player_vel = ((double)(CoverCalcs.RoundInterval(player_vel_kph * 1, 5)) / 1).ToString("F0") + "kph";
 
             //string smsg = ">>>> Your current speed: " + player_vel + ". Your current cover airgroups:";
-            string smsg = string.Format(">>>>Current speed: {0:N0} Position: {1} CDist: {2:N0} CFDist: {3:N0}", player_vel, getPlayerFormationPosition(player), getShiftFactor(player), getFrontBackDist(player))   ;
+            string smsg = string.Format(">>>>Current speed: {0:N0} Position: {1} CDist: {2:N0} CFDist: {3:N0}", player_vel, getPlayerFormationPosition(player), getShiftFactor(player)*100, getFrontBackDist(player))   ;
             
 
             retmsg += smsg + nl;

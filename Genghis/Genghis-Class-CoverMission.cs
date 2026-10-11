@@ -2365,7 +2365,7 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
         catch (Exception ex) { Console.WriteLine("Cover coverDropWatch_obj ERROR! " + ex.ToString()); }
     }
 
-    public void coverDropWatch(Player player)
+    public void coverDropWatch(Player player, bool force = false)
     {
         try
         {
@@ -2420,7 +2420,7 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
 
             bool alreadyFired = coverDropAlreadyFired.ContainsKey(player) && coverDropAlreadyFired[player];
 
-            if (justDropped && !alreadyFired)
+            if ( (justDropped && !alreadyFired ) || force)
             {
                 alreadyFired = true;
                 coverDropAlreadyFired[player] = true;
@@ -2930,6 +2930,9 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
             }
             catch (Exception  ex) { }
 
+            coverDropWatch(player, force: true);
+
+            /*
             PBP_saveBombPoint(player, player.Place().Pos());
             List<AiAirGroup> groups = new List<AiAirGroup>(coverAircraftAirGroupsActive.Keys);
             foreach (AiAirGroup airGroup in groups)
@@ -2952,17 +2955,28 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
                 coverAircraftAirGroupsDropIssued[airGroup] = DateTime.UtcNow;
                 told++;
             }
+            */
 
-            if (told > 0) GamePlay.gpLogServer(new Player[] { player }, told + " group(s) ordered to DROP NOW.", null);
-            //2026/10 - Step B1: the AI has to open its bomb bays before it can release, and that takes a
-            //few seconds (~6s measured on Wellingtons - the DROPTRACE bay= column confirms it per type).
-            //So if the player wants the sticks to land together, he should let HIS first bomb go shortly
-            //after issuing the command, not at the same instant.  Only shown when something actually
-            //went, so it never spams for an empty squadrons list.
-            if (told > 0) GamePlay.gpLogServer(new Player[] { player }, "Bomber groups need ~6 seconds to open their bomb bays - let your first bomb go a moment after this for the sticks to land together.", null);
-            if (held > 0) GamePlay.gpLogServer(new Player[] { player }, held + " group(s) held back on <creserve.", null);
-            if (nothing > 0) GamePlay.gpLogServer(new Player[] { player }, nothing + " group(s) had nothing to drop (no bombs, or torpedoes).", null);
-            if (told == 0 && held == 0 && nothing == 0) GamePlay.gpLogServer(new Player[] { player }, "No cover airgroups available to drop.", null);
+            if (BAM_getplayerBombAimMode_enum(player) == BAM_BombAimMode.Drop_When_I_Drop)
+            {
+                GamePlay.gpLogServer(new Player[] { player }, "DWID: All available groups ordered to DROP NOW if near or ahead, or upon reaching your current point if behind.", null);
+                /*
+                if (told > 0) GamePlay.gpLogServer(new Player[] { player }, told + " group(s) ordered to DROP NOW.", null);
+                //2026/10 - Step B1: the AI has to open its bomb bays before it can release, and that takes a
+                //few seconds (~6s measured on Wellingtons - the DROPTRACE bay= column confirms it per type).
+                //So if the player wants the sticks to land together, he should let HIS first bomb go shortly
+                //after issuing the command, not at the same instant.  Only shown when something actually
+                //went, so it never spams for an empty squadrons list.
+                if (told > 0) GamePlay.gpLogServer(new Player[] { player }, "Bomber groups need ~6 seconds to open their bomb bays - let your first bomb go a moment after this for the sticks to land together.", null);
+                if (held > 0) GamePlay.gpLogServer(new Player[] { player }, held + " group(s) held back on <creserve.", null);
+                if (nothing > 0) GamePlay.gpLogServer(new Player[] { player }, nothing + " group(s) had nothing to drop (no bombs, or torpedoes).", null);
+                if (told == 0 && held == 0 && nothing == 0) GamePlay.gpLogServer(new Player[] { player }, "No cover airgroups available to drop.", null);
+                */
+            } else if (BAM_getplayerBombAimMode_enum(player) == BAM_BombAimMode.Drop_When_I_Drop_Nearest_Enemy)
+            {
+                GamePlay.gpLogServer(new Player[] { player }, "DWID: All available groups ordered to ATTACK NEAREST GROUND ENEMY to your current drop point.", null);                
+
+            }
         }
         catch (Exception ex) { Console.WriteLine("Cover dropBombsNow_player ERROR! " + ex.ToString()); }
     }

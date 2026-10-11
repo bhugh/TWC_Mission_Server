@@ -914,11 +914,14 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
                 var held = coverOrdersBeforeDrop[player];
                 if (!held.Item2) coverOrdersBeforeDrop[player] = new Tuple<Dictionary<AiAirGroup, CoverAGOrders>, bool>(held.Item1, true);
             }
+
             if ( BAM_getplayerBombAimMode_enum(player) == BAM_BombAimMode.Drop_When_I_Drop)
             setCoverAircraftAirGroupsOrders(player, msg, CoverAGOrders.drop, "were ordered to DROP WHEN YOU DROP - they will hold their bombs and, the moment you let your first bomb go, release everything at the same time.", skipHoldFire: 
             msg.Trim().Length == 0);
+
             else if  (BAM_getplayerBombAimMode_enum(player) == BAM_BombAimMode.Drop_When_I_Drop_Nearest_Enemy)            setCoverAircraftAirGroupsOrders(player, msg, CoverAGOrders.drop, "were ordered to DROP WHEN YOU DROP - NEAREST ENEMY. They will hold their bombs and, the moment you let your first bomb go, target the nearest ground enemy to your target point.", skipHoldFire: 
             msg.Trim().Length == 0);
+
             turnOffCoverDropWatch(player);  //<cdrop RE-ARM - the previous pass stood the watcher down, so a timer from
                                             //it (and its coverDropLastLeaderBombCount seed) is no longer valid.  armCoverDropWatch
                                             //does this too, but doing it explicitly guarantees the stale count is gone BEFORE the
@@ -1943,7 +1946,7 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
         if (playerSpot > maxSpot) playerSpot = maxSpot;
         if (playerSpot < -maxSpot) playerSpot = -maxSpot;
 
-        int playerSpot_formation = playerSpot + (sameTypeCount +  1)/2;
+        int playerSpot_formation = (sameTypeCount +  1)/2 - playerSpot; //Subtracting a positive number here gives fewer groups on the right side of it.
 
 
 
@@ -2426,6 +2429,8 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
                 coverDropAlreadyFired[player] = true;
 
                 if (BAM_getplayerBombAimMode_enum(player) == BAM_BombAimMode.Drop_When_I_Drop) {
+
+
                     //record the line he dropped on: his position + his heading, both right now
                     Point3d p = pa.Pos();
                     Vector3d vwld = pa.AirGroup().Vwld();
@@ -2448,6 +2453,17 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
                 {
                     if (player.Place() != null)
                     {
+                        //clear any existing drop points - "too far ahead" points
+                        targetPointNoEnemiesFound_time.Clear();
+                        foreach (AiAirGroup ag in new List<AiAirGroup>(airgroupTargetPoints.Keys))
+                        {
+                            if (coverAircraftAirGroupsActive.ContainsKey(ag) && coverAircraftAirGroupsActive[ag] == player)
+                            {
+                                if (airgroupTargets.ContainsKey(ag)) airgroupTargets.Remove(ag);
+                                if (airgroupGroundTargets.ContainsKey(ag)) airgroupGroundTargets.Remove(ag);
+                                if (airgroupTargetPoints.ContainsKey(ag)) airgroupTargetPoints.Remove(ag);
+                            }
+                        }
                         Point3d impactPoint = player.Place().Pos();
                         float timeToImpact_s = 0;
                         Calcs.SimulateDropWithWind(
@@ -2737,19 +2753,7 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
 
         // DWID-NE: clear stale targets so bombers immediately re-pick enemies near the
         // actual drop point instead of keeping wrong targets from the fake forward point.
-        if (BAM_getplayerBombAimMode_enum(player) == BAM_BombAimMode.Drop_When_I_Drop_Nearest_Enemy)
-        {
-            targetPointNoEnemiesFound_time.Clear();
-            foreach (AiAirGroup ag in new List<AiAirGroup>(airgroupTargetPoints.Keys))
-            {
-                if (coverAircraftAirGroupsActive.ContainsKey(ag) && coverAircraftAirGroupsActive[ag] == player)
-                {
-                    if (airgroupTargets.ContainsKey(ag)) airgroupTargets.Remove(ag);
-                    if (airgroupGroundTargets.ContainsKey(ag)) airgroupGroundTargets.Remove(ag);
-                    if (airgroupTargetPoints.ContainsKey(ag)) airgroupTargetPoints.Remove(ag);
-                }
-            }
-        }
+
 
         DateTime nowUtc = DateTime.UtcNow;
         bool anyStillArmed = false;
@@ -3489,7 +3493,7 @@ public string listPositionCurrentCoverAircraft(Player player = null, bool displa
             if (player.Army() == 2) player_vel = ((double)(CoverCalcs.RoundInterval(player_vel_kph * 1, 5)) / 1).ToString("F0") + "kph";
 
             //string smsg = ">>>> Your current speed: " + player_vel + ". Your current cover airgroups:";
-            string smsg = string.Format(">>>>Current speed: {0:N0} Position: {1} CDist: {2:N0} CFDist: {3:N0}", player_vel, getPlayerFormationPosition(player), getShiftFactor(player)*100, getFrontBackDist(player))   ;
+            string smsg = string.Format(">>>>Current speed: {0:N0} CPlayer: {1} CDist: {2:N0} CFDist: {3:N0}", player_vel, getPlayerFormationPosition(player), getShiftFactor(player)*100, getFrontBackDist(player))   ;
             
 
             retmsg += smsg + nl;
@@ -5670,7 +5674,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
     //by dropBombsNow_airGroup() once we detect the leader actually dropping.
     public bool ordersBombGround(CoverAGOrders orders)
     {
-        return orders == CoverAGOrders.attack || orders == CoverAGOrders.normal;
+        return orders == CoverAGOrders.attack || orders == CoverAGOrders.normal || orders == CoverAGOrders.drop;
     }
 
     //Shared logic for all of the player's airgroup order commands (<cnormal, <cstrict, <cescort,
@@ -6828,7 +6832,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 //release comes from the leader's own position instead (see dropBombsNow_airGroup).
                 if (bam == BAM_BombAimMode.None || bam == BAM_BombAimMode.Drop_When_I_Drop || !ordersBombGround(orders) )  //no bombing, unless the orders are attack or normal (so <creserve, <cstrict, <cescort & <cloiter all hold their bombs)
                 {
-                bombing = false;
+                    bombing = false;
                     newTargetPoint = new Point3d(-1, -1, -1);
                     if (airgroupTargets.ContainsKey(airGroup)) airgroupTargets.Remove(airGroup);
                     if (airgroupGroundTargets.ContainsKey(airGroup)) airgroupGroundTargets.Remove(airGroup);
@@ -9018,7 +9022,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             //Choose another ground stationary somewhere within the given radius of change, starting with the GATTACK point since we don't have an actual GATTACK target actor; make sure it is alive if possible
             //Console.WriteLine("CBCW: bom,alt: {0} {1:F0}", isDiveBomber(airGroup), pos.z);
 
-            if (isDiveBomber(airGroup) && pos.z >= 1600 + Calcs.LandElevation_m(pos)  
+            if (isDiveBomber(airGroup) && pos.z >= 1300 + Calcs.LandElevation_m(pos)  
 				|| BAM_isNearestEnemy(player))//only bother to do this search for dive bombers OR if we have specially requested as as "nearest enemy" type target
                                                                                         //Divebombs need an object to glom onto to do their dive, they also need to start above 2000m or so altitude (let's say 1600, that gives 1000 meters to aim & drop as usually set up; right now only JU87 can do dive bombing but many can target ground actors/stationaries somehow.
             {

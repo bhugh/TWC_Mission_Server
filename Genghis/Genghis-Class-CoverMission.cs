@@ -2227,8 +2227,13 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
                                                        //(so the 8-leg NORMFLY tail can never run out on a long
                                                        // straight hold - the whole point of the tail is to
                                                        // outlast the hold, and a stale plan defeats that)
-    //last pre-open plan issued per group: (leader pos, leader heading-unit-x, leader heading-unit-y,
-    //leader speed mps, leader altitude m, issue time UTC).  Cleared by forgetAirGroup().
+    //last pre-open plan issued per group: (leader pos, leader heading-unit-x, leader heading-unit-y, leader speed mps, leader altitude m, issue time UTC).  Cleared by forgetAirGroup().
+
+    //Faster re-issue cadence while DWID is armed and pre-open is active.
+    //Default 4s (vs normal 16s) so Blenheims/doorless types re-anchor quickly on player turns.
+    //CPU scaling (below) still applies on top, so it self-throttles under load.
+    public double coverDropPreOpenReissue_s = 4;
+
     ConcurrentDictionary<AiAirGroup, Tuple<Point3d, double, double, double, double, DateTime>> coverPreOpenLast =
         new ConcurrentDictionary<AiAirGroup, Tuple<Point3d, double, double, double, double, DateTime>>();
 
@@ -3140,7 +3145,11 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
                     //Too low - force re-issue to maintain safety margin
                     return;
                 }
-                else if (doorsOpen && (dh <= coverPreOpenNodupeHeading_deg)
+                //NODUPE: skip re-issue if geometry unchanged (heading, alt, speed) and plan is healthy.
+                //NOTE: removed the "doorsOpen &&" requirement so doorless planes (Blenheim, etc.) don't churn -
+                //they now skip re-issue on steady flight just like real-door planes, and only re-anchor
+                //when the leader actually turns/climbs/speeds up or the plan is lost/too old.
+                else if ((dh <= coverPreOpenNodupeHeading_deg)
                     && Math.Abs(ldPos.z - prev.Item5) <= coverPreOpenNodupeAlt_m
                     && Math.Abs(lv2 - prev.Item4) <= coverPreOpenNodupeSpeed_mps
                     && (DateTime.UtcNow - prev.Item6).TotalSeconds < coverPreOpenNodupeMaxAge_s)
@@ -3626,7 +3635,7 @@ public string listPositionCurrentCoverAircraft(Player player = null, bool displa
                         vel_mph = CoverCalcs.meterspsec2milesphour(CoverCalcs.distance(airGroup.Vwld().x, airGroup.Vwld().y));
                         vel = ((double)(CoverCalcs.RoundInterval(vel_mph * 1, 5)) / 1).ToString("F0") + "mph";
                     }
-                    msg = "#" + count.ToString() + " " + mi_10 + bearing_10.ToString("F0") + "°" + ang + " " + vel + heading_10.ToString("F0") + "°" + " - " + numAC + "x" + CoverCalcs.GetAircraftType(aircraft);
+                    msg = "#" + count.ToString() + " " + mi_10 + bearing_10.ToString("F0") + "Â°" + ang + " " + vel + heading_10.ToString("F0") + "Â°" + " - " + numAC + "x" + CoverCalcs.GetAircraftType(aircraft);
                 }
 				
 				//if (mainmission.ON_TESTSERVER) Console.WriteLine("LCA #5");
@@ -6564,11 +6573,17 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             else if (mmtlm.recentCPUPercent > 95 || mmtlm.rollingAverageCPUPercent > 90) actual_delay = 3 * delay;
             else if (mmtlm.recentCPUPercent > 90 || mmtlm.rollingAverageCPUPercent > 85) actual_delay = 2 * delay;
             else if (mmtlm.recentCPUPercent > 85 || mmtlm.rollingAverageCPUPercent > 80) actual_delay = 1.5 * delay;
+            //Faster re-issue cadence while DWID armed + pre-open active.
+            //Min(CPU-scaled delay, coverDropPreOpenReissue_s) so Blenheims/doorless types re-anchor fast on turns.
+            if (player != null && isDropAimMode(player) && cdDropPreOpenBays && isBomberArmed(airGroup) && !airGroup.hasTorpedos())
+            {
+                actual_delay = Math.Min(actual_delay, coverDropPreOpenReissue_s);
+            }
 
             
             //if (!heavyBomber) actual_delay = delay * 4; //experiment, kinda worked?  but maybe 2* instead of 4*?
             //Only re-arm the heartbeat if this group is STILL active; otherwise a stale Timeout
-            //would fire on a dead airgroup and hit setTask() → NullReferenceException.
+            //would fire on a dead airgroup and hit setTask() â†’ NullReferenceException.
             if (coverAircraftAirGroupsActive.ContainsKey(airGroup))
             {
                 Timeout(actual_delay, () => keepAircraftOnTask_recurs(airGroup, task, aawpt, player, delay, heavyBomber, isStrikeAC, isPlayerStrikeAC, AltDiff_m, AltDiff_range_m, AltDiffBomber_m, AltDiffBomber_range_m, AltDiffPlayerEscort_m, AltDiffPlayerEscort_range_m));
@@ -7056,7 +7071,11 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 //2021/07, we switched to .ESCORT here & the cove r a/c seemed to not follow too well. So trying .FOLLOW again
                 aawpt = AiAirWayPointType.FOLLOW; //SEtting to Escort seems to make them drop their bombs?  Maybe?
                                                   //aawpt = AiAirWayPointType.ESCORT; //SEtting to Escort seems to make them drop their bombs?  Maybe?
-				tasktarget = playerAirGroup;								  
+
+                // FIX: Prevent cover aircraft from attacking their own player when >4000m away.
+                // The FOLLOW waypoint already brings them back; FLY_WAYPOINT clears any stale ATTACK_AIR task.
+                task = AiAirGroupTask.FLY_WAYPOINT;
+                tasktarget = null;
 
                 //2021/07 - also we tried setting the task below, the a/c are not behaving, trying to remove the task
                 //and see how it goes
@@ -7123,6 +7142,16 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 
             //only change task if we have specifically indicated something above
             //setting task to ATTACK_GROUND ETC SEEMS TO MAKE bombers drop their bombs?
+            // FIX: Defensive guard - never allow cover aircraft to be tasked to attack their own player.
+            // This is a belt-and-suspenders check to catch any code path that might accidentally
+            // set task=ATTACK_AIR with tasktarget=playerAirGroup.
+            if (task == AiAirGroupTask.ATTACK_AIR && tasktarget == playerAirGroup)
+            {
+                Console.WriteLine("!!! DEFENSIVE GUARD: Cover aircraft " + airGroup.Name() + " was about to be tasked ATTACK_AIR on own player " + player.Name() + " - downgrading to FLY_WAYPOINT");
+                task = AiAirGroupTask.FLY_WAYPOINT;
+                tasktarget = null;
+            }
+            
             if (task != AiAirGroupTask.DO_NOTHING)
             {
                 //perhaps we need to set the task AFTER the updatewaypoints thing has happened?               

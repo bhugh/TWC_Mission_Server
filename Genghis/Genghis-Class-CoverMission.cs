@@ -590,6 +590,8 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
         coverDictRemove(coverAircraftAirGroupsBayWaitSince, airGroup);   //<cdrop Step C8 - same leak class as the rest
         coverDictRemove(coverAircraftAirGroupsDoorsNeverOpen, airGroup);      //<cdrop plan-2026-10-12-0010 Fix 1a - door-readiness classification, same leak class
         coverDictRemove(coverAircraftAirGroupsDoorsInitiallyOpen, airGroup);  //<cdrop plan-2026-10-12-0010 Fix 1a - door-readiness classification, same leak class
+        coverDictRemove(coverAircraftAirGroupsArmedAt, airGroup);             //<cdrop plan-2026-10-12-1044 Step 1 - DWID arm-time stamp, same leak class
+        coverDictRemove(coverAircraftAirGroupsBayEverMoved, airGroup);        //<cdrop plan-2026-10-12-1044 hardening - spring-door "ever moved" latch, same leak class
         coverDictRemove(coverDropPassLogged, airGroup);            //<cdrop Step D - and its log throttle with it
         coverDictRemove(coverRtbLogged, airGroup);                 //<cdrop Step D - and its RTB probe throttle with it
         coverDictRemove(coverRtbNotified, airGroup);               //<cdrop Step G - one-shot RTB notice latch, same leak class
@@ -935,6 +937,10 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
                 bool initiallyOpen = (!neverOpen && bayPos >= coverDropBayOpenThreshold);
                 coverAircraftAirGroupsDoorsNeverOpen[airGroup] = neverOpen;
                 coverAircraftAirGroupsDoorsInitiallyOpen[airGroup] = initiallyOpen;
+                //<cdrop plan-2026-10-12-1044 Step 2 - stamp "DWID declared" NOW.  This is the start of the
+                //door-wait clock read by coverDropReleasePass, so the 30s fallback budget is spent on the
+                //run-in rather than starting lazily when the player drops.
+                coverAircraftAirGroupsArmedAt[airGroup] = DateTime.UtcNow;
                 if (mainmission.ON_TESTSERVER)
                     Console.WriteLine("COVER <cdrop ARM: {0} bay-doors bay={1:F3} -> neverOpen={2} initiallyOpen={3}",
                         airGroup.Name(), bayPos, neverOpen, initiallyOpen);
@@ -2180,6 +2186,15 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
     //   group held back for its doors is never skipped.  But if the doors never register open at all we
     //   must not hold its bombs forever - issue anyway after this long, and log it loudly.
     public double coverDropBayWaitFallback_s = 30;
+    //<cdrop 2026/10 plan-2026-10-12-1044 optional hardening - SPRING-LOADED DOOR cut-off.  A real bomb-bay
+    //door cycles 0 -> 0.6-0.9 -> 1 over several seconds, so it WILL have moved off exactly 0.000 at least
+    //once (recorded in coverAircraftAirGroupsBayEverMoved by dropPreOpenBays_airGroup during the run-in).
+    //A spring door (Blenheim etc.) is pinned at exactly 0.000 for the whole run-in and only opens AFTER
+    //the bomb is released, so waiting for it can never succeed.  If a group has been on DROP WHEN I DROP
+    //longer than this AND its door has never once moved off 0.000, coverDropReleasePass releases it now
+    //instead of burning the full coverDropBayWaitFallback_s.  ~8-10s: comfortably past the fastest real
+    //door cycle (Wellington ~6s) so a slow real door is never mis-taken for a spring door.
+    public double coverDropSpringDoor_s = 10;
     //a group we deliberately HELD BACK for its doors will have flown on well past the line, so it gets
     //   this much more room than a group that was ready at the time.
     public double coverDropMaxAheadWait_m = 3000;
@@ -2270,6 +2285,10 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
             //<cdrop must not inherit the previous pass's "never opens / already open" verdicts.
             coverAircraftAirGroupsDoorsNeverOpen.Clear();
             coverAircraftAirGroupsDoorsInitiallyOpen.Clear();
+            //<cdrop plan-2026-10-12-1044 Step 1 - the DWID arm-time stamp and the spring-door latch are
+            //per-arm; a fresh <cdrop must not inherit the previous pass's arm time or "ever moved" verdict.
+            coverAircraftAirGroupsArmedAt.Clear();
+            coverAircraftAirGroupsBayEverMoved.Clear();
 
             COVER_DropWatchTimer[player] = new System.Threading.Timer(
                 coverDropWatch_obj, player, dueTime: 100, period: COVER_DropWatchPeriod_ms);
@@ -2447,6 +2466,22 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
     //cleared as soon as it is released, and on re-arm.  A group that is in here has flown on while it
     //waited, so it gets a much more generous "too far ahead" bound than one that was ready at the time.
     ConcurrentDictionary<AiAirGroup, DateTime> coverAircraftAirGroupsBayWaitSince = new ConcurrentDictionary<AiAirGroup, DateTime>();
+
+    //<cdrop 2026/10 plan-2026-10-12-1044 Step 1 - WHEN DWID mode was DECLARED for this group
+    //(stamped in cdProbeBayDoorsAtArm, which runs from BAM_enterDropMode).  Used ONLY as the start of
+    //the bomb-bay door-wait clock in coverDropReleasePass, so the 30s fallback budget is spent during
+    //the run-in rather than starting lazily on the player's drop.  Kept SEPARATE from
+    //coverAircraftAirGroupsBayWaitSince on purpose: seeding that one at arm would flip its everWaited
+    //flag (and so widen the ahead-of-line skip bound from coverDropMaxAhead_m to coverDropMaxAheadWait_m)
+    //for every group the instant DWID is armed.  Same life cycle: cleared on re-arm and by forgetAirGroup.
+    ConcurrentDictionary<AiAirGroup, DateTime> coverAircraftAirGroupsArmedAt = new ConcurrentDictionary<AiAirGroup, DateTime>();
+
+    //<cdrop 2026/10 plan-2026-10-12-1044 optional hardening - has this group's A_BombBayDoor EVER read
+    //above 0 while DWID was armed?  A real door cycles 0 -> 0.6-0.9 -> 1 before releasing; a spring door
+    //(Blenheim etc.) is pinned at exactly 0.000 for the whole run-in.  If a group has been armed past
+    //coverDropSpringDoor_s and has NEVER moved off 0.000, coverDropReleasePass treats it as a spring door
+    //and releases it immediately instead of burning the full 30s fallback.  Cleared on re-arm / forgetAirGroup.
+    ConcurrentDictionary<AiAirGroup, bool> coverAircraftAirGroupsBayEverMoved = new ConcurrentDictionary<AiAirGroup, bool>();
 
     //<cdrop 2026/10 plan-2026-10-12-0010 Fix 1a - bomb-bay-door readiness, classified ONCE when the player
     //declares DROP WHEN I DROP (see BAM_enterDropMode / cdProbeBayDoorsAtArm), so the release pass never has
@@ -2810,8 +2845,24 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
             if (!doorsOpen)
             {
                 if (!everWaited) { coverAircraftAirGroupsBayWaitSince[airGroup] = nowUtc; everWaited = true; }
-                double waited_s = (nowUtc - coverAircraftAirGroupsBayWaitSince[airGroup]).TotalSeconds;
-                if (waited_s < coverDropBayWaitFallback_s)
+                //<cdrop 2026/10 plan-2026-10-12-1044 Step 3 - measure the door-wait from the DWID ARM time
+                //(coverAircraftAirGroupsArmedAt, stamped in cdProbeBayDoorsAtArm), NOT lazily from the
+                //player's drop, so the 30s fallback budget is spent during the run-in.  Fall back to the
+                //lazy per-pass stamp only if the arm stamp is somehow missing (defensive).
+                DateTime armedAt; bool haveArmed = coverAircraftAirGroupsArmedAt.TryGetValue(airGroup, out armedAt);
+                double waited_s = haveArmed ? (nowUtc - armedAt).TotalSeconds : (nowUtc - coverAircraftAirGroupsBayWaitSince[airGroup]).TotalSeconds;
+                //<cdrop 2026/10 plan-2026-10-12-1044 optional hardening - SPRING-LOADED DOOR.  A real door
+                //cycles 0 -> 0.6-0.9 -> 1 and so reads > 0 at least once (latched into
+                //coverAircraftAirGroupsBayEverMoved by dropPreOpenBays_airGroup on the run-in, and by the
+                //read just below on every release-pass tick).  A spring door (Blenheim etc.) is pinned at
+                //exactly 0.000 for the whole run-in and only opens AFTER the bomb is released, so waiting
+                //can never succeed.  If we have been armed past coverDropSpringDoor_s and the door has NEVER
+                //once moved off 0.000, treat it as a spring door and release now instead of burning the
+                //full coverDropBayWaitFallback_s.
+                if (bayPos > 0.0) coverAircraftAirGroupsBayEverMoved[airGroup] = true;
+                bool bayEverMoved = coverAircraftAirGroupsBayEverMoved.ContainsKey(airGroup) && coverAircraftAirGroupsBayEverMoved[airGroup];
+                bool springDoor = haveArmed && !bayEverMoved && (waited_s >= coverDropSpringDoor_s);
+                if (!springDoor && waited_s < coverDropBayWaitFallback_s)
                 {
                     anyStillArmed = true;   //keep the watcher alive; we come back the instant it opens
                     cdDropPassLog(airGroup, "HELD: bomb-bay doors shut, bay=" + bayPos.ToString("F3") + " (waited " + waited_s.ToString("F0") + "s)");
@@ -2819,8 +2870,14 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
                                             //holding it, so we must not then blame it for being late
                 }
                 if (mainmission.ON_TESTSERVER)
-                    Console.WriteLine("COVER <cdrop: {0} bomb-bay doors never opened (bay={1:F3}) after {2:F0}s - releasing anyway",
-                        airGroup.Name(), bayPos, waited_s);
+                {
+                    if (springDoor)
+                        Console.WriteLine("COVER <cdrop: {0} spring-loaded door (bay pinned at {1:F3}, never moved in {2:F0}s since arm) - releasing now",
+                            airGroup.Name(), bayPos, waited_s);
+                    else
+                        Console.WriteLine("COVER <cdrop: {0} bomb-bay doors never opened (bay={1:F3}) after {2:F0}s - releasing anyway",
+                            airGroup.Name(), bayPos, waited_s);
+                }
             }
 
             //<cdrop 2026/10 - too far AHEAD of the leader's drop line.  Releasing out there plants the
@@ -3060,6 +3117,12 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
             if (lv2 > 0.1) { hdgX = ldV2.x / lv2; hdgY = ldV2.y / lv2; }
             Point3d ldPos = leader.Pos();
             bool doorsOpen = (coverDropBayDoorPos(airGroup) >= coverDropBayOpenThreshold);
+            //<cdrop 2026/10 plan-2026-10-12-1044 optional hardening - latch "this group's bay door has moved
+            //at least once while DWID was armed".  A real door cycles 0 -> 0.6-0.9 -> 1, so it WILL read > 0
+            //here on some run-in cycle; a spring door (Blenheim etc.) stays pinned at exactly 0.000 until the
+            //bomb physically releases.  coverDropReleasePass uses this (plus coverDropSpringDoor_s) to tell a
+            //spring door apart from a slow real door and release it without burning the full 30s fallback.
+            if (coverDropBayDoorPos(airGroup) > 0.0) coverAircraftAirGroupsBayEverMoved[airGroup] = true;
             Tuple<Point3d, double, double, double, double, DateTime> prev;
             bool hasPrev = coverPreOpenLast.TryGetValue(airGroup, out prev);
             if (hasPrev)
@@ -3926,8 +3989,14 @@ public string listPositionCurrentCoverAircraft(Player player = null, bool displa
 
         }
         //int acAvailable = acAllowedThisPlayer - howMany_numberCoverAircraftActorsCheckedOutWholeMission(player);
-        int acAvailable = (int)Math.Round(
-        (double)acAllowedThisPlayer*     howMany_numberCoverAircraftActorsCheckedOutWholeMission(player)/ (double) maximumAircraftAllowedPerMission_BomberPilots);
+
+        //If pilots use a normal number of bombers, then switched
+        //to sturmovik or fighter, they didn't have any a/c left to use.  So trying this instead.
+        // Math.Ceiling to give them a little break.
+        int acAvailable = 0;
+        if (maximumAircraftAllowedPerMission_BomberPilots != 0) 
+            acAvailable = (int)Math.Ceiling(
+        (double)acAllowedThisPlayer* (maximumAircraftAllowedPerMission_BomberPilots -    howMany_numberCoverAircraftActorsCheckedOutWholeMission(player))/ (double) maximumAircraftAllowedPerMission_BomberPilots);
         
         
         

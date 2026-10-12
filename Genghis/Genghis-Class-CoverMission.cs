@@ -1943,10 +1943,13 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
         //+1 to account for the player's own group.
         int maxSpot = (sameTypeCount + 1)/2;
         if (maxSpot < 0) maxSpot = 0;
-        if (playerSpot > maxSpot) playerSpot = maxSpot;
-        if (playerSpot < -maxSpot) playerSpot = -maxSpot;
+        playerSpot = playerSpot.Clamp(-maxSpot, maxSpot);
+        //if (playerSpot > maxSpot) playerSpot = maxSpot;
+        //if (playerSpot < -maxSpot) playerSpot = -maxSpot;
 
-        int playerSpot_formation = (sameTypeCount +  1)/2 - playerSpot; //Subtracting a positive number here gives fewer groups on the right side of it.
+        int playerSpot_formation = (sameTypeCount +  1)/2 + playerSpot; 
+        //Subtracting a positive number here gives fewer groups on the right side of it.
+        //But I think right/left are also reversed below, so...
 
 
 
@@ -9209,6 +9212,8 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                                         if (act as AiGroundActor != null) groundType = (act as AiGroundActor).Type().ToString();
                                         //newTarget = act; //arrgh, don't set it here, only after an actual target is found
 
+                                        if (!airGroup.hasBombs() && groundType.ToLower().Contains("ship")) continue;
+
                                         int numToTargetOne = 1;
                                         if (groundType.ToLower().Contains("ship") && landType == maddox.game.LandTypes.WATER )
                                         {
@@ -9218,7 +9223,10 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 
                                         if (act.Name().ToLower().Contains("chief")) numToTargetOne = 3;
 
-                                        Console.WriteLine("CBCW: Keep this one? {0} IsAlive: {1} isAIgroundactor: {2} numalreadytargetingit: {3} maxnumToTargetit: {4} ", act.Name(), act.IsAlive(), act as AiGroundActor != null, airgroupTargets.Values.Count(x => x == act), numToTargetOne);
+                                        Console.WriteLine("CBCW: Keep this one? {0} IsAlive: {1} isAIgroundactor: {2} numalreadytargetingit: {3} maxnumToTargetit: {4} hasBombs: {5} isShip: {6}", act.Name(), act.IsAlive(), act as AiGroundActor != null, airgroupTargets.Values.Count(x => x == act), numToTargetOne, airGroup.hasBombs(),  groundType.ToLower().Contains("ship"));
+
+                                        //no point in strafing ships, it does nothing
+                                        if (!airGroup.hasBombs() && groundType.ToLower().Contains("ship")) continue;
 
                                         //if (dist_m < closest_m && act.IsAlive() && act as AiGroundActor != null)
                                         if (act.IsAlive() && act as AiGroundActor != null && airgroupTargets.Values.Count(x => x == act) < numToTargetOne )                                        
@@ -9411,7 +9419,8 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                                                 else if (types.Contains("ammo")) ml = 3; //associated with AA nests...
                                                 else if (types.Contains("bofors")) ml = 3; //associated with AA nests...
                                                 else if (types.Contains("flak37")) ml = 3; //associated with AA nests...
-                                                else if (types.Contains("pdr_mk")) ml = 3; //associated with AA nests...
+                                                else if (types.Contains("pdr_mk")) ml = 3; //associated with AA nests... Zwillingssockel
+                                                else if (types.Contains("Zwillingssockel")) ml = 3;
 												else if (types.Contains("ship")) ml = 3;
 												else if (types.Contains("plane") || types.Contains("aagun") 
 													|| types.Contains("artillery")) ml = 2;
@@ -9423,7 +9432,9 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 												else if (types.Contains("camonet")) ml = 2;
 												else if (types.Contains("hangar")) ml = 2;
 												//else if (types.Contains("fuel") || types.Contains("ammo")) ml = 1;
-												//else if (types.Contains("weapons_")) ml = 1;	
+												//else if (types.Contains("weapons_")) ml = 1;
+
+                                                if (!airGroup.hasBombs() && types.Contains("ship")) ml = 0;
 												
 												//At first onlyh accept score 3.
 												//Then...2.  Then...1.  Then finally 0;
@@ -9511,6 +9522,19 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 } 
                 newPos.x += addDist * Math.Cos(addAngle);
                 newPos.y += addDist * Math.Sin(addAngle);
+
+                if (!airGroup.hasBombs() || isSturmovik || isJU87 || !heavyBomber ) {
+
+                    //AND . . . they will just target craters etc if they are near, so we'll try just plain removing them if close
+                    //If we wanted to get tricky, could remove them, save, and then replace a while later after teh attack is done.
+                    //doesn't matter as much for heavy bombers, but for strafing etc, strafing a crater ain't so much fun.
+                    for (int i = 0; i < 10; i++)
+                    {
+                        Timeout(i * 12, () => mainmission.removeSmokeFireCraters(newPos, radius_m: 200 - i * 15, percentToRemove: 7 * i));
+                        //mainmission.removeSmokeFireCraters(newPos, radius_m: 100, percentToRemove: 10);
+                    }
+                }
+                
             }
             //3rd approach, just set it to the actual x,y
             else

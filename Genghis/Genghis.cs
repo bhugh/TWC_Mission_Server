@@ -606,9 +606,10 @@ public class Mission : AMission, IMainMission
     //public int END_MISSION_TICK = 1680000; //14 Hours
     //public int END_MISSION_TICK = 1980000; //16.5 Hours, starting at 4:45am and ending at 9:15pm.
     //public int END_MISSION_TICK = 960000; //8 Hours, starting at 7:50am and ending at 3:15pm.  Could possibly go even 15 mins earlier to 7:15?  And a little later?
-    public double MISSION_LENGTH_HRS = 8.0; //For SUMMER. 4.15-20.05 = 15.90 hrs.  So abt 2x8hr sessions.
+    public double MISSION_LENGTH_HRS = 3.0; //For SUMMER. 4.15-20.05 = 15.90 hrs.  So abt 2x8hr sessions.
     //public double MISSION_LENGTH_HRS = 6.0; //6.0 is ideal for AUTUMN map - 6.15-17.25 gives two equal sessions about 5.6 hours each, but 6.0+5.1 worked fine/better
     // 8.0 makes 2X 8hr missions per day; 5.3333; makes 3X missions per day //720000; //6.4 //2021/07: was 10, trying shorter to see if it will fix long load times?
+    //2026/10 - setting from 8.0 back to 3.0 to try to stop server borking as time gets longer
     //public int END_MISSION_TICK = 1200000; //10 Hours
     //public int END_MISSION_TICK = 720; //TESTING
     public double END_MISSION_TIME_HRS = 20.05; //Summer map latest possible end time
@@ -22219,10 +22220,10 @@ added Rouen Flak
     //max deployed is roughly 8 X tempflaktoAllocatePerRound = 180 (for 22 allocated)
     //So in theory would easily do 50 instead of 22
     //int tempflaktoAllocatePerRound = 22; //number to hand out each time tempFlakPlacement runs. Was 28/2022-01-05
-    int tempflaktoAllocatePerRound = 28; //number to hand out each time tempFlakPlacement runs. Was 28/2022-01-05, 22/before 2026/09, 50 - 2026/09, then 32, now 28
+    int tempflaktoAllocatePerRound = 22; //number to hand out each time tempFlakPlacement runs. Was 28/2022-01-05, 22/before 2026/09, 50 - 2026/09, then 32, now 28
     //int minTempflaktoAllocatePerRound = 14; //we don't have to cut the # of flak so much bec we cut the frequency loaded, # of files loaded, etc.  Was 16 2022-01-05
-    int minTempflaktoAllocatePerRound = 14; //we don't have to cut the # of flak so much bec we cut the frequency loaded, # of files loaded, etc.  Was 16 2022-01-05; 14/prior to 2026-09
-    double maxACAltitudeforTempflak = 2500;
+    int minTempflaktoAllocatePerRound = 12; //we don't have to cut the # of flak so much bec we cut the frequency loaded, # of files loaded, etc.  Was 16 2022-01-05; 14/prior to 2026-09
+    double maxACAltitudeforTempflak = 2200;
     double minRatingForFlak = 25;
     int maxSectionFiles = 16;
 

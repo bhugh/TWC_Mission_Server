@@ -163,11 +163,7 @@ public class CoverMission : AMission, ICoverMission
     //           ignores <cdist, & fires only in self defence)
     //  escort - CLoD's ESCORT behavior for all a/c types: stay with & defend the player (no ground bombing)
     //  loiter - stay in one place, circling
-    //  drop - "drop when I drop".  Like reserve, they hold their bombs and fly with the leader, but
-    //         the moment the leader lets his FIRST bomb go, every bomber in the formation lets go too.
-    //         See Genghis-Class-CloDNotes.cs section 1 - making them actually release needs a
-    //         NORMFLY + GATTACK_POINT waypoint pair, NOT setTask(ATTACK_GROUND).
-    public enum CoverAGOrders {none, reserve, attack, normal, strict, escort, loiter, drop };
+    public enum CoverAGOrders {none, reserve, attack, normal, strict, escort, loiter};
 
     public ConcurrentDictionary<Player, int> numberCoverAircraftActorsCheckedOutWholeMission = new ConcurrentDictionary<Player, int>();
     public ConcurrentDictionary<AiActor, Player> coverAircraftActorsCheckedOut = new ConcurrentDictionary<AiActor, Player>();
@@ -454,7 +450,7 @@ public class CoverMission : AMission, ICoverMission
 //Targeting" menu right alongside Knickebein Point / Bomb Explosion Point / etc, where it belongs -
 //it is a bombing mode, not a formation directive.  It is deliberately the ONLY value here that
 //matches none of the BAM_is* predicates: those all answer "WHERE do they bomb", whereas this one
-//answers "WHEN do they bomb", so it drives the airgroup ORDERS instead (see BAM_enterDropMode()).
+    //answers "WHEN do they bomb", so it drives the <cdrop release machinery instead (see BAM_enterDropMode()).
 //Keep it immediately before None so the existing cycle order (None -> Knickebein -> ... -> Flare)
 //is unchanged and everybody's muscle memory still works.
 public enum BAM_BombAimMode { Knickebein_Point, Nearest_Enemy_to_Knickebein_Point, Bomb_Explosion_Point, Nearest_Enemy_to_Bomb_Explosion, Drop_Flare_Point_Here_and_Target_it, Nearest_Enemy_to_Flare_Point, Drop_When_I_Drop, Drop_When_I_Drop_Nearest_Enemy, None };
@@ -508,6 +504,17 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
             || BAM_getplayerBombAimMode_enum(player) == BAM_BombAimMode.Drop_When_I_Drop_Nearest_Enemy
             || BAM_getplayerBombAimMode_enum(player) == BAM_BombAimMode.Nearest_Enemy_to_Flare_Point);
     }
+    //2026-10-11 (plan-2026-10-11-2333): with the old `drop` order mode removed, the question
+    //"does this player have DROP WHEN I DROP armed?" is answered by the bomb-aim mode alone.
+    //This is the single test the <cdrop machinery (coverDropWatch, coverDropReleasePass,
+    //the pre-open bays, the onDrop diagnostic) uses.
+    public bool isDropAimMode(Player player)
+    {
+        if (player == null) return false;
+        BAM_BombAimMode bam = BAM_getplayerBombAimMode_enum(player);
+        return (bam == BAM_BombAimMode.Drop_When_I_Drop || bam == BAM_BombAimMode.Drop_When_I_Drop_Nearest_Enemy);
+    }
+
     public bool BAM_isPoint(Player player)
     {
         if (player == null) return false;
@@ -581,6 +588,8 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
         coverDictRemove(coverAircraftAirGroupsDroppedThisPass, airGroup);  //<cdrop one-issue-per-pass latch - same leak class as the hold-off above
         coverDictRemove(coverAircraftAirGroupsReleased, airGroup);
         coverDictRemove(coverAircraftAirGroupsBayWaitSince, airGroup);   //<cdrop Step C8 - same leak class as the rest
+        coverDictRemove(coverAircraftAirGroupsDoorsNeverOpen, airGroup);      //<cdrop plan-2026-10-12-0010 Fix 1a - door-readiness classification, same leak class
+        coverDictRemove(coverAircraftAirGroupsDoorsInitiallyOpen, airGroup);  //<cdrop plan-2026-10-12-0010 Fix 1a - door-readiness classification, same leak class
         coverDictRemove(coverDropPassLogged, airGroup);            //<cdrop Step D - and its log throttle with it
         coverDictRemove(coverRtbLogged, airGroup);                 //<cdrop Step D - and its RTB probe throttle with it
         coverDictRemove(coverRtbNotified, airGroup);               //<cdrop Step G - one-shot RTB notice latch, same leak class
@@ -591,9 +600,6 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
         coverDictRemove(airgroupTargets, airGroup);
         coverDictRemove(airgroupGroundTargets, airGroup);
         coverDictRemove(airgroupTargetPoints, airGroup);
-        //Do NOT touch coverOrdersBeforeDrop here: BAM_leaveDropMode restores from the snapshot,
-        //and a mid-drop disband must still restore the survivors.  A dead group simply never matches
-        //the restore loop (it iterates live coverAircraftAirGroupsActive keys).
     }
 
 
@@ -677,7 +683,6 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
         //removal below is currently unconditional, so this is informational only for now.
         bool removeLastBombPoint = true;
 
-        if (prev_BAMs.Contains(BAM_BombAimMode.Drop_When_I_Drop)) BAM_leaveDropMode(player);
         
                 
 
@@ -900,76 +905,63 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
 
     //<cdrop - turn DROP WHEN I DROP on.  Called both from the Tab-4-4-4-4-6 menu (BAM cycle) and from
     //the <cdrop chat command, so the menu label and the actual orders can never disagree.
-    //Snapshot the player's current orders FIRST, then put everyone on .drop.  Empty msg => every
-    //group is selected (see setCoverAircraftAirGroupsOrders), which is what the menu can express;
-    //players who want only some squadrons use "<cdrop 3 6" in chat.  The all-groups scope is
-    //remembered alongside the snapshot (see coverOrdersBeforeDrop): a group later released from
-    //<cstrict/<creserve with <cnormal re-joins drop mode only under an all-groups scope; under a
-    //selective "<cdrop 3 6" scope it stays on normal, out of the drop.  Groups sitting on
-    //<cstrict/<creserve are SKIPPED by a bare all-groups <cdrop (they were told to hold fire, and a
-    //blanket drop order must not overrule that); name them explicitly ("<cdrop 2") to pull them in.
+    //2026-10-11 (plan-2026-10-11-2333): the old `drop` order mode has been removed - it was
+    //a vestige of the original -covermission.cs implementation that mashed orders mode together with
+    //targeting mode.  DROP WHEN I DROP is now carried ENTIRELY by the player's bomb-aim mode
+    //(Drop_When_I_Drop / Drop_When_I_Drop_Nearest_Enemy): the drop machinery (coverDropWatch,
+    //coverDropReleasePass, the pre-open bays) keys off the aim mode via isDropAimMode(), not off the
+    //group orders.  The groups keep whatever orders the player gave them - <cstrict gives the tight
+    //formation, and ordersHoldFire/ordersBombGround keep them quiet until the release.
+    //<cdrop 2026/10 plan-2026-10-12-0010 Fix 1a - CLASSIFY each of this player's active cover groups'
+    //bomb-bay doors ONCE, the moment DROP WHEN I DROP is declared.  The release pass then reads these
+    //verdicts instead of starting a fresh door-wait on the player's drop, so a doorless aircraft
+    //(A_BombBayDoor reads -1: Blenheim, Ju-87, most fighters, Sturmovik) is released promptly rather
+    //than sitting HELD for the 30s fallback.  A real-but-shut door (reads 0) is classified as NEITHER,
+    //so it still gets the lazy door-wait in coverDropReleasePass (which protects the one-salvo latch).
+    public void cdProbeBayDoorsAtArm(Player player)
+    {
+        try
+        {
+            if (player == null) return;
+            List<AiAirGroup> saveCAAGA = new List<AiAirGroup>(coverAircraftAirGroupsActive.Keys);
+            foreach (AiAirGroup airGroup in saveCAAGA)
+            {
+                if (airGroup == null) continue;
+                if (!coverAircraftAirGroupsActive.ContainsKey(airGroup)) continue;
+                if (coverAircraftAirGroupsActive[airGroup] != player) continue;
+                if (airGroup.GetItems() == null || airGroup.GetItems().Length == 0) continue;
+                double bayPos = coverDropBayDoorPos(airGroup);
+                bool neverOpen = (bayPos < 0);                       //-1 = no operable door parameter at all
+                bool initiallyOpen = (!neverOpen && bayPos >= coverDropBayOpenThreshold);
+                coverAircraftAirGroupsDoorsNeverOpen[airGroup] = neverOpen;
+                coverAircraftAirGroupsDoorsInitiallyOpen[airGroup] = initiallyOpen;
+                if (mainmission.ON_TESTSERVER)
+                    Console.WriteLine("COVER <cdrop ARM: {0} bay-doors bay={1:F3} -> neverOpen={2} initiallyOpen={3}",
+                        airGroup.Name(), bayPos, neverOpen, initiallyOpen);
+            }
+        }
+        catch (Exception ex) { Console.WriteLine("Cover cdProbeBayDoorsAtArm ERROR! " + ex.ToString()); }
+    }
+
     public void BAM_enterDropMode(Player player, string msg = "")
     {
         if (player == null) return;
 
-        //Re-issuing <cdrop to RE-ARM an existing drop must NOT overwrite the snapshot - that would
-        //throw away the pre-drop orders and leave us with nowhere to restore to.  But if the re-arm
-        //is a BARE <cdrop (all groups) it widens the scope: any earlier selective "<cdrop 3 6" snapshot
-        //becomes all-groups, so <cnormal re-joins work from here on.  A selective re-arm never narrows
-        //an all-groups scope - the Tab-4 label applies to everyone.
-        if (coverOrdersBeforeDrop.ContainsKey(player))
-        {
-            if (msg.Trim().Length == 0)
-            {
-                var held = coverOrdersBeforeDrop[player];
-                if (!held.Item2) coverOrdersBeforeDrop[player] = new Tuple<Dictionary<AiAirGroup, CoverAGOrders>, bool>(held.Item1, true);
-            }
-
-            if ( BAM_getplayerBombAimMode_enum(player) == BAM_BombAimMode.Drop_When_I_Drop)
-            setCoverAircraftAirGroupsOrders(player, msg, CoverAGOrders.drop, "were ordered to DROP WHEN YOU DROP - they will hold their bombs and, the moment you let your first bomb go, release everything at the same time.", skipHoldFire: 
-            msg.Trim().Length == 0);
-
-            else if  (BAM_getplayerBombAimMode_enum(player) == BAM_BombAimMode.Drop_When_I_Drop_Nearest_Enemy)            setCoverAircraftAirGroupsOrders(player, msg, CoverAGOrders.drop, "were ordered to DROP WHEN YOU DROP - NEAREST ENEMY. They will hold their bombs and, the moment you let your first bomb go, target the nearest ground enemy to your target point.", skipHoldFire: 
-            msg.Trim().Length == 0);
-
-            turnOffCoverDropWatch(player);  //<cdrop RE-ARM - the previous pass stood the watcher down, so a timer from
-                                            //it (and its coverDropLastLeaderBombCount seed) is no longer valid.  armCoverDropWatch
-                                            //does this too, but doing it explicitly guarantees the stale count is gone BEFORE the
-                                            //new seed is read, so a re-arm can never fire on a count left over from the old pass.
-            armCoverDropWatch(player);      //<cdrop RE-ARM - WITHOUT this a re-issued <cdrop armed the groups but left no timer,
-                                            //so the leader's next drop was never detected (2026-10-02G: third run dropped, <cdropnow
-                                            //needed).  armCoverDropWatch re-seeds the count & clears the "already fired" latch.
-            BAM_forceFormationRefresh(player);  //<cdrop Step D - cancel any transient menu-cycle attack run NOW (see helper)
-            return;
-        }
-
-        Dictionary<AiAirGroup, CoverAGOrders> snap = new Dictionary<AiAirGroup, CoverAGOrders>();
-        try
-        {
-            foreach (KeyValuePair<AiAirGroup, Player> kv in coverAircraftAirGroupsActive)
-            {
-                if (kv.Value != player) continue;
-                AiAirGroup airGroup = kv.Key;
-                if (airGroup == null) continue;
-                if (!coverAircraftAirGroupsOrders.ContainsKey(airGroup)) continue;
-                snap[airGroup] = coverAircraftAirGroupsOrders[airGroup];
-            }
-        }
-        catch (Exception ex) { Console.WriteLine("Cover BAM_enterDropMode ERROR taking snapshot! " + ex.ToString()); }
-        coverOrdersBeforeDrop[player] = new Tuple<Dictionary<AiAirGroup, CoverAGOrders>, bool>(snap, msg.Trim().Length == 0);
-
-        armCoverDropWatch(player);  //start watching the leader's bomb count
-        if ( BAM_getplayerBombAimMode_enum(player) == BAM_BombAimMode.Drop_When_I_Drop)
-            setCoverAircraftAirGroupsOrders(player, msg, CoverAGOrders.drop, "were ordered to DROP WHEN YOU DROP - they will hold their bombs and, the moment you let your first bomb go, release everything at the same time.", skipHoldFire: 
-            msg.Trim().Length == 0);
-            else if ( BAM_getplayerBombAimMode_enum(player) == BAM_BombAimMode.Drop_When_I_Drop_Nearest_Enemy)            setCoverAircraftAirGroupsOrders(player, msg, CoverAGOrders.drop, "were ordered to DROP WHEN YOU DROP - NEAREST ENEMY. They will hold their bombs and, the moment you let your first bomb go, target the nearest ground enemy to your target point.", skipHoldFire: 
-            msg.Trim().Length == 0);
-         BAM_forceFormationRefresh(player);  //<cdrop Step D - cancel any transient menu-cycle attack run NOW (see helper)
+        turnOffCoverDropWatch(player);  //<cdrop RE-ARM - the previous pass stood the watcher down, so a timer from
+                                        //it (and its coverDropLastLeaderBombCount seed) is no longer valid.  armCoverDropWatch
+                                        //does this too, but doing it explicitly guarantees the stale count is gone BEFORE the
+                                        //new seed is read, so a re-arm can never fire on a count left over from the old pass.
+        armCoverDropWatch(player);      //<cdrop RE-ARM - WITHOUT this a re-issued <cdrop armed the groups but left no timer,
+                                        //so the leader's next drop was never detected (2026-10-02G: third run dropped, <cdropnow
+                                        //needed).  armCoverDropWatch re-seeds the count & clears the "already fired" latch.
+        cdProbeBayDoorsAtArm(player);   //<cdrop plan-2026-10-12-0010 Fix 1a - classify each group's bomb-bay doors NOW
+                                        //(not when the player drops) so doorless aircraft aren't held for the 30s fallback.
+        BAM_forceFormationRefresh(player);  //<cdrop Step D - cancel any transient menu-cycle attack run NOW (see helper)
     }
 
     //<cdrop Step D - re-issue an immediate formation (FOLLOW) flight plan to every cover group this
     //player owns.  This mirrors exactly what keepAircraftOnTask_recurs() writes for
-    //orders == CoverAGOrders.drop (the <cdrop / <cstrict branch: FOLLOW, altDiff -3 +/- 15).  The
+    //orders == CoverAGOrders.strict (the <cstrict branch: FOLLOW, altDiff -3 +/- 15).  The
     //Tab-4 menu cycle passes THROUGH Drop_Flare_Point_Here_and_Target_it, which points the player's
     //bomb point at their CURRENT position (see BAM_toggleBombAimMode); if the ~16s AI tick fires on
     //that transient the groups pick up a GATTACK_POINT run at a point that is already behind them, so
@@ -999,7 +991,7 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
                 if (coverAircraftAirGroupsDropIssued.ContainsKey(airGroup) &&
                     (DateTime.UtcNow - coverAircraftAirGroupsDropIssued[airGroup]).TotalSeconds < coverDropHoldFlightPlan_s) continue;
 
-                EscortUpdateWaypoints(player, airGroup, targetAirGroup, AiAirWayPointType.FOLLOW, altDiff_m: -3, AltDiff_range_m: 15, nodupe: true, orders: CoverAGOrders.drop);
+                EscortUpdateWaypoints(player, airGroup, targetAirGroup, AiAirWayPointType.FOLLOW, altDiff_m: -3, AltDiff_range_m: 15, nodupe: true, orders: CoverAGOrders.strict);
                 refreshed++;
             }
             if (refreshed > 0) Console.WriteLine("COVER <cdrop: " + refreshed + " group(s) given an immediate formation plan on entering DROP WHEN I DROP (cancels any transient menu-cycle attack run)");
@@ -1007,43 +999,12 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
         catch (Exception ex) { Console.WriteLine("Cover BAM_forceFormationRefresh ERROR! " + ex.ToString()); }
     }
 
-    //<cdrop - turn DROP WHEN I DROP off again, restoring the orders that were in force when it was
-    //switched on.  Only groups whose order is STILL .drop get reverted; anything the player changed
-    //in the meantime (a <creserve N, most importantly) is left exactly as they set it.
-    public void BAM_leaveDropMode(Player player)
-    {
-        if (player == null) return;
-        Tuple<Dictionary<AiAirGroup, CoverAGOrders>, bool> held;
-        if (!coverOrdersBeforeDrop.TryGetValue(player, out held)) return;  //nothing remembered, so nothing to undo
-        Dictionary<AiAirGroup, CoverAGOrders> snap = held.Item1;
-        coverOrdersBeforeDrop.Remove(player);
-
-        try
-        {
-            List<AiAirGroup> saveCAAGA = new List<AiAirGroup>(coverAircraftAirGroupsActive.Keys);
-            int restored = 0;
-            foreach (AiAirGroup airGroup in saveCAAGA)
-            {
-                if (airGroup == null) continue;
-                if (coverAircraftAirGroupsActive[airGroup] != player) continue;
-                if (!coverAircraftAirGroupsOrders.ContainsKey(airGroup)) continue;
-                if (coverAircraftAirGroupsOrders[airGroup] != CoverAGOrders.drop) continue;  //player has since overridden it - leave it alone
-
-                CoverAGOrders was = CoverAGOrders.normal;
-                if (snap.ContainsKey(airGroup)) was = snap[airGroup];   //group that appeared after we started: fall back to normal
-                coverAircraftAirGroupsOrders[airGroup] = was;
-                restored++;
-            }
-            if (GamePlay != null && restored > 0) GamePlay.gpLogServer(new Player[] { player }, restored.ToString() + " groups of cover aircraft returned to their previous orders (DROP WHEN I DROP is off)", new object[] { });
-        }
-        catch (Exception ex) { Console.WriteLine("Cover BAM_leaveDropMode ERROR restoring orders! " + ex.ToString()); }
-    }
 
     public void BAM_toggleBombAimMode_withmessages(Player player)
     {
         if (GamePlay == null) return;
-        //<cdrop - entering/leaving DROP WHEN I DROP is a change to the airgroup ORDERS, not just to the
-        //menu label, so capture the mode we are leaving in order to act on the transition.
+        //<cdrop - entering/leaving DROP WHEN I DROP now changes only the bomb-aim mode, not the airgroup
+        //orders (the old `drop` order mode was removed 2026-10-11); this hook is kept for parity.
         BAM_BombAimMode prev = BAM_getplayerBombAimMode_enum(player);
         bool removeLastBombPoint = true;
         string s = BAM_toggleBombAimMode(player);
@@ -1754,14 +1715,6 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
     public float strictFormationShiftFactor = 1.0f;   //1.0f = 100% = the standard formation spread
     public double strictSpeedMatchDistance_m = 30;  //as long as they are within this (front/back) distance of the leader, they match the leader's speed
 
-    //<cdrop - DROP groups fly their own fixed tight spread, independent of the player's <cdist.
-    //0.6 = 60% of the standard 44 m-per-bomber-slot (~26 m lateral spacing): close enough that the
-    //whole stick lands on the same target line, but - given that He-111s weave a bit more than other
-    //bombers - kept off the tighter 0.5 that packs them inside each other's wingspans.  The +/-40 m
-    //vertical stagger from calcOffset_m() still keeps them apart in turns.  Tune after a test sortie:
-    //0.5 packs tighter (mid-air risk in turns), 0.7+ is looser but safer.
-    public float dropFormationShiftFactor = 0.6f;
-
     //How much FASTER than the leader cover a/c are asked to fly when they are BEHIND him, as a
     //multiplier on the leader's speed.  1.0 = exactly the leader's speed, which means never closing.
     //Applied to the two "settle/converge" targets in calcCoverSpeedToMatchMain() - the resting point
@@ -1807,15 +1760,6 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
     //also now the FINAL clamped command, not the pre-clamp value.
     public readonly double coverAGSpeedRatioTransientDelta_mps = 4.0;  //|ag_vel - lastAsked| threshold for "cruising"
     public int coverAGSpeedRatioDiscardedCount = 0;  //diagnostic: samples discarded by the two rules above
-
-    //<cdrop - snapshot of each player's airgroup orders, taken when DROP WHEN I DROP is switched
-    //on, so switching it off again can put everyone back where they were.  Only groups whose order
-    //is STILL .drop are reverted - so a <creserve N issued while drop mode is on is left alone.
-    //Second value is the SCOPE of the snapshot: true = every group (bare "<cdrop" or the Tab-4 menu,
-    //which can only express all-groups), false = only named squadrons ("<cdrop 3 6").  A <cnormal that
-    //releases a group from <cstrict/<creserve re-joins it to drop mode only when scope is all-groups;
-    //with a selective scope that <cnormal means "fly normal, stay out of the drop".
-    public Dictionary<Player, Tuple<Dictionary<AiAirGroup, CoverAGOrders>, bool>> coverOrdersBeforeDrop = new Dictionary<Player, Tuple<Dictionary<AiAirGroup, CoverAGOrders>, bool>>();
 
     //<cfdist - this player's front/back offset, or 0 if they never set one.
     //2026/10 - THE one place every upward speed floor comes from (bpFloor, cwFloor, the
@@ -1876,15 +1820,12 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
     }
 
     //The formation spread factor to use for this airgroup - <cstrict (<cst) airgroups always use the fixed,
-    //standard spread instead of the player's <cdist setting.  <cdrop groups likewise use their own fixed
-    //tight spread (dropFormationShiftFactor), so a stale <cdist from escort flying can't blow the bomb run
-    //apart - or pack the bombers inside each other's wingspans.
+    //standard spread instead of the player's <cdist setting.
     public float getShiftFactorForAirgroup(Player player, AiAirGroup airGroup)
     {
         if (airGroup != null && coverAircraftAirGroupsOrders.ContainsKey(airGroup))
         {
             if (coverAircraftAirGroupsOrders[airGroup] == CoverAGOrders.strict) return strictFormationShiftFactor;
-            if (coverAircraftAirGroupsOrders[airGroup] == CoverAGOrders.drop) return dropFormationShiftFactor;
         }
         return getShiftFactor(player);
     }
@@ -2325,6 +2266,10 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
             coverAircraftAirGroupsDroppedThisPass.Clear();
             coverAircraftAirGroupsDropIssued.Clear();
             coverAircraftAirGroupsBayWaitSince.Clear();
+            //<cdrop plan-2026-10-12-0010 Fix 1a - the door-readiness classification is per-arm; a fresh
+            //<cdrop must not inherit the previous pass's "never opens / already open" verdicts.
+            coverAircraftAirGroupsDoorsNeverOpen.Clear();
+            coverAircraftAirGroupsDoorsInitiallyOpen.Clear();
 
             COVER_DropWatchTimer[player] = new System.Threading.Timer(
                 coverDropWatch_obj, player, dueTime: 100, period: COVER_DropWatchPeriod_ms);
@@ -2340,7 +2285,7 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
                 {
                     if (agD == null) continue;
                     if (coverAircraftAirGroupsActive[agD] != player) continue;
-                    if (coverAircraftAirGroupsOrders.ContainsKey(agD) && coverAircraftAirGroupsOrders[agD] == CoverAGOrders.drop) onDrop++;
+                    if (isDropAimMode(player)) onDrop++;
                 }
                 Console.WriteLine("COVER <cdrop ARM: {0} watcher started, seed bombs={1}, {2} group(s) on DROP WHEN I DROP",
                     player.Name(), coverDropLastLeaderBombCount.ContainsKey(player) ? coverDropLastLeaderBombCount[player] : -1, onDrop);
@@ -2388,19 +2333,9 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
         {
             if (player == null) return;
 
-            //still using <cdrop at all?  if they changed order, stand ourselves down.
-            bool stillWanted = false;
-            List<AiAirGroup> saveCAAGA = new List<AiAirGroup>(coverAircraftAirGroupsActive.Keys);
-            foreach (AiAirGroup airGroup in saveCAAGA)
-            {
-                if (airGroup == null) continue;
-                if (coverAircraftAirGroupsActive[airGroup] != player) continue;
-                if (coverAircraftAirGroupsOrders.ContainsKey(airGroup) && coverAircraftAirGroupsOrders[airGroup] == CoverAGOrders.drop)
-                {
-                    stillWanted = true;
-                    break;
-                }
-            }
+            //still using <cdrop at all?  DROP WHEN I DROP is carried by the player's bomb-aim mode now
+            //(the old `drop` order mode is gone) - if that is no longer a drop mode, stand ourselves down.
+            bool stillWanted = isDropAimMode(player);
             if (!stillWanted)
             {
                 if (mainmission.ON_TESTSERVER)
@@ -2512,6 +2447,17 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
     //cleared as soon as it is released, and on re-arm.  A group that is in here has flown on while it
     //waited, so it gets a much more generous "too far ahead" bound than one that was ready at the time.
     ConcurrentDictionary<AiAirGroup, DateTime> coverAircraftAirGroupsBayWaitSince = new ConcurrentDictionary<AiAirGroup, DateTime>();
+
+    //<cdrop 2026/10 plan-2026-10-12-0010 Fix 1a - bomb-bay-door readiness, classified ONCE when the player
+    //declares DROP WHEN I DROP (see BAM_enterDropMode / cdProbeBayDoorsAtArm), so the release pass never has
+    //to hold a doorless aircraft for the full 30s door-wait on the player's drop.  Same life cycle as
+    //coverAircraftAirGroupsBayWaitSince (cleared on re-arm in armCoverDropWatch and by forgetAirGroup).
+    //  doorsNeverOpen     - A_BombBayDoor read < 0 at arm (i.e. -1: no operable door parameter at all -
+    //                        Blenheim, Ju-87, most fighters, Sturmovik).  Never wait for these.
+    //  doorsInitiallyOpen - A_BombBayDoor was already >= coverDropBayOpenThreshold at arm time.
+    //A REAL door that merely reads 0 (shut) at arm is in NEITHER dict, so it keeps the lazy door-wait.
+    ConcurrentDictionary<AiAirGroup, bool> coverAircraftAirGroupsDoorsNeverOpen = new ConcurrentDictionary<AiAirGroup, bool>();
+    ConcurrentDictionary<AiAirGroup, bool> coverAircraftAirGroupsDoorsInitiallyOpen = new ConcurrentDictionary<AiAirGroup, bool>();
 
     //<cdrop 2026/10 Step D - the release pass used to be made entirely of SILENT continues.  In log
     //02F the player dropped, "detect" fired, and no group was ever told to release - with nothing at
@@ -2778,9 +2724,9 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
         {
             if (airGroup == null || airGroup.GetItems() == null || airGroup.GetItems().Length == 0) continue;
             if (coverAircraftAirGroupsActive[airGroup] != player) continue;
-            if (!coverAircraftAirGroupsOrders.ContainsKey(airGroup) || coverAircraftAirGroupsOrders[airGroup] != CoverAGOrders.drop)
+            if (!isDropAimMode(player))
             {
-                cdDropPassLog(airGroup, "SKIP: not on DROP WHEN I DROP orders (on " + (coverAircraftAirGroupsOrders.ContainsKey(airGroup) ? coverAircraftAirGroupsOrders[airGroup].ToString() : "no order set") + ")");
+                cdDropPassLog(airGroup, "SKIP: player bomb-aim mode is no longer DROP WHEN I DROP (on " + BAM_getPlayerBombAimMode_string(player) + ")");
                 continue;
             }
 
@@ -2789,6 +2735,16 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
             //logic we don't want to disturb here.
             if (!isBomberArmed(airGroup)) { cdDropPassLog(airGroup, "SKIP: has no bombs to release"); continue; }
             if (airGroup.hasTorpedos()) { cdDropPassLog(airGroup, "SKIP: carries torpedoes"); continue; }
+
+            //<cdrop 2026/10 plan-2026-10-12-0010 Fix 2 - RESPECT <creserve in the AUTOMATIC release pass.
+            //A squadron the player put on RESERVE must NOT be released by the leader's drop - exactly as
+            //dropBombsNow_player() already honours it.  orders default to normal when the key is absent.
+            //Logged with always:true (no 5s throttle) so the test server always shows WHY it was held.
+            if (coverAircraftAirGroupsOrders.ContainsKey(airGroup) && coverAircraftAirGroupsOrders[airGroup] == CoverAGOrders.reserve)
+            {
+                cdDropPassLog(airGroup, "HELD: orders=reserve", always: true);
+                continue;
+            }
 
             //<cdrop - ONE ISSUE PER PASS.  If we have already handed this group its release plan for
             //this pass, leave it alone completely: do not re-issue, and do not count it as
@@ -2835,17 +2791,21 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
             //how far PAST the drop line are we?  +ve = at/ahead of it, -ve = still behind it
             double pastLine_m = (ap.x - lineP.x) * lineD.x + (ap.y - lineP.y) * lineD.y;
 
-            //<cdrop 2026/10 Step C8 - WAIT FOR THE BOMB-BAY DOORS.  This is the whole point of the reference
-            //test in Genghis\Reliable-instant-bomb-drop: if the release plan arrives while the doors
-            //are still shut, the attack waypoint is consumed before they open, the engine works out
-            //an "already passed" solution, and the group lets go ONE salvo and latches - which is
-            //exactly the 54->51 we kept seeing.  With the doors ALREADY OPEN (which cdDropPreOpenBays
-            //arranges by keeping an attack waypoint live) it dumps its WHOLE load the moment the
-            //GATTACK_POINT is reached.  So: release groups whose doors are open, and WAIT for the rest
-            //with no timeout - the watcher re-polls every 750ms.  The only timeout is a deadlock
-            //escape for a type whose door parameter never moves at all.
+            //<cdrop 2026/10 plan-2026-10-12-0010 Fix 1b - WAIT FOR THE BOMB-BAY DOORS, but only for a
+            //group that actually HAS a door that is still opening.  Door readiness is classified ONCE at
+            //DWID arm time (cdProbeBayDoorsAtArm -> coverAircraftAirGroupsDoorsNeverOpen /
+            //coverAircraftAirGroupsDoorsInitiallyOpen), so the wait no longer starts lazily on the
+            //player's drop:
+            //  - doorsNeverOpen (A_BombBayDoor read -1 at arm: Blenheim, Ju-87, most fighters, Sturmovik)
+            //    -> treat as ready, release on the next safe gate; these never open, so waiting is futile
+            //    and was the source of the ~20s+ lag the test mission showed.
+            //  - doorsInitiallyOpen (>= threshold at arm) -> release normally, no wait.
+            //  - otherwise (a REAL door that read 0/shut at arm) -> keep the lazy wait + 30s fallback,
+            //    because releasing before its doors open is exactly what causes the one-salvo latch.
             double bayPos = coverDropBayDoorPos(airGroup);
-            bool doorsOpen = (bayPos >= coverDropBayOpenThreshold);
+            bool doorsNeverOpen = coverAircraftAirGroupsDoorsNeverOpen.ContainsKey(airGroup) && coverAircraftAirGroupsDoorsNeverOpen[airGroup];
+            bool doorsInitiallyOpen = coverAircraftAirGroupsDoorsInitiallyOpen.ContainsKey(airGroup) && coverAircraftAirGroupsDoorsInitiallyOpen[airGroup];
+            bool doorsOpen = (bayPos >= coverDropBayOpenThreshold) || doorsNeverOpen || doorsInitiallyOpen;
             bool everWaited = coverAircraftAirGroupsBayWaitSince.ContainsKey(airGroup);
             if (!doorsOpen)
             {
@@ -3134,7 +3094,7 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
             List<AiWayPoint> wps = new List<AiWayPoint>();
 
             //1. the ordinary formation waypoint, so they track the leader exactly as they do normally
-            Tuple<AiAirWayPoint, AiAirWayPoint, double> fx = EscortPosWaypoint(player, airGroup, leader, AiAirWayPointType.FOLLOW, -3, 15, true, CoverAGOrders.drop);
+            Tuple<AiAirWayPoint, AiAirWayPoint, double> fx = EscortPosWaypoint(player, airGroup, leader, AiAirWayPointType.FOLLOW, -3, 15, true, CoverAGOrders.strict);
             double vel = 80;
             if (fx != null)
             {
@@ -3694,7 +3654,6 @@ public string listPositionCurrentCoverAircraft(Player player = null, bool displa
                 bool ordersAreStrict = (coverAircraftAirGroupsOrders.ContainsKey(airGroup) && coverAircraftAirGroupsOrders[airGroup] == CoverAGOrders.strict);
                 bool ordersAreEscort = (coverAircraftAirGroupsOrders.ContainsKey(airGroup) && coverAircraftAirGroupsOrders[airGroup] == CoverAGOrders.escort);
                 bool ordersAreLoiter = (coverAircraftAirGroupsOrders.ContainsKey(airGroup) && coverAircraftAirGroupsOrders[airGroup] == CoverAGOrders.loiter);
-                bool ordersAreDrop = (coverAircraftAirGroupsOrders.ContainsKey(airGroup) && coverAircraftAirGroupsOrders[airGroup] == CoverAGOrders.drop);
                 bool ordersAreHoldFire = (coverAircraftAirGroupsOrders.ContainsKey(airGroup) && ordersHoldFire(coverAircraftAirGroupsOrders[airGroup]));
                 double distToTarget_m = CoverCalcs.CalculatePointDistance(p, aircraft.Pos());
 				
@@ -3714,7 +3673,7 @@ public string listPositionCurrentCoverAircraft(Player player = null, bool displa
                 //In cases where the pilot has set a target point and type of "nearest enemy" but the a/c has not found
                 //a ground actor/stationary as a target. Only when FOLLOW AND BAM is nearest enemy
                 //AND armed AND not set on RESERVE/FOLLOW
-                else if ((action.Contains("FOLLOW") || action.Contains("NORMFLY")) && BAM_isNearestEnemy(player) && isBomberArmed(airGroup) && !ordersAreDrop && !ordersAreHoldFire)
+                else if ((action.Contains("FOLLOW") || action.Contains("NORMFLY")) && BAM_isNearestEnemy(player) && isBomberArmed(airGroup) && !ordersAreHoldFire)
                 {
 
                     if (distToTarget_m < 15000)
@@ -3767,7 +3726,6 @@ public string listPositionCurrentCoverAircraft(Player player = null, bool displa
                 {
                     msg += " " + BAM_BombAimModeNames[orders];
                 }
-                //if (ordersAreDrop) msg += " [[[DROP-WHEN-I-DROP]]]";
                 delay += 0.08; //was .06 but that seemed to cause stuttering?  Maybe needs 0.1 or even more
                 Timeout(delay, () =>
                 {
@@ -3967,7 +3925,12 @@ public string listPositionCurrentCoverAircraft(Player player = null, bool displa
             //rankExpl = " for rank of " + TWCStbStatRecorder.StbSr_RankFromName(player.Name()) + "and with " + numPlayer.ToString() + " friendly players online";
 
         }
-        int acAvailable = acAllowedThisPlayer - howMany_numberCoverAircraftActorsCheckedOutWholeMission(player);
+        //int acAvailable = acAllowedThisPlayer - howMany_numberCoverAircraftActorsCheckedOutWholeMission(player);
+        int acAvailable = (int)Math.Round(
+        (double)acAllowedThisPlayer*     howMany_numberCoverAircraftActorsCheckedOutWholeMission(player)/ (double) maximumAircraftAllowedPerMission_BomberPilots);
+        
+        
+        
         //Always allow at least 10 a/c for repair/ferry missions
         if (isOnRepairMission(player) && acAvailable < 20) acAvailable = 20;
         if (isOnFerryMission(player) && acAvailable < 20) acAvailable = 20;
@@ -4681,7 +4644,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
         else if (msg.StartsWith("<cdrop") || msg.StartsWith("<cdro"))
         { //drop - "drop when I drop": hold your bombs and fly with the leader, then pull your release when he pulls his (<cdrop, <cdro)
             //<cdrop - set the BAM mode too, so the Tab-4-4-4-4-6 "Cover Targeting [..]" label shows
-            //what is actually happening.  BAM_enterDropMode does the snapshot + orders + watcher.
+            //what is actually happening.  BAM_enterDropMode arms the watcher and refreshes the formation.
             //BAM_playerAimMode[player] = BAM_BombAimMode.Drop_When_I_Drop;
             BAM_playerAimMode.AddOrUpdate(player, BAM_BombAimMode.Drop_When_I_Drop, (key, oldValue) => BAM_BombAimMode.Drop_When_I_Drop);
             //<cdrop 2026/10 Step C9 - the chat command is now a PURE ALIAS for the Tab-4 menu: it always means
@@ -5673,11 +5636,10 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
     //Do these orders mean the airgroup should hold its fire (no ground bombing & no air attacks)?
     public bool ordersHoldFire(CoverAGOrders orders)
     {
-        return orders == CoverAGOrders.reserve || orders == CoverAGOrders.strict || orders == CoverAGOrders.loiter || orders == CoverAGOrders.drop;
+        return orders == CoverAGOrders.reserve || orders == CoverAGOrders.strict || orders == CoverAGOrders.loiter;
     }
 
     //Do these orders mean the airgroup should engage nearby enemy aircraft?
-    //<cdrop holds fire in the air too - a bombing run formation shouldn't scatter chasing fighters.
     public bool ordersEngageAir(CoverAGOrders orders)
     {
         return orders == CoverAGOrders.attack || orders == CoverAGOrders.normal || orders == CoverAGOrders.escort;
@@ -5685,32 +5647,27 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 
     //Do these orders mean the airgroup should still run ground/naval bombing attacks on the target
     //point the player has given it (Knickebein point, bomb drop point, flare point, etc)?
-    //<cdrop returns FALSE - that is what makes them sit on their bombs and wait for the leader instead
-    //of running their own bombing pass off the player's aim point.  The release is driven separately,
-    //by dropBombsNow_airGroup() once we detect the leader actually dropping.
+    //When the player's bomb-aim mode is DROP WHEN I DROP, keepAircraftOnTask_recurs() suppresses
+    //independent bombing separately (see the bam check there) - the release is driven by
+    //dropBombsNow_airGroup() once we detect the leader actually dropping.
     public bool ordersBombGround(CoverAGOrders orders)
     {
-        return orders == CoverAGOrders.attack || orders == CoverAGOrders.normal || orders == CoverAGOrders.drop;
+        return orders == CoverAGOrders.attack || orders == CoverAGOrders.normal;
     }
 
     //Shared logic for all of the player's airgroup order commands (<cnormal, <cstrict, <cescort,
-    //<cattack, <creserve, <cloiter, <cdrop).  Parses any airgroup #'s out of the command - no #'s at
+    //<cattack, <creserve, <cloiter).  Parses any airgroup #'s out of the command - no #'s at
     //all means ALL of the player's cover airgroups - & applies the given order to each of them.
     //Returns the list of airgroups the order was applied to.
     //Note that the command word(s) themselves need not be stripped out of the message, because
     //anything that isn't a # is simply ignored when the airgroup #'s are parsed out.
-    //skipHoldFire is only used entering <cdrop: a bare all-groups <cdrop (Tab-4 menu included)
-    //must not overrule a <cstrict/<creserve/<cloiter hold-fire order, so those groups are skipped;
-    //naming them explicitly ("<cdrop 2") still pulls them in.
-    public List<AiAirGroup> setCoverAircraftAirGroupsOrders(Player player, string msg, CoverAGOrders order, string orderDescription, bool skipHoldFire = false)
+    public List<AiAirGroup> setCoverAircraftAirGroupsOrders(Player player, string msg, CoverAGOrders order, string orderDescription)
     {
         List<AiAirGroup> ret = new List<AiAirGroup>();
         try
         {
             if (player == null || GamePlay == null) return ret;
 
-            int skippedHoldFire = 0; // counter for groups skipped due to hold-fire order
-            string skippedIndxs = ""; // squadron numbers of those skipped, for the warning message below
 
             string newmsg = msg.Replace(",", " ").Replace("(", " ").Replace(")", " ").Replace("[", " ").Replace("]", " ").Replace("  ", " ").Replace("  ", " ").Replace("  ", " ").Trim(); // remove the comma, parentheses etc
 
@@ -5726,11 +5683,6 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             int count = 0;
             string foundIndxs = "";
             int numFoundIndxs = 0;
-            //Set when a <cnormal RE-JOINS groups to drop mode (see below).  A bare all-groups <cnormal
-            //is both "release everyone from hold-fire" AND "the Tab-4 label is still Drop When I Drop",
-            //so the clear-aim-mode block further down must NOT fire - that would undo the re-join it
-            //just performed and throw the snapshot away.
-            bool rejoinedDropMode = false;
 
             List<AiAirGroup> saveCAAGA = new List<AiAirGroup>(coverAircraftAirGroupsActive.Keys); //copy the keys, so the list can safely change while we set orders
             foreach (AiAirGroup airGroup in saveCAAGA)
@@ -5744,61 +5696,16 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 count++;
                 if (indxs.Contains(count) || indxs.Count == 0)
                 {
-                    //<cdrop entering with a bare all-groups order skips hold-fire groups (<cstrict,
-                    //<creserve, <cloiter): they were told to hold fire, and a blanket drop must not
-                    //overrule that.  Explicit "<cdrop 2" still pulls them in (skipHoldFire is false).
-                    //Groups already on .drop are never skipped (they ARE the drop).
-                    if (skipHoldFire && order == CoverAGOrders.drop && coverAircraftAirGroupsOrders.ContainsKey(airGroup) && coverAircraftAirGroupsOrders[airGroup] != CoverAGOrders.drop && ordersHoldFire(coverAircraftAirGroupsOrders[airGroup]))
-                    {
-                        skippedHoldFire++;
-                        skippedIndxs += count.ToString() + " ";
-                        continue;
-                    }
                     coverAircraftAirGroupsOrders[airGroup] = order;
                     ret.Add(airGroup);
                     foundIndxs += count.ToString() + " ";
                     numFoundIndxs++;
-                    //<cnormal releasing a hold-fire group re-joins it to DROP WHEN I DROP, but ONLY under
-                    //an all-groups drop scope (bare <cdrop or the Tab-4 menu, which can only express
-                    //all-groups) and ONLY when the <cnormal itself was all-groups.  Selective "<cdrop 3 6"
-                    //scope, or a selective "<cnormal 2", means "fly normal, stay out of the drop".
-                    //The SNAPSHOT IS LEFT ALONE on purpose: it holds the order to restore when drop mode
-                    //ends, and the honest answer for a re-joined group is still its pre-drop order.  Writing
-                    //.drop into it would make BAM_leaveDropMode restore .drop - i.e. the group would never
-                    //bomb for the rest of the mission.
-                    if (order == CoverAGOrders.normal && indxs.Count == 0 && ( BAM_getplayerBombAimMode_enum(player) == BAM_BombAimMode.Drop_When_I_Drop ||  BAM_getplayerBombAimMode_enum(player) == BAM_BombAimMode.Drop_When_I_Drop_Nearest_Enemy) && coverOrdersBeforeDrop.ContainsKey(player) && coverOrdersBeforeDrop[player].Item2)
-                    {
-                        coverAircraftAirGroupsOrders[airGroup] = CoverAGOrders.drop;
-                        rejoinedDropMode = true;
-                    }
                 }
             }
 
             GamePlay.gpLogServer(new Player[] { player }, numFoundIndxs.ToString() + " groups of cover aircraft " + orderDescription + " (#{0})", new object[] { String.Join(" #", foundIndxs.Trim()) });
 
-            // WARNING: Groups were skipped due to hold-fire orders
-            if (skippedHoldFire > 0)
-            {
-                GamePlay.gpLogServer(new Player[] { player }, "<<WARNING>> " + skippedHoldFire + " group(s) were skipped due to hold-fire orders (on hold: " + skippedIndxs.Trim() + ") - <cn to release them, then <cdrop", new object[] { });
-            }
 
-            //<cdrop - if the player has just overridden EVERYONE out of DROP WHEN I DROP (a bare
-            //<cattack, <cstrict, <cescort, <cloiter - i.e. orders that cannot mean "join the drop"),
-            //then drop mode is no longer in force and the Tab-4-4-4-4-6 "Cover Targeting [..]" label
-            //would otherwise still read "Drop When I Drop" - so clear it.  (<cnormal is NOT in that
-            //list: it has just RE-JOINED everyone, hence the rejoinedDropMode guard below.)
-            //Deliberately NOT done for a PARTIAL command: "<creserve 3" only moves squadron 3, the rest
-            //are still on .drop, and that is exactly how a player holds squadrons back during a drop run.
-            //BAM_enterDropMode() passes order == drop, so this can never fight with entering drop mode.
-            //And rejoinedDropMode guards the case where "<cnormal" just RE-JOINED groups to the drop:
-            //then the condition below would otherwise be true again (order != drop, no #s, everyone
-            //found) and would switch off a drop that is very much still in force.
-            if (order != CoverAGOrders.drop && indxs.Count == 0 && numFoundIndxs > 0 && !rejoinedDropMode && BAM_getplayerBombAimMode_enum(player) == BAM_BombAimMode.Drop_When_I_Drop)
-            {
-                //BAM_playerAimMode[player] = BAM_BombAimMode.None;
-                BAM_playerAimMode.AddOrUpdate(player, BAM_BombAimMode.None, (key, oldValue) => BAM_BombAimMode.None);
-                coverOrdersBeforeDrop.Remove(player);   //they have overridden us; there is nothing left to restore
-            }
         }
         catch (Exception ex) { Console.WriteLine("Cover setCoverAircraftAirGroupsOrders ERROR: " + ex.ToString()); }
         return ret;
@@ -6121,11 +6028,9 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 if (coverFrontBackDist_m.ContainsKey(player) && coverFrontBackDist_m[player] != 0) wasNonDefault = true; //<cfdist not zero
                 BAM_BombAimMode bamWas = BAM_BombAimMode.None;
                 if (BAM_playerAimMode.TryGetValue(player, out bamWas) && bamWas != BAM_BombAimMode.None) wasNonDefault = true; // bomb aim mode set - ConcurrentDictionary: single atomic read
-                if (coverOrdersBeforeDrop.ContainsKey(player)) wasNonDefault = true; //anything in snapshot means <cnormal re-joined to drop mode
                 if (playerShiftFactor_pct.ContainsKey(player.Name()) && playerShiftFactor_pct[player.Name()] > 100) playerShiftFactor_pct[player.Name()] = 100; //clamp spread down
                 if (coverFrontBackDist_m.ContainsKey(player) && coverFrontBackDist_m[player] != 0) coverFrontBackDist_m.Remove(player); //reset <cfdist
                 BAM_playerAimMode.AddOrUpdate(player, BAM_BombAimMode.None, (key, oldValue) => BAM_BombAimMode.None); //reset bomb aim mode - thread-safe, adds None if no entry yet
-                coverOrdersBeforeDrop.Remove(player); //clear the snapshot
                 setAutoFormationPosition(player); //re-enable auto slot rolling
             }
             if (wasNonDefault && GamePlay != null)
@@ -6797,7 +6702,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 //geometry - and because the bays are already open the release should be near-instant.
                 //OFF by default (cdDropPreOpenBays) because it puts the group into bomb-run attitude
                 //instead of tight formation - A/B it in a test session before turning it on anywhere.
-                if (cdDropPreOpenBays && orders == CoverAGOrders.drop && !coverACContinuingFinalRun &&
+                if (cdDropPreOpenBays && isDropAimMode(player) && !coverACContinuingFinalRun &&
                     isBomberArmed(airGroup) && !airGroup.hasTorpedos() &&
                     player != null && player.Place() != null && (player.Place() as AiAircraft) != null &&
                     !(BAM_getplayerBombAimMode_enum(player) == BAM_BombAimMode.Drop_When_I_Drop_Nearest_Enemy && coverDropAlreadyFired.ContainsKey(player) && coverDropAlreadyFired[player]))
@@ -7112,11 +7017,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             if (!isOnRepairMission(player))
             {
                 //<cstrict - ignore everything else & just fly in formation with the player
-                //<cdrop flies the same tight formation.  Cover aircraft hold their position best in a
-                //close formation, and for a "drop when I drop" run you want them right on the leader's
-                //line when he releases - so <cdrop behaves like <cstrict for FORMATION, while
-                //ordersHoldFire/ordersBombGround keep them quiet and holding their bombs until then.
-                if (orders == CoverAGOrders.strict || orders == CoverAGOrders.drop)
+                if (orders == CoverAGOrders.strict)
                 {
                     aawpt = AiAirWayPointType.FOLLOW;
                     task = AiAirGroupTask.FLY_WAYPOINT;
@@ -10482,18 +10383,12 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             //<cstrict - hold a rigid formation: match the leader's speed, instead of the 10% over-speed (weaving)
             //that escorts normally use.  Only do this when we are roughly in position, though - if we have fallen
             //well behind, the catch-up speeds that were calculated above are left in place, so we can rejoin.
-            //DIAGNOSTIC - did the <cstrict exact-match override fire this cycle?  <cstrict AND <cdrop both run
+            //DIAGNOSTIC - did the <cstrict exact-match override fire this cycle?  <cstrict runs
             //strict formation, and inside strictSpeedMatchDistance_m this forces vel to the leader's own
             //speed regardless of everything above it - a FOURTH discontinuity in the steering law, and
             //one that only shows up on bombing runs.  Worth seeing in the numbers before we re-tune.
             bool strictApplied = false;
-            //Drop groups join the exact-speed-match gate too (same 30 m front/back band as <cstrict):
-            //inside it the velocity is forced to the leader's own speed instead of the 10% escort
-            //over-speed weave, which is what holds them on station through the release.  Groups that
-            //fall behind still rejoin from outside the band as before - the band only binds when they
-            //are already roughly in position.
-            bool inDropFormation = coverAircraftAirGroupsOrders.ContainsKey(airGroup) && coverAircraftAirGroupsOrders[airGroup] == CoverAGOrders.drop;
-            if ((isInStrictFormation(airGroup) || inDropFormation) && frontBackDist_m < strictSpeedMatchDistance_m)
+            if (isInStrictFormation(airGroup) && frontBackDist_m < strictSpeedMatchDistance_m)
             {
                 vel_mps = target_vel_mps_TAS;
                 strictApplied = true;

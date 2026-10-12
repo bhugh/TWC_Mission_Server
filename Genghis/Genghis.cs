@@ -19642,11 +19642,11 @@ added Rouen Flak
     }
 
     //removes any craters, smoke, or fire statics within the given radius.  Typically used for airport but could be for anything.
-    public void removeSmokeFireCraters(Point3d p, double radius_m, int percentToRemove = 100)
+    public void removeSmokeFireCraters(Point3d p, double radius_m, int percentToRemove = 100, int maxWait_s = 355)
     {
         //Console.WriteLine("Main: Removing smokeFireCraters Loc:{0}/{1} r:{2} pctto remove:{3}", new object[] { p.x, p.y, radius_m, percentToRemove });
         Calcs.removeStatics(GamePlay, this, p.x, p.y, radius_m, types_to_remove: new List<string> {
-            "Smoke1", "Smoke2", "BuildingFireSmall", "BuildingFireBig", "BigSitySmoke_0", "BigSitySmoke_1", "BombCrater" }, percentToRemove: percentToRemove, replaceThem: false);
+            "Smoke1", "Smoke2", "BuildingFireSmall", "BuildingFireBig", "BigSitySmoke_0", "BigSitySmoke_1", "BombCrater" }, percentToRemove: percentToRemove, replaceThem: false, maxWait_s: maxWait_s);
         //"crater", "smoke", "fire" });
     }
 
@@ -32941,7 +32941,7 @@ GroundStationary[] gs = GamePlay.gpGroundStationarys(250000, 252000, 1000); //Fi
     //gpGroundStationarys()
     //army, can specify 0=nn, 1=gb, 2=de which will remove the statics matching that country only
     //amry=-1 removes all
-    public static void removeStatics(maddox.game.IGamePlay GamePlay, Mission msn, double x, double y, double radius_m, List<string> types_to_remove = null, int percentToRemove = 100, int army = -1, List<string> types_to_retain = null, bool preserveOnWater = false, bool replaceThem = false) //types is a SUBSTRING MATCH and CASE INSENSITIVE
+    public static void removeStatics(maddox.game.IGamePlay GamePlay, Mission msn, double x, double y, double radius_m, List<string> types_to_remove = null, int percentToRemove = 100, int army = -1, List<string> types_to_retain = null, bool preserveOnWater = false, bool replaceThem = false, int maxWait_s = 355) //types is a SUBSTRING MATCH and CASE INSENSITIVE
     {
         //Task.Run(() => //Don't TASK RUN for anything that changes anything ==> server crashes!!!!
         {
@@ -33041,7 +33041,7 @@ GroundStationary[] gs = GamePlay.gpGroundStationarys(250000, 252000, 1000); //Fi
                         }
 						
 						
-                        msn.Timeout(clc_random.Next(5, 360), () => { gg.Destroy(); });  //somewhat cheap way to avoid deleting items in ggList while looping through it, but also spreads the removal of stationaries over 5 mins or so instead of just zapping them all at once, which usually looks fake.
+                        msn.Timeout(clc_random.Next(5, 5+maxWait_s), () => { gg.Destroy(); });  //somewhat cheap way to avoid deleting items in ggList while looping through it, but also spreads the removal of stationaries over 5 mins or so instead of just zapping them all at once, which usually looks fake.
                         count++;
                     }
                     catch (Exception ex)

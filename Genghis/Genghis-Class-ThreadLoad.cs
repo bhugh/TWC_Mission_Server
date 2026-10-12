@@ -14,6 +14,8 @@ using maddox.steam;
 using part;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
+using System.Reflection;
+using System.Linq;
 using System.IO;
 using System.Text;
 
@@ -390,6 +392,52 @@ public class ThreadLoadMission : AMission
 		}
 
     }
+
+	DateTime handleNetworkSlotsFull_lastTimeCalled = DateTime.Now;	
+	int handleNetworkSlotsFull_timesCalled_10Min = 0;
+
+	public void handleNetworkSlotsFull()
+	{
+		DateTime now = DateTime.Now;
+		double timeSinceLastCall_s = now.Subtract(handleNetworkSlotsFull_lastTimeCalled).TotalSeconds;
+		if (timeSinceLastCall_s < 30) {
+			Console.WriteLine("Net local slots full! [FMB Sync/FAST Console Intercept] - called again, but to soon to do anything again ({0} seconds)", timeSinceLastCall_s);
+			return;
+		}
+
+		if (timeSinceLastCall_s > 600) {
+			handleNetworkSlotsFull_timesCalled_10Min = 0;
+		} else handleNetworkSlotsFull_timesCalled_10Min ++;
+
+
+		handleNetworkSlotsFull_lastTimeCalled = now;
+
+		List<GroundStationary> stationaries = GamePlay.gpGroundStationarys().ToList();
+		int startNum = stationaries.Count;
+		Console.WriteLine("Net local slots full! [FMB Sync/FAST Console Intercept] - number of stationaries: " + startNum);
+
+		mainmission.removeSmokeFireCraters(new Point3d(150000, 150000,0), radius_m: 300000, percentToRemove:10, maxWait_s: 60);				
+
+		if (timeSinceLastCall_s < 180)
+		{
+			double pctToRemove = 5  + handleNetworkSlotsFull_timesCalled_10Min * 2.5;
+			if (pctToRemove > 22) pctToRemove = 22;
+			Calcs.removeStatics(GamePlay, mainmission, 150000, 150000, radius_m: 300000, percentToRemove: (int)pctToRemove, replaceThem: false, maxWait_s: 60);
+			
+		}
+
+		Timeout(70, () =>
+		{
+			List<GroundStationary> stationaries2 = GamePlay.gpGroundStationarys().ToList();
+			Console.WriteLine("Net local slots full - result! [FMB Sync/FAST Console Intercept] - number of stationaries after removals: " + startNum);
+			
+		} );
+
+		
+
+
+		
+	}
 	
 	public DateTime lastCrash = DateTime.Now;
 	public DateTime lastFileSave = DateTime.Now.AddHours(-1);
@@ -808,6 +856,22 @@ public class ConsoleInterceptor : TextWriter
 					_originalOutput.WriteLine(_lineBuffer.ToString());
 					Console.WriteLine("================================================================================");
 					Console.WriteLine("Steam Shutting Down! OnSteamShutdown triggered [FMB Sync/FAST Console Intercept]");
+					Console.WriteLine("================================================================================");
+					Console.WriteLine(_lineBuffer.ToString());
+					
+					threadloadmission.OnUnhandledException(
+						"Steam Shutdown (TWC)", 
+						"Steam Shutting Down! OnSteamShutdown triggered [FMB Sync/FAST Console Intercept]"
+					);
+				}
+				if (completedLine.Contains("Net local slots from 255 to 32767 is FULL"))
+				{					
+					_originalOutput.WriteLine("================================================================================");
+					_originalOutput.WriteLine("Net local slots full! [FMB Sync/FAST Console Intercept]");
+					_originalOutput.WriteLine("================================================================================");
+					_originalOutput.WriteLine(_lineBuffer.ToString());
+					Console.WriteLine("================================================================================");
+					Console.WriteLine("Net local slots full! [FMB Sync/FAST Console Intercept]");
 					Console.WriteLine("================================================================================");
 					Console.WriteLine(_lineBuffer.ToString());
 					

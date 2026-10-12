@@ -30648,7 +30648,7 @@ public static class Calcs
         if (acType == "") return false;
         bool ret = false;
         //2022-07-31 - added all Hurri types with boms to list, also hurri iid
-        if (acType.Contains("Ju-87") || acType.Contains("Bf-110") || acType.Contains("Beaufighter") || acType.Contains("Ju-88C") || acType.Contains("BlenheimMkIVF") || acType.Contains("BlenheimMkIVNF") || acType.Contains("BlenheimMkIF") || acType.Contains("BlenheimMkINF")
+        if (acType.Contains("Ju-87") || acType.Contains("Bf-110") || acType.Contains("Beaufighter") || acType.Contains("Ju-88C") || acType.Contains("BlenheimMkIVF") || acType.Contains("BlenheimMkIVNF") || acType.Contains("BlenheimMkIF") || acType.Contains("BlenheimMkINF") || acType.Contains("HurricaneMkIIc") 
 			/*
 			|| acType.Contains("109E-4B") || acType.Contains("109E-1B") || acType.Contains("109E-3B")
 		|| acType.Contains("109E-4B") || acType.Contains("109E-7")|| acType.Contains("109F-2")

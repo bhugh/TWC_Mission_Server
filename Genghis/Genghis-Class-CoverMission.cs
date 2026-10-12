@@ -417,13 +417,13 @@ public class CoverMission : AMission, ICoverMission
 
         try
         {
-            foreach (Player player in COVER_ListPositionTimer.Keys) if (COVER_ListPositionTimer[player] != null) COVER_ListPositionTimer[player].Dispose();
+            foreach (KeyValuePair<Player, System.Threading.Timer> kvTmr in COVER_ListPositionTimer) if (kvTmr.Value != null) kvTmr.Value.Dispose();
         }
         catch (Exception ex) { Console.WriteLine("Cover OnBattleStoped2: " + ex.ToString()); }
 
         try
         {
-            foreach (Player player in COVER_DropWatchTimer.Keys) if (COVER_DropWatchTimer[player] != null) COVER_DropWatchTimer[player].Dispose();
+            foreach (KeyValuePair<Player, System.Threading.Timer> kvTmr in COVER_DropWatchTimer) if (kvTmr.Value != null) kvTmr.Value.Dispose();
             COVER_DropWatchTimer.Clear();
         }
         catch (Exception ex) { Console.WriteLine("Cover OnBattleStoped3: " + ex.ToString()); }
@@ -2177,7 +2177,7 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
         return res;
     }
 
-    public Dictionary<Player, System.Threading.Timer> COVER_ListPositionTimer = new Dictionary<Player, System.Threading.Timer>();
+    public ConcurrentDictionary<Player, System.Threading.Timer> COVER_ListPositionTimer = new ConcurrentDictionary<Player, System.Threading.Timer>();
     public readonly int COVER_ListPositionTimerPeriod_ms = 20154; //20 sec
 
     /*************************************************************
@@ -2202,7 +2202,7 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
     //<reserve still works as an escape hatch - it takes a squadron out of this mode entirely.
     *************************************************************/
 
-    public Dictionary<Player, System.Threading.Timer> COVER_DropWatchTimer = new Dictionary<Player, System.Threading.Timer>();
+    public ConcurrentDictionary<Player, System.Threading.Timer> COVER_DropWatchTimer = new ConcurrentDictionary<Player, System.Threading.Timer>();
     public readonly int COVER_DropWatchPeriod_ms = 750; //0.75 sec - leader's drop detected within ~1 sec
 
     //<cdrop 2026/10 Step C4 - this is now only a SAFETY FLOOR, not the main gate.  The main gate is the
@@ -2357,7 +2357,7 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
             if (COVER_DropWatchTimer.ContainsKey(player))
             {
                 if (COVER_DropWatchTimer[player] != null) COVER_DropWatchTimer[player].Dispose();
-                COVER_DropWatchTimer.Remove(player);
+                coverDictRemove(COVER_DropWatchTimer, player);
             }
             coverDropAlreadyFired.Remove(player);
             coverDropLinePoint.Remove(player);
@@ -3402,7 +3402,7 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
         if (COVER_ListPositionTimer.ContainsKey(player))
         {
             COVER_ListPositionTimer[player].Dispose();
-            COVER_ListPositionTimer.Remove(player);
+            coverDictRemove(COVER_ListPositionTimer, player);
             if (mainmission.ON_TESTSERVER) Console.WriteLine("CoverDisplay: OFF (manual toggle) for " + player.Name());
             return false;
         }

@@ -169,19 +169,19 @@ public class CoverMission : AMission, ICoverMission
     //         NORMFLY + GATTACK_POINT waypoint pair, NOT setTask(ATTACK_GROUND).
     public enum CoverAGOrders {none, reserve, attack, normal, strict, escort, loiter, drop };
 
-    public Dictionary<Player, int> numberCoverAircraftActorsCheckedOutWholeMission = new Dictionary<Player, int>();
-    public Dictionary<AiActor, Player> coverAircraftActorsCheckedOut = new Dictionary<AiActor, Player>();
-    public Dictionary<AiAirGroup, Player> coverAircraftAirGroupsActive = new Dictionary<AiAirGroup, Player>();
+    public ConcurrentDictionary<Player, int> numberCoverAircraftActorsCheckedOutWholeMission = new ConcurrentDictionary<Player, int>();
+    public ConcurrentDictionary<AiActor, Player> coverAircraftActorsCheckedOut = new ConcurrentDictionary<AiActor, Player>();
+    public ConcurrentDictionary<AiAirGroup, Player> coverAircraftAirGroupsActive = new ConcurrentDictionary<AiAirGroup, Player>();
     public Dictionary<Player, int> playerIndex = new Dictionary<Player, int>();
     public Dictionary<Player, Dictionary<int, AiAirGroup>> coverAircraftAirGroupsIndexes = new Dictionary<Player, Dictionary<int, AiAirGroup>>();
     public Dictionary<Player, Dictionary<Tuple<int, AiActor>, AiAirGroup>> coverAircraftActorsIndexes = new Dictionary<Player, Dictionary<Tuple<int, AiActor>, AiAirGroup>>();
-    public Dictionary<AiAirGroup, Point3d> coverAircraftAirGroupsTargetPoint = new Dictionary<AiAirGroup, Point3d>();
-    public Dictionary<AiAirGroup, CoverAGOrders> coverAircraftAirGroupsOrders = new Dictionary<AiAirGroup, CoverAGOrders>();
+    public ConcurrentDictionary<AiAirGroup, Point3d> coverAircraftAirGroupsTargetPoint = new ConcurrentDictionary<AiAirGroup, Point3d>();
+    public ConcurrentDictionary<AiAirGroup, CoverAGOrders> coverAircraftAirGroupsOrders = new ConcurrentDictionary<AiAirGroup, CoverAGOrders>();
     public Dictionary<AiAirGroup, CoverACInfo> coverACInfo = new Dictionary<AiAirGroup, CoverACInfo>();
-    public Dictionary<Player, Tuple<Point3d, DateTime>> PBP_playerBombPoint = new Dictionary<Player, Tuple<Point3d, DateTime>>(); //Last point player has bombed, along with the time it was set, which can be used to target the cover bombers
+    public ConcurrentDictionary<Player, Tuple<Point3d, DateTime>> PBP_playerBombPoint = new ConcurrentDictionary<Player, Tuple<Point3d, DateTime>>(); //Last point player has bombed, along with the time it was set, which can be used to target the cover bombers
     public ConcurrentDictionary<Player, BAM_BombAimMode> BAM_playerAimMode = new ConcurrentDictionary<Player, BAM_BombAimMode>(); //What Cover Bomber Aim Mode the player has selected
 
-    public Dictionary<AiAirGroup, bool> coverAircraftAirGroupsReleased = new Dictionary<AiAirGroup, bool>(); //When pilots die, bombers can continue to attack for 5mins or so more; this sets the time to release them
+    public ConcurrentDictionary<AiAirGroup, bool> coverAircraftAirGroupsReleased = new ConcurrentDictionary<AiAirGroup, bool>(); //When pilots die, bombers can continue to attack for 5mins or so more; this sets the time to release them
 
     //Map boundaries - these should match what you set in the .mis file; these are the values that work with TWC radar etc
     //double twcmap_minX = 10000;  //orig values.
@@ -556,6 +556,16 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
 
     }
 
+    //2026-10-11 Step 2 (plan-2026-10-11-2134): ConcurrentDictionary.TryRemove needs an out
+    //parameter and C#5 (server compiler) has no 'out var', so declaring a throwaway local at
+    //each of the ~68 call sites would bury the logic.  This wrapper preserves the old
+    //Dictionary.Remove(key) statement usage exactly (the bool return value is never needed there).
+    private static void coverDictRemove<TKey, TValue>(ConcurrentDictionary<TKey, TValue> dict, TKey key)
+    {
+        TValue removedValue;
+        dict.TryRemove(key, out removedValue);
+    }
+
     //Whenever an airgroup is dropped from coverAircraftAirGroupsActive (disbanded, destroyed, or
     //released to land) we must drop our per-airgroup state too, or these dictionaries grow for the
     //whole mission.  Keyed by AiAirGroup, so each stale key is small - but it is permanent, and it
@@ -563,24 +573,24 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
     public void forgetAirGroup(AiAirGroup airGroup)
     {
         if (airGroup == null) return;
-        coverAGSpeedRatio.Remove(airGroup);
-        coverAGSpeedRequested.Remove(airGroup);
-        coverAircraftAirGroupsOrders.Remove(airGroup);
-        coverAircraftAirGroupsTargetPoint.Remove(airGroup);
-        coverAircraftAirGroupsDropIssued.Remove(airGroup);
-        coverAircraftAirGroupsDroppedThisPass.Remove(airGroup);  //<cdrop one-issue-per-pass latch - same leak class as the hold-off above
-        coverAircraftAirGroupsReleased.Remove(airGroup);
-        coverAircraftAirGroupsBayWaitSince.Remove(airGroup);   //<cdrop Step C8 - same leak class as the rest
-        coverDropPassLogged.Remove(airGroup);            //<cdrop Step D - and its log throttle with it
-        coverRtbLogged.Remove(airGroup);                 //<cdrop Step D - and its RTB probe throttle with it
-        coverRtbNotified.Remove(airGroup);               //<cdrop Step G - one-shot RTB notice latch, same leak class
-        coverPreOpenLast.Remove(airGroup);               //<cdrop Step F - pre-open nodupe snapshot, same leak class
-        coverSpawnBombCount.Remove(airGroup);          //<cdrop Step D - spawn bomb snapshot, same leak class
-        coverSpawnFuelKg.Remove(airGroup);             //<cdrop Step G - spawn fuel snapshot, same leak class
-        coverAircraftAirGroupsLoiterPoint.Remove(airGroup);
-        airgroupTargets.Remove(airGroup);
-        airgroupGroundTargets.Remove(airGroup);
-        airgroupTargetPoints.Remove(airGroup);
+        coverDictRemove(coverAGSpeedRatio, airGroup);
+        coverDictRemove(coverAGSpeedRequested, airGroup);
+        coverDictRemove(coverAircraftAirGroupsOrders, airGroup);
+        coverDictRemove(coverAircraftAirGroupsTargetPoint, airGroup);
+        coverDictRemove(coverAircraftAirGroupsDropIssued, airGroup);
+        coverDictRemove(coverAircraftAirGroupsDroppedThisPass, airGroup);  //<cdrop one-issue-per-pass latch - same leak class as the hold-off above
+        coverDictRemove(coverAircraftAirGroupsReleased, airGroup);
+        coverDictRemove(coverAircraftAirGroupsBayWaitSince, airGroup);   //<cdrop Step C8 - same leak class as the rest
+        coverDictRemove(coverDropPassLogged, airGroup);            //<cdrop Step D - and its log throttle with it
+        coverDictRemove(coverRtbLogged, airGroup);                 //<cdrop Step D - and its RTB probe throttle with it
+        coverDictRemove(coverRtbNotified, airGroup);               //<cdrop Step G - one-shot RTB notice latch, same leak class
+        coverDictRemove(coverPreOpenLast, airGroup);               //<cdrop Step F - pre-open nodupe snapshot, same leak class
+        coverDictRemove(coverSpawnBombCount, airGroup);          //<cdrop Step D - spawn bomb snapshot, same leak class
+        coverDictRemove(coverSpawnFuelKg, airGroup);             //<cdrop Step G - spawn fuel snapshot, same leak class
+        coverDictRemove(coverAircraftAirGroupsLoiterPoint, airGroup);
+        coverDictRemove(airgroupTargets, airGroup);
+        coverDictRemove(airgroupGroundTargets, airGroup);
+        coverDictRemove(airgroupTargetPoints, airGroup);
         //Do NOT touch coverOrdersBeforeDrop here: BAM_leaveDropMode restores from the snapshot,
         //and a mid-drop disband must still restore the survivors.  A dead group simply never matches
         //the restore loop (it iterates live coverAircraftAirGroupsActive keys).
@@ -626,9 +636,9 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
 
             if (currentBam != BAM_BombAimMode.Nearest_Enemy_to_Bomb_Explosion) PBP_removePlayerLastBombOrMyPositionPoint(player); //Toggling bomb mode erases the last bomb drop location, except when switching bomb point=>actor
 
-            airgroupTargets = new Dictionary<AiAirGroup, AiActor>();
-            airgroupGroundTargets = new Dictionary<AiAirGroup, GroundStationary>();
-            airgroupTargetPoints = new Dictionary<AiAirGroup, Point3d>();
+            airgroupTargets = new ConcurrentDictionary<AiAirGroup, AiActor>();
+            airgroupGroundTargets = new ConcurrentDictionary<AiAirGroup, GroundStationary>();
+            airgroupTargetPoints = new ConcurrentDictionary<AiAirGroup, Point3d>();
                 
             // Track exactly when this specific choice was made
             DateTime thisClickTime = DateTime.UtcNow;
@@ -672,9 +682,9 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
                 
 
         // Remove any existing targets
-        airgroupTargets = new Dictionary<AiAirGroup, AiActor>();
-        airgroupGroundTargets = new Dictionary<AiAirGroup, GroundStationary>();
-        airgroupTargetPoints = new Dictionary<AiAirGroup, Point3d>();
+        airgroupTargets = new ConcurrentDictionary<AiAirGroup, AiActor>();
+        airgroupGroundTargets = new ConcurrentDictionary<AiAirGroup, GroundStationary>();
+        airgroupTargetPoints = new ConcurrentDictionary<AiAirGroup, Point3d>();
 
         if (bam == BAM_BombAimMode.Drop_When_I_Drop || bam == BAM_BombAimMode.Drop_When_I_Drop_Nearest_Enemy ) BAM_enterDropMode(player);        
                 
@@ -817,9 +827,9 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
 
         //remove any existing targets
         
-        airgroupTargets = new Dictionary<AiAirGroup, AiActor>();
-        airgroupGroundTargets = new Dictionary<AiAirGroup, GroundStationary>();
-        airgroupTargetPoints = new Dictionary<AiAirGroup, Point3d>();
+        airgroupTargets = new ConcurrentDictionary<AiAirGroup, AiActor>();
+        airgroupGroundTargets = new ConcurrentDictionary<AiAirGroup, GroundStationary>();
+        airgroupTargetPoints = new ConcurrentDictionary<AiAirGroup, Point3d>();
         
         if (bam != BAM_BombAimMode.Nearest_Enemy_to_Bomb_Explosion) PBP_removePlayerLastBombOrMyPositionPoint(player); //Toggling bomb mode erases the last bomb drop location, except when switching bomb point=>actor
 
@@ -1084,7 +1094,7 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
 
     public void PBP_removePlayerLastBombOrMyPositionPoint(Player player)
     {
-        if (PBP_playerBombPoint.ContainsKey(player)) PBP_playerBombPoint.Remove(player);
+        if (PBP_playerBombPoint.ContainsKey(player)) coverDictRemove(PBP_playerBombPoint, player);
     }
 
     public void PBP_saveBombPoint(Player player, Point3d pos)
@@ -1224,7 +1234,7 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
             Console.WriteLine("OnAircraftLanded: " + aircraft.AirGroup().Name(), coverAircraftActorsCheckedOut[actor].Name());
             if (supplymission != null) supplymission.SupplyOnPlaceLeave(coverAircraftActorsCheckedOut[actor], actor, reason: "SAFE_cover_LandedAtAirport");
             numberCoverAircraftActorsCheckedOutWholeMission_remove(coverAircraftActorsCheckedOut[actor]);
-            coverAircraftActorsCheckedOut.Remove(actor);
+            coverDictRemove(coverAircraftActorsCheckedOut, actor);
         }
     }
 
@@ -1238,7 +1248,7 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
             Console.WriteLine("OnAircraftCrashLanded: " + aircraft.AirGroup().Name(), coverAircraftActorsCheckedOut[actor].Name());
             if (supplymission != null) supplymission.SupplyOnPlaceLeave(coverAircraftActorsCheckedOut[actor], actor, 0, false, 1); //the final "1" forced 100% damage of aircraft/write-off
                                                                                                                                          //numberCoverAircraftActorsCheckedOutWholeMission_remove(coverAircraftActorsCheckedOut[actor]); //don't give a/c back as this one was killed!
-            coverAircraftActorsCheckedOut.Remove(actor);
+            coverDictRemove(coverAircraftActorsCheckedOut, actor);
         }
     }
     public override void OnAircraftKilled(int missionNumber, string shortName, AiAircraft aircraft)
@@ -1251,7 +1261,7 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
             Console.WriteLine("OnAircraftKilled: " + aircraft.AirGroup().Name(), coverAircraftActorsCheckedOut[actor].Name());
             if (supplymission != null) supplymission.SupplyOnPlaceLeave(coverAircraftActorsCheckedOut[actor], actor, 0, false, 1, reason: "DEAD_cover_CoverAircraftKilled"); //the final "1" forced 100% damage of aircraft/write-off
                                                                                                                                          //numberCoverAircraftActorsCheckedOutWholeMission_remove(coverAircraftActorsCheckedOut[actor]); //don't give a/c back as this one was killed!
-            coverAircraftActorsCheckedOut.Remove(actor);
+            coverDictRemove(coverAircraftActorsCheckedOut, actor);
         }
     }
 
@@ -1295,7 +1305,7 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
                     //Console.WriteLine("CoverOnDestroy: Counting a/c left in " + actor.Name() + " {0} {1} {2}", aircraft.AirGroup().Name(), numAC, countAC);
                     if (countAC == 0 && coverAircraftAirGroupsActive.ContainsKey(aircraft.AirGroup()))
                     {
-                        coverAircraftAirGroupsActive.Remove(aircraft.AirGroup());
+                        coverDictRemove(coverAircraftAirGroupsActive, aircraft.AirGroup());
                         forgetAirGroup(aircraft.AirGroup());
                         //Console.WriteLine("CoverOnDestroy: Removing airgroup from active list");
                     }
@@ -1315,7 +1325,7 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
                     {
                         if (supplymission != null) supplymission.SupplyOnPlaceLeave(coverAircraftActorsCheckedOut[actor], actor, 0, true, reason: "SAFE_cover_CoverAircraftOffMap: "+reason); //valid return; the final true is softexit & forces return of a/c even though it is still flying.
                         numberCoverAircraftActorsCheckedOutWholeMission_remove(coverAircraftActorsCheckedOut[actor]);
-                        coverAircraftActorsCheckedOut.Remove(actor);
+                        coverDictRemove(coverAircraftActorsCheckedOut, actor);
                         //Console.WriteLine("CoverOnDestroy: " + actor.Name() + " was returned to stock because left map OK.");
 
                     }
@@ -1323,7 +1333,7 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
                     {
                         if (supplymission != null) supplymission.SupplyOnPlaceLeave(coverAircraftActorsCheckedOut[actor], actor, 0, false, 1,reason: "DEAD_cover_Landed/CrashedOnWater: "+reason); //the final "1" forced 100% damage of aircraft/write-off
                                                                                                                                                      //numberCoverAircraftActorsCheckedOutWholeMission_remove(coverAircraftActorsCheckedOut[actor]); //don't re-add to player's supply here bec. this one was destroyed.
-                        coverAircraftActorsCheckedOut.Remove(actor);
+                        coverDictRemove(coverAircraftActorsCheckedOut, actor);
                         //Console.WriteLine("CoverOnDestroy: " + actor.Name() + " was not returned to stock because crashed/died on water.");
                     }
                     // crash landing in solid ground
@@ -1332,7 +1342,7 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
                     {
                         if (supplymission != null) supplymission.SupplyOnPlaceLeave(coverAircraftActorsCheckedOut[actor], actor, 0, false, 1, reason: "DEAD_cover_CoverAircraftLanded/CrashedOnEnemyTerritory: "+reason); //the final "1" forced 100% damage of aircraft/write-off
                                                                                                                                                      //numberCoverAircraftActorsCheckedOutWholeMission_remove(coverAircraftActorsCheckedOut[actor]); //don't re-add to player's supply here bec. this one was destroyed.
-                        coverAircraftActorsCheckedOut.Remove(actor);
+                        coverDictRemove(coverAircraftActorsCheckedOut, actor);
                         //Console.WriteLine("CoverOnDestroy: " + actor.Name() + " was not returned to stock because crashed/died in enemy territory.");
 
                     }
@@ -1340,7 +1350,7 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
                     {
                         if (supplymission != null) supplymission.SupplyOnPlaceLeave(coverAircraftActorsCheckedOut[actor], actor, 0, false, 1, reason: "DEAD_cover_CoverAircraftLanded/CrashedAwayFromAirport: "+reason); //the final "1" forced 100% damage of aircraft/write-off
                                                                                                                                                      //numberCoverAircraftActorsCheckedOutWholeMission_remove(coverAircraftActorsCheckedOut[actor]); //don't re-add to player's supply here bec. this one was destroyed.
-                        coverAircraftActorsCheckedOut.Remove(actor);
+                        coverDictRemove(coverAircraftActorsCheckedOut, actor);
                         //Console.WriteLine("CoverOnDestroy: " + actor.Name() + " was not returned to stock because crashed/died away from airport.");
                     }
 
@@ -1366,14 +1376,14 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
 						if (reason.ToLower().StartsWith("dead")) {
 							if (supplymission != null) supplymission.SupplyOnPlaceLeave(coverAircraftActorsCheckedOut[actor], actor, 1, false, reason: reason); //true is softexit & forces return of plane even though it is in the air etc.
 							//numberCoverAircraftActorsCheckedOutWholeMission_remove(coverAircraftActorsCheckedOut[actor]);
-							coverAircraftActorsCheckedOut.Remove(actor);
+							coverDictRemove(coverAircraftActorsCheckedOut, actor);
 							
 						} else {
 
 
 							if (supplymission != null) supplymission.SupplyOnPlaceLeave(coverAircraftActorsCheckedOut[actor], actor, 0, true, reason: "SAFE_cover_LandedOrDisapparatedNearAirport"); //true is softexit & forces return of plane even though it is in the air etc.
 							numberCoverAircraftActorsCheckedOutWholeMission_remove(coverAircraftActorsCheckedOut[actor]);
-							coverAircraftActorsCheckedOut.Remove(actor);
+							coverDictRemove(coverAircraftActorsCheckedOut, actor);
 							//Console.WriteLine("CoverOnDestroy: " + actor.Name() + " was returned to stock because disapparated during or after LANDING.");
 						}
                     }
@@ -1782,8 +1792,8 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
     //Without this, a group running at 100% while the rest of the flight runs at 98% creeps away
     //from the leader and is never pulled back: the control loop only ever compares actual speed
     //against the LEADER's speed, never against its own request.
-    public Dictionary<AiAirGroup, double> coverAGSpeedRatio = new Dictionary<AiAirGroup, double>();     //smoothed actual/requested; 1.0 = delivers exactly
-    public Dictionary<AiAirGroup, double> coverAGSpeedRequested = new Dictionary<AiAirGroup, double>();  //the speed we last asked this group for
+    public ConcurrentDictionary<AiAirGroup, double> coverAGSpeedRatio = new ConcurrentDictionary<AiAirGroup, double>();     //smoothed actual/requested; 1.0 = delivers exactly
+    public ConcurrentDictionary<AiAirGroup, double> coverAGSpeedRequested = new ConcurrentDictionary<AiAirGroup, double>();  //the speed we last asked this group for
     public readonly double coverAGSpeedRatioMin = 0.85;   //never trust a ratio outside this band
     public readonly double coverAGSpeedRatioMax = 1.15;
     public readonly double coverAGSpeedRatioNewWeight = 0.3;  //weight of the newest sample in the rolling average (~7 samples to settle)
@@ -1912,9 +1922,10 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
         //airGroup, not ag - so it never filtered by owner at all; it now correctly counts only
         //this player's own groups.)
         int sameTypeCount = 0;
-        foreach (AiAirGroup ag in coverAircraftAirGroupsActive.Keys)
+        foreach (KeyValuePair<AiAirGroup, Player> kvActiveAG in coverAircraftAirGroupsActive)
         {
-            if (coverAircraftAirGroupsActive[ag] != player) continue;
+            AiAirGroup ag = kvActiveAG.Key;
+            if (kvActiveAG.Value != player) continue;
             if (ag.GetItems() == null || ag.GetItems().Length == 0) continue;
             if ((isHeavyBomber(ag) || isDiveBomber(ag)) != type) continue;
             sameTypeCount++;
@@ -2262,8 +2273,8 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
                                                        // outlast the hold, and a stale plan defeats that)
     //last pre-open plan issued per group: (leader pos, leader heading-unit-x, leader heading-unit-y,
     //leader speed mps, leader altitude m, issue time UTC).  Cleared by forgetAirGroup().
-    Dictionary<AiAirGroup, Tuple<Point3d, double, double, double, double, DateTime>> coverPreOpenLast =
-        new Dictionary<AiAirGroup, Tuple<Point3d, double, double, double, double, DateTime>>();
+    ConcurrentDictionary<AiAirGroup, Tuple<Point3d, double, double, double, double, DateTime>> coverPreOpenLast =
+        new ConcurrentDictionary<AiAirGroup, Tuple<Point3d, double, double, double, double, DateTime>>();
 
     //we latch after the first drop so one leader pass = one formation release.  Reset by <cdrop.
     Dictionary<Player, bool> coverDropAlreadyFired = new Dictionary<Player, bool>();
@@ -2274,7 +2285,7 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
     //airgroups we have already told to drop, and when - so keepAircraftOnTask_recurs() can leave
     //their new flight plan alone long enough for the release to actually happen (that routine runs
     //every ~16s and would otherwise overwrite it - see Genghis-Class-CloDNotes.cs section 2).
-    Dictionary<AiAirGroup, DateTime> coverAircraftAirGroupsDropIssued = new Dictionary<AiAirGroup, DateTime>();
+    ConcurrentDictionary<AiAirGroup, DateTime> coverAircraftAirGroupsDropIssued = new ConcurrentDictionary<AiAirGroup, DateTime>();
 
     //<cdrop - ONE ISSUE PER PASS.  This is deliberately a SEPARATE thing from
     //coverAircraftAirGroupsDropIssued, which is only the 25s hold-off that stops
@@ -2289,7 +2300,7 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
     //  sent the bombers off to the side, without speed control, several km behind.
     //This latch is what the documentation always claimed: one release per pass, cleared when the
     //player re-arms with <cdrop.
-    Dictionary<AiAirGroup, Player> coverAircraftAirGroupsDroppedThisPass = new Dictionary<AiAirGroup, Player>();
+    ConcurrentDictionary<AiAirGroup, Player> coverAircraftAirGroupsDroppedThisPass = new ConcurrentDictionary<AiAirGroup, Player>();
     public readonly double coverDropHoldFlightPlan_s = 25; //how long we leave the drop flight plan in place
 
     //Start (or re-arm) the <cdrop watcher for this player.  Records the leader's CURRENT bomb count
@@ -2462,9 +2473,9 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
                         {
                             if (coverAircraftAirGroupsActive.ContainsKey(ag) && coverAircraftAirGroupsActive[ag] == player)
                             {
-                                if (airgroupTargets.ContainsKey(ag)) airgroupTargets.Remove(ag);
-                                if (airgroupGroundTargets.ContainsKey(ag)) airgroupGroundTargets.Remove(ag);
-                                if (airgroupTargetPoints.ContainsKey(ag)) airgroupTargetPoints.Remove(ag);
+                                if (airgroupTargets.ContainsKey(ag)) coverDictRemove(airgroupTargets, ag);
+                                if (airgroupGroundTargets.ContainsKey(ag)) coverDictRemove(airgroupGroundTargets, ag);
+                                if (airgroupTargetPoints.ContainsKey(ag)) coverDictRemove(airgroupTargetPoints, ag);
                             }
                         }
                         Point3d impactPoint = player.Place().Pos();
@@ -2500,13 +2511,13 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
     //<cdrop 2026/10 Step C8 - WHEN did we start holding this group back because its doors were shut?
     //cleared as soon as it is released, and on re-arm.  A group that is in here has flown on while it
     //waited, so it gets a much more generous "too far ahead" bound than one that was ready at the time.
-    Dictionary<AiAirGroup, DateTime> coverAircraftAirGroupsBayWaitSince = new Dictionary<AiAirGroup, DateTime>();
+    ConcurrentDictionary<AiAirGroup, DateTime> coverAircraftAirGroupsBayWaitSince = new ConcurrentDictionary<AiAirGroup, DateTime>();
 
     //<cdrop 2026/10 Step D - the release pass used to be made entirely of SILENT continues.  In log
     //02F the player dropped, "detect" fired, and no group was ever told to release - with nothing at
     //all in the log to say which of the (many) skip conditions swallowed it.  cdDropPassLog() makes
     //every decision self-describing, throttled to one line per group per 5s so a 750ms poll cannot flood.
-    Dictionary<AiAirGroup, DateTime> coverDropPassLogged = new Dictionary<AiAirGroup, DateTime>();
+    ConcurrentDictionary<AiAirGroup, DateTime> coverDropPassLogged = new ConcurrentDictionary<AiAirGroup, DateTime>();
     public void cdDropPassLog(AiAirGroup airGroup, string why, bool always = false)
     {
         if (!mainmission.ON_TESTSERVER) return;
@@ -2539,14 +2550,14 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
         catch (Exception ex) { return -1; }
     }
 
-    Dictionary<AiAirGroup, DateTime> coverRtbLogged = new Dictionary<AiAirGroup, DateTime>();
+    ConcurrentDictionary<AiAirGroup, DateTime> coverRtbLogged = new ConcurrentDictionary<AiAirGroup, DateTime>();
 //2026/10 Step D - probe: track how many bombs each cover airgroup spawns with,
     //so that a RTB with bombs=0 can be told apart from "bombs dropped en route".
     //Cleared by forgetAirGroup() (same life cycle as coverRtbLogged).
-    Dictionary<AiAirGroup, int> coverSpawnBombCount = new Dictionary<AiAirGroup, int>();
+    ConcurrentDictionary<AiAirGroup, int> coverSpawnBombCount = new ConcurrentDictionary<AiAirGroup, int>();
     //2026/10 Step G - total kg aboard at checkout (S_FuelReserve, -1).  The RTB notice uses this to
     //tell "RTB'd because it ran the tanks dry" apart from "RTB'd with plenty of fuel - other cause".
-    Dictionary<AiAirGroup, double> coverSpawnFuelKg = new Dictionary<AiAirGroup, double>();
+    ConcurrentDictionary<AiAirGroup, double> coverSpawnFuelKg = new ConcurrentDictionary<AiAirGroup, double>();
 
     //2026/10 Step G - one-shot-per-episode PLAYER notice that a group went RTB on its own.  A group
     //in task .RETURN will not open its bays, drop, or ground-attack (CloDNotes 1f - and the owner's
@@ -2555,7 +2566,7 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
     //per RTB episode, re-armed when the group leaves .RETURN, so it can re-fire for a NEW episode.
     //Cleared by forgetAirGroup().  Only sent for ENGINE RTB - never for a group WE released
     //home (coverAircraftAirGroupsReleased), which the player already knows about.
-    Dictionary<AiAirGroup, bool> coverRtbNotified = new Dictionary<AiAirGroup, bool>();
+    ConcurrentDictionary<AiAirGroup, bool> coverRtbNotified = new ConcurrentDictionary<AiAirGroup, bool>();
 
     //<cdrop 2026/10 Helper for the RTB probe.  Health comes straight off each a/c - the same source
     //the <cpos line uses for its "(87:100)" column (listPositionCurrentCoverAircraft) - rather than
@@ -2596,8 +2607,8 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
             {
                 //not RTB (anymore) - clear both the log throttle and the player-notice latch so a
                 //future RTB episode reports again.
-                coverRtbLogged.Remove(airGroup);
-                coverRtbNotified.Remove(airGroup);
+                coverDictRemove(coverRtbLogged, airGroup);
+                coverDictRemove(coverRtbNotified, airGroup);
                 return;
             }
 
@@ -2815,7 +2826,7 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
                     }
                     continue;
                 }
-                coverAircraftAirGroupsDropIssued.Remove(airGroup);
+                coverDictRemove(coverAircraftAirGroupsDropIssued, airGroup);
             }
 
             Point3d ap = airGroup.Pos();
@@ -2894,7 +2905,7 @@ Dictionary<BAM_BombAimMode, string> BAM_BombAimModeNames = new Dictionary<BAM_Bo
             Timeout(0.05, () => dropBombsNow_airGroup(ag2, leaderAircraft != null ? leaderAircraft.AirGroup() : null));
             coverAircraftAirGroupsDropIssued[airGroup] = nowUtc;
             coverAircraftAirGroupsDroppedThisPass[airGroup] = player;   //once per pass - never refresh this
-            coverAircraftAirGroupsBayWaitSince.Remove(airGroup);   //it is away - stop timing its doors
+            coverDictRemove(coverAircraftAirGroupsBayWaitSince, airGroup);   //it is away - stop timing its doors
             issuedAnyThisPass = true;
         }
 
@@ -3524,12 +3535,13 @@ public string listPositionCurrentCoverAircraft(Player player = null, bool displa
             //if (coverAircraftAirGroupsIndexes.ContainsKey(player)) agIndex = coverAircraftAirGroupsIndexes[player];           
 
             //foreach ( int indx in agIndex.Keys)
-            foreach (AiAirGroup airGroup in coverAircraftAirGroupsActive.Keys)
+            foreach (KeyValuePair<AiAirGroup, Player> kvActiveAG in coverAircraftAirGroupsActive)
             {
                 //AiAirGroup airGroup = agIndex[indx];
+                AiAirGroup airGroup = kvActiveAG.Key;
 
                 if (airGroup == null) continue;
-                if (coverAircraftAirGroupsActive[airGroup] != player) continue;
+                if (kvActiveAG.Value != player) continue;
                 if (airGroup.GetItems().Length == 0) continue;
                 AiAircraft aircraft = airGroup.GetItems()[0] as AiAircraft;
                 if (aircraft == null) continue;
@@ -4252,7 +4264,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                     if (supplymission != null) supplymission.SupplyOnPlaceLeave(coverAircraftActorsCheckedOut[actor], actor, reason:"SAFE_cover_Player/LeaderIsGone-ReturningCoverAircraft"
 				);
                     numberCoverAircraftActorsCheckedOutWholeMission_remove(coverAircraftActorsCheckedOut[actor]);
-                    coverAircraftActorsCheckedOut.Remove(actor);
+                    coverDictRemove(coverAircraftActorsCheckedOut, actor);
                 }
             }
         }
@@ -4319,7 +4331,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             {
                 if (supplymission != null) supplymission.SupplyOnPlaceLeave(coverAircraftActorsCheckedOut[actor], actor, reason:"SAFE_cover_AircraftReturned");
                 numberCoverAircraftActorsCheckedOutWholeMission_remove(coverAircraftActorsCheckedOut[actor]);
-                coverAircraftActorsCheckedOut.Remove(actor);
+                coverDictRemove(coverAircraftActorsCheckedOut, actor);
             }
 
             acIndex.Remove(kv.Key);
@@ -4578,9 +4590,10 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             AiAircraft pac = player.Place() as AiAircraft;
             bool ptype = (pac != null) && (isHeavyBomber(pac) || isDiveBomber(pac));
             int pcount = 0;
-            foreach (AiAirGroup ag in coverAircraftAirGroupsActive.Keys)
+            foreach (KeyValuePair<AiAirGroup, Player> kvActiveAG in coverAircraftAirGroupsActive)
             {
-                if (coverAircraftAirGroupsActive[ag] != player) continue;
+                AiAirGroup ag = kvActiveAG.Key;
+                if (kvActiveAG.Value != player) continue;
                 if (ag.GetItems() == null || ag.GetItems().Length == 0) continue;
                 bool agtype = isHeavyBomber(ag) || isDiveBomber(ag);
                 if (agtype != ptype) continue;
@@ -5793,7 +5806,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 
     //<cloiter - remember the point each loitering airgroup circles around.  The circling itself is
     //done by keepAircraftLoitering(), which is called from keepAircraftOnTask_recurs().
-    public Dictionary<AiAirGroup, Point3d> coverAircraftAirGroupsLoiterPoint = new Dictionary<AiAirGroup, Point3d>();
+    public ConcurrentDictionary<AiAirGroup, Point3d> coverAircraftAirGroupsLoiterPoint = new ConcurrentDictionary<AiAirGroup, Point3d>();
 
     //Set (or re-set) the point the given airgroups will circle around, to where those a/c are right now.
     //Called when the <cloiter (<cl) command is given.
@@ -6333,7 +6346,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                                 GamePlay.gpLogServer(new Player[] { player }, "Cover assigned: " + aircrafttype + " (" + (a as AiActor).Name() + ")", new object[] { });
                                 //if (supplymission != null) supplymission.SupplyOnPlaceEnter(player, (a as AiActor));
                                 if (supplymission != null && !isOnRepairMission(player)) supplymission.SupplyAICheckout(player, a as AiActor); //we're saying that repair mission a/c come from a different supply, not our regular limited supply
-                                coverAircraftActorsCheckedOut.Add((a as AiActor), player);
+                                coverAircraftActorsCheckedOut.TryAdd((a as AiActor), player);
 
                                 int nac = numberCoverAircraftActorsCheckedOutWholeMission_add(player);
 
@@ -6365,7 +6378,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 
                                 string msg6 = acAvailableToPlayer_msg(player);
 
-                                coverAircraftAirGroupsActive.Add(newAirgroup, player);
+                                coverAircraftAirGroupsActive.TryAdd(newAirgroup, player);
                                 addToIndexes(player, newAirgroup);
                                                                  coverAircraftAirGroupsOrders[newAirgroup] = CoverAGOrders.normal;
                                  coverSpawnBombCount[newAirgroup] = CoverCalcs.bombCount(newAirgroup);
@@ -6538,7 +6551,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                     Console.WriteLine("COVER: Airgroup has a mothergroup, the mother group has AirGroupsOrders, and they haven't been transferred to the daughter group yet, os doing that now");
                 }
                 //And we also add it to the active airgroups for this player
-                coverAircraftAirGroupsActive.Add(airGroup,
+                coverAircraftAirGroupsActive.TryAdd(airGroup,
                 coverAircraftAirGroupsActive[airGroup.motherGroup()]);
             }
 
@@ -6599,7 +6612,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             int numAC = airGroup.GetItems().Length; //2021/07/05 - I am suspicious of this method for counting a/c and it might give ZERO as answer when it shouldn't (.NOfAC())
             if (numAC == 0)
             {
-                coverAircraftAirGroupsActive.Remove(airGroup);
+                coverDictRemove(coverAircraftAirGroupsActive, airGroup);
                 forgetAirGroup(airGroup);
                 //Console.WriteLine("Cover KeepAircraftOnTask: Removing airgroup {0} from active list because no more aircraft in the group", airGroup.Name());
                 if (player != null) GamePlay.gpLogServer(new Player[] { player }, "Your {0} cover group has been disbanded (no aircraft left in it)", new object[] { airGroup.Name() });
@@ -6626,14 +6639,14 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             if (!coverAircraftAirGroupsReleased.ContainsKey(airGroup)) coverAircraftAirGroupsReleased[airGroup] = false;
             else if (coverAircraftAirGroupsReleased[airGroup])
             {
-                coverAircraftAirGroupsActive.Remove(airGroup);
+                coverDictRemove(coverAircraftAirGroupsActive, airGroup);
                 forgetAirGroup(airGroup);
                 EscortMakeLand(airGroup, null);
                 return;
             }
 
         CoverAGOrders orders = CoverAGOrders.normal;
-        if (coverAircraftAirGroupsOrders.Keys.Contains(airGroup)) orders = coverAircraftAirGroupsOrders[airGroup];
+        if (coverAircraftAirGroupsOrders.ContainsKey(airGroup)) orders = coverAircraftAirGroupsOrders[airGroup];
 
 
         //This is to let any coverAC/bombers on their bomb runs just continue it for 5 more minutes after the main a / c(live pilot) has been
@@ -6745,7 +6758,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                     return;
                 }
                 if (mainmission.ON_TESTSERVER) Console.WriteLine("COVER <cdrop HOLD: {0} release hold-off expired after {1:F1}s - formation control resumes", airGroup.Name(), heldRec_s);
-                coverAircraftAirGroupsDropIssued.Remove(airGroup);
+                coverDictRemove(coverAircraftAirGroupsDropIssued, airGroup);
             }
 
             if (
@@ -6837,9 +6850,9 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 {
                     bombing = false;
                     newTargetPoint = new Point3d(-1, -1, -1);
-                    if (airgroupTargets.ContainsKey(airGroup)) airgroupTargets.Remove(airGroup);
-                    if (airgroupGroundTargets.ContainsKey(airGroup)) airgroupGroundTargets.Remove(airGroup);
-                    if (airgroupTargetPoints.ContainsKey(airGroup)) airgroupTargetPoints.Remove(airGroup);       
+                    if (airgroupTargets.ContainsKey(airGroup)) coverDictRemove(airgroupTargets, airGroup);
+                    if (airgroupGroundTargets.ContainsKey(airGroup)) coverDictRemove(airgroupGroundTargets, airGroup);
+                    if (airgroupTargetPoints.ContainsKey(airGroup)) coverDictRemove(airgroupTargetPoints, airGroup);       
                 }
 
 
@@ -6855,9 +6868,9 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 {
                     bombing = false;
                     newTargetPoint = new Point3d(-1, -1, -1);
-                    if (airgroupTargets.ContainsKey(airGroup)) airgroupTargets.Remove(airGroup);
-                    if (airgroupGroundTargets.ContainsKey(airGroup)) airgroupGroundTargets.Remove(airGroup);
-                    if (airgroupTargetPoints.ContainsKey(airGroup)) airgroupTargetPoints.Remove(airGroup);
+                    if (airgroupTargets.ContainsKey(airGroup)) coverDictRemove(airgroupTargets, airGroup);
+                    if (airgroupGroundTargets.ContainsKey(airGroup)) coverDictRemove(airgroupGroundTargets, airGroup);
+                    if (airgroupTargetPoints.ContainsKey(airGroup)) coverDictRemove(airgroupTargetPoints, airGroup);
                 }
 
                 //Console.WriteLine("Cover KeepAconTask: 444");
@@ -6921,9 +6934,9 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             } else
             {
                 //clear the targets if the ag is not targeting anything 
-                if (airgroupTargets.ContainsKey(airGroup)) airgroupTargets.Remove(airGroup);
-                if (airgroupGroundTargets.ContainsKey(airGroup)) airgroupGroundTargets.Remove(airGroup);
-                if (airgroupTargetPoints.ContainsKey(airGroup)) airgroupTargetPoints.Remove(airGroup);
+                if (airgroupTargets.ContainsKey(airGroup)) coverDictRemove(airgroupTargets, airGroup);
+                if (airgroupGroundTargets.ContainsKey(airGroup)) coverDictRemove(airgroupGroundTargets, airGroup);
+                if (airgroupTargetPoints.ContainsKey(airGroup)) coverDictRemove(airgroupTargetPoints, airGroup);
             }
 
             //Console.WriteLine("Cover KeepAconTask: 8");
@@ -8818,7 +8831,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                     {
                         Console.WriteLine("Cover - EscortMakeLand: " + airGroup.Name(), coverAircraftActorsCheckedOut[actor].Name());
                         numberCoverAircraftActorsCheckedOutWholeMission_remove(coverAircraftActorsCheckedOut[actor]);
-                        coverAircraftActorsCheckedOut.Remove(actor);
+                        coverDictRemove(coverAircraftActorsCheckedOut, actor);
                     }
                     if (fromRepair)
                     {
@@ -8834,7 +8847,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             }
 
 
-            coverAircraftAirGroupsActive.Remove(airGroup);
+            coverDictRemove(coverAircraftAirGroupsActive, airGroup);
             forgetAirGroup(airGroup);
 
             /*Timeout(240, () =>bomberway
@@ -8859,7 +8872,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 {
                     Console.WriteLine("Cover - EscortMakeLand: " + airGroup.Name(), coverAircraftActorsCheckedOut[actor].Name());
                     numberCoverAircraftActorsCheckedOutWholeMission_remove(coverAircraftActorsCheckedOut[actor]);
-                    coverAircraftActorsCheckedOut.Remove(actor);
+                    coverDictRemove(coverAircraftActorsCheckedOut, actor);
                 }
 
             }
@@ -8885,9 +8898,9 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 
             if (noGroundTargetFound)
             {
-                if (airgroupTargets.ContainsKey(airGroup)) airgroupTargets.Remove(airGroup);
-                if (airgroupGroundTargets.ContainsKey(airGroup)) airgroupGroundTargets.Remove(airGroup);
-                if (airgroupTargetPoints.ContainsKey(airGroup)) airgroupTargetPoints.Remove(airGroup);   
+                if (airgroupTargets.ContainsKey(airGroup)) coverDictRemove(airgroupTargets, airGroup);
+                if (airgroupGroundTargets.ContainsKey(airGroup)) coverDictRemove(airgroupGroundTargets, airGroup);
+                if (airgroupTargetPoints.ContainsKey(airGroup)) coverDictRemove(airgroupTargetPoints, airGroup);   
                 return false; 
             }
             AiAirWayPoint aawp33 = CurrentPosWaypoint(airGroup, targetAirGroup, aawptstart, aaPs.Item3);
@@ -8901,9 +8914,9 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
         catch (Exception ex) { Console.WriteLine("Cover BomberUpdateWaypoints() ERROR: " + ex.ToString());  return false; }
     }
 
-    Dictionary<AiAirGroup, AiActor> airgroupTargets = new Dictionary<AiAirGroup, AiActor>(); //any ground actor this airgroup is targeting at the moment
-    Dictionary<AiAirGroup, GroundStationary> airgroupGroundTargets = new Dictionary<AiAirGroup, GroundStationary>(); //any ground stationary the airgroup is targeting at the  moment
-    Dictionary<AiAirGroup, Point3d> airgroupTargetPoints = new Dictionary<AiAirGroup, Point3d>(); //the point the airgroup is targeting at the moment
+    ConcurrentDictionary<AiAirGroup, AiActor> airgroupTargets = new ConcurrentDictionary<AiAirGroup, AiActor>(); //any ground actor this airgroup is targeting at the moment
+    ConcurrentDictionary<AiAirGroup, GroundStationary> airgroupGroundTargets = new ConcurrentDictionary<AiAirGroup, GroundStationary>(); //any ground stationary the airgroup is targeting at the  moment
+    ConcurrentDictionary<AiAirGroup, Point3d> airgroupTargetPoints = new ConcurrentDictionary<AiAirGroup, Point3d>(); //the point the airgroup is targeting at the moment
     Dictionary<Point3d, DateTime> targetPointNoEnemiesFound_time = new Dictionary<Point3d, DateTime>();
     //AARGH - all these three should be in one dictionary or whatever instead of 3, right?
 
@@ -9122,8 +9135,8 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                             airgroupTargetPoints[airGroup] = new Point3d(-1,-1,-1);
 
                             //also remove any old targets 
-                            if (airgroupTargets.ContainsKey(airGroup)) airgroupTargets.Remove(airGroup);
-                            if (airgroupGroundTargets.ContainsKey(airGroup)) airgroupGroundTargets.Remove(airGroup);
+                            if (airgroupTargets.ContainsKey(airGroup)) coverDictRemove(airgroupTargets, airGroup);
+                            if (airgroupGroundTargets.ContainsKey(airGroup)) coverDictRemove(airgroupGroundTargets, airGroup);
                 
                             if (mainmission.ON_TESTSERVER) Console.WriteLine("old ground target bad, couldn't find actor OR stationary, not using it after all actor : {0} stationary: {1}", airgroupTargets.ContainsKey(airGroup) && airgroupTargets[airGroup] != null, airgroupGroundTargets.ContainsKey(airGroup) && airgroupGroundTargets[airGroup] != null );
                         }
@@ -9135,9 +9148,9 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 //We're getting new target points now, so remove any old targets
                 //otherwise they can interfere with e.g. counts of how many a/g are
                 //targeting a certain objective or stationary or groundactor
-                if (airgroupTargets.ContainsKey(airGroup)) airgroupTargets.Remove(airGroup);
-                if (airgroupGroundTargets.ContainsKey(airGroup)) airgroupGroundTargets.Remove(airGroup);
-                if (airgroupTargetPoints.ContainsKey(airGroup)) airgroupTargetPoints.Remove(airGroup);
+                if (airgroupTargets.ContainsKey(airGroup)) coverDictRemove(airgroupTargets, airGroup);
+                if (airgroupGroundTargets.ContainsKey(airGroup)) coverDictRemove(airgroupGroundTargets, airGroup);
+                if (airgroupTargetPoints.ContainsKey(airGroup)) coverDictRemove(airgroupTargetPoints, airGroup);
 
                 string groundType = "";
 
@@ -9372,7 +9385,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                                             
 
 
-											if (gg != null && gg.IsAlive && !airgroupGroundTargets.ContainsValue(gg)
+											if (gg != null && gg.IsAlive && !airgroupGroundTargets.Values.Contains(gg) //2026-10-11 Step 2: ConcurrentDictionary has no ContainsValue; Values.Contains is the same EqualityComparer-based lookup
 											&& statArmy == 3 - airGroup.getArmy() && !gg.Title.ToLower().Contains("crater")
 											&& !gg.Title.ToLower().Contains("smoke") && !gg.Title.ToLower().Contains("fire") && !gg.Title.ToLower().Contains("_dmg")  && !gg.Title.ToLower().Contains("AEC_Regent_II")  && !gg.Title.ToLower().Contains("MG_TA")  //avoid choosing a smoke, fire, or crater, or damaged object to attack. There might be some other types to avoid, too but these are the main offenders.
 											) //not trying to find the closest, just a random one within the given distance, and not already picked by another airgroup && enemy
@@ -9542,9 +9555,9 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 //Console.WriteLine("CBCW: No stationary found, updating attack position");
                 newPos.x = pos.x;
                 newPos.y = pos.y;
-                if (airgroupTargets.ContainsKey(airGroup)) airgroupTargets.Remove(airGroup);
-                if (airgroupGroundTargets.ContainsKey(airGroup)) airgroupGroundTargets.Remove(airGroup);
-                if (airgroupTargetPoints.ContainsKey(airGroup)) airgroupTargetPoints.Remove(airGroup);
+                if (airgroupTargets.ContainsKey(airGroup)) coverDictRemove(airgroupTargets, airGroup);
+                if (airgroupGroundTargets.ContainsKey(airGroup)) coverDictRemove(airgroupGroundTargets, airGroup);
+                if (airgroupTargetPoints.ContainsKey(airGroup)) coverDictRemove(airgroupTargetPoints, airGroup);
                 
 
             }
@@ -9757,9 +9770,9 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 (nextWP as AiAirWayPoint).Action = AiAirWayPointType.NORMFLY;
                 noGroundEnemyFound = true;
 				Console.WriteLine("CBCW: 4");
-                if (airgroupTargets.ContainsKey(airGroup)) airgroupTargets.Remove(airGroup);
-                if (airgroupGroundTargets.ContainsKey(airGroup)) airgroupGroundTargets.Remove(airGroup);
-                if (airgroupTargetPoints.ContainsKey(airGroup)) airgroupTargetPoints.Remove(airGroup);
+                if (airgroupTargets.ContainsKey(airGroup)) coverDictRemove(airgroupTargets, airGroup);
+                if (airgroupGroundTargets.ContainsKey(airGroup)) coverDictRemove(airgroupGroundTargets, airGroup);
+                if (airgroupTargetPoints.ContainsKey(airGroup)) coverDictRemove(airgroupTargetPoints, airGroup);
 			              
             }
 			
@@ -10667,8 +10680,9 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             double maxY = twcmap_maxY + 12500; // 300000;
 
             //Console.WriteLine("Checking for AI Aircraft off map, to check back in (Cover)");
-            foreach (AiActor actor in coverAircraftActorsCheckedOut.Keys)
+            foreach (KeyValuePair<AiActor, Player> kvCheckedOut in coverAircraftActorsCheckedOut)
             {
+                AiActor actor = kvCheckedOut.Key;
                 AiAircraft a = actor as AiAircraft;
                 /*Console.WriteLine("COVER: Checking for off map: " + Calcs.GetAircraftType(a) + " "
                 + actor.Name() + " "
@@ -10698,10 +10712,10 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 
                     EscortMakeLand(a.AirGroup(), null); //fixing bug - cover aircraft flew off map & were 'returned' but they were actually still in the air & following the main a/c.                    
 
-                    numberCoverAircraftActorsCheckedOutWholeMission_remove(coverAircraftActorsCheckedOut[actor]);
-                    supplymission.SupplyOnPlaceLeave(coverAircraftActorsCheckedOut[actor], actor, 0, true, reason: "SAFE_cover_CoverAircraftOffMap"); //return this a/c to supply; true = softexit which forces return of the plane even though it is still in the air & flying
+                    numberCoverAircraftActorsCheckedOutWholeMission_remove(kvCheckedOut.Value);
+                    supplymission.SupplyOnPlaceLeave(kvCheckedOut.Value, actor, 0, true, reason: "SAFE_cover_CoverAircraftOffMap"); //return this a/c to supply; true = softexit which forces return of the plane even though it is still in the air & flying
                                                                                                                                              //Console.WriteLine("CoverLeftMap: " + actor.Name() + " was returned to stock because left map OK.");
-                    Timeout(0.1, () => { coverAircraftActorsCheckedOut.Remove(actor); }); //Little cheap trick to remove an item from coverAircraftActorsCheckedOut even though we are presently looping through its keys
+                    Timeout(0.1, () => { coverDictRemove(coverAircraftActorsCheckedOut, actor); }); //Little cheap trick to remove an item from coverAircraftActorsCheckedOut even though we are presently looping through its keys
                 }
 
 
@@ -11325,7 +11339,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 					Player player = coverAircraftAirGroupsActive[airgroup.motherGroup()];
 					
 					//And we also add it to the active airgroups for this player
-					coverAircraftAirGroupsActive.Add(airgroup, player);
+					coverAircraftAirGroupsActive.TryAdd(airgroup, player);
 					
 
                     addToIndexes(player, airgroup);

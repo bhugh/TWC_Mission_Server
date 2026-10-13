@@ -1,4 +1,4 @@
-﻿#define DEBUG  
+#define DEBUG  
 #define TRACE  
 //$reference System.Core.dll
 //$reference parts/core/Strategy.dll

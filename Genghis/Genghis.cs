@@ -20577,6 +20577,35 @@ added Rouen Flak
         "Stationary.Krupp_L2H43_Protze_open_CargoAmmo4",
         };
 
+        public static List<string> MO_AntiAirAmmo_Misc = new List<string> { 
+
+        "Stationary.Environment.Maschinensatz_8_KW_GER1",
+        "Stationary.Environment.Zwillingssockel36_Base_GER1",
+        "Stationary.Environment.Predictor",
+        "Stationary.Environment.RRH_GER1",
+        "Stationary.Environment.Em_4m_R(H)34_GER1",
+        "Stationary.Environment.Kdo_Hi_Ger35_GER1",
+        "Stationary.Environment.Maschinensatz_15_KW_GER1",
+        "Stationary.Environment.Maschinensatz_8_KW_GER1",
+        "Stationary.Environment.Anlasswagen_(starter)_GER1",
+        "Stationary.Environment.Telega_UK-GER_1",
+        "Stationary.Ammo_Vehicles.All",
+        "Stationary.Ammo_Vehicles.10_5cm_LeFH18_Composition2_GER",
+        "Stationary.Ammo_Vehicles.2cmFlack38_composition1",
+        "Stationary.Ammo_Vehicles.2pdr_AT_composition2_UK1",
+        "Stationary.Ammo_Vehicles.3_7inch_QF_AA_composition2_UK1",
+        "Stationary.Ammo_Vehicles.40mm_Bofors_composition1_GER1",
+        "Stationary.Ammo_Vehicles.40mm_Bofors_composition1_UK1",
+        "Stationary.Ammo_Vehicles.40mm_Bofors_composition2_UK1",
+        "Stationary.Ammo_Vehicles.40mm_Bofors_composition3_UK1",
+        "Stationary.Ammo_Vehicles.8_8cm_Flak18_composition2_GER1",
+        "Stationary.Ammo_Vehicles.BoxWithMGLenta",
+        "Stationary.Ammo_Vehicles.Zwillingssockel_Composition1",
+        "Stationary.Ford_G917_CargoAmmo2",
+        "Stationary.Krupp_L2H43_Protze_Flak38_Zwillingssockel36_CargoAmmo6",
+        "Stationary.Krupp_L2H43_Protze_open_CargoAmmo4",
+        };    
+
     
 
     //public static List<string> MO_Detritus = new List<string> { "Stationary.Environment.SandBagWall_Line_4m", "Stationary.Environment.FuelDrum_UK1_9", "Stationary.Environment.Zwillingssockel36_Base_GER1", "Stationary.DamagedCar.Opel_Blitz_tent_MDG", "Stationary.Environment.Anlasswagen_(starter)_GER1_DMG1", "Stationary.Environment.Anlasswagen_(starter)_GER1_DMG1", "Stationary.Environment.TentStaffSmall_GER1_DMG1", "Stationary.Environment.TentTroopLarge_GER1_DMG1", "Stationary.Environment.TentZeltbahnBig_GER1_DMG1", "Stationary.Environment.TentMedicLarge_UK1_DMG1", "Stationary.Environment.Starter_UK1_DMG1", "Stationary.Environment.Kdo_Hi_Ger35_GER1_DMG1", "Stationary.Environment.Ladder_UK2_DMG1", "Stationary.Environment.Maschinensatz_15_KW_GER1_DMG1", "Stationary.Environment.TelegaBallon_UK1_DMG1", "Stationary.Environment.Gulaschkanone_GER1_DMG1", "Stationary.Environment.BombSled_GER1_DMG1", "Stationary.Environment.Telega_UK-GER_1_DMG1", "Stationary.Damaged.Airfield.Planelifter_UK2_DMG1", "Stationary.Environment.FieldKitchen_UK1_DMG1", "Stationary.Environment.Ladder_UK1_DMG1", "Stationary.Environment.RRH_GER1_DMG1", };
@@ -20670,8 +20699,8 @@ added Rouen Flak
                 { MO_MobileObjectiveThings.GBFighters, new MO_ThingsTypeNumberRadius( MO_GBFighters, 2, 62, 20 ) },
                 { MO_MobileObjectiveThings.GBBombers, new MO_ThingsTypeNumberRadius( MO_GBBombers, 3, 102, 20) },
                 { MO_MobileObjectiveThings.Sentry, new MO_ThingsTypeNumberRadius(MO_Sentry, 7, 150, 1) },
-                { MO_MobileObjectiveThings.Trenches, new MO_ThingsTypeNumberRadius(MO_Sandbags, 110, 175, 0.25) },
-                { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 10, 180, 0.2, 0.75) },
+                { MO_MobileObjectiveThings.Trenches, new MO_ThingsTypeNumberRadius(MO_Sandbags, 10, 175, 0.25) },
+                { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 5, 180, 0.2, 0.75) },
                 { MO_MobileObjectiveThings.Small_Radar, new MO_ThingsTypeNumberRadius(MO_Small_Radar, 2, 200, 20) },
 
 
@@ -20681,13 +20710,13 @@ added Rouen Flak
         { MO_MobileObjectiveType.SecretAirbaseDE,
             new Dictionary<MO_MobileObjectiveThings, MO_ThingsTypeNumberRadius>() {
 
-                { MO_MobileObjectiveThings.Humans, new MO_ThingsTypeNumberRadius( MO_Humans, 8, 30,30) },
+                { MO_MobileObjectiveThings.Humans, new MO_ThingsTypeNumberRadius( MO_Humans, 1, 30,30) },
                 { MO_MobileObjectiveThings.Buildings, new MO_ThingsTypeNumberRadius( MO_Buildings, 2, 20, 20) },
                 { MO_MobileObjectiveThings.DEFighters, new MO_ThingsTypeNumberRadius( MO_DEFighters, 3, 65, 20) },
                 { MO_MobileObjectiveThings.DEBombers, new MO_ThingsTypeNumberRadius( MO_DEBombers, 3, 95, 20) },
                 { MO_MobileObjectiveThings.Sentry, new MO_ThingsTypeNumberRadius(MO_Sentry, 7, 150, 1) },
-                { MO_MobileObjectiveThings.Sandbags, new MO_ThingsTypeNumberRadius(MO_Sandbags, 10, 175, 0.25) },
-                { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 12, 179, 0.2, 0.75) },
+                { MO_MobileObjectiveThings.Sandbags, new MO_ThingsTypeNumberRadius(MO_Sandbags, 5, 175, 0.25) },
+                { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 5, 179, 0.2, 0.75) },
                 { MO_MobileObjectiveThings.Small_Radar, new MO_ThingsTypeNumberRadius(MO_Small_Radar, 2, 200, 20) },
 
             }
@@ -20697,12 +20726,12 @@ added Rouen Flak
          { MO_MobileObjectiveType.SecretAircraftResearchGB,
             new Dictionary<MO_MobileObjectiveThings, MO_ThingsTypeNumberRadius>() {
 
-                { MO_MobileObjectiveThings.Humans, new MO_ThingsTypeNumberRadius( MO_Humans, 7, 15, 12) },
+                { MO_MobileObjectiveThings.Humans, new MO_ThingsTypeNumberRadius( MO_Humans, 1, 15, 12) },
                 { MO_MobileObjectiveThings.Tables, new MO_ThingsTypeNumberRadius( MO_Buildings, 3, 40, 20) },
                 { MO_MobileObjectiveThings.DEFighters, new MO_ThingsTypeNumberRadius( MO_DEFighters, 3, 65, 20) },
                 { MO_MobileObjectiveThings.DEBombers, new MO_ThingsTypeNumberRadius( MO_DEBombers, 4, 85, 20) },
                 { MO_MobileObjectiveThings.Sentry, new MO_ThingsTypeNumberRadius(MO_Sentry, 7, 135, 1) },
-                { MO_MobileObjectiveThings.Sandbags, new MO_ThingsTypeNumberRadius(MO_Sandbags, 8, 155, 0.25) },
+                { MO_MobileObjectiveThings.Sandbags, new MO_ThingsTypeNumberRadius(MO_Sandbags, 5, 155, 0.25) },
                 { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, true, 5, 70, 162, 3) },
                 { MO_MobileObjectiveThings.Small_Radar, new MO_ThingsTypeNumberRadius(MO_Small_Radar,true, 1, 5, 200, 20) },
 
@@ -20712,12 +20741,12 @@ added Rouen Flak
          { MO_MobileObjectiveType.SecretAircraftResearchDE,
             new Dictionary<MO_MobileObjectiveThings, MO_ThingsTypeNumberRadius>() {
 
-                { MO_MobileObjectiveThings.Humans, new MO_ThingsTypeNumberRadius( MO_Humans, 7, 15, 12) },
+                { MO_MobileObjectiveThings.Humans, new MO_ThingsTypeNumberRadius( MO_Humans, 1, 15, 12) },
                 { MO_MobileObjectiveThings.Tables, new MO_ThingsTypeNumberRadius( MO_Buildings, 3, 40, 20) },
                 { MO_MobileObjectiveThings.GBFighters, new MO_ThingsTypeNumberRadius( MO_GBFighters, 3, 60, 20) },
                 { MO_MobileObjectiveThings.GBBombers, new MO_ThingsTypeNumberRadius( MO_GBBombers, 4, 80, 20) },
                 { MO_MobileObjectiveThings.Sentry, new MO_ThingsTypeNumberRadius(MO_Sentry, 7, 135, 1) },
-                { MO_MobileObjectiveThings.Sandbags, new MO_ThingsTypeNumberRadius(MO_Sandbags, 10, 155, 0.25) },
+                { MO_MobileObjectiveThings.Sandbags, new MO_ThingsTypeNumberRadius(MO_Sandbags, 5, 155, 0.25) },
                 { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs,true, 5, 70, 161, 2) },
                 { MO_MobileObjectiveThings.Small_Radar, new MO_ThingsTypeNumberRadius(MO_Small_Radar, true, 1, 7, 200, 20) },
 
@@ -20732,8 +20761,8 @@ added Rouen Flak
                 { MO_MobileObjectiveThings.Tents, new MO_ThingsTypeNumberRadius(MO_Tents, true, 2, 15, 25, 10, shps: tentShapes) },
                 { MO_MobileObjectiveThings.Trucks, new MO_ThingsTypeNumberRadius(MO_Trucks, 7, 35, 5, shps: truckShapes) },
                 { MO_MobileObjectiveThings.Sentry, new MO_ThingsTypeNumberRadius(MO_Sentry, 5, 50, 2) },
-                { MO_MobileObjectiveThings.Trenches, new MO_ThingsTypeNumberRadius(MO_Trenches, 6, 50, 0.2) },
-                { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, true, 5, 40, 53, 2) },
+                { MO_MobileObjectiveThings.Trenches, new MO_ThingsTypeNumberRadius(MO_Trenches, 5, 50, 0.2) },
+                { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, true, 3, 40, 53, 2) },
                 { MO_MobileObjectiveThings.Small_Radar, new MO_ThingsTypeNumberRadius(MO_Small_Radar, 2, 80, 20) },
 
             }
@@ -20745,10 +20774,10 @@ added Rouen Flak
                 { MO_MobileObjectiveThings.Humans, new MO_ThingsTypeNumberRadius( MO_Humans, 1, 10, 8) },
                 { MO_MobileObjectiveThings.Tents, new MO_ThingsTypeNumberRadius(MO_Tents, 1, 15, 10, shps: tentShapes) },
                 { MO_MobileObjectiveThings.Armor_Tanks, new MO_ThingsTypeNumberRadius(MO_Armor_Tanks, true, 5, 12, 30, 5, shps: truckShapes) },
-                { MO_MobileObjectiveThings.Camo, new MO_ThingsTypeNumberRadius(MO_Camo, 6, 30, 25) },
-                { MO_MobileObjectiveThings.Misc, new MO_ThingsTypeNumberRadius(MO_Misc, 7, 22, 18) },
-                { MO_MobileObjectiveThings.Sandbags, new MO_ThingsTypeNumberRadius(MO_Sandbags, 6, 45, 0.5) },
-                { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 7, 53, 4) },
+                { MO_MobileObjectiveThings.Camo, new MO_ThingsTypeNumberRadius(MO_Camo, 3, 30, 25) },
+                { MO_MobileObjectiveThings.Misc, new MO_ThingsTypeNumberRadius(MO_Misc, 1, 22, 18) },
+                { MO_MobileObjectiveThings.Sandbags, new MO_ThingsTypeNumberRadius(MO_Sandbags, 4, 45, 0.5) },
+                { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 4, 53, 4) },
                 { MO_MobileObjectiveThings.Small_Radar, new MO_ThingsTypeNumberRadius(MO_Small_Radar, 2, 100, 30) },
 
             }
@@ -20760,9 +20789,9 @@ added Rouen Flak
                     { MO_MobileObjectiveThings.Humans, new MO_ThingsTypeNumberRadius( MO_Humans, 1, 10, 8) },
                     { MO_MobileObjectiveThings.Tents, new MO_ThingsTypeNumberRadius(MO_Tents, 8, 20, 15, 0.6, shps: tentShapes) },
                     { MO_MobileObjectiveThings.Armor_Tanks, new MO_ThingsTypeNumberRadius(MO_Armor_Tanks, true, 12, 21, 40, 5, shps: truckShapes) },
-                    { MO_MobileObjectiveThings.Misc, new MO_ThingsTypeNumberRadius(MO_Misc, 4, 25, 20) },
+                    { MO_MobileObjectiveThings.Misc, new MO_ThingsTypeNumberRadius(MO_Misc, 1, 25, 20) },
                     { MO_MobileObjectiveThings.Sandbags, new MO_ThingsTypeNumberRadius(MO_Sandbags, 1, 60, 0.2) },
-                    { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 12, 67, 3 ) },
+                    { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 6, 67, 3 ) },
                     { MO_MobileObjectiveThings.Small_Radar, new MO_ThingsTypeNumberRadius(MO_Small_Radar, 2, 120, 30) },
                 }
             },
@@ -20793,37 +20822,37 @@ added Rouen Flak
                     { MO_MobileObjectiveThings.Humans, new MO_ThingsTypeNumberRadius( MO_Humans, 1, 15, 12) },
                     { MO_MobileObjectiveThings.Tents, new MO_ThingsTypeNumberRadius(MO_Tents, 4, 17, 12, shps: tentShapes) },
                     { MO_MobileObjectiveThings.Camo, new MO_ThingsTypeNumberRadius(MO_Camo, 8, 40, 25, shps: tentShapes) },
-                    { MO_MobileObjectiveThings.Misc, new MO_ThingsTypeNumberRadius(MO_Misc, 2, 40, 35) },
+                    { MO_MobileObjectiveThings.Misc, new MO_ThingsTypeNumberRadius(MO_Misc, 1, 40, 35) },
                     { MO_MobileObjectiveThings.Sentry, new MO_ThingsTypeNumberRadius(MO_Sentry, 4, 70, 2) },
-                    { MO_MobileObjectiveThings.Sandbags, new MO_ThingsTypeNumberRadius(MO_Sandbags, 6, 75, 0.1) },
-                    { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 8, 83, 5) },
+                    { MO_MobileObjectiveThings.Sandbags, new MO_ThingsTypeNumberRadius(MO_Sandbags, 4, 75, 0.1) },
+                    { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 4, 83, 5) },
                     { MO_MobileObjectiveThings.Small_Radar, new MO_ThingsTypeNumberRadius(MO_Small_Radar, 2, 140, 30) },
                 }
             },
             { MO_MobileObjectiveType.SmallCamoGroup,
                 new Dictionary<MO_MobileObjectiveThings, MO_ThingsTypeNumberRadius>() {
 
-                    { MO_MobileObjectiveThings.Humans, new MO_ThingsTypeNumberRadius( MO_Humans, 6, 12, 10) },
+                    { MO_MobileObjectiveThings.Humans, new MO_ThingsTypeNumberRadius( MO_Humans, 2, 12, 10) },
                     { MO_MobileObjectiveThings.Tents, new MO_ThingsTypeNumberRadius(MO_Tents, 2, 14, 10,shps: tentShapes) },
                     { MO_MobileObjectiveThings.Trucks, new MO_ThingsTypeNumberRadius(MO_Trucks, 3, 40, 5, shps: truckShapes) },
                     { MO_MobileObjectiveThings.Camo, new MO_ThingsTypeNumberRadius(MO_Camo, 4, 30, 17) },
-                    { MO_MobileObjectiveThings.Misc, new MO_ThingsTypeNumberRadius(MO_Misc, 8, 30, 17) },
+                    { MO_MobileObjectiveThings.Misc, new MO_ThingsTypeNumberRadius(MO_Misc, 1, 30, 17) },
                     { MO_MobileObjectiveThings.Sentry, new MO_ThingsTypeNumberRadius(MO_Sentry, 2, 50, 2) },
-                    { MO_MobileObjectiveThings.Sandbags, new MO_ThingsTypeNumberRadius(MO_Sandbags, 6, 45, 0.1) },
-                    { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 6, 60, 5) },
+                    { MO_MobileObjectiveThings.Sandbags, new MO_ThingsTypeNumberRadius(MO_Sandbags, 4, 45, 0.1) },
+                    { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 3, 60, 5) },
                 }
             },
             { MO_MobileObjectiveType.HighCommandPost,
                 new Dictionary<MO_MobileObjectiveThings, MO_ThingsTypeNumberRadius>() {
 
-                    { MO_MobileObjectiveThings.Humans, new MO_ThingsTypeNumberRadius( MO_Humans, 8, 3, 2, randomizeHowMany: false) },
+                    { MO_MobileObjectiveThings.Humans, new MO_ThingsTypeNumberRadius( MO_Humans, 3, 3, 2, randomizeHowMany: false) },
                     { MO_MobileObjectiveThings.Tents, new MO_ThingsTypeNumberRadius(MO_StaffTents, 2, 3, 2,shps: tentShapes, randomizeHowMany: false) },
                     { MO_MobileObjectiveThings.HQCars, new MO_ThingsTypeNumberRadius(MO_HQCars, 2, 3, 3, randomizeHowMany: false ) },
-                    { MO_MobileObjectiveThings.Camo, new MO_ThingsTypeNumberRadius(MO_Camo_small, 8, 26, 5) },
+                    { MO_MobileObjectiveThings.Camo, new MO_ThingsTypeNumberRadius(MO_Camo_small, 6, 26, 5) },
                     //{ MO_MobileObjectiveThings.Misc, new MO_ThingsTypeNumberRadius(MO_Misc, 8, 31, 5) },
                     { MO_MobileObjectiveThings.Sentry, new MO_ThingsTypeNumberRadius(MO_Sentry, 4, 34, 5) },
                     { MO_MobileObjectiveThings.Trucks, new MO_ThingsTypeNumberRadius(MO_Trucks, 8, 25, 3) },
-                    { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 8, 33.5, 1) },
+                    { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 4, 33.5, 1) },
                 }
             },
             { MO_MobileObjectiveType.MobileRadar1,
@@ -20831,11 +20860,11 @@ added Rouen Flak
 
                     { MO_MobileObjectiveThings.Humans, new MO_ThingsTypeNumberRadius(MO_Humans,5, 12, 7 )},
                     { MO_MobileObjectiveThings.Trucks, new MO_ThingsTypeNumberRadius(MO_Trucks, 5, 40, 10, shps: truckShapes )},
-                    { MO_MobileObjectiveThings.Tables, new MO_ThingsTypeNumberRadius(MO_Tables, 5, 15, 7 )},
+                    { MO_MobileObjectiveThings.Tables, new MO_ThingsTypeNumberRadius(MO_Tables, 1, 15, 7 )},
                     { MO_MobileObjectiveThings.Radar, new MO_ThingsTypeNumberRadius(MO_Radar, 2, 15, 10 )},
                     { MO_MobileObjectiveThings.Camo, new MO_ThingsTypeNumberRadius(MO_Camo, 2, 15, 13) },
-                    { MO_MobileObjectiveThings.Sandbags, new MO_ThingsTypeNumberRadius(MO_Sandbags, 8, 65, 0.3) },
-                    { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 6, 71, 3) },
+                    { MO_MobileObjectiveThings.Sandbags, new MO_ThingsTypeNumberRadius(MO_Sandbags, 6, 65, 0.3) },
+                    { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 4, 71, 3) },
 
                 }
             },
@@ -20844,11 +20873,11 @@ added Rouen Flak
                     { MO_MobileObjectiveThings.Buildings, new MO_ThingsTypeNumberRadius(MO_Buildings, 1, 3, 3 )},
                     { MO_MobileObjectiveThings.Humans, new MO_ThingsTypeNumberRadius(MO_Humans,1, 25, 20 )},
                     { MO_MobileObjectiveThings.Trucks, new MO_ThingsTypeNumberRadius(MO_Trucks,3, 50, 20, shps: truckShapes )},
-                    { MO_MobileObjectiveThings.Tables, new MO_ThingsTypeNumberRadius(MO_Tables, 3, 25, 20 )},
+                    { MO_MobileObjectiveThings.Tables, new MO_ThingsTypeNumberRadius(MO_Tables, 1, 25, 20 )},
                     { MO_MobileObjectiveThings.Camo, new MO_ThingsTypeNumberRadius(MO_Camo, 2, 30, 25) },
                     { MO_MobileObjectiveThings.Radar, new MO_ThingsTypeNumberRadius(MO_Radar, 3, 30, 20 )},
-                    { MO_MobileObjectiveThings.Sandbags, new MO_ThingsTypeNumberRadius(MO_Sandbags, 8, 75, 0.2) },
-                    { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 7, 85, 7) },
+                    { MO_MobileObjectiveThings.Sandbags, new MO_ThingsTypeNumberRadius(MO_Sandbags, 4, 75, 0.2) },
+                    { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 3, 85, 7) },
 
                 }
             },
@@ -20856,7 +20885,7 @@ added Rouen Flak
                     new Dictionary<MO_MobileObjectiveThings, MO_ThingsTypeNumberRadius>(){
 
                     { MO_MobileObjectiveThings.Trucks, new MO_ThingsTypeNumberRadius(MO_Trucks, 2, 40, 20 )},
-                    { MO_MobileObjectiveThings.Tables, new MO_ThingsTypeNumberRadius(MO_Tables, 4, 4, .3 )},
+                    { MO_MobileObjectiveThings.Tables, new MO_ThingsTypeNumberRadius(MO_Tables, 1, 4, .3 )},
                     //{ MO_MobileObjectiveThings.Camo, new MO_ThingsTypeNumberRadius(MO_Camo, 1, 8, 3) },
                     { MO_MobileObjectiveThings.Small_Radar, new MO_ThingsTypeNumberRadius(MO_Small_Radar, 1, 120, 30) },
 
@@ -21036,11 +21065,11 @@ added Rouen Flak
             { MO_MobileObjectiveType.AASite,
                     new Dictionary<MO_MobileObjectiveThings, MO_ThingsTypeNumberRadius>(){
                     
-                    { MO_MobileObjectiveThings.AntiAirGuns, new MO_ThingsTypeNumberRadius(MO_AntiAirGuns, 6, 20, 18 )},
-                    { MO_MobileObjectiveThings.AntiAirNets, new MO_ThingsTypeNumberRadius(MO_AntiAirNets, 3, 20, 18 )},
-                    { MO_MobileObjectiveThings.AntiAirMisc, new MO_ThingsTypeNumberRadius(MO_AntiAirMisc, 3, 20, 18 )},
-                    { MO_MobileObjectiveThings.AntiAirVehicles, new MO_ThingsTypeNumberRadius(MO_AntiAirVehicles, 5, 30, 10 )},
-                    { MO_MobileObjectiveThings.AntiAirAmmo, new MO_ThingsTypeNumberRadius(MO_AntiAirAmmo, 4, 20, 18 )},
+                    { MO_MobileObjectiveThings.AntiAirGuns, new MO_ThingsTypeNumberRadius(MO_AntiAirGuns, 4, 20, 18 )},
+                    { MO_MobileObjectiveThings.AntiAirNets, new MO_ThingsTypeNumberRadius(MO_AntiAirNets, 2, 20, 18 )},
+                    { MO_MobileObjectiveThings.AntiAirMisc, new MO_ThingsTypeNumberRadius(MO_AntiAirMisc, 1, 20, 18 )},
+                    { MO_MobileObjectiveThings.AntiAirVehicles, new MO_ThingsTypeNumberRadius(MO_AntiAirVehicles, 3, 30, 10 )},
+                    { MO_MobileObjectiveThings.AntiAirAmmo, new MO_ThingsTypeNumberRadius(MO_AntiAirAmmo, 2, 20, 18 )},
                     
 
                 }
@@ -21052,9 +21081,9 @@ added Rouen Flak
                     
                     { MO_MobileObjectiveThings.AntiAirGuns, new MO_ThingsTypeNumberRadius(MO_AntiAirGuns, 2, 5, 4, randomizeHowMany: false )},
                     { MO_MobileObjectiveThings.AntiAirNets, new MO_ThingsTypeNumberRadius(MO_AntiAirNets, 1, 5, 4, prob: .15, randomizeHowMany: false  )},
-                    { MO_MobileObjectiveThings.AntiAirMisc, new MO_ThingsTypeNumberRadius(MO_AntiAirMisc, 1, 6, 5,prob: .25, randomizeHowMany: false  )},
-                    { MO_MobileObjectiveThings.AntiAirVehicles, new MO_ThingsTypeNumberRadius(MO_AntiAirVehicles, 1, 8, 3,prob: .85, randomizeHowMany: false  )},
-                    { MO_MobileObjectiveThings.AntiAirAmmo, new MO_ThingsTypeNumberRadius(MO_AntiAirAmmo, 1, 8, 3, prob: .5 , randomizeHowMany: false )},
+                    { MO_MobileObjectiveThings.AntiAirMisc, new MO_ThingsTypeNumberRadius(MO_AntiAirAmmo_Misc, 1, 6, 5,prob: .35, randomizeHowMany: false  )},
+                    { MO_MobileObjectiveThings.AntiAirVehicles, new MO_ThingsTypeNumberRadius(MO_AntiAirVehicles, 1, 8, 3,prob: .65, randomizeHowMany: false  )},
+                    //{ MO_MobileObjectiveThings.AntiAirAmmo, new MO_ThingsTypeNumberRadius(MO_AntiAirAmmo, 1, 8, 3, prob: .5 , randomizeHowMany: false )},
                     
 
                 }

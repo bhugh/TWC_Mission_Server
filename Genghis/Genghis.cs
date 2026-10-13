@@ -19642,12 +19642,14 @@ added Rouen Flak
     }
 
     //removes any craters, smoke, or fire statics within the given radius.  Typically used for airport but could be for anything.
-    public void removeSmokeFireCraters(Point3d p, double radius_m, int percentToRemove = 100, int maxWait_s = 355)
+    public int removeSmokeFireCraters(Point3d p, double radius_m, int percentToRemove = 100, int maxWait_s = 355)
     {
+
         //Console.WriteLine("Main: Removing smokeFireCraters Loc:{0}/{1} r:{2} pctto remove:{3}", new object[] { p.x, p.y, radius_m, percentToRemove });
-        Calcs.removeStatics(GamePlay, this, p.x, p.y, radius_m, types_to_remove: new List<string> {
+        int count = Calcs.removeStatics(GamePlay, this, p.x, p.y, radius_m, types_to_remove: new List<string> {
             "Smoke1", "Smoke2", "BuildingFireSmall", "BuildingFireBig", "BigSitySmoke_0", "BigSitySmoke_1", "BombCrater" }, percentToRemove: percentToRemove, replaceThem: false, maxWait_s: maxWait_s);
         //"crater", "smoke", "fire" });
+        return count;
     }
 
     public int MO_MissionObjectivesNear(Point3d p, double dist_m)
@@ -32941,15 +32943,16 @@ GroundStationary[] gs = GamePlay.gpGroundStationarys(250000, 252000, 1000); //Fi
     //gpGroundStationarys()
     //army, can specify 0=nn, 1=gb, 2=de which will remove the statics matching that country only
     //amry=-1 removes all
-    public static void removeStatics(maddox.game.IGamePlay GamePlay, Mission msn, double x, double y, double radius_m, List<string> types_to_remove = null, int percentToRemove = 100, int army = -1, List<string> types_to_retain = null, bool preserveOnWater = false, bool replaceThem = false, int maxWait_s = 355) //types is a SUBSTRING MATCH and CASE INSENSITIVE
+    public static int removeStatics(maddox.game.IGamePlay GamePlay, Mission msn, double x, double y, double radius_m, List<string> types_to_remove = null, int percentToRemove = 100, int army = -1, List<string> types_to_retain = null, bool preserveOnWater = false, bool replaceThem = false, int maxWait_s = 355) //types is a SUBSTRING MATCH and CASE INSENSITIVE
     {
         //Task.Run(() => //Don't TASK RUN for anything that changes anything ==> server crashes!!!!
         {
+            int count = 0;
             Console.WriteLine("mainmission removeStatics: Starting");
             try
             {
                 ISectionFile f = GamePlay.gpCreateSectionFile();
-				int count = 0;
+				
                 List<GroundStationary> ggList = new List<GroundStationary>(GamePlay.gpGroundStationarys(x, y, radius_m).ToList());
                 
 				//if (ggList != null) foreach (GroundStationary gg in ggList) //all stationaries w/i given radiusr meters of this object
@@ -32988,7 +32991,7 @@ GroundStationary[] gs = GamePlay.gpGroundStationarys(250000, 252000, 1000); //Fi
                         //Don't include NAME for now as it now includes stuff like the objective ID
                         //string types = gg.Title + gg.Type.ToString() + gg.Name + gg.Category;
                         string types = gg.Title + gg.Type.ToString() + gg.Category;
-                        if (types.Contains("tank") && msn.ON_TESTSERVER) Console.WriteLine("RemoveStatic - checking: {0} ", types);
+                        //if (types.Contains("tank") && msn.ON_TESTSERVER) Console.WriteLine("RemoveStatic - checking: {0} ", types);
 
 
 
@@ -33060,11 +33063,79 @@ GroundStationary[] gs = GamePlay.gpGroundStationarys(250000, 252000, 1000); //Fi
                     
                     });
                 }
+                return count;
             }
-            catch (Exception ex) { Console.WriteLine("removeStatics ERROR: " + ex.ToString()); }
+            catch (Exception ex) { 
+                Console.WriteLine("removeStatics ERROR: " + ex.ToString()); 
+                return count; 
+            }
 
         }  //); //end task.run();
     }
+
+    public static int removeAllDeadStatics(maddox.game.IGamePlay GamePlay, Mission msn,  double radius_m = 0,  Point3d center = new Point3d(), bool fast = true) //types is a SUBSTRING MATCH and CASE INSENSITIVE.  addX will add a giant white X in the middle (marks center of destroyed objectives for repair/resupply missions)
+    {
+        int count = 0;
+        try 
+        {
+            
+            List<GroundStationary> ggList = new List<GroundStationary>();
+
+            if (radius_m ==0 ) ggList = new List<GroundStationary>(GamePlay.gpGroundStationarys().ToList());
+            else ggList = new List<GroundStationary>(GamePlay.gpGroundStationarys(center.x, center.y, radius_m).ToList());
+            
+
+            for (int i = ggList.Count - 1; i >= 0; i--)
+
+            {
+                var gg = ggList[i];
+                
+                try
+                {
+                    
+
+                    if (gg == null) continue;
+                    
+                
+                    
+                    //if (msn.ON_TESTSERVER) Console.WriteLine("DeleteDeadStatics: (before): {0:N2} {1:N2} Alive: {2}",gg.pos.x, gg.pos.y, gg.IsAlive);
+
+                    if (gg.IsAlive) continue;					                       
+                    
+                    ggDestroyedList.Add(gg);
+                    
+                    if (fast) {
+                        //msn.Timeout(0, () => { 
+                        if (msn.ON_TESTSERVER) Console.WriteLine("Destroy Dead Ground: Destroying {0} {1} {2}", gg.Title, gg.Name, gg.Type); 
+                        gg.Destroy(); 
+                        //Console.WriteLine("Clean Enemy Ground: Destroying (after) isNull: {0}", gg == null); 
+                        //});  
+                    } else {
+                        if (msn.ON_TESTSERVER) Console.WriteLine("Destroy Dead Ground: Destroying {0} {1} {2}", gg.Title, gg.Name, gg.Type); 
+                        msn.Timeout(clc_random.Next(5, 60), () => { gg.Destroy();  });  //somewhat cheap way to avoid deleting items in ggList while looping through it, but also spreads the removal of stationaries over 5 mins or so instead of just zapping them all at once, which usually						looks fake.
+                    }
+                    
+                    
+                    if (msn.ON_TESTSERVER) Console.WriteLine("Remove Dead: removing static {0} {1} {2}", gg.Title, gg.Name, gg.Type );
+                    count++;
+                }
+                catch (Exception ex)
+                {
+                    if (gg != null) Console.WriteLine("removeDeadStatics Loop ERROR: Couldn't do something with name {0}, error: {1}", gg.Name, ex);
+                    else { Console.WriteLine("removeDeadStatics Loop ERROR: couldn't do anything with a NULL static ERROR" + ex); }
+                }
+            }
+                
+			
+            Console.WriteLine("removeAllDeadStatics: Removed {0} items ... ", count);
+            return count;
+        }
+        catch (Exception ex) { 
+            Console.WriteLine("removeDeadStatics ERROR: " + ex.ToString()); 
+            return count; 
+        }
+
+    } 
 	
 	//avoid destroying/replacing a particular groundactor more than 1x
 	private static HashSet<GroundStationary> ggDestroyedList = new HashSet<GroundStationary>();

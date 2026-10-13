@@ -414,22 +414,33 @@ public class ThreadLoadMission : AMission
 
 		List<GroundStationary> stationaries = GamePlay.gpGroundStationarys().ToList();
 		int startNum = stationaries.Count;
+		int numRemoved = 0;
 		Console.WriteLine("Net local slots full! [FMB Sync/FAST Console Intercept] - number of stationaries: " + startNum);
 
-		mainmission.removeSmokeFireCraters(new Point3d(150000, 150000,0), radius_m: 300000, percentToRemove:10, maxWait_s: 60);				
+		int deadStaticsRemoved = Calcs.removeAllDeadStatics(GamePlay, mainmission, radius_m: 0, fast: true);
+
+		numRemoved += deadStaticsRemoved;
+
+		int cratersRemoved = mainmission.removeSmokeFireCraters(new Point3d(150000, 150000,0), radius_m: 300000, percentToRemove:10, maxWait_s: 60);				
+
+		numRemoved += cratersRemoved;
+
+		int staticsRemoved = 0;
 
 		if (timeSinceLastCall_s < 180)
 		{
 			double pctToRemove = 5  + handleNetworkSlotsFull_timesCalled_10Min * 2.5;
 			if (pctToRemove > 22) pctToRemove = 22;
-			Calcs.removeStatics(GamePlay, mainmission, 150000, 150000, radius_m: 300000, percentToRemove: (int)pctToRemove, replaceThem: false, maxWait_s: 60);
+			staticsRemoved = Calcs.removeStatics(GamePlay, mainmission, 150000, 150000, radius_m: 300000, percentToRemove: (int)pctToRemove, replaceThem: false, maxWait_s: 60);
 			
 		}
+		numRemoved += staticsRemoved;
 
 		Timeout(70, () =>
 		{
 			List<GroundStationary> stationaries2 = GamePlay.gpGroundStationarys().ToList();
 			Console.WriteLine("Net local slots full - result! [FMB Sync/FAST Console Intercept] - number of stationaries after removals: " + startNum);
+			Console.WriteLine("Net local slots full - result! Removed: {0} total, {1} dead, {2} craters, {3} statics", numRemoved, deadStaticsRemoved, cratersRemoved, staticsRemoved);
 			
 		} );
 
@@ -437,7 +448,7 @@ public class ThreadLoadMission : AMission
 
 
 		
-	}
+	}	
 	
 	public DateTime lastCrash = DateTime.Now;
 	public DateTime lastFileSave = DateTime.Now.AddHours(-1);
@@ -875,10 +886,12 @@ public class ConsoleInterceptor : TextWriter
 					Console.WriteLine("================================================================================");
 					Console.WriteLine(_lineBuffer.ToString());
 					
-					threadloadmission.OnUnhandledException(
+					/*threadloadmission.OnUnhandledException(
 						"Steam Shutdown (TWC)", 
 						"Steam Shutting Down! OnSteamShutdown triggered [FMB Sync/FAST Console Intercept]"
 					);
+					*/
+					threadloadmission.handleNetworkSlotsFull();
 				}
 			}
 			_lineBuffer.Clear();			
@@ -901,7 +914,7 @@ public class ConsoleInterceptor : TextWriter
 		//if (len <searchDist) searchDist = len;
 		len = len.Clamp(0,18); //the first ERROR Is always within the first 13 chars or so but 18 for safety [12343234] ERROR [SYSTEM] = 16 chars
 
-        for (int i = 0; i < len - 5; i++) //len -5 because "ERROR" has 5 digits
+        for (int i = 0; i < len; i++) // can do len -5 because "ERROR" has 5 digits but System.Exception etc hs more complex, so...
         {
 			//ci._originalOutput.WriteLine("\n>>> FOUND [ <<<\n");
 			//Console.WriteLine("\n>>> FOUND [ <<<\n");
@@ -912,12 +925,13 @@ public class ConsoleInterceptor : TextWriter
             {
 				//ci._originalOutput.WriteLine("\n>>> FOUND CHAR <<<\n"); //OK don't do this (print an E to console) as it leads to stack overflow
 				//Console.WriteLine("\n>>> FOUND CHAR <<<\n");
-                if (sb[i+1] == 'R' && sb[i+2] == 'R' && sb[i+3] == 'O' && sb[i+4] == 'R'
+                if (sb[i+1] == 'R' && sb[i+2] == 'R' && sb[i+3] == 'O' && sb[i+4] == 'R' ||
+					sb[i+1] == 'x' && sb[i+2] == 'c' && sb[i+3] == 'e' && sb[i+4] == 'p' && sb[i+5] == 't' && sb[i+6] == 'i' && sb[i+7] == 'o' && sb[i+8] == 'n' 
 					   //&& sb[i+5] == 'M'
 						//&& sb[i+6] == 'M' && sb[i+7] == ']' 
 						) {
 					//ci._originalOutput.WriteLine("\n>>> FOUND ERROR <<<\n"); //OK don't do this either (print an E to console, or especially not the whole word ERROR as it is the word we are searching for) as it leads to stack overflow
-					//Console.WriteLine("\n>>> FOUND ERROR <<<\n");
+					//Console.WriteLine("\n>>> FOUND ONE (Threadload) <<<\n");
                     return true;
 				}
             }

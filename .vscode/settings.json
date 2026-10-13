@@ -1,10 +1,12 @@
-{
+﻿{
   "csharp.validateSemantic": true,
   "omnisharp": {
     "projects": {
       "strictMode": true
     }
-  }
+  },
   "problems.maxNumber": 10000,
-  "problems.decorations.enabled": true
+  "problems.decorations.enabled": true,
+  "files.encoding": "utf8bom",
+  "files.autoGuessEncoding": false
 }

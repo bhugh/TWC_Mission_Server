@@ -1,4 +1,4 @@
-#define DEBUG  
+﻿#define DEBUG  
 #define TRACE  
 //$reference System.Core.dll
 //$reference parts/core/Strategy.dll
@@ -3635,7 +3635,7 @@ public string listPositionCurrentCoverAircraft(Player player = null, bool displa
                         vel_mph = CoverCalcs.meterspsec2milesphour(CoverCalcs.distance(airGroup.Vwld().x, airGroup.Vwld().y));
                         vel = ((double)(CoverCalcs.RoundInterval(vel_mph * 1, 5)) / 1).ToString("F0") + "mph";
                     }
-                    msg = "#" + count.ToString() + " " + mi_10 + bearing_10.ToString("F0") + "Â°" + ang + " " + vel + heading_10.ToString("F0") + "Â°" + " - " + numAC + "x" + CoverCalcs.GetAircraftType(aircraft);
+                    msg = "#" + count.ToString() + " " + mi_10 + bearing_10.ToString("F0") + "°" + ang + " " + vel + heading_10.ToString("F0") + "°" + " - " + numAC + "x" + CoverCalcs.GetAircraftType(aircraft);
                 }
 				
 				//if (mainmission.ON_TESTSERVER) Console.WriteLine("LCA #5");
@@ -6583,7 +6583,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             
             //if (!heavyBomber) actual_delay = delay * 4; //experiment, kinda worked?  but maybe 2* instead of 4*?
             //Only re-arm the heartbeat if this group is STILL active; otherwise a stale Timeout
-            //would fire on a dead airgroup and hit setTask() â†’ NullReferenceException.
+            //would fire on a dead airgroup and hit setTask() -> NullReferenceException.
             if (coverAircraftAirGroupsActive.ContainsKey(airGroup))
             {
                 Timeout(actual_delay, () => keepAircraftOnTask_recurs(airGroup, task, aawpt, player, delay, heavyBomber, isStrikeAC, isPlayerStrikeAC, AltDiff_m, AltDiff_range_m, AltDiffBomber_m, AltDiffBomber_range_m, AltDiffPlayerEscort_m, AltDiffPlayerEscort_range_m));
@@ -7152,7 +7152,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                 tasktarget = null;
             }
             
-            if (task != AiAirGroupTask.DO_NOTHING)
+            if (task != AiAirGroupTask.DO_NOTHING && tasktarget != null)
             {
                 //perhaps we need to set the task AFTER the updatewaypoints thing has happened?               
                 if (airGroup != null && coverAircraftAirGroupsActive.ContainsKey(airGroup)) airGroup.setTask(task, tasktarget);

@@ -435,6 +435,7 @@ public class ThreadLoadMission : AMission
 			
 		}
 		numRemoved += staticsRemoved;
+		Console.WriteLine("Net local slots full - result! Removed: {0} total, {1} dead, {2} craters, {3} statics", numRemoved, deadStaticsRemoved, cratersRemoved, staticsRemoved);
 
 		Timeout(70, () =>
 		{

@@ -606,7 +606,7 @@ public class Mission : AMission, IMainMission
     //public int END_MISSION_TICK = 1680000; //14 Hours
     //public int END_MISSION_TICK = 1980000; //16.5 Hours, starting at 4:45am and ending at 9:15pm.
     //public int END_MISSION_TICK = 960000; //8 Hours, starting at 7:50am and ending at 3:15pm.  Could possibly go even 15 mins earlier to 7:15?  And a little later?
-    public double MISSION_LENGTH_HRS = 3.0; //For SUMMER. 4.15-20.05 = 15.90 hrs.  So abt 2x8hr sessions.
+    public double MISSION_LENGTH_HRS = 8.0; //For SUMMER. 4.15-20.05 = 15.90 hrs.  So abt 2x8hr sessions. //2026-10-14 - cut it to 3.0 hrs due to problems, now back to 8.0 hrs to test "fixes"
     //public double MISSION_LENGTH_HRS = 6.0; //6.0 is ideal for AUTUMN map - 6.15-17.25 gives two equal sessions about 5.6 hours each, but 6.0+5.1 worked fine/better
     // 8.0 makes 2X 8hr missions per day; 5.3333; makes 3X missions per day //720000; //6.4 //2021/07: was 10, trying shorter to see if it will fix long load times?
     //2026/10 - setting from 8.0 back to 3.0 to try to stop server borking as time gets longer
@@ -761,7 +761,7 @@ public class Mission : AMission, IMainMission
                                          //CHange this MANUALLY once the files/directories/etc renamed & moved
                 SERVER_ID = "Twin Grandsons of Khan"; //Used by General Situation Map app or maybe not used by anything at all???
                 SERVER_ID_SHORT = "Twin Grandsons of Khan"; //Used by General Situation Map app for transfer filenames.  Should be the same for any files that run on the same server, but different for different servers       
-                CAMPAIGN_ID = "Son of Khan"; //Used to name the filename that saves state for this campaign that determines which map the campaign will use, ie -R001, -B003 etc.  So any missions that are part of the same overall campaign should use the same CAMPAIGN_ID while any missions that happen to run on the same server but are part of a different campaign should have a different CAMPAIGN_ID
+                CAMPAIGN_ID = "Twin Grandsons of Khan"; //Used to name the filename that saves state for this campaign that determines which map the campaign will use, ie -R001, -B003 etc.  So any missions that are part of the same overall campaign should use the same CAMPAIGN_ID while any missions that happen to run on the same server but are part of a different campaign should have a different CAMPAIGN_ID
             }
             string localPath =  Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments).ToLower();
             
@@ -790,11 +790,12 @@ public class Mission : AMission, IMainMission
 			//50000/win30000 gets Red Theville, Querqueville, Crepon, Le Havre, Dieppe, Berck, Boulogne Alprecht, Colembert, Hermelinghen, Calais Marck, Oye Plage, Provisional Grand-Fort Phillipe
 			//6/2026: Red goals: all of Canterbury, Shoreham, Ford, Tangmere, Bembridge, Sandown
 			//Blue: all of Oye Plage, Colembert, Boulogne Alprecht, Berck, Dieppe, Le Havre
-            MAP_WIN_POINTS = 30000; 
+            MAP_WIN_POINTS = 20000;  //was 30000 for TGS of K 2026-06->10. 
             if (ON_JUBILEE) MAP_WIN_POINTS = 14000;
             //MAP_FRONTLINE_OFFSET = 12000; //we can start the map off-centered from the center of the Channel, brent 2024/03/19
 			//MAP_FRONTLINE_OFFSET = 0; //we can start the map off-centered from the center of the Channel, brent 2024/03/19
-			MAP_FRONTLINE_OFFSET = -12000; //we can start the map off-centered from the center of the Channel, brent 2024/03/19
+			MAP_FRONTLINE_OFFSET = 0; //we can start the map off-centered from the center of the Channel, brent 2024/03/19
+            ///was -12000 for TGS of K 2026-06->10.  This put it around the edge of the coast of England
             //if (ON_TESTSERVER) MAP_WIN_POINTS = 20000; //testing where we are planning to move win_points in the future
 
             DEBUG = false;
@@ -3681,7 +3682,7 @@ public class Mission : AMission, IMainMission
         double military_strength_red = MO_AllMilitaryStrength_averaged(ArmiesE.Red);
         double military_strength_blue = MO_AllMilitaryStrength_averaged(ArmiesE.Blue);
 
-        string msg0 = "****Overall Campaign Objective - BLUE: Push the front line all the way past, and capture/claim ANY TWO of these airfields simultaneously, using <makelg: Canterbury, Shoreham, Ford, Tangmere, Bembridge, Sandown";
+        string msg0 = "****Overall Campaign Objective - BLUE: Push the front line all the way past, and capture/claim these airfields simultaneously: Canterbury, Deal (north or south)";
         outputmsg += msg0 + Environment.NewLine;
         if (output) Timeout(delay_s, () => { gpLogServerAndLog(recipients, msg0, null); });
         delay_s += 0.04;
@@ -3696,7 +3697,7 @@ public class Mission : AMission, IMainMission
 		//6/2026: Blue goals: all of Canterbury, Shoreham, Ford, Tangmere, Bembridge, Sandown
 			//Red: all of Oye Plage, Colembert, Boulogne Alprecht, Berck, Dieppe, Le Havre
 
-        string msg02 = "****RED: Push the front line all the way past, and capture/claim ANY TWO of these airfields simultaneously, using <makelg: Oye Plage, Colembert, Boulogne Alprecht, Berck, Dieppe, Le Havre.";
+        string msg02 = "****RED: Push the front line all the way past, and capture/claim these airfields simultaneously: Colembert, Calais Marck";
         outputmsg += msg02 + Environment.NewLine + Environment.NewLine;
         //msg01 = "Use command <makelg - details at https://forums.twcpilots.com/showthread.php?tid=512&pid=1933";
         if (output) Timeout(delay_s, () => { gpLogServerAndLog(recipients, msg02, null); });
@@ -4283,7 +4284,7 @@ public class Mission : AMission, IMainMission
         {
             double mapState = CampaignMapState;
             var f2 = GamePlay.gpCreateSectionFile();
-            for (double i = -2; i <= 2; i += 0.1)
+            for (double i = -3.1; i <= 3.1; i += 0.1)
             {
                 f2 = DrawFrontLinesPerMapState(-MAP_WIN_POINTS, MAP_WIN_POINTS, i * MAP_WIN_POINTS / 100, saveName: "FrontLines-test_" + (i * 100).ToString("F0") + ".mis", loadSectionFile: false, f2: f2, test: true, campaign_offset_ext: MAP_FRONTLINE_OFFSET); //2022-03-21 - WAS 100, NOW 125
 
@@ -4598,7 +4599,7 @@ public class Mission : AMission, IMainMission
             Console.WriteLine("Frontline: mapState {0:F2}  maxMapState_ext {1:F2} minMapState_ext {2:F2}", mapState, maxMapState_ext, minMapState_ext);
             //This is the CORRECT way, we can do it after Jubilee is done
             double slowdownpoint = 1;
-            double slowdownrate = 3;
+            double slowdownrate = 1.5;
             if (mapState > slowdownpoint * maxMapState_int) mapState = maxMapState_int * slowdownpoint + (mapState - slowdownpoint * maxMapState_int) / slowdownrate; //2022-07-31: was 20, now 19.  2022-12, now 15.  This is to make it a bit easier to move the front line onto land
             if (mapState < slowdownpoint * minMapState_int) mapState = minMapState_int * slowdownpoint + (mapState - slowdownpoint * minMapState_int) / slowdownrate;
 
@@ -15950,7 +15951,8 @@ public class Mission : AMission, IMainMission
             {
                 //we could WAIT to do this for a few minutes unti lthe dust settles
                 //OR we could recalculate it periodically?
-                int num = msn.GamePlay.gpGroundStationarys(Pos.x, Pos.y, trigger_destroy_radius).ToList().Count;
+                //int num = msn.GamePlay.gpGroundStationarys(Pos.x, Pos.y, trigger_destroy_radius).ToList().Count;
+                int num = Calcs.getGroundStationarys_safe(msn.GamePlay,Pos.x, Pos.y, trigger_destroy_radius).Count;
                 if (num < 10) num = 10;
                 TotalInitialObjects_num = num;
             }
@@ -16378,7 +16380,8 @@ public class Mission : AMission, IMainMission
 
             ThingsToSave_stillAlive = ret.stillAlive;
 
-            if (msn.ON_TESTSERVER) Console.WriteLine("ThingsToSave, returning: alive: {0} numNeeded {1} numFOund: {2}", ret.stillAlive, ret.numNeeded, ret.numFound);
+            //if (msn.ON_TESTSERVER) 
+            Console.WriteLine("ThingsToSave, returning: alive: {0} numNeeded {1} numFOund: {2}", ret.stillAlive, ret.numNeeded, ret.numFound);
             return ret;
             
         }
@@ -16535,56 +16538,71 @@ public class Mission : AMission, IMainMission
             try
             {
                 double checkRadius_m = (radius * 10).Clamp(10000, 50000);
-
+                if (msn.ON_TESTSERVER) Console.WriteLine("tallyTempFlakScore 1 radius {0} for {1} at {2:N0},{3:N0}", checkRadius_m, ID, Pos.x, Pos.y);
                 // 1️⃣ Fetch ground stationaries OUTSIDE the lock
-                List<GroundStationary> gs = msn.GamePlay.gpGroundStationarys(Pos.x, Pos.y, checkRadius_m).ToList();
+                //List<GroundStationary> gs = msn.GamePlay.gpGroundStationarys(Pos.x, Pos.y, checkRadius_m).ToList();
+
+                List<GroundStationary> gs = Calcs.getGroundStationarys_safe(msn.GamePlay,Pos.x, Pos.y, checkRadius_m);
+
+                if (msn.ON_TESTSERVER) Console.WriteLine("tallyTempFlakScore 2 gs {0}", gs.Count);
 
                 // 2️⃣ Brief lock just to get the flak‑location list reference
                 List<AutoFlak_location> flakLocations;
                 lock (msn.AutoFlak_locations_lock)
                 {
                     if (msn.AutoFlak_locations == null ||
-                        !msn.AutoFlak_locations.Keys.Contains(ID) ||
+                        !msn.AutoFlak_locations.ContainsKey(ID) || // Bonus tip: ContainsKey is faster than Keys.Contains
                         msn.AutoFlak_locations[ID] == null)
                         return 0;
 
-                    flakLocations = msn.AutoFlak_locations[ID]; // snapshot
+                    // This creates a shallow copy snapshot of the list
+                    flakLocations = new List<AutoFlak_location>(msn.AutoFlak_locations[ID]); 
                 }
+
+                if (msn.ON_TESTSERVER) Console.WriteLine("tallyTempFlakScore 3 flakLocations {0}", flakLocations.Count);
 
                 // 3️⃣ Process each flak position WITHOUT holding the lock
                 foreach (var afl in flakLocations)
-                {
-                    if (afl.dead) grandTotal ++;
-                    //if (afl.numItemsRemaining <= 0) continue;
-                    
+                { 
 
-                    // Expensive operation – no lock held
-                    int newNumItemsRemaining = Calcs.CountMatchingGroundObjectsIn(gs, afl.stationaryPrefix, matchAliveState: true);  //get only LIVE remaining objs
-                        //if (msn.ON_TESTSERVER) Console.WriteLine ("tempFlakTally for {0} flakpos {1} newremaining {2}", ID, afl.stationaryPrefix, newNumItemsRemaining);
+                    try {
+                        if (afl.dead) grandTotal ++;
+                        //if (afl.numItemsRemaining <= 0) continue;
+                        
+                        if (msn.ON_TESTSERVER) Console.WriteLine("tallyTempFlakScore 4 flakpos {0} index is num {1} remaining {2} dead {3} % {4}", ID, afl.numItems, afl.numItemsRemaining, afl.dead, afl.percentRemaining);
+                        // Expensive operation – no lock held
+                        int newNumItemsRemaining = Calcs.CountMatchingGroundObjectsIn(gs, afl.stationaryPrefix, matchAliveState: true);  //get only LIVE remaining objs
+                            //if (msn.ON_TESTSERVER) Console.WriteLine ("tempFlakTally for {0} flakpos {1} newremaining {2}", ID, afl.stationaryPrefix, newNumItemsRemaining);
 
-                    if (newNumItemsRemaining >= afl.numItemsRemaining) continue;
+                        if(msn.ON_TESTSERVER) Console.WriteLine("tallyTempFlakScore 5 flakpos {0} index is num {1} remaining {2} newremaining {3} dead {4} % {5}", ID, afl.numItems, afl.numItemsRemaining, newNumItemsRemaining, afl.dead, afl.percentRemaining);
 
-                    // 4️⃣ Minimal lock only for the state update
-                    lock (msn.AutoFlak_locations_lock)
-                    {
-                         if (msn.AutoFlak_locations == null ||
-                        !msn.AutoFlak_locations.Keys.Contains(ID) ||
-                        msn.AutoFlak_locations[ID] == null)
-                        continue;
-
-                        // Re‑check inside the lock in case another thread already updated this entry
-                        if (!msn.AutoFlak_locations[ID].Contains(afl) || afl.dead) continue;
+                        if (newNumItemsRemaining >= afl.numItemsRemaining) continue;
+       
 
                         afl.numItemsRemaining = newNumItemsRemaining;
-                        afl.percentRemaining = (double)afl.numItemsRemaining / (double)afl.numItems;
 
-                        if (!afl.dead &&  (afl.percentRemaining <= 0.5 || afl.numItemsRemaining <= 1) )
+                        if (msn.ON_TESTSERVER) Console.WriteLine("tallyTempFlakScore 6 flakpos {0} index is num {1} remaining {2} newremaining {3} dead {4} % {5}", ID, afl.numItems, afl.numItemsRemaining, newNumItemsRemaining, afl.dead, afl.percentRemaining);
+
+                        //basically killing TWO of the items
+                        //will kill the position
+                        if (!afl.dead &&  (afl.percentRemaining <= 0.5 || afl.numItemsRemaining <= 1 || afl.numItems-afl.numItemsRemaining >=2) )
                         {
                             afl.dead = true;
                             newlyKilled++;
                         }
-                         //if (msn.ON_TESTSERVER) Console.WriteLine ("tempFlakTally, some killed, for {0} flakpos {1} index is num {2} remaining {3} newremaining {4} dead {5} % {6}", ID, afl.stationaryPrefix, afl.numItems, afl.numItemsRemaining, newNumItemsRemaining, afl.dead, afl.percentRemaining);
+                        if (msn.ON_TESTSERVER) Console.WriteLine ("tempFlakTally, some killed, for {0} flakpos {1} index is num {2} remaining {3} newremaining {4} dead {5} % {6}", ID, afl.stationaryPrefix, afl.numItems, afl.numItemsRemaining, newNumItemsRemaining, afl.dead, afl.percentRemaining);
+                        //msn.AutoFlak_locations[ID][afl] = afl;
+                        
                     }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("MO - tallyTempFlakScoreLOOP ERROR: " + ex.Message);
+                    }
+                }
+
+                lock (msn.AutoFlak_locations_lock)
+                {
+                    msn.AutoFlak_locations[ID] = flakLocations;
                 }
 
                 if (total) return grandTotal;
@@ -17818,12 +17836,17 @@ public class Mission : AMission, IMainMission
             //addTrigger(MO_ObjectiveType.Military_Armored_Vehicles, "Ashford Train Depot Armour", "Ashf", "", "", 1, 3, "BTarget3", "TGroundDestroyed", 18, 214639, 235604, 250, false, 100, 196, "", add);
             addPointArea(MO_ObjectiveType.Military_Armored_Vehicles, "Ashford Train Depot Armour", "Ashf", "", 1, 4, "BTarget3", 214639, 235604, 250, 300, 4000, 14, 0, 150, 196, true, true, 2, 2, "", add, true, "");
 
-            addPointArea(MO_ObjectiveType.Railroad_Bridge, "Harrietsham Railroad Bridge", "Ashf", "", 1, 5, "HarrietshamRRBridge", 204185, 244512, 18, 18, 4000, 3, 0, 150, 360, false, true, 1, 2, "", add, true, "");
+            addPointArea(MO_ObjectiveType.Railroad_Bridge, "Harrietsham Railroad Bridge", "Ashf", "", 1, 5, "HarrietshamRRBridge", 204185, 244512, 18, 18, 4000, 3, 0, 150, 360, false, true, 1, 2, "", add, false, "");
 
-            addPointArea(MO_ObjectiveType.Railroad_Bridge, "Lyminge Railroad Bridge", "Hawk", "", 1, 5, "LymingeRRBridge", 231047, 232329, 12, 12, 4000, 3, 0, 150, 360, false, true, 1, 2, "", add, true, "");
+            addPointArea(MO_ObjectiveType.Railroad_Bridge, "Lyminge Railroad Bridge", "Hawk", "", 1, 5, "LymingeRRBridge", 231047, 232329, 12, 12, 4000, 3, 0, 150, 360, false, true, 1, 2, "", add, false, "");
 
             addTrigger(MO_ObjectiveType.Ground_Aircraft, "Littlestone Bomber Squadron Aircraft", "Litt", "", "", 1, 3, "BTarget1", "TGroundDestroyed", 20, 222303, 221176, 300, false, 100, 196, "", add);
+
             addTrigger(MO_ObjectiveType.Airfield_Complex, "Redhill Bomber Squadron Aircraft ", "Redh", "", "", 1, 5, "BTarget2", "TGroundDestroyed", 20, 143336, 240806, 550, false, 5, 196, "", add);
+
+            addPointArea(MO_ObjectiveType.Dam, "Lydd Retention Dam", "", "genghis-LOADONCALL-LyddDam.mis", 1, 4, "LyddDam", 214197, 212181, 100, 100,  000, 10, 0, 150, 196,false, false, 2, 2, "", add, false, destroyedSub: "genghis-LOADONCALL-LyddDam-disabled.mis");
+
+            addPointArea(MO_ObjectiveType.Dam, "Bremes Retention Dam", "", "genghis-LOADONCALL-BremesDam.mis", 2, 4, "BremesDam", 291945, 205820, 190, 190, 4000, 14, 0, 150, 196,false, false, 2, 2, "", add, false, destroyedSub: "genghis-LOADONCALL-BremesDam-disabled.mis");
             
             //addTrigger(MO_ObjectiveType.Ground_Aircraft, "Manston aircraft", "Mans", "", "", 1, 3, "BTarget4", "TGroundDestroyed", 75, 247462, 259157, 250, false, 100, 196, "", add);
             addTrigger(MO_ObjectiveType.Military_Vehicles, "Armoured Column @ Dover", "Dove", "", "", 1, 5, "BTarget5", "TGroundDestroyed", 43, 243887, 236956, 200, false, 100, 196, "", add);
@@ -18333,9 +18356,9 @@ public class Mission : AMission, IMainMission
             addMobile(MO_ObjectiveType.MilitaryHeadquarters, "Canterbury Mobile Secret Resistance Training Center", "", 1, 5, "BCanterburyCamoGroup", 245118, 253057, 250, 200, 4000, 15, 0, 160, 450, true, true, 1, 10, MO_MobileObjectiveType.CamoGroup, 80, 228118, 240057, 247785, 256399, 1, 9, MO_ProducerOrStorageType.None, "", add);
 
 
-            addMobile(MO_ObjectiveType.HighCommandPost, "Westerham Mobile High Command Post (NO BOMBS!)", "", 1, 12, "WesterhamHighCommandPost", 162033, 232000, 45, 45, 0, 30, 0, 170, 330, false, false, 1, 2, MO_MobileObjectiveType.HighCommandPost, 36, 153000, 246000, 175000, 222000, 1, 8, MO_ProducerOrStorageType.None, "No bombs, must kill outer defense while leaving center untouched", addNewOnly: false, mo_trigger_type: MO_TriggerType.NoBombs, things_to_save: new Dictionary<string,int> () {{"MG_TA", 2}, {"humans", 8}, {"tent", 2}}, log_message: "{army} captured Westerham High Command general staff! Valuable intel gathered!", hud_message: "{army} captured Westerham High Command Staff!", thingstosave_destroyed_message: ">>>The Westerham High Command General Staff was KILLED instead of CAPTURED! Objective not achieved; no intelligence gathered!", explanation: "Neutralize the general staff escorts and guard on the periphery, but preserve the General Staff in the center for capture by our agents. NO BOMBS! Pinpoint accurate strafing!", canbedisabled: false);
+            addMobile(MO_ObjectiveType.HighCommandPost, "Westerham Mobile High Command Post (NO BOMBS!)", "", 1, 12, "WesterhamHighCommandPost", 162033, 232000, 45, 45, 0, 30, 0, 170, 330, false, false, 1, 2, MO_MobileObjectiveType.HighCommandPost, 36, 153000, 246000, 175000, 222000, 1, 8, MO_ProducerOrStorageType.None, "No bombs, must kill outer defense while leaving center untouched", addNewOnly: false, mo_trigger_type: MO_TriggerType.NoBombs, things_to_save: new Dictionary<string,int> () {{"MG_TA", 1}, {"humans", 6}, {"tent", 1}}, log_message: "{army} captured Westerham High Command general staff! Valuable intel gathered!", hud_message: "{army} captured Westerham High Command Staff!", thingstosave_destroyed_message: ">>>The Westerham High Command General Staff was KILLED instead of CAPTURED! Objective not achieved; no intelligence gathered!", explanation: "Neutralize the general staff escorts and guard on the periphery, but preserve the General Staff in the center for capture by our agents. NO BOMBS! Pinpoint accurate strafing!", canbedisabled: false);
 
-            addMobile(MO_ObjectiveType.HighCommandPost, "Denton Mobile High Command Post (NO BOMBS!)", "", 1, 12, "DentonHighCommandPost", 232033, 239000, 45, 45, 0, 30, 0, 170, 330, false, false, 1, 2, MO_MobileObjectiveType.HighCommandPost, 36, 223210, 247340, 249319, 236309, 1, 8, MO_ProducerOrStorageType.None, "No bombs, must kill outer defense while leaving center untouched", addNewOnly:false, mo_trigger_type: MO_TriggerType.NoBombs,things_to_save: new Dictionary<string,int> () {{"MG_TA", 2}, {"humans", 8}, {"tent", 2}}, log_message: "{army} captured Denton High Command general staff! Valuable intel gathered!", hud_message: "{army} captured Denton High Command Staff!", thingstosave_destroyed_message: ">>>The Denton High Command General Staff was KILLED instead of CAPTURED! Objective not achieved; no intelligence gathered!", explanation: "Neutralize the general staff escorts and guard on the periphery, but preserve the General Staff in the center for capture by our agents. NO BOMBS! Pinpoint accurate strafing!", canbedisabled: false);
+            addMobile(MO_ObjectiveType.HighCommandPost, "Denton Mobile High Command Post (NO BOMBS!)", "", 1, 12, "DentonHighCommandPost", 232033, 239000, 45, 45, 0, 30, 0, 170, 330, false, false, 1, 2, MO_MobileObjectiveType.HighCommandPost, 36, 223210, 247340, 249319, 236309, 1, 8, MO_ProducerOrStorageType.None, "No bombs, must kill outer defense while leaving center untouched", addNewOnly:false, mo_trigger_type: MO_TriggerType.NoBombs,things_to_save: new Dictionary<string,int> () {{"MG_TA", 1}, {"humans", 6}, {"tent", 1}}, log_message: "{army} captured Denton High Command general staff! Valuable intel gathered!", hud_message: "{army} captured Denton High Command Staff!", thingstosave_destroyed_message: ">>>The Denton High Command General Staff was KILLED instead of CAPTURED! Objective not achieved; no intelligence gathered!", explanation: "Neutralize the general staff escorts and guard on the periphery, but preserve the General Staff in the center for capture by our agents. NO BOMBS! Pinpoint accurate strafing!", canbedisabled: false);
 
        
 
@@ -20845,7 +20868,12 @@ added Rouen Flak
             { MO_MobileObjectiveType.HighCommandPost,
                 new Dictionary<MO_MobileObjectiveThings, MO_ThingsTypeNumberRadius>() {
 
-                    { MO_MobileObjectiveThings.Humans, new MO_ThingsTypeNumberRadius( MO_Humans, 3, 3, 2, randomizeHowMany: false) },
+
+                    //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                    //DON'T adjust humants, stafftents, or HQCars here without ALSO adjusting the same values in the
+                    //"thingstosave" list in all the items that use this objective type.  Otherwise the objective will
+                    //be impossible to achieve.
+                    { MO_MobileObjectiveThings.Humans, new MO_ThingsTypeNumberRadius( MO_Humans, 8, 3, 2, randomizeHowMany: false) },
                     { MO_MobileObjectiveThings.Tents, new MO_ThingsTypeNumberRadius(MO_StaffTents, 2, 3, 2,shps: tentShapes, randomizeHowMany: false) },
                     { MO_MobileObjectiveThings.HQCars, new MO_ThingsTypeNumberRadius(MO_HQCars, 2, 3, 3, randomizeHowMany: false ) },
                     { MO_MobileObjectiveThings.Camo, new MO_ThingsTypeNumberRadius(MO_Camo_small, 6, 26, 5) },
@@ -21378,7 +21406,11 @@ added Rouen Flak
             bool destroyObjects = false; //mostly we just "kill" the objects/actors which makes them "dead" but still in the sim
             if (destroyObj && mo.MOMobileObjectiveType != MO_MobileObjectiveType.None) destroyObjects = true; //for mobile objective types that are actually MOVING though we actually cart.destroy() the items so that they are not on the map or on the ground any more.
 
-            List<GroundStationary> gs = new List<GroundStationary>(GamePlay.gpGroundStationarys(mo.Pos.x, mo.Pos.y, searchRadius_m + 40).ToList());
+            //List<GroundStationary> gs = new List<GroundStationary>(GamePlay.gpGroundStationarys(mo.Pos.x, mo.Pos.y, searchRadius_m + 40).ToList());
+
+            List<GroundStationary> gs = new List<GroundStationary>(Calcs.getGroundStationarys_safe(GamePlay,mo.Pos.x, mo.Pos.y, searchRadius_m + 40).ToList());
+
+
             ISectionFile f = GamePlay.gpCreateSectionFile();
 			
 			if (addX) {
@@ -21698,7 +21730,9 @@ added Rouen Flak
 
             int count = 0;
 
-            List<GroundStationary> gs = new List<GroundStationary>(GamePlay.gpGroundStationarys(mo.Pos.x, mo.Pos.y, rad).ToList());
+            //List<GroundStationary> gs = new List<GroundStationary>(GamePlay.gpGroundStationarys(mo.Pos.x, mo.Pos.y, rad).ToList());
+
+            List<GroundStationary> gs = new List<GroundStationary>(Calcs.getGroundStationarys_safe(GamePlay,mo.Pos.x, mo.Pos.y, rad));
             int foundCount = 0;
             if (gs != null) foundCount = gs.Count;
 
@@ -22322,7 +22356,7 @@ added Rouen Flak
             if (testTempFlakNumPilots > 0 && testTempFlakNumPilots > nump) nump = testTempFlakNumPilots;
             //if (nump > 50) return;
 
-            if (ON_TESTSERVER) nump = 90;//FOR TESTING
+            if (ON_TESTSERVER) nump = 11;//FOR TESTING
 
             tempFlak_Lifetime_s = 95; //default/starting situation
             double sectionFileDelay_s = 2.42324;
@@ -22495,13 +22529,30 @@ added Rouen Flak
     }
 
     //tempflak only lives for 2 minutes or so
+    //This is called ONActorCreated; if the Actor is a TempFlak then we wait the # of seconds
+    //then destroy the actor & remove the base & "explodey thing" we have placed with the flak
     public void handleTempflakSpawn(string shortname, AiActor actor) {
         try
         {
+            if (actor == null) return;
             if (!shortname.Contains(tempFlakPrefix)) return;
+
+            if (ON_TESTSERVER) Console.WriteLine("handleTempflakSpawn for {0}, killing in {1} seconds", shortname, tempFlak_Lifetime_s);
+            
+            double x = actor.Pos().x;
+            double y = actor.Pos().y;
             Timeout(tempFlak_Lifetime_s, () =>
              {
-                 if (actor != null) (actor as AiCart).Destroy();
+                if (ON_TESTSERVER) Console.WriteLine("handleTempflakSpawn for {0}, killing NOW", shortname);
+                if (actor != null) (actor as AiCart).Destroy();
+                  
+                //remove the base 
+                int count = Calcs.removeStatics(GamePlay, this, x, y, radius_m: 4, types_to_remove: new List<string> () { "Zwillingssockel36_Base_GER1", "Stationary.Environment.FuelDrum_UK1_9"}, percentToRemove: 100, replaceThem: false, maxWait_s: 60);
+
+                if (ON_TESTSERVER) Console.WriteLine("handleTempflakSpawn for {0}, killed NOW, plus {1} statics removed", shortname, count);
+                  
+
+                 
              });
         }
         catch (Exception ex)
@@ -23155,6 +23206,7 @@ added Rouen Flak
                 int realNIB = Convert.ToInt32(nib * temp.percentRemaining);
                 //So just hitting it cuts #of flak by 50% right off the bat
                 if (nib>=2 && realNIB > nib/2.0) realNIB = Convert.ToInt32(nib/2.0);
+                if (realNIB < 2 && random.Next(100) < 50) realNIB = 0; //if only one in battery, and the area's been hit, just 50% of placing anything now
                 if (temp.dead) realNIB = 0;
 
                 Console.WriteLine("Handling autoFlak/tempFlakPlacement for {0} {1} {2} {3} numItems placed: {4} Remaining: {5} numInBattery orig: {6} now: {7} Pct Remaining: {8:N0} AFL dead? {9}", mo.ID, mo.Pos.x, mo.Pos.y, mo.OwnerArmy, numItemsPlaced, temp.numItemsRemaining, nib, realNIB, temp.percentRemaining*100, temp.dead);
@@ -23211,7 +23263,11 @@ added Rouen Flak
                     "Artillery.Flak30_Shield","Artillery.Flak30_Shield","Artillery.Flak30_Shield","Artillery.Bofors_StandAlone",
                     "Artillery.Flak30_Shield","Artillery.Flak30_Shield","Artillery.Flak30_Shield",                  
                     "Artillery.Bofors_StandAlone", };    
+
                 var flakStands = new List<string> { "Stationary.Environment.Zwillingssockel36_Base_GER1",  };
+
+                List<string> explodeyThings = new List<string> { "Stationary.Environment.FuelDrum_UK1_9", };
+
                 //OK, the artillery chief is one of my prime suspects for the warping/rubberbanding.  Trying to disable them all to see if that helps.  2020/03/07
                 //Next thing to try would be disabling all this autoflak.  It does seem to slow down/tie up the server noticeably.
                 //Trying chiefs onliy for primary targets
@@ -23264,7 +23320,9 @@ added Rouen Flak
                     if (ON_TESTSERVER) Console.WriteLine("Placing flak gun placed for {4} ({6}) at ({0:N0} {1:N0} {2:N0}) heading: {3:N0}, formation: {5}) {6}", Math.Round(newPoint.x), Math.Round(newPoint.y), Math.Round(mo.Pos.z), head, mo.Name, formation, side, tempFlak?"TempFlak":"AutoFlak");
                     //Update - radius_hide how far out the AA looks, so it won't fire until the enemy is closer than this distance
                     f = Calcs.makeStatic(f, GamePlay, this, Math.Round(newPoint.x), Math.Round(newPoint.y), 0, type: flak[flakType], heading: head, side: side, radiusHide: Convert.ToInt32(radiusHide), chiefNum: autoFlakChiefNum, resetCount: resetCount, staticprefix: staticprefix);
-                     f = Calcs.makeStatic(f, GamePlay, this, Math.Round(newPoint.x), Math.Round(newPoint.y), 0, type: flakStands[random.Next(flakStands.Count)], heading: head, side: side,  resetCount: false, staticprefix: staticprefix);
+                    f = Calcs.makeStatic(f, GamePlay, this, Math.Round(newPoint.x), Math.Round(newPoint.y), 0, type: flakStands[random.Next(flakStands.Count)], heading: head, side: side,  resetCount: false, staticprefix: staticprefix);
+                    resetCount = false;
+                    f = Calcs.makeStatic(f, GamePlay, this, Math.Round(newPoint.x+0.5), Math.Round(newPoint.y+1.3), 0, type: explodeyThings[random.Next(explodeyThings.Count)], heading: head, side: side,  resetCount: false, staticprefix: staticprefix);
                     resetCount = false;
                     if (tempFlak) tempFlakTotal++;
                     totalFlakPlaced++;
@@ -25508,8 +25566,10 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
 						Timeout(60, () =>
 						{
 							double numTargets = 0;
-							GroundStationary[] gs = GamePlay.gpGroundStationarys(mo.Pos.x, mo.Pos.y, mo.TriggerDestroyRadius);
-							if (gs != null) numTargets = gs.Length;
+							//GroundStationary[] gs = GamePlay.gpGroundStationarys(mo.Pos.x, mo.Pos.y, mo.TriggerDestroyRadius);
+                            var gs = Calcs.getGroundStationarys_safe(GamePlay,mo.Pos.x, mo.Pos.y, mo.TriggerDestroyRadius);
+							if (gs != null) numTargets = gs.Count();
+
 							//int targetsRequired = Convert.ToInt32((Math.Floor(numTargets * 0.7))); // require 70% of the groundstationaries in the target area.  This should be fairly hard.
 							int targetsRequired = 2;
 							if (numTargets < targetsRequired) targetsRequired = Convert.ToInt32(numTargets);
@@ -27659,8 +27719,12 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
 
             if (!mo.ThingsToSave_stillAlive && mo.ThingsToSave_stillAlive  != saveStillAlive) //just killed the General, or whatever...
             {
+                twcLogServer((Player[])null, "." );                
+                twcLogServer((Player[])null, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" );                
                 twcLogServer((Player[])null, mo.ThingsToSave_destroyed_message );                
                 twcLogServer((Player[])null,">>>You'll have to try " + mo.Name + " again another day, after it has been reactivated with new troops, supplies, and equipment.");
+                twcLogServer((Player[])null, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" );                
+                twcLogServer((Player[])null, "." );                
 
                 //And now it is undestroyed/alldamage repair, for the rest of the mission
                 //And disabled until the end of the mission
@@ -27672,7 +27736,7 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
                 mo.ActorsDestroyed_num = 0;
                 mo.AirfieldDamagePoints = 0;
                 mo.IsEnabled = false; //set to disabled for the rest of this session
-                MO_RemoveObjective(mo, percent: .25, addX: true, delay_s: 900 );
+                MO_RemoveObjective(mo, percent: .85, addX: true, delay_s: 60 );
 
                 return;
             }
@@ -30542,6 +30606,8 @@ public static class Calcs
 
 		return name;
 	}
+
+
 	//This is a bit of a kludge; not sure how else to do it though, for now
 	private static HashSet<string> tobrukTitles = new HashSet<string>()
 	{
@@ -30607,6 +30673,42 @@ public static class Calcs
 		if (tobrukTitles.Contains(title)) title = "tobruk:"+title;
 		return title;
 	}
+
+    //This is a safe version of getGroundStationarys that will try up to 10 times to get the list of ground stationarys
+    //If it fails, it will return an empty list
+    //Plain gpGroundStationarys().ToList() will sometimes fail with an ArgumentOutOfRangeException, if a stationary was destroyed during execution
+    public static List<GroundStationary> getGroundStationarys_safe(IGamePlay GamePlay, double x=0, double y=0, double radius_m = 0)
+    {
+        List<GroundStationary> gs = null;
+        int attempts = 0;
+
+        while (gs == null && attempts < 10)
+        {
+            try
+            {
+                attempts++;
+                // Fetch and convert to list
+                if (radius_m>0) gs = GamePlay.gpGroundStationarys(x, y, radius_m).ToList();
+                else  gs = GamePlay.gpGroundStationarys().ToList();
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                // A stationary was destroyed during execution. Log it if on test server.
+                //if (msn.ON_TESTSERVER) 
+                    Console.WriteLine("ERROR Calcs.getGroundStationarys_safe: Race condition hit on attempt {0}. Retrying...", attempts);
+                
+                // Optional: A tiny sleep to let the simulation thread finish modifying the collection
+                //System.Threading.Thread.Sleep(1); 
+            }
+        }
+
+        // Fallback to an empty list if it somehow failed 10 times in a row
+        if (gs == null)
+        {
+            gs = new List<GroundStationary>();
+        }
+        return gs;
+    }
 
     public static bool isHeavyBomber(AiAircraft aircraft)
     {
@@ -30679,7 +30781,8 @@ public static class Calcs
         if (acType == "") return false;
         bool ret = false;
         //2022-07-31 - added all Hurri types with boms to list, also hurri iid
-        if (acType.Contains("Ju-87") || acType.Contains("Bf-110") || acType.Contains("Beaufighter") || acType.Contains("Ju-88C") || acType.Contains("BlenheimMkIVF") || acType.Contains("BlenheimMkIVNF") || acType.Contains("BlenheimMkIF") || acType.Contains("BlenheimMkINF") || acType.Contains("HurricaneMkIIc") 
+        if (acType.Contains("Ju-87") || acType.Contains("Bf-110") || acType.Contains("Beaufighter") || acType.Contains("Ju-88C") || acType.Contains("BlenheimMkIVF") || acType.Contains("BlenheimMkIVNF") || acType.Contains("BlenheimMkIF") || acType.Contains("BlenheimMkINF") || acType.Contains("HurricaneMkIIb")|| acType.Contains("HurricaneMkIIc") || acType.Contains("HurricaneMkIId")
+        //2026-10 - added both Hurrk IIC and IID to list - IID is a "tank buster" so clearly fits. IIC is slightly more debatable but it helps the Red in various ways (and one way they kept parity in the real war was MORE PLANES even if each plane was worse)
 			/*
 			|| acType.Contains("109E-4B") || acType.Contains("109E-1B") || acType.Contains("109E-3B")
 		|| acType.Contains("109E-4B") || acType.Contains("109E-7")|| acType.Contains("109F-2")
@@ -31362,7 +31465,8 @@ public static class Calcs
         int count = 0;
         string matchstring = "gb";
         if (matcharmy == 2) matchstring = "de";
-        List<GroundStationary> gs = GamePlay.gpGroundStationarys(location.x, location.y, radius_m).ToList();
+        //List<GroundStationary> gs = GamePlay.gpGroundStationarys(location.x, location.y, radius_m).ToList();
+        List<GroundStationary> gs = Calcs.getGroundStationarys_safe(GamePlay,location.x, location.y, radius_m);
         foreach (GroundStationary g in gs)
         {
             //Console.WriteLine("Groundstat " + g.Name + " " + g.country + " " + g.Title + " " + g.Type.ToString());
@@ -31402,7 +31506,7 @@ public static class Calcs
     //If matchAliveState==null then it will match both alive & dead
     //If antiMatch then it does the opposite, of course
     //public static Point3d nullPoint = new Point3d (-1,-1,-1);
-    public static int CountMatchingGroundObjects(this IGamePlay GamePlay, Point3d? location_null = null, double radius_m = 0, string matchTitle = null, AiGroundActorType? matchType = null, string matchName = null, int matcharmy = 0, bool? matchAliveState = true, bool antiMatch = false)
+    public static int CountMatchingGroundObjects(IGamePlay GamePlay, Point3d? location_null = null, double radius_m = 0, string matchTitle = null, AiGroundActorType? matchType = null, string matchName = null, int matcharmy = 0, bool? matchAliveState = true, bool antiMatch = false)
     {
         try
         {
@@ -31415,8 +31519,9 @@ public static class Calcs
 
             List<GroundStationary> gs = new List<GroundStationary>();
 
-            if (radius_m>0) gs = GamePlay.gpGroundStationarys(location.x, location.y, radius_m).ToList();
-            else  gs = GamePlay.gpGroundStationarys().ToList();
+            //if (radius_m>0) gs = GamePlay.gpGroundStationarys(location.x, location.y, radius_m).ToList();
+            //else  gs = GamePlay.gpGroundStationarys().ToList();
+            gs = Calcs.getGroundStationarys_safe(GamePlay,location.x, location.y, radius_m);
 
             foreach (GroundStationary g in gs)
             {
@@ -31982,7 +32087,9 @@ public static class Calcs
                 try
                 {
                     //Stationaries - so not sure if we need to remove these; they are not actors ?!?
-                    List<GroundStationary> gs = GamePlay.gpGroundStationarys(x_m, y_m, radius_m).ToList();
+                    //List<GroundStationary> gs = GamePlay.gpGroundStationarys(x_m, y_m, radius_m).ToList();
+
+                    List<GroundStationary> gs = Calcs.getGroundStationarys_safe(GamePlay,x_m, y_m, radius_m);
                     if (gs != null) foreach (GroundStationary g in gs)
                         {
                             try
@@ -32099,7 +32206,8 @@ public static class Calcs
         string myCountry = "gb";
         if (myArmy == 2) myCountry = "de";
 
-        foreach (GroundStationary sta in GamePlay.gpGroundStationarys(x, y, radius))
+        //foreach (GroundStationary sta in GamePlay.gpGroundStationarys(x, y, radius))
+        foreach (GroundStationary sta in Calcs.getGroundStationarys_safe(GamePlay, x, y, radius))
         {
             if (sta == null) continue;
             if (sta.country != myCountry) return true;
@@ -32114,7 +32222,8 @@ public static class Calcs
         string enemyCountry = "de";
         if (myArmy == 2) enemyCountry = "gb";
 
-        foreach (GroundStationary sta in GamePlay.gpGroundStationarys(x, y, radius))
+        //foreach (GroundStationary sta in GamePlay.gpGroundStationarys(x, y, radius))
+        foreach (GroundStationary sta in Calcs.getGroundStationarys_safe(GamePlay, x, y, radius))
         {
             if (sta == null) continue;
             if (sta.country == enemyCountry) return true;
@@ -32656,7 +32765,8 @@ GroundStationary[] gs = GamePlay.gpGroundStationarys(250000, 252000, 1000); //Fi
             //GamePlay.gpLogServer(null, "Deleting stationary bomb effects . . . ", new object[] { });
             Point2d P = new Point2d(x, y);
             //GamePlay.gpRemoveGroundStationarys(P, 10); //this is part of TF_extensions and doesn't work; it just fails silently when the timeout is called & entire timeout fails to run
-            foreach (GroundStationary sta in GamePlay.gpGroundStationarys(x, y, 2))
+            //foreach (GroundStationary sta in GamePlay.gpGroundStationarys(x, y, 2))
+            foreach (GroundStationary sta in Calcs.getGroundStationarys_safe(GamePlay, x, y, 2))
             {
                 if (sta == null) continue;
                 Console.WriteLine("Deleting " + sta.Name + " " + sta.Title);
@@ -32690,7 +32800,8 @@ GroundStationary[] gs = GamePlay.gpGroundStationarys(250000, 252000, 1000); //Fi
             if (t == "BombCrater_firmSoil_EXlargekg")
             {
                 ttemp = "BombCrater_firmSoil_largekg";
-                lines = 2;
+                //lines = 2;
+                lines = 1; //trying to cut down statics 2026/10/14
             }
 
             //use all the various types/colors etc of craters
@@ -32937,7 +33048,8 @@ GroundStationary[] gs = GamePlay.gpGroundStationarys(250000, 252000, 1000); //Fi
     {
         int count = 0;
         int count2 = 0;
-        List<GroundStationary> ggList = new List<GroundStationary>(GamePlay.gpGroundStationarys().ToList());
+        //List<GroundStationary> ggList = new List<GroundStationary>(GamePlay.gpGroundStationarys().ToList());
+        List<GroundStationary> ggList = Calcs.getGroundStationarys_safe(GamePlay);
         foreach (GroundStationary gg in ggList) 
         {
             //var match = types_to_remove.FirstOrDefault(stringToCheck => stringToCheck.Contains(gg.Category));
@@ -32982,7 +33094,9 @@ GroundStationary[] gs = GamePlay.gpGroundStationarys(250000, 252000, 1000); //Fi
             {
                 ISectionFile f = GamePlay.gpCreateSectionFile();
 				
-                List<GroundStationary> ggList = new List<GroundStationary>(GamePlay.gpGroundStationarys(x, y, radius_m).ToList());
+                //List<GroundStationary> ggList = new List<GroundStationary>(GamePlay.gpGroundStationarys(x, y, radius_m).ToList());
+
+                List<GroundStationary> ggList = Calcs.getGroundStationarys_safe(GamePlay, x, y, radius_m);
                 
 				//if (ggList != null) foreach (GroundStationary gg in ggList) //all stationaries w/i given radiusr meters of this object
 				
@@ -33110,8 +33224,10 @@ GroundStationary[] gs = GamePlay.gpGroundStationarys(250000, 252000, 1000); //Fi
             
             List<GroundStationary> ggList = new List<GroundStationary>();
 
-            if (radius_m ==0 ) ggList = new List<GroundStationary>(GamePlay.gpGroundStationarys().ToList());
-            else ggList = new List<GroundStationary>(GamePlay.gpGroundStationarys(center.x, center.y, radius_m).ToList());
+            //if (radius_m ==0 ) ggList = new List<GroundStationary>(GamePlay.gpGroundStationarys().ToList());
+            //else ggList = new List<GroundStationary>(GamePlay.gpGroundStationarys(center.x, center.y, radius_m).ToList());
+
+            ggList = Calcs.getGroundStationarys_safe(GamePlay, center.x, center.y, radius_m);
             
 
             for (int i = ggList.Count - 1; i >= 0; i--)
@@ -33202,8 +33318,10 @@ GroundStationary[] gs = GamePlay.gpGroundStationarys(250000, 252000, 1000); //Fi
 
                 if (addX) f = Calcs.makeStatic(f, GamePlay, msn, xPos.x, xPos.y, 0, "Stationary.Environment.Polotnische_X_white_1", 0, "nn", staticprefix: "replace_enemy_statics");
 
-                if (radius_m ==0 ) ggList = new List<GroundStationary>(GamePlay.gpGroundStationarys().ToList());
-                else ggList = new List<GroundStationary>(GamePlay.gpGroundStationarys(center.x, center.y, radius_m).ToList());
+                //if (radius_m ==0 ) ggList = new List<GroundStationary>(GamePlay.gpGroundStationarys().ToList());
+                //else ggList = new List<GroundStationary>(GamePlay.gpGroundStationarys(center.x, center.y, radius_m).ToList());
+
+                ggList = Calcs.getGroundStationarys_safe(GamePlay,center.x, center.y, radius_m);
 				
 				/*
 				for (int i = ggList.Count - 1; i >= 0; i--) {

@@ -311,6 +311,8 @@ public class StatsMission : AMission, IStatsMission
     public string stb_FighterName = "fighter";
     public string stb_BomberSuffix = "(bomber)";
     public string stb_BomberName = "bomber";
+    public string stb_DiveBomberSuffix = "(dive bomber)";
+    public string stb_DiveBomberName = "dive bomber";
     public string stb_StrikeSuffix = "(sturmovik)";
     public string stb_StrikeName = "sturmovik";
 
@@ -8691,14 +8693,16 @@ public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
         //Even though there is technically a Blenheim fighter we're calling it "bomber" for this purpose.  It carries (some) bombs.
         //if (acType.Contains("Ju-88") || acType.Contains("He-111") || acType.Contains("BR-20") || acType.Contains("Blenheim"))
         //if (Calcs.isHeavyBomber(acType) || Calcs.isDiveBomber(acType))
-        if (Calcs.isHeavyBomber(acType))
+
+        if (Calcs.isDiveBomber(acType)) //special career for Stukas
+        {
+            playerBomberFighter = " " + stb_DiveBomberSuffix;
+            
+        } else if (Calcs.isHeavyBomber(acType))
         {
             playerBomberFighter = " " + stb_BomberSuffix;
 
-
-        }
-
-        if (Calcs.isStrikeAC(acType))
+        } else if (Calcs.isStrikeAC(acType) && !acType.Contains("HurricaneMkIIc"))  //HurricaneMkIIc is still classified as a fighter
         {
             playerBomberFighter = " " + stb_StrikeSuffix;
 
@@ -12489,12 +12493,16 @@ public class StbStatRecorder : IStbStatRecorder
 
         //TODO: this could all possibly be handled more gracefully, list of different career types in one place, etc:
         string playerBomberFighter = " " + mission.stb_BomberSuffix;
-        if (playername.EndsWith(playerBomberFighter)) playername.Remove(playername.Length - 9, 9);
+        if (playername.EndsWith(playerBomberFighter)) playername.Remove(playername.Length - playerBomberFighter.Length, playerBomberFighter.Length);
+
+        string playerDiveBomberFighter = " " + mission.stb_DiveBomberSuffix;
+        if (playername.EndsWith(playerDiveBomberFighter)) playername.Remove(playername.Length - playerDiveBomberFighter.Length, playerDiveBomberFighter.Length);        
+        
         string playerStrikeFighter = " " + mission.stb_StrikeSuffix;
 
-        if (playername.EndsWith(playerStrikeFighter)) playername.Remove(playername.Length - 9, 9);
+        if (playername.EndsWith(playerStrikeFighter)) playername.Remove(playername.Length - playerStrikeFighter.Length, playerStrikeFighter.Length);
 
-        string[] names = new string[] { playername, playername + playerBomberFighter, playername + playerStrikeFighter };
+        string[] names = new string[] { playername, playername + playerBomberFighter, playername + playerDiveBomberFighter, playername + playerStrikeFighter };
         int timesincedead = -1;
         int temptimesincedead = -1;
 
@@ -12808,6 +12816,7 @@ public class StbStatRecorder : IStbStatRecorder
             //Calc new RANK
             double divisor = .7; //larger divisor makes it HARDER.  To make it easier, make it range from >0 to <1.  Had it at 1 but on reflection, setting to 0.3 to make it quite a bit easier. Then put it on .6 to make it 2X that hard.
             if (entry.Key.Contains(mission.stb_BomberSuffix)) divisor = 1.9; //bomber pilots are rated basically on kills & damage only, not sorties.  (Since they don't survive for long.)  But this results is some really super-fast promotions for just one good mission.  So we need to calm it down a bit.
+            if (entry.Key.Contains(mission.stb_DiveBomberSuffix)) divisor = 1.9;
             if (entry.Key.Contains(mission.stb_StrikeSuffix)) divisor = 1; //strike pilots are rated basically on kills & damage only, not sorties. But a little less so than Bombers, so calm it down but not so much as bombers.
             if (!stbSr_ResetPlayerStatsWhenKilled) divisor = 5; //If stbSr_ResetPlayerStatsWhenKilled is off, we adjust the ranks to require MUCH higher amounts of kills etc to progress through the ranks. TODO: These divisors should be set in the stats.ini file               & be customizable per server
 
@@ -12878,11 +12887,13 @@ public class StbStatRecorder : IStbStatRecorder
             if (pwops > 0.15 && entry.Value[845] > 3) divisor3 = 1 + pwops / 3;
             if (divisor3 > 2) divisor3 = 2;
             if ((entry.Key.Contains(mission.stb_BomberSuffix)) && divisor3 > 1.1) divisor3 = 1.1; //not too worried about bomber/strike ac pilots writing off planes
+            if ((entry.Key.Contains(mission.stb_DiveBomberSuffix)) && divisor3 > 1.1) divisor3 = 1.1; //not too worried about bomber/strike ac pilots writing off planes
             if ((entry.Key.Contains(mission.stb_StrikeSuffix)) && divisor3 > 1.2) divisor3 = 1.2; //not too worried about bomber/strike ac pilots writing off planes
 
 
             double divisor4 = 1;
             if (entry.Key.Contains(mission.stb_BomberSuffix)) divisor4 = 0.3; //For bomber pilots, who typically have a shorter but more meteoric career, we don't require as much seat time to get a promotion
+            if (entry.Key.Contains(mission.stb_DiveBomberSuffix)) divisor4 = 0.3; //For bomber pilots, who typically have a shorter but more meteoric career, we don't require as much seat time to get a promotion
             if (entry.Key.Contains(mission.stb_StrikeSuffix)) divisor4 = 0.6; //same for strike but not as much
 
             //Some love for pilots who take recon photos
@@ -14314,13 +14325,14 @@ public class StbStatRecorder : IStbStatRecorder
                         }
                         TextInfo myTI = new CultureInfo("en-US", false).TextInfo;
 
-                        sw.WriteLine("<h4>" + myTI.ToTitleCase(mission.stb_BomberName) + " Pilot vs. " + myTI.ToTitleCase(mission.stb_StrikeName) + " Pilot vs. " + myTI.ToTitleCase(mission.stb_FighterName) + " Pilot Careers</h4>");
+                        sw.WriteLine("<h4>" + myTI.ToTitleCase(mission.stb_BomberName) + " Pilot vs. "+ myTI.ToTitleCase(mission.stb_DiveBomberName) + " Pilot vs. " + myTI.ToTitleCase(mission.stb_StrikeName) + " Pilot vs. " + myTI.ToTitleCase(mission.stb_FighterName) + " Pilot Careers</h4>");
                         sw.WriteLine("One of the goals of our missions and campaigns it to make it fun to fly <i> every type of aircraft in the sim. Some aircraft are fast and agile fighters, some can carry tons of ordnance, some can take out individual ground targets with pinpoint accuracy, some can track and enemy and shoot it down at night.  Not every aircraft is going to do well in a head-to-head dogfight with the fastest and most agile air supremacy fighter.  But each and every aircraft had a certain job it could do and do well--or it would have have been built and flown.<p>");
 
                         sw.WriteLine(myTI.ToTitleCase(mission.stb_BomberName) + " pilots in this sim tend to have short but storied careers--it is just a fact of the situation and theater. For that reason, bomber pilot can rise through the ranks very quickly, and with relatively few air-hours and sorties, in comparison with fighter pilots. " + myTI.ToTitleCase(mission.stb_BomberName) + " pilots will want to concentrate on destroying as many ground, naval, and AA targets as possible, while also extending their career through as many sorties as possible, to reach the highest possible rank before their inevitable-but-heroic demise.<p>");
+                        sw.WriteLine(myTI.ToTitleCase(mission.stb_DiveBomberName) + " pilots likewise tend to have short but storied careers. Their accuracy is astonishing - because they take the fight straight to the enemy.  And pay the price.<p>");
                         sw.WriteLine(myTI.ToTitleCase(mission.stb_StrikeName) + " pilots are somewhat similar to bomber pilots. This is a very, very dangerous but important career.  " + myTI.ToTitleCase(mission.stb_StrikeName) + " aircraft--also known as <i>attack aircraft</i>, <i>ground-attack aircraft</i>, <i>attack bomber</i>, <i>strike aircraft</i> (later usage), <i>Schlachtflugzeug</i> (\"battle aircraft\", German), and <i>sturmovik</i> (\"storm-trooper\", Russian)--<a href=\"https://en.wikipedia.org/wiki/Attack_aircraft\">can do it all</a>--whether its taking on enemy bombers, night fighter duty with their on-board radar, taking on enemy fighters (usually with assistance of fighters, when possible), and perhaps most important, taking on the ground attack and close air support duties.  Strike pilots are not as concerned with racking up air-to-air victories--though they <i>can</i> do that and do it well.  But they concentrate just as much on low-level ground support missions, taking out AA and flak with strafing runs or low-level bomb drops, taking out convoys and other important individual ground targets, and other similar missions. For that reason, your strike pilot career is separate from both your bomber pilot career and your fighter pilot career.  Strike pilots can rise through the ranks more quickly than fighter pilots but not as quickly as bomber pilots, and with relatively few air-hours and sorties in comparison with fighter pilots (but more than bomber pilots). " + myTI.ToTitleCase(mission.stb_StrikeName) + " pilots will want to concentrate on destroying as many ground, AA, naval, and enemy bomber targets as possible, while also extending their career through as many sorties as possible, to reach the highest possible rank before their own inevitable-but heroic--demise. " + myTI.ToTitleCase(mission.stb_StrikeName) + " aircraft include the Bf-110, Beaufighter, Blenheim fighter models, Ju-88C models, and Stuka (Ju-87).<p>");
 
-                        sw.WriteLine("Because the career arc of " + myTI.ToTitleCase(mission.stb_BomberName) + " Pilots vs. " + myTI.ToTitleCase(mission.stb_StrikeName) + " Pilots vs. " + myTI.ToTitleCase(mission.stb_FighterName) + " Pilots is so different, you have a separate career as each type of pilot.  Look for--and search for--<i>" + mission.stb_BomberSuffix + "</i> and <i>" + mission.stb_StrikeSuffix + "</i> in the stats listings above to see various types of pilot careers. No suffix at the end of your name indicates your " + mission.stb_FighterName + " pilot career.<p>");
+                        sw.WriteLine("Because the career arc of " + myTI.ToTitleCase(mission.stb_BomberName) + " Pilots vs. " + myTI.ToTitleCase(mission.stb_DiveBomberName) + " Pilots vs. " + myTI.ToTitleCase(mission.stb_StrikeName) + " Pilots vs. " + myTI.ToTitleCase(mission.stb_FighterName) + " Pilots is so different, you have a separate career as each type of pilot.  Look for--and search for--<i>" + mission.stb_BomberSuffix + "</i>,<i>" + mission.stb_DiveBomberSuffix + "</i> and <i>" + mission.stb_StrikeSuffix + "</i> in the stats listings above to see various types of pilot careers. No suffix at the end of your name indicates your " + mission.stb_FighterName + " pilot career.<p>");
 
 
                         sw.WriteLine("<h4>When You Die</h4>");
@@ -15732,6 +15744,7 @@ private FtpWebRequest CreateFtpRequest(string ftpServer, string method, string u
 
             foreach (GroundStationary gg in GamePlay.gpGroundStationarys(x, y, 100)) //all stationaries w/i 10 or whatever meters of this object
             {
+                if (gg == null) continue;
                 Console.WriteLine("Checking " + gg.Name + " for truck removal");
                 string w;
 

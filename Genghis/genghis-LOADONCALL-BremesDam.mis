@@ -1,0 +1,44 @@
+﻿[PARTS]
+  core.100
+  bob.100
+  tobruk.100
+[MAIN]
+  fileversion 2
+  MAP Land$English_Channel_1940
+  DespawnAfterLandingTimeout 600
+  BattleArea 9300 9500 350000 300000 10000
+  TIME 10.0000002421439
+  WeatherIndex 0
+  CloudsHeight 1000
+  BreezeActivity 0
+  ThermalActivity 0
+[GlobalWind_0]
+  Power 0.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1500.00
+  GustPower 0
+  GustAngle 45
+[splines]
+[CustomChiefs]
+[Stationary]
+  Static0 Stationary.Industrial.Railroad.Engine_Shed nn 292027.69 205696.44 125.00 
+  Static1 Stationary.Industrial.Railroad.Engine_Shed nn 292016.69 205711.30 125.00 
+  Static2 Stationary.Industrial.Railroad.Engine_Shed nn 292006.31 205726.47 125.00 
+  Static3 Stationary.Industrial.Railroad.Engine_Shed nn 291995.47 205740.97 125.00 
+  Static4 Stationary.Industrial.Railroad.Engine_Shed nn 291985.19 205755.58 125.00 
+  Static5 Stationary.Industrial.Railroad.Engine_Shed nn 291975.31 205769.73 125.00 
+  Static6 Stationary.Industrial.Railroad.Engine_Shed de 291966.81 205780.56 125.00 
+  Static7 Stationary.Industrial.Railroad.Engine_Shed nn 291955.97 205796.19 125.00 
+  Static8 Stationary.Industrial.Railroad.Engine_Shed nn 291945.34 205811.36 125.00 
+  Static9 Stationary.Industrial.Railroad.Engine_Shed nn 291934.28 205827.17 125.00 
+  Static10 Stationary.Industrial.Railroad.Engine_Shed nn 291922.94 205842.83 125.00 
+  Static11 Stationary.Industrial.Railroad.Engine_Shed nn 291912.66 205857.30 125.00 
+  Static12 Stationary.Industrial.Railroad.Engine_Shed nn 291901.88 205872.53 125.00 
+  Static13 Stationary.Industrial.Railroad.Engine_Shed nn 291891.03 205887.44 125.00 
+  Static14 Stationary.Industrial.Railroad.Engine_Shed de 291880.63 205901.83 125.00 
+  Static15 Stationary.Industrial.Railroad.Engine_Shed nn 291870.19 205916.42 125.00 
+  Static16 Stationary.Industrial.Railroad.Engine_Shed nn 291860.63 205930.83 125.00 
+  Static17 Stationary.Industrial.Railroad.Engine_Shed nn 291850.84 205945.69 125.00 
+  Static18 Stationary.Industrial.Railroad.Engine_Shed nn 292038.25 205682.73 125.00 
+[Buildings]
+[BuildingsLinks]

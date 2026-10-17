@@ -4095,6 +4095,13 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
         //if (isFighterAllowedCover(player) && !(Calcs.isStrikeAC(player) && Calcs.playerHasBombs(player)) && !isHeavyBomber(key)) return false;
 		//if (Calcs.isStrikeAC(player) && !Calcs.playerHasBombs(player)) return false;		
         //if ((Calcs.isStrikeAC(player) && !isDiveBomber(player) && !Calcs.isStrikeAC(key) && !isHeavyBomber(key))) return false;
+        AiAircraft aircraft = player.Place() as AiAircraft;
+        string acType = Calcs.GetAircraftType(aircraft);
+
+        if (acType.Contains("HurricaneMkIIc") || acType.Contains("HurricaneMkIId")) {
+            if (key.Contains("Hurricane")) return true;
+            return false;
+        }
 		
 		//StrikeAC can only take other StrikeAC
 		if (Calcs.isStrikeAC(player) && !Calcs.isStrikeAC(key)) return false;
@@ -5397,7 +5404,9 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
         bool ret = false;
         //all strike/sturmovik fighters except JU-87, because it is grouped in with regular bombers so can take out
         //even more a/c than the fighter-bombers
-        if (acType.Contains("Hurricane") || acType.Contains("Spitfire") ||  acType.Contains("Bf-109") 
+        if ((acType.Contains("Hurricane") && (!acType.Contains("HurricaneMkIIc") && !acType.Contains("HurricaneMkIId") ) )
+
+        || acType.Contains("Spitfire") ||  acType.Contains("Bf-109") 
 		|| acType.Contains("Macchi") || acType.Contains("Martlet") || acType.Contains("Tomahawk") || acType.Contains("Kittyhawk"))  ret = true;
         return ret;
     }
@@ -6207,8 +6216,9 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                     return;
                 }
 				
-				Vector3d plVwld = new Vector3d (0,0,0);
+				Vector3d plVwld = new Vector3d (40,40,0);
 				if (aircraft != null && aircraft.AirGroup() != null) plVwld = aircraft.AirGroup().Vwld();
+                else {Console.WriteLine("Supply: ERROR!! Player aircraft is null or aircraft.airgroup is null.  This should NEVER happen.");}
                 double pl_vel_mps = CoverCalcs.CalculatePointDistance(plVwld);
 				int min_pl_vel_mps = 40;
 				
@@ -9261,7 +9271,8 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
                                             Console.WriteLine("CBCW: FOUND a ground actor" + newTarget.Name() + " " + groundType + " dist from nearest targeted: {0:n0}", distToNearestACTOR_m);
 
                                             if (act.Name().ToLower().Contains("_tflak_")) {
-                                                List<GroundStationary> stationaries = GamePlay.gpGroundStationarys(act.Pos().x, act.Pos().y,25).ToList();
+                                                //List<GroundStationary> stationaries = GamePlay.gpGroundStationarys(act.Pos().x, act.Pos().y,25).ToList();
+                                                List<GroundStationary> stationaries = Calcs.getGroundStationarys_safe(GamePlay,act.Pos().x, act.Pos().y,25);
                                                 if (stationaries.Count > 0 ) {
                                                     CoverCalcs.Shuffle(stationaries);
                                                     newGroundTarget = stationaries[0];
@@ -9336,7 +9347,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 
                                 //if (mainmission.ON_TESTSERVER) Console.WriteLine("MBTXX4 " + DateTime.UtcNow.ToString("T.fffffff"));
                                 Console.WriteLine("CBCW: Trying to find a ground stationary");
-                                List<GroundStationary> stationaries = GamePlay.gpGroundStationarys(pos.x, pos.y, preferredMove_m + d * step).ToList();
+                                List<GroundStationary> stationaries = Calcs.getGroundStationarys_safe(GamePlay,pos.x, pos.y, preferredMove_m + d * step);
                                 //foreach (GroundStationary s in stationaries) Console.WriteLine("List:" + s.Name + " " + s.Title + " " + s.Type);
                                 Console.WriteLine("CBCW: Looking for nearby stationary at {0}m, found {1} stationaries", preferredMove_m + d * step, stationaries.Count);
                                 int numToCheck = 30;
@@ -12720,7 +12731,7 @@ public static class CoverCalcs
     { try
         {
             if (airGroup != null && airGroup.hasBombs()) return false; //we don't need to worry about this when the a/c has bombs; they still work. It's shooting that is the problem.
-            List<GroundStationary> stationaries = msn.GamePlay.gpGroundStationarys(pos.x, pos.y, radius_m).ToList();
+            List<GroundStationary> stationaries = Calcs.getGroundStationarys_safe(msn.GamePlay,pos.x, pos.y, radius_m);
             
                 foreach (GroundStationary gg in stationaries) {
                     string tt = gg.Title.ToLower();

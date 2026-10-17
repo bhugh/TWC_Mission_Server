@@ -1335,6 +1335,8 @@ public class SupplyMission : AMission, ISupplyMission
         return status;
     }
 
+    List <Player> hasReceivedMessage = new List<Player>();
+
     private bool CheckActorOut(AiActor actor, Player player = null, bool Force = false, bool AICheckout = false, bool fromStats = false)
     {
         try
@@ -1375,9 +1377,12 @@ public class SupplyMission : AMission, ISupplyMission
                     //special quick-start instructions for Blennie, Beauf, BR.20:
                     if (
                             player != null && !AICheckout && !Force &&
-                            (acName.Contains("Blenheim") || acName.Contains("Beaufighter") || acName.Contains("BR-20"))
-                       )
+                            (acName.Contains("Blenheim") || acName.Contains("Beaufighter") || acName.Contains("BR-20")) && !hasReceivedMessage.Contains(player)
+                        )
+                       
                     {
+                        hasReceivedMessage.Add(player);
+
                         Timeout(4.81, () =>
                         {
                             if (GamePlay != null) GamePlay.gpLogServer(new Player[] { player }, "QUICK START INSTRUCTIONS FOR " + acName.ToUpper() + ": 1. Fuel, throttle, radiators to normal start position.", null);
@@ -1392,7 +1397,7 @@ public class SupplyMission : AMission, ISupplyMission
                         });
                         Timeout(4.87, () =>
                         {
-                            if (GamePlay != null) GamePlay.gpLogServer(new Player[] { player }, "4. ALT-F2 (RELEASE POSITION) command.  You will leave pilot position & move to rear gunner/observer.", null);
+                            if (GamePlay != null) GamePlay.gpLogServer(new Player[] { player }, "4. ALT-F2 (RELEASE POSITION) command (might be a different keybinding for you).  You will leave pilot position & move to rear gunner/observer.", null);
                         });
                         Timeout(4.89, () =>
                         {

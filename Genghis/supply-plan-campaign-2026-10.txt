@@ -1,0 +1,7 @@
+The mission lasts 113 days.  We want to take the available aircraft as defined in -SupplyMission.cs, and start with only the earliest aircraft of each type.  As the 113 days progress, we want to gradually add availability of the more advanced aircraft, so that during the last 30 days, all aircraft are available.
+
+Also, we would like this system tunable so that the campaign owner can easily adjust the first date a particular aircraft is available and how fast production of that aircraft ramps up.
+
+This is for the Cliffs of Dover - Blitz map, so we want to omit _trop variants of aircraft, with an exception or two as already down in -SupplyMission.cs. Ideally we will create a system that can also be used on the Tobruk version of the map, where those _trop variants will be used and the others (suitable for Cliffs of Dover/English Channel) omitted.
+
+Aircraft are added to supply either automatically the rates shown in -SupplyMission.cs but also players can fly aircraft from rear bases to add them to the supply, as coded in -ObjectiveRepairMission.cs and -CoverMission.cs.  So we should allow more advanced aircraft to be flown in by players in this way, but also allow the Campaign Owner to control which aircraft can be flown into supply from the rear bases.

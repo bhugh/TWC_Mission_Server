@@ -1,0 +1,44 @@
+﻿[PARTS]
+  core.100
+  bob.100
+  tobruk.100
+[MAIN]
+  fileversion 2
+  MAP Land$English_Channel_1940
+  DespawnAfterLandingTimeout 600
+  BattleArea 9300 9500 350000 300000 10000
+  TIME 10.0000002421439
+  WeatherIndex 0
+  CloudsHeight 1000
+  BreezeActivity 0
+  ThermalActivity 0
+[GlobalWind_0]
+  Power 0.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1500.00
+  GustPower 0
+  GustAngle 45
+[splines]
+[CustomChiefs]
+[Stationary]
+ 
+  Static1 Smoke.Environment.BuildingFireSmall nn 214215.36 212134.97 110.00 /height -45.00  
+  Static6 Smoke.Environment.BuildingFireSmall nn 214188.36 212170.61 110.00 /height -45.00
+  Static7 Smoke.Environment.BuildingFireSmall nn 214181.88 212177.09 110.00 /height -45.00
+  Static12 Smoke.Environment.BuildingFireSmall nn 214163.88 212215.61 110.00 /height -45.0
+  Static17 Smoke.Environment.BuildingFireSmall nn 214139.39 212265.66 110.00 /height -45.00  
+  Static4 Stationary.Industrial.Railroad.Engine_Shed_dmg nn 214164.55 212262.34 110.00 
+  Static5 Stationary.Industrial.Railroad.Engine_Shed_dmg nn 214168.81 212250.63 110.00 
+  Static26 Stationary.Industrial.Railroad.Engine_Shed_dmg gb 214174.09 212237.52 110.00 
+  Static27 Stationary.Industrial.Railroad.Engine_Shed nn 214178.69 212224.92 110.00 
+  Static8 Stationary.Industrial.Railroad.Engine_Shed_dmg nn 214183.63 212211.98 110.00 
+  Static9 Stationary.Industrial.Railroad.Engine_Shed nn 214188.56 212199.55 110.00 
+  Static10 Stationary.Industrial.Railroad.Engine_Shed_dmg nn 214193.84 212184.22 110.00 
+  Static11 Stationary.Industrial.Railroad.Engine_Shed gb 214199.45 212169.75 110.00 
+  Static22 Stationary.Industrial.Railroad.Engine_Shed_dmg nn 214205.25 212154.42 110.00 
+  Static13 Stationary.Industrial.Railroad.Engine_Shed_dmg nn 214210.19 212142.67 110.00 
+  Static14 Stationary.Industrial.Railroad.Engine_Shed nn 214215.47 212130.42 110.00 
+  Static15 Stationary.Industrial.Railroad.Engine_Shed_dmg nn 214221.25 212114.75 110.00 
+  Static16 Stationary.Industrial.Railroad.Engine_Shed nn 214227.55 212098.58 110.00   
+[Buildings]
+[BuildingsLinks]

@@ -412,7 +412,7 @@ public class ThreadLoadMission : AMission
 
 		handleNetworkSlotsFull_lastTimeCalled = now;
 
-		List<GroundStationary> stationaries = GamePlay.gpGroundStationarys().ToList();
+		List<GroundStationary> stationaries = Calcs.getGroundStationarys_safe(GamePlay);
 		int startNum = stationaries.Count;
 		int numRemoved = 0;
 		Console.WriteLine("Net local slots full! [FMB Sync/FAST Console Intercept] - number of stationaries: " + startNum);
@@ -439,7 +439,7 @@ public class ThreadLoadMission : AMission
 
 		Timeout(70, () =>
 		{
-			List<GroundStationary> stationaries2 = GamePlay.gpGroundStationarys().ToList();
+			List<GroundStationary> stationaries2 = Calcs.getGroundStationarys_safe(GamePlay);
 			Console.WriteLine("Net local slots full - result! [FMB Sync/FAST Console Intercept] - number of stationaries after removals: " + startNum);
 			Console.WriteLine("Net local slots full - result! Removed: {0} total, {1} dead, {2} craters, {3} statics", numRemoved, deadStaticsRemoved, cratersRemoved, staticsRemoved);
 			

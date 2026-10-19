@@ -3886,7 +3886,7 @@ public string listPositionCurrentCoverAircraft(Player player = null, bool displa
                     i++;
                     string acName = CoverCalcs.ParseTypeName(key);
                     string bombs = "(no bombs)";
-                    if (isHeavyBomber(acName) || isDiveBomber(acName) || (Calcs.isStrikeAC(acName) && !Calcs.isStrikeACwithNoBombs(acName))) bombs = "(bombs)";
+                    if (isHeavyBomber(acName) || isDiveBomber(acName) || (Calcs.isStrikeAC(acName) && !Calcs.isStrikeACwithNoBombs(acName)) || acName.Contains("HurricaneMkI_FB") ) bombs = "(bombs)";
                     string tn = CoverCalcs.ParseTypeName(key);
                     if (key == "tobruk:Aircraft.He-111H-6" || key == "tobruk:Aircraft.He-111H-6_Trop") tn += " Hermann-1000kg";
                     string msg = string.Format("#{0} {1} {2} {3}", i, tn, CoverAircraftCurrentlyAvailable[a][key] - minimumAircraftRequiredForCoverDuty, bombs);

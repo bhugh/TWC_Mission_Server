@@ -626,10 +626,10 @@ public class Mission : AMission, IMainMission
     //public double EARLIEST_MISSION_START_TIME_HRS = 7.5; //FOR TESTING
     public double SHORTEST_MISSION_LENGTH_ALLOWED_HRS = 3;  //if the mission restarts and there are less than this many hours remaining until END_MISSION_TIME_HRS , then it will just restart at the DESIRED_MISSION_START_TIME.  This has the effect of guarantteeing that missions will run at least this many hours, and also that missions won't start or run later than END_MISSION_TIME_HRS
 
-    public static readonly DateTime MODERN_CAMPAIGN_START_DATE = new DateTime(2024, 9, 30); //3 variables dealing with translating the current modern date to a relevant historical date: #1. Date on the current calendar that will count as day 0 of the campaign
+    public static readonly DateTime MODERN_CAMPAIGN_START_DATE = new DateTime(2026, 10, 21); //3 variables dealing with translating the current modern date to a relevant historical date: #1. Date on the current calendar that will count as day 0 of the campaign
     //10 July 1940 is usually considered start of BoB
     public static readonly DateTime HISTORIC_CAMPAIGN_START_DATE = new DateTime(1940, 7, 10); //#2. Date on the historic/1940s calendar that will register as day 0 of the campaign.
-    public static int HISTORIC_CAMPAIGN_LENGTH_DAYS = 210; //#3. After this many days the historical dates will "roll over" and start again with HISTORIC_MISSION_START_DATE.
+    public static int HISTORIC_CAMPAIGN_LENGTH_DAYS = 113; //#3. After this many days the historical dates will "roll over" and start again with HISTORIC_MISSION_START_DATE.
 
     public bool END_MISSION_IF_PLAYERS_INACTIVE = false;
     public bool COOP_START_MODE_ENABLED = false;
@@ -1169,6 +1169,8 @@ public class Mission : AMission, IMainMission
 		
 		if ((tickSinceStarted) == 7000  && tickSinceStarted > 0) //ca. 3 minutes
         {
+            Console.WriteLine("virtualizePHysicalMarkerObjects - final run: {0}",tickSinceStarted);
+            virtualizePhysicalMarkerObjects();
 			//Final run, just in case there are more things loaded, after giving previous removegroundactors etc time to settle
 			Console.WriteLine("removeGroundActorsAndStationariesInEnemyTerritory(fast:true); - final run: {0}",tickSinceStarted);
 			removeGroundActorsAndStationariesInEnemyTerritory(fast:true);
@@ -1502,6 +1504,52 @@ public class Mission : AMission, IMainMission
 				}catch (Exception ex) { Console.WriteLine("Change Birthplaces INNER LOOP ERROR: " + ex.Message); }; 	
 			}
 		}catch (Exception ex) { Console.WriteLine("Change Birthplaces ERROR: " + ex.Message); }; 
+    }
+
+    public void virtualizePhysicalMarkerObjects() {
+
+        // NEW: Scan for and virtualize physical marker objects from the main mission
+        //Timeout(1.0, () => 
+        //{
+            try 
+            {
+                Console.WriteLine("[StationaryMarkerManager] Scanning for physical markers to virtualize...");
+                
+                //GroundStationary[] allStatics = GamePlay.gpGroundStationarys(250000, 252000, 500000);
+                GroundStationary[] allStatics = GamePlay.gpGroundStationarys();
+                
+                int removed = 0;
+                foreach (GroundStationary sta in allStatics)
+                {
+                    if (sta == null) continue;
+                    
+                    try {
+                        string title = sta.Title;
+                        if (title.Contains("JerryCan_GER1_1") || title.Contains("JerryCan_GER1_2") || 
+                            title.Contains("JerryCan_GER1_3") || title.Contains("JerryCan_GER1_5") ||
+                            title.Contains("AEC_Regent_II") || title.Contains("MG_TA"))
+                        {
+                            string shortType = StationaryMarkerManager.ExtractShortTypeName(title);
+                            StationaryMarkerManager.AddMarker(shortType, sta.pos.x, sta.pos.y, "MainMission.mis");
+                            
+                            sta.Destroy();
+                            removed++;
+                        }
+                              }
+                    catch (System.Exception ex)
+                    {
+                        Console.WriteLine("[StationaryMarkerManager] LOOP - Error during main mission scan: " + ex.Message);
+                    }
+                }
+                
+                Console.WriteLine("[StationaryMarkerManager] Virtualized " + removed + " physical markers from main mission");
+                StationaryMarkerManager.DebugPrintAll();
+            }
+            catch (System.Exception ex)
+            {
+                Console.WriteLine("[StationaryMarkerManager] Error during main mission scan: " + ex.Message);
+            }
+        //});
     }
 
 	//Note: don't call this repeatedly & quickly.  It spreads out deleting the objects
@@ -8725,41 +8773,7 @@ public class Mission : AMission, IMainMission
 					
 					removeGroundActorsAndStationariesInEnemyTerritory(fast:true);
 			});
-// NEW: Scan for and virtualize physical marker objects from the main mission
-        Timeout(1.0, () => 
-        {
-            try 
-            {
-                Console.WriteLine("[StationaryMarkerManager] Scanning for physical markers to virtualize...");
-                
-                GroundStationary[] allStatics = GamePlay.gpGroundStationarys(250000, 252000, 500000);
-                
-                int removed = 0;
-                foreach (GroundStationary sta in allStatics)
-                {
-                    if (sta == null) continue;
-                    
-                    string title = sta.Title;
-                    if (title.Contains("JerryCan_GER1_1") || title.Contains("JerryCan_GER1_2") || 
-                        title.Contains("JerryCan_GER1_3") || title.Contains("JerryCan_GER1_5") ||
-                        title.Contains("AEC_Regent_II") || title.Contains("MG_TA"))
-                    {
-                        string shortType = StationaryMarkerManager.ExtractShortTypeName(title);
-                        StationaryMarkerManager.AddMarker(shortType, sta.pos.x, sta.pos.y, "MainMission.mis");
-                        
-                        sta.Destroy();
-                        removed++;
-                    }
-                }
-                
-                Console.WriteLine("[StationaryMarkerManager] Virtualized " + removed + " physical markers from main mission");
-                StationaryMarkerManager.DebugPrintAll();
-            }
-            catch (System.Exception ex)
-            {
-                Console.WriteLine("[StationaryMarkerManager] Error during main mission scan: " + ex.Message);
-            }
-        });
+
 			
 
 			
@@ -8866,10 +8880,15 @@ public class Mission : AMission, IMainMission
                     addAirfieldWindsocks();
 					Timeout(1, () =>
 					{
-						Console.WriteLine("removeGroundActorsAndStationariesInEnemyTerritory(fast:true); - FIRST run: {0}",Time.tickCounter());
+						
+                        Console.WriteLine("virtualizePHysicalMarkerObjects - first run");
+                        virtualizePhysicalMarkerObjects();
+                        
+                        Console.WriteLine    ("removeGroundActorsAndStationariesInEnemyTerritory(fast:true) - first run");
 						removeGroundActorsAndStationariesInEnemyTerritory(fast:true);
+                        
                         Timeout(1, () =>
-                            {
+                            {   
 
                                 Console.WriteLine("removeAndChangeBirthPlacesInEnemyTerritory(fast:true) - 1st run: {0}",Time.tickCounter());
                                 removeAndChangeBirthPlacesInEnemyTerritory(fast:true);//remove any birthplaces that have fallen behind enemy 
@@ -9136,7 +9155,8 @@ public class Mission : AMission, IMainMission
     {
         try
         {
-            string tempPath = System.IO.Path.GetTempFileName();
+            //string tempPath = System.IO.Path.GetTempFileName();
+            string tempPath = CLOD_PATH + FILE_PATH + "/sectionfiles" + "/markers_temp_file_"+ random.Next(10,999).ToString();
             f.save(tempPath);
             
             string content = System.IO.File.ReadAllText(tempPath);
@@ -16426,8 +16446,6 @@ public class Mission : AMission, IMainMission
                 //
             }
 
-            if (!Destroyed || !IsEnabled) Console.WriteLine(Name + ": " + InitSubmissionName + " initsubmission NOT loaded because this objective is not destroyed AND enabled.");
-
             return false;
         }
 
@@ -16648,13 +16666,13 @@ public class Mission : AMission, IMainMission
             try
             {
                 double checkRadius_m = (radius * 10).Clamp(10000, 50000);
-                if (msn.ON_TESTSERVER) Console.WriteLine("tallyTempFlakScore 1 radius {0} for {1} at {2:N0},{3:N0}", checkRadius_m, ID, Pos.x, Pos.y);
+                //if (msn.ON_TESTSERVER) Console.WriteLine("tallyTempFlakScore 1 radius {0} for {1} at {2:N0},{3:N0}", checkRadius_m, ID, Pos.x, Pos.y);
                 // 1️⃣ Fetch ground stationaries OUTSIDE the lock
                 //List<GroundStationary> gs = msn.GamePlay.gpGroundStationarys(Pos.x, Pos.y, checkRadius_m).ToList();
 
                 List<GroundStationary> gs = Calcs.getGroundStationarys_safe(msn.GamePlay,Pos.x, Pos.y, checkRadius_m);
 
-                if (msn.ON_TESTSERVER) Console.WriteLine("tallyTempFlakScore 2 gs {0}", gs.Count);
+                //if (msn.ON_TESTSERVER) Console.WriteLine("tallyTempFlakScore 2 gs {0}", gs.Count);
 
                 // 2️⃣ Brief lock just to get the flak‑location list reference
                 List<AutoFlak_location> flakLocations;
@@ -16669,7 +16687,7 @@ public class Mission : AMission, IMainMission
                     flakLocations = new List<AutoFlak_location>(msn.AutoFlak_locations[ID]); 
                 }
 
-                if (msn.ON_TESTSERVER) Console.WriteLine("tallyTempFlakScore 3 flakLocations {0}", flakLocations.Count);
+                //if (msn.ON_TESTSERVER) Console.WriteLine("tallyTempFlakScore 3 flakLocations {0}", flakLocations.Count);
 
                 // 3️⃣ Process each flak position WITHOUT holding the lock
                 foreach (var afl in flakLocations)
@@ -16679,19 +16697,19 @@ public class Mission : AMission, IMainMission
                         if (afl.dead) grandTotal ++;
                         //if (afl.numItemsRemaining <= 0) continue;
                         
-                        if (msn.ON_TESTSERVER) Console.WriteLine("tallyTempFlakScore 4 flakpos {0} index is num {1} remaining {2} dead {3} % {4}", ID, afl.numItems, afl.numItemsRemaining, afl.dead, afl.percentRemaining);
+                        //if (msn.ON_TESTSERVER) Console.WriteLine("tallyTempFlakScore 4 flakpos {0} index is num {1} remaining {2} dead {3} % {4}", ID, afl.numItems, afl.numItemsRemaining, afl.dead, afl.percentRemaining);
                         // Expensive operation – no lock held
                         int newNumItemsRemaining = Calcs.CountMatchingGroundObjectsIn(gs, afl.stationaryPrefix, matchAliveState: true);  //get only LIVE remaining objs
                             //if (msn.ON_TESTSERVER) Console.WriteLine ("tempFlakTally for {0} flakpos {1} newremaining {2}", ID, afl.stationaryPrefix, newNumItemsRemaining);
 
-                        if(msn.ON_TESTSERVER) Console.WriteLine("tallyTempFlakScore 5 flakpos {0} index is num {1} remaining {2} newremaining {3} dead {4} % {5}", ID, afl.numItems, afl.numItemsRemaining, newNumItemsRemaining, afl.dead, afl.percentRemaining);
+                        //if(msn.ON_TESTSERVER) Console.WriteLine("tallyTempFlakScore 5 flakpos {0} index is num {1} remaining {2} newremaining {3} dead {4} % {5}", ID, afl.numItems, afl.numItemsRemaining, newNumItemsRemaining, afl.dead, afl.percentRemaining);
 
                         if (newNumItemsRemaining >= afl.numItemsRemaining) continue;
        
 
                         afl.numItemsRemaining = newNumItemsRemaining;
 
-                        if (msn.ON_TESTSERVER) Console.WriteLine("tallyTempFlakScore 6 flakpos {0} index is num {1} remaining {2} newremaining {3} dead {4} % {5}", ID, afl.numItems, afl.numItemsRemaining, newNumItemsRemaining, afl.dead, afl.percentRemaining);
+                        //if (msn.ON_TESTSERVER) Console.WriteLine("tallyTempFlakScore 6 flakpos {0} index is num {1} remaining {2} newremaining {3} dead {4} % {5}", ID, afl.numItems, afl.numItemsRemaining, newNumItemsRemaining, afl.dead, afl.percentRemaining);
 
                         //basically killing TWO of the items
                         //will kill the position
@@ -16700,7 +16718,7 @@ public class Mission : AMission, IMainMission
                             afl.dead = true;
                             newlyKilled++;
                         }
-                        if (msn.ON_TESTSERVER) Console.WriteLine ("tempFlakTally, some killed, for {0} flakpos {1} index is num {2} remaining {3} newremaining {4} dead {5} % {6}", ID, afl.stationaryPrefix, afl.numItems, afl.numItemsRemaining, newNumItemsRemaining, afl.dead, afl.percentRemaining);
+                        //if (msn.ON_TESTSERVER) Console.WriteLine ("tempFlakTally, some killed, for {0} flakpos {1} index is num {2} remaining {3} newremaining {4} dead {5} % {6}", ID, afl.stationaryPrefix, afl.numItems, afl.numItemsRemaining, newNumItemsRemaining, afl.dead, afl.percentRemaining);
                         //msn.AutoFlak_locations[ID][afl] = afl;
                         
                     }
@@ -30801,15 +30819,15 @@ public static class Calcs
                 if (radius_m>0) gs = GamePlay.gpGroundStationarys(x, y, radius_m).ToList();
                 else  gs = GamePlay.gpGroundStationarys().ToList();
             }
-            catch (ArgumentOutOfRangeException)
+            catch (ArgumentOutOfRangeException ex)
             {
                 // A stationary was destroyed during execution. Log it if on test server.
                 //if (msn.ON_TESTSERVER) 
-                    Console.WriteLine("ERROR Calcs.getGroundStationarys_safe: Race condition hit on attempt {0}. Retrying...", attempts);
+                    Console.WriteLine("ERROR Calcs.getGroundStationarys_safe: Race condition hit on attempt {0}; argument out of range exception: {1}. Retrying...", attempts, ex.Message);
                 
                 // Optional: A tiny sleep to let the simulation thread finish modifying the collection
                 //System.Threading.Thread.Sleep(1); 
-            }
+            } catch (Exception ex) { Console.WriteLine("ERROR Calcs.getGroundStationarys_safe: Exception {0}", ex.Message); }
         }
 
         // Fallback to an empty list if it somehow failed 10 times in a row

@@ -4461,7 +4461,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
         if (msg.StartsWith("<lactorsall") && (admin_privilege_level(player) > 1))
         {
             Console.WriteLine("FULL actor list - starting...");
-			mainmission.twcLogServer(new Player[] { player }, "FULL actor list - starting (to CONSOLE only) ...");
+			//mainmission.twcLogServer(new Player[] { player }, "FULL actor list - starting (to CONSOLE only) ...");
             Point3d p = new Point3d(284703, 125257, 0);
             double r = 9000;
 
@@ -4475,7 +4475,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             {
                 closeStaticActors = allStaticActors.ToList(); 
             }
-        PBP_saveBombPoint(player, player.Place().Pos());
+            PBP_saveBombPoint(player, player.Place().Pos());
             //Finding actors we're going to range wider 1500. meters IN reality maybe we could look up the objective radius.  But actors nearby will be flak, etc etc etc.  All helpful.            
             foreach (AiActor act in closeStaticActors) {
 				Console.WriteLine(string.Format("Actor: {0} {1} {5} {2:N0} {3:N0} army: {4}", act.Name(), (act as AiCart).InternalTypeName(), act.Pos().x, act.Pos().y, act.Army() , Calcs.correctedSectorNameDoubleKeypad(mainmission, act.Pos())));

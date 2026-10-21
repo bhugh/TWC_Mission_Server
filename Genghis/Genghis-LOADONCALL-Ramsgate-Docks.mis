@@ -53,8 +53,7 @@
   Ramsgate_DocksB_662 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251364.53 257253.67 -160.00 /hstart 20
   Ramsgate_DocksB_663 tobruk:Stationary.Environment.50meterStonewall nn 251365.63 257256.48 -75.00 
   Ramsgate_DocksB_665 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251361.91 257262.33 -160.00 /hstart 20
-  Ramsgate_DocksB_666 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251358.47 257271.36 -160.00 /hstart 20
-  Ramsgate_DocksB_362 ShipUnit.Boat_42ft_SailingLaunch nn 251383.84 257243.06 -70.00 /sleep 0/skill 2/slowfire 1
+  Ramsgate_DocksB_666 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251358.47 257271.36 -160.00 /hstart 20  
   Ramsgate_DocksB_658 tobruk:Stationary.Environment.50meterStonewall nn 251391.58 257268.55 -75.00 
   Ramsgate_DocksB_659 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251389.80 257272.80 -160.00 /hstart 20
   Ramsgate_DocksB_656 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251392.42 257264.13 -160.00 /hstart 20
@@ -94,13 +93,11 @@
   Ramsgate_DocksB_639 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251310.78 257323.19 -160.00 /hstart 20
   Ramsgate_DocksB_632 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251308.50 257332.17 -160.00 /hstart 20
   Ramsgate_DocksB_630 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251305.84 257340.88 -160.00 /hstart 20
-
   Ramsgate_DocksB_668 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251355.86 257280.05 -160.00 /hstart 20
   Ramsgate_DocksB_670 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251353.56 257289.03 -160.00 /hstart 20
   Ramsgate_DocksB_671 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251350.94 257297.70 -160.00 /hstart 20
   Ramsgate_DocksB_533 tobruk:Stationary.Airfield.LawsHangerGravesend nn 251350.92 257300.13 110.00 
   Ramsgate_DocksB_527 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251347.22 257306.70 -160.00 /hstart 20
-
   Ramsgate_DocksB_518 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251344.61 257315.39 -160.00 /hstart 20
   Ramsgate_DocksB_525 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251341.17 257324.41 -160.00 /hstart 20
   Ramsgate_DocksB_660 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251386.38 257281.83 -160.00 /hstart 20
@@ -132,8 +129,7 @@
   Ramsgate_DocksB_408 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251431.81 257337.41 -160.00 /hstart 20
   Ramsgate_DocksB_391 tobruk:Stationary.Airfield.LawsHangerGravesend nn 251446.98 257335.31 110.00 
   Ramsgate_DocksB_449 tobruk:Stationary.Environment.50meterStonewall nn 251468.81 257301.41 -75.00 
-  Ramsgate_DocksB_466 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251477.23 257294.64 -160.00 /hstart 19
-  Ramsgate_DocksB_360 ShipUnit.Boat_42ft_SailingLaunch gb 251485.81 257289.48 -70.00 /sleep 0/skill 2/slowfire 1
+  Ramsgate_DocksB_466 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251477.23 257294.64 -160.00 /hstart 19  
   Ramsgate_DocksB_443 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251474.58 257303.33 -160.00 /hstart 19
   Ramsgate_DocksB_423 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251471.17 257312.34 -160.00 /hstart 19
   Ramsgate_DocksB_409 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251468.55 257321.02 -160.00 /hstart 19
@@ -146,8 +142,7 @@
   Ramsgate_DocksB_397 tobruk:Stationary.Environment.50meterStonewall nn 251498.70 257325.14 -160.00 
   Ramsgate_DocksB_379 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251496.42 257330.94 -160.00 /hstart 18
   Ramsgate_DocksB_371 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251494.23 257340.52 -160.00 /hstart 18
-  Ramsgate_DocksB_380 Stationary.Environment.PortCrane1_FRA1 nn 251508.70 257329.88 25.00 
-  Ramsgate_DocksB_359 ShipUnit.Boat_42ft_SailingLaunch gb 251503.20 257340.41 -340.00 /sleep 0/skill 2/slowfire 1
+  Ramsgate_DocksB_380 Stationary.Environment.PortCrane1_FRA1 nn 251508.70 257329.88 25.00   
   Ramsgate_DocksB_338 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251533.36 257314.95 -160.00 /hstart 18
   Ramsgate_DocksB_343 tobruk:Stationary.Environment.50meterStonewall nn 251526.98 257325.66 -75.00 
   Ramsgate_DocksB_339 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251530.73 257323.63 -160.00 /hstart 18
@@ -164,8 +159,7 @@
   Ramsgate_DocksB_315 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251577.89 257341.09 -160.00 /hstart 20
   Ramsgate_DocksB_310 Stationary.Environment.PortCrane1_FRA1 nn 251586.92 257332.45 -50.00 
   Ramsgate_DocksB_313 tobruk:Stationary.Environment.50meterStonewall nn 251584.36 257336.63 -75.00 
-  Ramsgate_DocksB_303 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251608.28 257342.33 -160.00 /hstart 20
-  Ramsgate_DocksB_3 ShipUnit.Boat_42ft_SailingLaunch nn 251628.78 257333.52 -70.00 /sleep 0/skill 2/slowfire 1
+  Ramsgate_DocksB_303 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251608.28 257342.33 -160.00 /hstart 20  
   Ramsgate_DocksB_626 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251249.98 257350.30 -160.00 /hstart 18
   Ramsgate_DocksB_621 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251247.34 257358.98 -160.00 /hstart 18
   Ramsgate_DocksB_615 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251245.06 257367.98 -160.00 /hstart 18
@@ -239,7 +233,6 @@
   Ramsgate_DocksB_434 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251423.09 257363.78 -160.00 /hstart 20
   Ramsgate_DocksB_435 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251420.81 257372.80 -160.00 /hstart 20
   Ramsgate_DocksB_444 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251418.20 257381.48 -160.00 /hstart 20
-
   Ramsgate_DocksB_452 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251415.50 257390.67 -160.00 /hstart 20
   Ramsgate_DocksB_453 Stationary.Airfield.Fuel_Storage nn 251416.67 257391.77 -75.00 
   Ramsgate_DocksB_460 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251412.88 257399.34 -160.00 /hstart 20
@@ -324,8 +317,7 @@
   Ramsgate_DocksB_99 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251686.81 257390.73 -160.00 /hstart 20
   Ramsgate_DocksB_77 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251684.16 257399.41 -160.00 /hstart 20
   Ramsgate_DocksB_90 tobruk:Stationary.Environment.50meterStonewall nn 251712.56 257390.06 -75.00 
-  Ramsgate_DocksB_107 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251720.98 257383.30 -160.00 /hstart 19
-  Ramsgate_DocksB_1 ShipUnit.Boat_42ft_SailingLaunch gb 251729.56 257378.16 -70.00 /sleep 0/skill 2/slowfire 1
+  Ramsgate_DocksB_107 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251720.98 257383.30 -160.00 /hstart 19  
   Ramsgate_DocksB_84 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251718.33 257391.98 -160.00 /hstart 19
   Ramsgate_DocksB_64 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251714.92 257401.00 -160.00 /hstart 19
   Ramsgate_DocksB_65 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251748.94 257393.81 -160.00 /hstart 18
@@ -380,7 +372,6 @@
   Ramsgate_DocksB_461 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251409.48 257408.38 -160.00 /hstart 20
   Ramsgate_DocksB_471 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251406.83 257417.05 -160.00 /hstart 20
   Ramsgate_DocksB_472 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251404.53 257426.03 -160.00 /hstart 20
-
   Ramsgate_DocksB_484 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251401.92 257434.72 -160.00 /hstart 20
   Ramsgate_DocksB_483 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251398.39 257440.66 -160.00 /hstart 20
   Ramsgate_DocksB_485 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251397.33 257443.88 -160.00 /hstart 20
@@ -403,8 +394,7 @@
   Ramsgate_DocksB_416 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251451.75 257469.53 -160.00 /hstart 18
   Ramsgate_DocksB_383 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251471.61 257411.45 -160.00 /hstart 18
   Ramsgate_DocksB_400 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251468.86 257419.55 -160.00 /hstart 18
-  Ramsgate_DocksB_401 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251465.56 257429.14 -160.00 /hstart 18
-  Ramsgate_DocksB_361 ShipUnit.Boat_42ft_SailingLaunch gb 251478.17 257418.02 -340.00 /sleep 0/skill 2/slowfire 1
+  Ramsgate_DocksB_401 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251465.56 257429.14 -160.00 /hstart 18  
   Ramsgate_DocksB_387 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251462.84 257437.25 -160.00 /hstart 18
   Ramsgate_DocksB_385 Stationary.Environment.PortCrane1_FRA1 nn 251473.70 257429.94 25.00 
   Ramsgate_DocksB_376 tobruk:Stationary.Environment.50meterStonewall nn 251473.56 257431.80 -160.00 
@@ -460,7 +450,6 @@
   Ramsgate_DocksB_143 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251610.20 257432.22 -160.00 /hstart 20
   Ramsgate_DocksB_148 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251607.91 257441.20 -160.00 /hstart 20
   Ramsgate_DocksB_153 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251605.25 257449.91 -160.00 /hstart 20
-
   Ramsgate_DocksB_155 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251602.59 257459.09 -160.00 /hstart 20
   Ramsgate_DocksB_92 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251647.28 257415.92 -160.00 /hstart 20
   Ramsgate_DocksB_160 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251599.94 257467.78 -160.00 /hstart 20
@@ -472,7 +461,6 @@
   Ramsgate_DocksB_110 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251636.31 257451.28 -160.00 /hstart 20
   Ramsgate_DocksB_122 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251633.69 257459.97 -160.00 /hstart 20
   Ramsgate_DocksB_123 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251630.98 257469.17 -160.00 /hstart 20
-
   Ramsgate_DocksB_63 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251681.88 257408.39 -160.00 /hstart 20
   Ramsgate_DocksB_48 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251679.25 257417.08 -160.00 /hstart 20
   Ramsgate_DocksB_49 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251675.56 257426.08 -160.00 /hstart 20
@@ -484,7 +472,6 @@
   Ramsgate_DocksB_33 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251709.98 257418.67 -160.00 /hstart 19
   Ramsgate_DocksB_85 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251661.95 257470.14 -160.00 /hstart 20
   Ramsgate_DocksB_18 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251707.36 257427.36 -160.00 /hstart 19
-
   Ramsgate_DocksB_19 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251703.69 257436.34 -160.00 /hstart 19
   Ramsgate_DocksB_35 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251701.02 257445.03 -160.00 /hstart 19
   Ramsgate_DocksB_36 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251697.63 257454.06 -160.00 /hstart 19
@@ -497,7 +484,6 @@
   Ramsgate_DocksB_12 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251737.98 257429.17 -160.00 /hstart 18
   Ramsgate_DocksB_7 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251735.22 257437.28 -160.00 /hstart 18
   Ramsgate_DocksB_8 tobruk:Stationary.Environment.50meterStonewall nn 251737.11 257437.58 -160.00 
-  Ramsgate_DocksB_0 ShipUnit.Boat_42ft_SailingLaunch gb 251746.95 257429.08 -340.00 /sleep 0/skill 2/slowfire 1
   Ramsgate_DocksB_9 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251731.64 257446.86 -160.00 /hstart 18
   Ramsgate_DocksB_10 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251728.92 257454.97 -160.00 /hstart 18
   Ramsgate_DocksA_73 tobruk:Stationary.Environment.50meterStonewall nn 251770.63 257415.94 -75.00 
@@ -541,7 +527,6 @@
   Ramsgate_DocksA_274 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251849.28 257441.27 -160.00 /hstart 20
   Ramsgate_DocksA_254 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251845.86 257450.30 -160.00 /hstart 20
   Ramsgate_DocksA_251 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251843.23 257458.98 -160.00 /hstart 20
-  Ramsgate_DocksA_22 ShipUnit.Boat_42ft_SailingLaunch nn 251873.61 257424.38 -70.00 /sleep 1440/skill 2/slowfire 100
   Ramsgate_DocksA_246 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251840.94 257467.97 -160.00 /hstart 20
   Ramsgate_DocksA_271 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251879.81 257443.06 -160.00 /hstart 20
   Ramsgate_DocksA_2 tobruk:Stationary.Environment.50meterStonewall nn 251878.97 257447.48 -75.00 
@@ -556,16 +541,13 @@
   Ramsgate_DocksA_4 tobruk:Stationary.Environment.50meterStonewall nn 251929.13 257465.05 -75.00 
   Ramsgate_DocksA_267 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251936.50 257463.30 -160.00 /hstart 20
   Ramsgate_DocksA_266 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251933.83 257471.97 -160.00 /hstart 20
-  Ramsgate_DocksA_19 ShipUnit.Boat_42ft_SailingLaunch gb 251973.19 257468.42 -70.00 /sleep 1440/skill 0/slowfire 100
   Ramsgate_DocksB_541 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251356.52 257474.55 -160.00 /hstart 20
   Ramsgate_DocksB_500 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251387.42 257476.02 -160.00 /hstart 20
   Ramsgate_DocksB_509 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251384.41 257484.97 -160.00 /hstart 20
-  Ramsgate_DocksB_364 ShipUnit.Boat_42ft_SailingLaunch nn 251204.45 257364.84 -250.00 /sleep 0/skill 2/slowfire 1
   Ramsgate_DocksB_474 tobruk:Stationary.Environment.50meterStonewall nn 251407.36 257477.66 -75.00 
   Ramsgate_DocksB_464 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251417.83 257477.31 -160.00 /hstart 19
   Ramsgate_DocksB_465 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251415.53 257486.30 -160.00 /hstart 19
   Ramsgate_DocksB_475 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251412.92 257494.98 -160.00 /hstart 19
-  Ramsgate_DocksB_363 ShipUnit.Boat_42ft_SailingLaunch nn 251184.05 257362.70 -250.00 /sleep 0/skill 2/slowfire 1
   Ramsgate_DocksB_417 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251450.48 257474.31 -160.00 /hstart 18
   Ramsgate_DocksB_418 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251448.42 257479.13 -160.00 /hstart 18
   Ramsgate_DocksB_431 tobruk:Stationary.Environment.50meterStonewall nn 251442.72 257489.61 -75.00 
@@ -638,7 +620,6 @@
   Ramsgate_DocksB_157 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251612.83 257522.36 -160.00 /hstart 20
   Ramsgate_DocksB_162 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251611.23 257527.83 -160.00 /hstart 20
   Ramsgate_DocksB_163 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251609.83 257531.63 -160.00 /hstart 20
-
   Ramsgate_DocksB_125 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251645.67 257523.39 -160.00 /hstart 20
   Ramsgate_DocksB_124 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251642.14 257529.31 -160.00 /hstart 20
   Ramsgate_DocksB_126 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251641.08 257532.53 -160.00 /hstart 20
@@ -667,7 +648,6 @@
   Ramsgate_DocksB_24 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251715.36 257500.11 -160.00 /hstart 18
   Ramsgate_DocksB_41 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251712.61 257508.22 -160.00 /hstart 18
   Ramsgate_DocksB_16 tobruk:Stationary.Environment.50meterStonewall nn 251726.88 257495.22 -160.00 
-  Ramsgate_DocksB_2 ShipUnit.Boat_42ft_SailingLaunch gb 251721.92 257506.69 -340.00 /sleep 0/skill 2/slowfire 1
   Ramsgate_DocksA_199 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251753.64 257475.98 -160.00 /hstart 18
   Ramsgate_DocksA_201 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251751.00 257484.67 -160.00 /hstart 18
   Ramsgate_DocksB_17 tobruk:Stationary.Environment.50meterStonewall nn 251717.31 257520.47 -160.00 
@@ -751,7 +731,6 @@
   Ramsgate_DocksA_224 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251981.63 257519.45 -160.00 /hstart 18
   Ramsgate_DocksA_222 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251978.86 257527.55 -160.00 /hstart 18
   Ramsgate_DocksA_8 tobruk:Stationary.Environment.50meterStonewall nn 251980.75 257527.84 -160.00 
-  Ramsgate_DocksA_21 ShipUnit.Boat_42ft_SailingLaunch gb 251990.58 257519.34 -340.00 /sleep 1440/skill 0/slowfire 100
   Ramsgate_DocksA_31 Stationary.Environment.PortCrane1_FRA1 nn 251988.84 257533.47 25.00 
   Ramsgate_DocksB_200 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251543.97 257542.66 -160.00 /hstart 20
   Ramsgate_DocksB_192 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251574.50 257544.45 -160.00 /hstart 20
@@ -838,7 +817,6 @@
   Ramsgate_DocksA_339 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251801.22 257588.89 -160.00 /hstart 20
   Ramsgate_DocksA_96 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251800.16 257592.09 -160.00 /hstart 20
   Ramsgate_DocksA_334 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251798.55 257597.56 -160.00 /hstart 20
-
   Ramsgate_DocksA_129 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251837.55 257575.73 -160.00 /hstart 20
   Ramsgate_DocksA_118 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251835.27 257584.75 -160.00 /hstart 20
   Ramsgate_DocksA_108 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251832.59 257593.42 -160.00 /hstart 20
@@ -852,7 +830,6 @@
   Ramsgate_DocksA_184 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251879.94 257541.56 -160.00 /hstart 20
   Ramsgate_DocksA_174 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251877.31 257550.23 -160.00 /hstart 20
   Ramsgate_DocksA_150 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251874.63 257559.44 -160.00 /hstart 20
-
   Ramsgate_DocksA_148 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251872.00 257568.13 -160.00 /hstart 20
   Ramsgate_DocksA_130 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251868.58 257577.16 -160.00 /hstart 20
   Ramsgate_DocksA_67 tobruk:Stationary.Airfield.LawsHangerGravesend nn 251851.55 257597.88 110.00 
@@ -881,7 +858,6 @@
   Ramsgate_DocksA_33 Stationary.Environment.PortCrane1_FRA1 nn 251965.98 257583.56 25.00 
   Ramsgate_DocksA_144 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251959.00 257590.39 -160.00 /hstart 18
   Ramsgate_DocksA_142 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251956.23 257598.48 -160.00 /hstart 18
-  Ramsgate_DocksA_20 ShipUnit.Boat_42ft_SailingLaunch gb 251965.55 257596.95 -340.00 /sleep 1440/skill 0/slowfire 100
   Ramsgate_DocksA_203 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251975.27 257537.13 -160.00 /hstart 18
   Ramsgate_DocksA_202 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251972.55 257545.23 -160.00 /hstart 18
   Ramsgate_DocksA_169 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251969.22 257554.81 -160.00 /hstart 18
@@ -957,8 +933,6 @@
   Ramsgate_DocksA_14 tobruk:Stationary.Environment.50meterStonewall nn 251930.09 257668.55 -75.00 
   Ramsgate_DocksA_288 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251933.08 257666.17 -160.00 /hstart 18
   Ramsgate_DocksA_284 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251930.89 257675.73 -160.00 /hstart 18
-  Ramsgate_DocksA_282 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251928.16 257683.84 -160.00 /hstart 18
-  Ramsgate_DocksC_10 ShipUnit.Boat_42ft_SailingLaunch gb 251334.72 257224.47 -70.00 /sleep 0/skill 2/slowfire 1
-  Ramsgate_DocksC_11 ShipUnit.Boat_42ft_SailingLaunch gb 251294.19 257202.41 -70.00 /sleep 0/skill 2/slowfire 1
+  Ramsgate_DocksA_282 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 251928.16 257683.84 -160.00 /hstart 18  
 [Buildings]
 [BuildingsLinks]

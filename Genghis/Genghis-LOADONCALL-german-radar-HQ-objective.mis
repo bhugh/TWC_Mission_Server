@@ -39,14 +39,6 @@
   German_Radar_HQ2 Stationary.Hangars.Camouflaged_Hangar_single.Germany nn 348307.06 125069.07 -65.00 
   German_Radar_HQ1 Stationary.Environment.JerryCan_GER1_1 nn 348344.75 125063.05 25.00 
   German_Radar_HQ3 Stationary.Hangars.Camouflaged_Hangar_single.Germany nn 348336.09 125083.70 -65.00 
-  German_Radar_HQ19 Artillery.Bofors_StandAlone gb 346713.81 124191.75 0.00 /timeout 0/radius_hide 0
-  German_Radar_HQ20 Artillery.Bofors_StandAlone de 347928.59 125249.12 0.00 /timeout 0/radius_hide 0
-  German_Radar_HQ22 Artillery.Bofors_StandAlone de 348669.47 124899.12 0.00 /timeout 0/radius_hide 0
-  German_Radar_HQ23 Artillery.Bofors_StandAlone de 348196.81 124712.67 0.00 /timeout 0/radius_hide 0
-  German_Radar_HQ24 Artillery.Bofors_StandAlone de 347725.63 124736.20 0.00 /timeout 0/radius_hide 0
-  German_Radar_HQ21 Artillery.Bofors_StandAlone de 349138.88 124653.80 0.00 /timeout 0/radius_hide 0
-  German_Radar_HQ25 Artillery.Bofors_StandAlone de 348063.97 124376.23 0.00 /timeout 0/radius_hide 0
-  German_Radar_HQ26 Artillery.Bofors_StandAlone de 347220.44 125008.70 0.00 /timeout 0/radius_hide 0
   German_Radar_HQ27 Stationary.Radar.Wotan_I de 348144.97 124957.60 0.00 
   German_Radar_HQ28 Stationary.Radar.Wotan_I de 348568.59 125110.95 0.00 
   German_Radar_HQ29 Stationary.Radar.Wotan_I de 348563.06 124911.17 0.00 

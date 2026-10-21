@@ -361,120 +361,30 @@
   LeHavre-SBoot277 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160140.88 51207.64 -15.00 /hstart 18
   LeHavre-SBoot278 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160156.23 51202.80 -15.00 /hstart 18
   LeHavre-SBoot69 Stationary.Environment.PortCrane1_FRA1 de 160162.94 51201.29 65.00 
-  LeHavre-SBoot342 Stationary.Environment.JerryCan_GER1_1 nn 160076.17 51323.96 235.00 
-  LeHavre-SBoot343 Stationary.Weapons_.Torpedo_T_F5 de 160145.20 51169.71 -65.00 
-  LeHavre-SBoot243 tobruk:Stationary.TobrukBuilding.Generic.PierB30m nn 160132.86 51181.06 -15.00 /hstart 18
-  LeHavre-SBoot257 Stationary.Weapons_.Torpedo_T_F5 nn 159997.56 51192.05 -65.00 
-  LeHavre-SBoot344 Stationary.Weapons_.Torpedo_T_F5 nn 159966.86 51188.78 -65.00 
-  LeHavre-SBoot345 Stationary.Weapons_.Torpedo_T_F5 nn 159942.20 51198.37 -65.00 
-  LeHavre-SBoot346 Stationary.Weapons_.Torpedo_T_F5 nn 159940.83 51169.14 -65.00 
-  LeHavre-SBoot347 Stationary.Weapons_.Torpedo_T_F5 nn 159926.08 51147.34 -65.00 
-  LeHavre-SBoot348 Stationary.Weapons_.Torpedo_T_F5 nn 159905.95 51115.04 -65.00 
-  LeHavre-SBoot349 Stationary.Weapons_.Torpedo_T_F5 nn 159902.86 51087.54 -65.00 
-  LeHavre-SBoot350 Stationary.Weapons_.Torpedo_T_F5 nn 159932.83 51079.04 -65.00 
-  LeHavre-SBoot351 Stationary.Weapons_.Torpedo_T_F5 nn 159951.06 51096.36 -65.00 
-  LeHavre-SBoot352 Stationary.Weapons_.Torpedo_T_F5 nn 159973.39 51141.47 -65.00 
-  LeHavre-SBoot353 Stationary.Weapons_.Torpedo_T_F5 nn 159976.91 51182.84 -65.00 
-  LeHavre-SBoot354 Stationary.Weapons_.Torpedo_T_F5 nn 159969.59 51227.59 -65.00 
-  LeHavre-SBoot355 Stationary.Weapons_.Torpedo_T_F5 nn 159998.81 51237.18 -65.00 
-  LeHavre-SBoot356 Stationary.Weapons_.Torpedo_T_F5 nn 160039.72 51210.71 -65.00 
-  LeHavre-SBoot357 Stationary.Weapons_.Torpedo_T_F5 nn 160032.17 51184.76 -65.00 
-  LeHavre-SBoot358 Stationary.Weapons_.Torpedo_T_F5 nn 160012.58 51117.77 -65.00 
-  LeHavre-SBoot359 Stationary.Weapons_.Torpedo_T_F5 nn 160002.09 51105.47 -65.00 
-  LeHavre-SBoot360 Stationary.Weapons_.Torpedo_T_F5 nn 159971.11 51094.08 -65.00 
-  LeHavre-SBoot361 Stationary.Weapons_.Torpedo_T_F5 nn 159952.47 51066.68 -65.00 
-  LeHavre-SBoot362 Stationary.Weapons_.Torpedo_T_F5 nn 159983.75 51045.41 -65.00 
-  LeHavre-SBoot363 Stationary.Weapons_.Torpedo_T_F5 nn 159993.13 51059.77 -65.00 
-  LeHavre-SBoot364 Stationary.Weapons_.Torpedo_T_F5 nn 160002.55 51084.05 -65.00 
-  LeHavre-SBoot365 Stationary.Weapons_.Torpedo_T_F5 nn 160019.86 51059.45 -65.00 
-  LeHavre-SBoot366 Stationary.Weapons_.Torpedo_T_F5 nn 160015.13 51035.03 -65.00 
-  LeHavre-SBoot367 Stationary.Weapons_.Torpedo_T_F5 nn 160020.28 51025.78 -65.00 
-  LeHavre-SBoot368 Stationary.Weapons_.Torpedo_T_F5 nn 160042.31 51032.00 -65.00 
-  LeHavre-SBoot369 Stationary.Weapons_.Torpedo_T_F5 nn 160063.61 51087.25 -65.00 
-  LeHavre-SBoot370 Stationary.Weapons_.Torpedo_T_F5 nn 160063.61 51106.38 -65.00 
-  LeHavre-SBoot371 Stationary.Weapons_.Torpedo_T_F5 nn 160049.03 51122.33 -65.00 
-  LeHavre-SBoot372 Stationary.Weapons_.Torpedo_T_F5 nn 160053.59 51172.46 -65.00 
-  LeHavre-SBoot373 Stationary.Weapons_.Torpedo_T_F5 nn 160073.41 51182.44 -65.00 
-  LeHavre-SBoot374 Stationary.Weapons_.Torpedo_T_F5 nn 160097.14 51183.35 -65.00 
-  LeHavre-SBoot375 Stationary.Weapons_.Torpedo_T_F5 nn 160092.31 51157.42 -65.00 
-  LeHavre-SBoot376 Stationary.Weapons_.Torpedo_T_F5 nn 160080.92 51118.69 -65.00 
-  LeHavre-SBoot377 Stationary.Weapons_.Torpedo_T_F5 nn 160079.11 51148.76 -65.00 
-  LeHavre-SBoot378 Stationary.Weapons_.Torpedo_T_F5 nn 160059.52 51071.75 -65.00 
-  LeHavre-SBoot379 Stationary.Weapons_.Torpedo_T_F5 nn 160049.94 51045.78 -65.00 
-  LeHavre-SBoot380 Stationary.Weapons_.Torpedo_T_F5 nn 160068.33 51025.14 -65.00 
-  LeHavre-SBoot381 Stationary.Weapons_.Torpedo_T_F5 nn 160085.94 51061.73 -65.00 
-  LeHavre-SBoot382 Stationary.Weapons_.Torpedo_T_F5 nn 160088.22 51094.08 -65.00 
-  LeHavre-SBoot383 Stationary.Weapons_.Torpedo_T_F5 nn 160098.25 51131.90 -65.00 
-  LeHavre-SBoot384 Stationary.Weapons_.Torpedo_T_F5 nn 160111.00 51148.30 -65.00 
-  LeHavre-SBoot385 Stationary.Weapons_.Torpedo_T_F5 nn 160128.91 51175.16 -65.00 
-  LeHavre-SBoot386 Stationary.Weapons_.Torpedo_T_F5 nn 160132.42 51136.00 -65.00 
-  LeHavre-SBoot387 Stationary.Weapons_.Torpedo_T_F5 nn 160131.50 51103.20 -65.00 
-  LeHavre-SBoot388 Stationary.Weapons_.Torpedo_T_F5 nn 160120.11 51083.60 -65.00 
-  LeHavre-SBoot389 Stationary.Weapons_.Torpedo_T_F5 nn 160115.11 51047.14 -65.00 
-  LeHavre-SBoot390 Stationary.Weapons_.Torpedo_T_F5 nn 160108.27 51030.74 -65.00 
-  LeHavre-SBoot391 Stationary.Weapons_.Torpedo_T_F5 nn 160090.05 51018.89 -65.00 
-  LeHavre-SBoot392 Stationary.Weapons_.Torpedo_T_F5 nn 160080.92 51033.02 -65.00 
-  LeHavre-SBoot393 Stationary.Weapons_.Torpedo_T_F5 nn 160113.73 51027.55 -65.00 
-  LeHavre-SBoot394 Stationary.Weapons_.Torpedo_T_F5 nn 160144.27 51103.20 -65.00 
-  LeHavre-SBoot395 Stationary.Weapons_.Torpedo_T_F5 nn 160075.00 51125.52 -65.00 
-  LeHavre-SBoot396 Stationary.Weapons_.Torpedo_T_F5 nn 160017.59 51114.13 -65.00 
-  LeHavre-SBoot397 Stationary.Weapons_.Torpedo_T_F5 nn 160022.59 51080.41 -65.00 
-  LeHavre-SBoot398 Stationary.Weapons_.Torpedo_T_F5 nn 160026.70 51152.86 -65.00 
-  LeHavre-SBoot399 Stationary.Weapons_.Torpedo_T_F5 nn 160029.89 51175.64 -65.00 
-  LeHavre-SBoot400 Stationary.Environment.JerryCan_GER1_1 nn 159941.73 51208.41 -65.00 
-  LeHavre-SBoot401 Stationary.Environment.JerryCan_GER1_1 nn 159927.59 51173.71 -65.00 
-  LeHavre-SBoot402 Stationary.Environment.JerryCan_GER1_1 nn 159911.94 51147.34 -65.00 
+  LeHavre-SBoot342 Stationary.Environment.JerryCan_GER1_1 nn 160076.17 51323.96 235.00   
   LeHavre-SBoot403 Stationary.Environment.JerryCan_GER1_1 nn 159906.41 51115.04 -65.00 
   LeHavre-SBoot404 Stationary.Environment.JerryCan_GER1_1 nn 159910.52 51094.97 -65.00 
   LeHavre-SBoot405 Stationary.Environment.JerryCan_GER1_1 nn 159949.23 51096.81 -65.00 
   LeHavre-SBoot406 Stationary.Environment.JerryCan_GER1_1 nn 159952.42 51112.31 -65.00 
-  LeHavre-SBoot407 Stationary.Environment.JerryCan_GER1_1 nn 159956.98 51135.09 -65.00 
-  LeHavre-SBoot408 Stationary.Environment.JerryCan_GER1_1 nn 159966.39 51168.23 -65.00 
   LeHavre-SBoot409 Stationary.Environment.JerryCan_GER1_1 nn 159966.86 51185.12 -65.00 
   LeHavre-SBoot410 Stationary.Environment.JerryCan_GER1_1 nn 159973.25 51213.89 -65.00 
   LeHavre-SBoot411 Stationary.Environment.JerryCan_GER1_1 nn 160008.64 51213.45 -65.00 
   LeHavre-SBoot412 Stationary.Environment.JerryCan_GER1_1 nn 160022.14 51191.59 -65.00 
-  LeHavre-SBoot413 Stationary.Environment.JerryCan_GER1_1 nn 160023.97 51163.80 -65.00 
-  LeHavre-SBoot414 Stationary.Environment.JerryCan_GER1_1 nn 160008.02 51138.74 -65.00 
-  LeHavre-SBoot415 Stationary.Environment.JerryCan_GER1_1 nn 159985.69 51100.91 -65.00 
   LeHavre-SBoot416 Stationary.Environment.JerryCan_GER1_1 nn 159972.48 51090.89 -65.00 
   LeHavre-SBoot417 Stationary.Environment.JerryCan_GER1_1 nn 159966.66 51062.07 -65.00 
   LeHavre-SBoot418 Stationary.Environment.JerryCan_GER1_1 nn 160005.67 51040.84 -65.00 
   LeHavre-SBoot419 Stationary.Environment.JerryCan_GER1_1 nn 160016.22 51058.54 -65.00 
-  LeHavre-SBoot420 Stationary.Environment.JerryCan_GER1_1 nn 160032.63 51094.08 -65.00 
-  LeHavre-SBoot421 Stationary.Environment.JerryCan_GER1_1 nn 160037.64 51111.39 -65.00 
-  LeHavre-SBoot422 Stationary.Environment.JerryCan_GER1_1 nn 160046.75 51147.85 -65.00 
-  LeHavre-SBoot423 Stationary.Environment.JerryCan_GER1_1 nn 160042.19 51183.39 -65.00 
   LeHavre-SBoot424 Stationary.Environment.JerryCan_GER1_1 nn 160041.42 51200.23 -65.00 
   LeHavre-SBoot425 Stationary.Environment.JerryCan_GER1_1 nn 160065.02 51208.41 -65.00 
   LeHavre-SBoot426 Stationary.Environment.JerryCan_GER1_1 nn 160089.67 51199.73 -65.00 
-  LeHavre-SBoot427 Stationary.Environment.JerryCan_GER1_1 nn 160097.78 51166.08 -65.00 
-  LeHavre-SBoot428 Stationary.Environment.JerryCan_GER1_1 nn 160082.30 51131.90 -65.00 
-  LeHavre-SBoot429 Stationary.Environment.JerryCan_GER1_1 nn 160074.55 51115.04 -65.00 
-  LeHavre-SBoot430 Stationary.Environment.JerryCan_GER1_1 nn 160060.88 51073.57 -65.00 
   LeHavre-SBoot431 Stationary.Environment.JerryCan_GER1_1 nn 160054.05 51060.82 -65.00 
   LeHavre-SBoot432 Stationary.Environment.JerryCan_GER1_1 nn 160050.59 51026.46 -65.00 
   LeHavre-SBoot433 Stationary.Environment.JerryCan_GER1_1 nn 160072.48 51018.26 -65.00 
-  LeHavre-SBoot434 Stationary.Environment.JerryCan_GER1_1 nn 160091.41 51017.07 -65.00 
-  LeHavre-SBoot435 Stationary.Environment.JerryCan_GER1_1 nn 160112.83 51030.74 -65.00 
-  LeHavre-SBoot436 Stationary.Environment.JerryCan_GER1_1 nn 160131.50 51060.36 -65.00 
-  LeHavre-SBoot437 Stationary.Environment.JerryCan_GER1_1 nn 160129.23 51074.94 -65.00 
   LeHavre-SBoot438 Stationary.Environment.JerryCan_GER1_1 nn 160124.22 51094.54 -65.00 
   LeHavre-SBoot439 Stationary.Environment.JerryCan_GER1_1 nn 160136.52 51126.43 -65.00 
   LeHavre-SBoot440 Stationary.Environment.JerryCan_GER1_1 nn 160146.55 51147.39 -65.00 
-  LeHavre-SBoot441 Stationary.Environment.JerryCan_GER1_1 nn 160146.55 51162.43 -65.00 
-  LeHavre-SBoot442 Stationary.Environment.JerryCan_GER1_1 nn 160150.53 51184.26 -65.00 
-  LeHavre-SBoot443 Stationary.Environment.JerryCan_GER1_1 nn 160131.69 51202.02 -65.00 
-  LeHavre-SBoot444 Stationary.Environment.JerryCan_GER1_1 nn 160108.19 51188.81 -65.00 
-  LeHavre-SBoot445 Stationary.Environment.JerryCan_GER1_1 nn 160101.89 51156.51 -65.00 
   LeHavre-SBoot446 Stationary.Environment.JerryCan_GER1_1 nn 160101.44 51114.13 -65.00 
-  LeHavre-SBoot447 Stationary.Environment.JerryCan_GER1_1 nn 160086.39 51062.18 -65.00 
-  LeHavre-SBoot448 Stationary.Environment.JerryCan_GER1_1 nn 160060.42 51040.31 -65.00 
-  LeHavre-SBoot449 Stationary.Environment.JerryCan_GER1_1 nn 160034.02 51038.93 -65.00 
-  LeHavre-SBoot450 Stationary.Environment.JerryCan_GER1_1 nn 159965.30 51060.23 -65.00 
   LeHavre-SBoot451 Stationary.Environment.JerryCan_GER1_1 nn 159962.00 51082.69 -65.00 
-  LeHavre-SBoot452 Stationary.Environment.JerryCan_GER1_1 nn 159944.94 51183.30 -65.00 
-  LeHavre-SBoot453 Stationary.Environment.JerryCan_GER1_1 nn 159935.81 51239.46 -65.00 
   LeHavre-SBoot454 Stationary.Environment.JerryCan_GER1_1 nn 159965.48 51252.70 -65.00 
   LeHavre-SBoot455 Stationary.Environment.JerryCan_GER1_1 nn 159947.22 51214.80 -65.00 
 [Buildings]

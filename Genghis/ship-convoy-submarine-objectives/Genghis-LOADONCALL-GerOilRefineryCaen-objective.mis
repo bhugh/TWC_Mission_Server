@@ -20,8 +20,6 @@
 [splines]
 [CustomChiefs]
 [Stationary]
-  Static84 Artillery.Bofors de 128077.98 14318.33 120.00 /timeout 0/radius_hide 0
-  Static82 Artillery.Bofors de 128714.43 14479.20 120.00 /timeout 0/radius_hide 0
   Static79 Stationary.Industrial.Huge_Factory.Central nn 127733.37 14663.55 -250.00 
   Static38 Stationary.Kubelwagen de 127935.23 14646.48 35.00 
   Static20 Stationary.Environment.TentStaffBig_GER1 de 127932.02 14650.66 215.00 
@@ -39,7 +37,6 @@
   Static54 Stationary.Kubelwagen de 128059.66 14668.01 130.00 
   Static73 Stationary.Industrial.Oxygen_Facility nn 128097.63 14665.73 120.00 
   Static74 Stationary.Industrial.Oxygen_Facility nn 128145.02 14674.51 120.00 
-  Static83 Artillery.Bofors de 127168.67 14681.81 120.00 /timeout 0/radius_hide 0
   Static27 Stationary.Industrial.Huge_Factory.Central nn 127592.73 14710.33 110.00 
   Static78 Stationary.Industrial.Huge_Factory.Central nn 127689.51 14696.96 -160.00 
   Static26 Stationary.Opel_Blitz_cargo_med de 127913.05 14718.13 35.00 
@@ -57,7 +54,6 @@
   Static75 Stationary.Industrial.Oxygen_Facility nn 128184.10 14686.70 120.00 
   Static76 Stationary.Industrial.Oxygen_Facility nn 128237.24 14704.68 120.00 
   Static77 Stationary.Industrial.Huge_Factory.Central nn 127676.98 14786.78 20.00 
-  Static17 Artillery.20_mm_Flak_38 de 127971.01 14802.10 -90.00 /timeout 0/radius_hide 0
   Static69 Stationary.Environment.TentStaffSmall_GER1 de 128178.02 14772.66 305.00 
   Static68 Stationary.Environment.TentTroopLarge_GER1 de 128184.71 14777.73 305.00 
   Static72 Stationary.Environment.TentTroopLarge_GER1 de 128191.77 14782.73 305.00 
@@ -65,11 +61,7 @@
   Static70 Stationary.Environment.TentTroopLarge_GER1 de 128205.38 14792.44 305.00 
   Static66 Stationary.Environment.TentTroopLarge_GER1 de 128212.27 14797.35 305.00 
   Static64 Stationary.Environment.TentZeltbahn_GER1 de 128219.23 14802.16 305.00 
-  Static15 Artillery.Flak37 de 128040.39 14815.54 -90.00 /timeout 0/radius_hide 0/hstart -1
-  Static14 Artillery.Flak37 de 127990.77 14865.94 -180.00 /timeout 0/radius_hide 0/hstart -1
-  Static16 Artillery.RRH_GER1 de 128040.16 14851.16 -5.00 /timeout 0/radius_hide 0/hstart -1
   Static11 Stationary.Environment.Kdo_Hi_Ger35_GER1 de 128028.02 14865.54 270.00 /hstart -1
-  Static41 Artillery.Flak37 de 128090.70 14865.82 0.00 /timeout 0/radius_hide 0/hstart -1
   Static62 Stationary.Environment.Maschinensatz_8_KW_GER1 de 128245.34 14827.88 125.00 
   Static67 Stationary.Radar.Wotan_II_ADD1 de 128243.30 14832.07 35.00 
   Static59 Stationary.Environment.CamoNetCrates nn 128247.02 14827.29 125.00 
@@ -79,7 +71,6 @@
   Static65 Stationary.Opel_Blitz_radio_transport de 128254.71 14840.19 35.00 
   Static13 Stationary.Environment.Portable_Siren_GER1 de 128036.27 14878.13 270.00 /hstart -1
   Static12 Stationary.Environment.Em_4m_R(H)34_GER1 de 128040.27 14880.44 180.00 /hstart -1
-  Static0 Artillery.Flak37 de 128040.62 14916.10 90.00 /timeout 0/radius_hide 0/hstart -1
   Static9 Stationary.Opel_Blitz_tent de 127892.21 14979.26 310.00 
   Static7 Stationary.Opel_Blitz_tent de 127894.62 14981.60 310.00 
   Static10 Stationary.Environment.CamoNetPlane nn 127894.59 14984.13 310.00 
@@ -102,11 +93,5 @@
   Static46 Stationary.Environment.CamoNetPlane nn 128085.98 15038.79 270.00 
   Static44 Stationary.Ford_G917 de 128088.98 15037.51 -90.00 
   Static43 Stationary.Ford_G917 de 128091.66 15037.48 -90.00 
-  Static85 Artillery.Bofors de 128777.38 15032.58 120.00 /timeout 0/radius_hide 0
-  Static81 Artillery.Bofors de 128777.38 15049.51 120.00 /timeout 0/radius_hide 0
-  Static40 Artillery.20_mm_Flak_38 de 128083.63 15100.72 120.00 /timeout 0/radius_hide 0
-  Static80 Artillery.Bofors de 127813.59 15186.16 120.00 /timeout 0/radius_hide 0
 [Buildings]
 [BuildingsLinks]
-[Trigger]
-  RedSubmarine1 TGroupDestroyed 2001_Chief 100

@@ -23,15 +23,12 @@
   Static7 Stationary.BeaufighterMkIF nn 223378.94 224530.88 0.00 
   Static8 Stationary.BeaufighterMkIF nn 223398.11 224512.30 0.00 
   Static73 Stationary.Environment.JerryCan_GER1_1 nn 223427.78 224498.69 90.00 
-  Static74 Stationary.Environment.JerryCan_GER1_1 nn 223410.44 224522.22 90.00 
   Static11 Stationary.BeaufighterMkIF nn 223451.28 224486.31 90.00 
   Static72 Stationary.Environment.JerryCan_GER1_1 nn 223461.83 224498.05 90.00 
   Static10 Stationary.BeaufighterMkIF nn 223485.94 224484.45 90.00 
   Static45 Stationary.Environment.JerryCan_GER1_1 gb 223446.97 224527.16 90.00 
-  Static71 Stationary.Environment.JerryCan_GER1_1 nn 223502.75 224495.55 90.00 
   Static46 Stationary.Environment.JerryCan_GER1_1 nn 223475.47 224527.14 90.00 
-  Static9 Stationary.BeaufighterMkIF nn 223514.44 224483.22 90.00 
-  Static51 Stationary.Environment.JerryCan_GER1_1 nn 223528.75 224532.11 90.00 
+  Static9 Stationary.BeaufighterMkIF nn 223514.44 224483.22 90.00   
   Static70 Stationary.Environment.JerryCan_GER1_1 nn 223556.03 224506.70 90.00 
   Static39 Stationary.Bedford_OXA nn 223568.39 224521.20 90.00 
   Static69 Stationary.Environment.JerryCan_GER1_1 nn 223578.94 224529.00 90.00 
@@ -65,8 +62,7 @@
   Static33 Stationary.Bedford_OXA nn 223502.47 224594.73 90.00 
   Static50 Stationary.Environment.JerryCan_GER1_1 nn 223511.42 224554.41 90.00 
   Static2 tobruk:Stationary.Airfield.LawsHangerGravesend nn 223526.08 224545.27 0.00 
-  Static3 tobruk:Stationary.Airfield.LawsHangerGravesend nn 223524.72 224549.30 0.00 
-  Static49 Stationary.Environment.JerryCan_GER1_1 nn 223513.89 224574.23 90.00 
+  Static3 tobruk:Stationary.Airfield.LawsHangerGravesend nn 223524.72 224549.30 0.00   
   Static52 Stationary.Environment.JerryCan_GER1_1 nn 223533.72 224566.19 90.00 
   Static40 Stationary.Bedford_OXA nn 223570.61 224533.11 90.00 
   Static34 Stationary.Bedford_OXA nn 223512.19 224594.92 90.00 
@@ -78,30 +74,22 @@
   Static38 Stationary.Bedford_OXA nn 223547.28 224595.94 90.00 
   Static68 Stationary.Environment.JerryCan_GER1_1 nn 223590.72 224541.39 90.00 
   Static15 Stationary.BeaufighterMkIF nn 223602.42 224555.70 90.00 
-  Static28 Stationary.Bedford_OXA nn 223582.69 224586.58 90.00 
-  Static67 Stationary.Environment.JerryCan_GER1_1 nn 223628.50 224559.36 90.00 
+  Static28 Stationary.Bedford_OXA nn 223582.69 224586.58 90.00   
   Static56 Stationary.Environment.JerryCan_GER1_1 gb 223633.19 224583.53 90.00 
   Static14 Stationary.BeaufighterMkIF gb 223638.36 224555.70 90.00 
   Static66 Stationary.Environment.JerryCan_GER1_1 nn 223658.86 224560.61 90.00 
-  Static13 Stationary.BeaufighterMkIF nn 223683.58 224554.47 90.00 
-  Static57 Stationary.Environment.JerryCan_GER1_1 nn 223666.31 224588.48 90.00 
+  Static13 Stationary.BeaufighterMkIF nn 223683.58 224554.47 90.00   
   Static58 Stationary.Environment.JerryCan_GER1_1 nn 223697.92 224586.63 90.00 
   Static12 Stationary.BeaufighterMkIF nn 223704.64 224553.84 90.00 
-  Static65 Stationary.Environment.JerryCan_GER1_1 nn 223716.50 224565.56 90.00 
-  Static59 Stationary.Environment.JerryCan_GER1_1 nn 223702.86 224591.58 90.00 
-  Static64 Stationary.Environment.JerryCan_GER1_1 nn 223733.83 224592.83 90.00 
-  Static77 Stationary.Environment.JerryCan_GER1_1 nn 223474.19 224612.58 90.00 
-  Static78 Stationary.Environment.JerryCan_GER1_1 nn 223515.75 224603.98 90.00 
+  Static77 Stationary.Environment.JerryCan_GER1_1 nn 223474.19 224612.58 90.00   
   Static79 Stationary.Environment.TentZeltbahnBig_GER1 nn 223565.94 224621.94 90.00 
   Static27 Stationary.Bedford_OXA nn 223582.53 224605.14 90.00 
   Static26 Stationary.Bedford_OXA nn 223581.50 224620.47 90.00 
   Static55 Stationary.Environment.JerryCan_GER1_1 nn 223611.17 224602.13 90.00 
   Static25 Stationary.Bedford_OXA nn 223582.36 224636.81 90.00 
-  Static0 tobruk:Stationary.Airfield.LawsHangerGravesend nn 223620.44 224609.97 0.00 
-  Static54 Stationary.Environment.JerryCan_GER1_1 nn 223622.33 224617.61 90.00 
+  Static0 tobruk:Stationary.Airfield.LawsHangerGravesend nn 223620.44 224609.97 0.00   
   Static53 Stationary.Environment.JerryCan_GER1_1 nn 223631.61 224613.27 90.00 
-  Static1 tobruk:Stationary.Airfield.LawsHangerGravesend nn 223687.86 224611.33 0.00 
-  Static61 Stationary.Environment.JerryCan_GER1_1 nn 223684.89 224637.44 90.00 
+  Static1 tobruk:Stationary.Airfield.LawsHangerGravesend nn 223687.86 224611.33 0.00   
   Static60 Stationary.Environment.JerryCan_GER1_1 nn 223699.75 224629.38 90.00 
   Static24 Stationary.Bedford_OXA nn 223735.94 224604.11 90.00 
   Static63 Stationary.Environment.JerryCan_GER1_1 nn 223735.69 224615.13 90.00 

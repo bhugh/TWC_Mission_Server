@@ -60,8 +60,14 @@ public static class StationaryMarkerManager
 
     public static void AddMarker(string type, double x, double y, string sourceFile)
     {
-        double radius;
-        if (!_markerRadii.TryGetValue(type, out radius))
+        double radius = -1;
+        foreach (KeyValuePair<string, double> kvp in _markerRadii) {
+            if (! kvp.Key.ToLower().Contains(type.ToLower())) continue;
+            radius = kvp.Value;
+            break;
+        }
+        
+        if (radius == -1)
         {
             Console.WriteLine("[StationaryMarkerManager] Unknown marker type: " + type);
             return;

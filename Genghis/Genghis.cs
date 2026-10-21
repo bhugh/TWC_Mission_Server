@@ -18041,7 +18041,7 @@ public class Mission : AMission, IMainMission
 
             addPointArea(MO_ObjectiveType.MilitaryArea, "Ramsgate Military Train Station", "Mans", "", 1, 4, "RamsgateTrainStation", 251133, 259045, 175, 175, 5500, 15, 0, 125, 240, false, true, 2, 2, "", add, canBeDisabled:false);
 
-            addPointArea(MO_ObjectiveType.Naval_Dock_Area, "Ramsgate Naval Docks", "Mans", "Genghis-LOADONCALL-Ramsgate-Docks.mis", 1, 15, "RamsgateNavalDocks", 251622, 258457, 420, 420, 35000, 100, 0, 165, 360, false, true, 3, 2, "", add, canBeDisabled:false);
+            addPointArea(MO_ObjectiveType.Naval_Dock_Area, "Ramsgate Naval Docks", "Mans", "Genghis-LOADONCALL-Ramsgate-Docks.mis", 1, 15, "RamsgateNavalDocks", 251745, 257490, 280, 280, 35000, 100, 0, 165, 360, false, true, 3, 2, "", add, canBeDisabled:false);
 
             addPointArea(MO_ObjectiveType.Naval_Dock_Area, "HMS Fervent Naval Station & Fortified Cave Complex", "Mans", "", 1, 15, "RamsgateHMSFervent", 252233, 257951, 80, 80, 30000, 40, 0, 145, 240, false, true, 2, 2, "", add, canBeDisabled:false);
 

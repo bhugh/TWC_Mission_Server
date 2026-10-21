@@ -1,4 +1,4 @@
-﻿[1]
+[1]
 <Name>
 TWC Campaign Server - Genghis Khan
 <Description>
@@ -181,7 +181,7 @@ What you need before you join the server (and have a good time):
 
  The advantage of making these settings offline is the settings are saved permanently in file confUser.ini.  You can make the same changes while logged into a multiplayer server - just click "loadout" while choosing your aircraft, before spawning in.  But (for whatever reason known only to the CLoD gods!) these changes are just temporary and will revert to your saved settings as soon as you exit the server.
 
- Note that you can also edit the file confUser.ini with a text editor (after exiting CLoD - if you edit while CLoD is running it may overwrite any changes you make).  That file is typically found in a location like C:\Users\[MYUSERNAME]\Documents\1C SoftClub\il-2 sturmovik cliffs of dover\confUser.ini That file format is quite complex, so be sure to save a backup copy of the file first!
+ Note that you can also edit the file confUser.ini with a text editor (after exiting CLoD - if you edit while CLoD is running it may overwrite any changes you make).  That file is typically found in a location like C:\Users\MYUSERNAME\Documents\1C SoftClub\il-2 sturmovik cliffs of dover\confUser.ini That file format is quite complex, so be sure to save a backup copy of the file first!
 
  - For ammo belts, most pilots find some combination of armor piercing and incidendiary ammunition (AP/deWilde for UK, Spitzgeschoss mit kern/phosphoor for DE) best for machine guns and explosive rounds of some kind for cannons, perhaps with some incendiaries mixed in (HE for UK, Minengeschoss/M-geschoss or Brand/phosphor for DE).  "Ball" is strictly kinetic and generally to be avoided, especially for smaller-caliber guns.  Tracer rounds ("Leuchtspur") are typically for visibility/aiming only and usually mixed in one every 6 or 8 rounds - just so you can easily see where you are aiming (though some are armor piercing or incendiary in addition). Different color choices are strictly for visibility purposes - you might choose a low vis option to avoid being blinded at night, for example. Observer or practice ammunition ("Übungs" or "Beobachtung" for DE) is literally inexpensive/non-lethal ammo for practice and training. It is never used in combat.
 
@@ -249,7 +249,7 @@ The Campaign has many advanced features such as:
   - Knickebein radio beam navigation system, also used to guide Cover Bombers to target
  - Command a bomber or sturmovik squadron--with cover bombers and fighters, players can assemble large, protected bomber groups to attack the enemy, or smaller ground-attack squadrons to take out a convoy or patrol.  Attack shipping with bombs OR torpedo bombers.
  - Enemy fighter pilots have the fun of dealing with many large, well defended bomber groups organized and led by a real person 
- - Set up to facilitate [b]real, successful large-formation high-altitude formation bomb attacks[/b] by bomber squadron commanders on both sides--like those that actually took place during the Battle of Britain.
+ - Set up to facilitate real, successful large-formation high-altitude formation bomb attacks by bomber squadron commanders on both sides--like those that actually took place during the Battle of Britain.
  - In-game radar system and General Situation Map (online)
  - Detailed scoring and stats for individuals and teams
  - <rr rearm & reload system
@@ -345,7 +345,7 @@ Ground Attack modes for <cover aircrasft are selected via Tab-4-4-4-4-6. Attack 
   
 Remember that you can hold any airgroup back from ground attacking via the <creserve, <cstrict, or <cescort commands.  After bombing, most aircraft types will try to circle and strafe the target point repeatedly.  <creserve or <cstrict stops that and returns them to formation with you.
 
-In the <cpos position updates for your <cover aircraft that appear regularly in the chat window, you will see their current ground attack mode listed [[[KB-NE]]] or [[[DWID]]], for example.  If aircraft are withheld from attacking, you'll instead see [[[RESERVED]]], [[[STRICT]]], or [[[ESCORT]]]. You will also see other helpful information, such as the aircraft's current position and speed relative to you, whether each aircraft is out of bombs or ammo,  and current <cplayer, <cdist, and <cfdist values.
+In the <cpos position updates for your <cover aircraft that appear regularly in the chat window, you will see their current ground attack mode listed KB-NE or DWID, for example.  If aircraft are withheld from attacking, you'll instead see RESERVED, STRICT, or ESCORT. You will also see other helpful information, such as the aircraft's current position and speed relative to you, whether each aircraft is out of bombs or ammo,  and current <cplayer, <cdist, and <cfdist values.
 
 Again, detailed help at chat command <chelp.
 
@@ -417,8 +417,7 @@ brenthugh.com/twc - General Situation Map and links to Stats pages, TACVIEW file
 ATAG TWC Campaign forum - theairtacticalassaultgroup.com/forum/forumdisplay.php?f=150 - you can read the main forum without logging in, but to post or join the Red or Blue subforum, first make an account and then ask an admin to be added.
 
 DISCORD server - discord.gg/ESS9GNZnuG - Pilots on the server are invariably helpful in answering questions about piloting specific aircraft, using various features of the campaign server, etc.
-
-[Mission]
+Mission]
 <Name>
 TWC Campaign Server - Genghis Khan
 <Description>
@@ -601,7 +600,7 @@ What you need before you join the server (and have a good time):
 
  The advantage of making these settings offline is the settings are saved permanently in file confUser.ini.  You can make the same changes while logged into a multiplayer server - just click "loadout" while choosing your aircraft, before spawning in.  But (for whatever reason known only to the CLoD gods!) these changes are just temporary and will revert to your saved settings as soon as you exit the server.
 
- Note that you can also edit the file confUser.ini with a text editor (after exiting CLoD - if you edit while CLoD is running it may overwrite any changes you make).  That file is typically found in a location like C:\Users\[MYUSERNAME]\Documents\1C SoftClub\il-2 sturmovik cliffs of dover\confUser.ini That file format is quite complex, so be sure to save a backup copy of the file first!
+ Note that you can also edit the file confUser.ini with a text editor (after exiting CLoD - if you edit while CLoD is running it may overwrite any changes you make).  That file is typically found in a location like C:\Users\MYUSERNAME\Documents\1C SoftClub\il-2 sturmovik cliffs of dover\confUser.ini That file format is quite complex, so be sure to save a backup copy of the file first!
 
  - For ammo belts, most pilots find some combination of armor piercing and incidendiary ammunition (AP/deWilde for UK, Spitzgeschoss mit kern/phosphoor for DE) best for machine guns and explosive rounds of some kind for cannons, perhaps with some incendiaries mixed in (HE for UK, Minengeschoss/M-geschoss or Brand/phosphor for DE).  "Ball" is strictly kinetic and generally to be avoided, especially for smaller-caliber guns.  Tracer rounds ("Leuchtspur") are typically for visibility/aiming only and usually mixed in one every 6 or 8 rounds - just so you can easily see where you are aiming (though some are armor piercing or incendiary in addition). Different color choices are strictly for visibility purposes - you might choose a low vis option to avoid being blinded at night, for example. Observer or practice ammunition ("Übungs" or "Beobachtung" for DE) is literally inexpensive/non-lethal ammo for practice and training. It is never used in combat.
 
@@ -669,7 +668,7 @@ The Campaign has many advanced features such as:
   - Knickebein radio beam navigation system, also used to guide Cover Bombers to target
  - Command a bomber or sturmovik squadron--with cover bombers and fighters, players can assemble large, protected bomber groups to attack the enemy, or smaller ground-attack squadrons to take out a convoy or patrol.  Attack shipping with bombs OR torpedo bombers.
  - Enemy fighter pilots have the fun of dealing with many large, well defended bomber groups organized and led by a real person 
- - Set up to facilitate [b]real, successful large-formation high-altitude formation bomb attacks[/b] by bomber squadron commanders on both sides--like those that actually took place during the Battle of Britain.
+ - Set up to facilitate real, successful large-formation high-altitude formation bomb attacks by bomber squadron commanders on both sides--like those that actually took place during the Battle of Britain.
  - In-game radar system and General Situation Map (online)
  - Detailed scoring and stats for individuals and teams
  - <rr rearm & reload system
@@ -765,7 +764,7 @@ Ground Attack modes for <cover aircrasft are selected via Tab-4-4-4-4-6. Attack 
   
 Remember that you can hold any airgroup back from ground attacking via the <creserve, <cstrict, or <cescort commands.  After bombing, most aircraft types will try to circle and strafe the target point repeatedly.  <creserve or <cstrict stops that and returns them to formation with you.
 
-In the <cpos position updates for your <cover aircraft that appear regularly in the chat window, you will see their current ground attack mode listed [[[KB-NE]]] or [[[DWID]]], for example.  If aircraft are withheld from attacking, you'll instead see [[[RESERVED]]], [[[STRICT]]], or [[[ESCORT]]]. You will also see other helpful information, such as the aircraft's current position and speed relative to you, whether each aircraft is out of bombs or ammo,  and current <cplayer, <cdist, and <cfdist values.
+In the <cpos position updates for your <cover aircraft that appear regularly in the chat window, you will see their current ground attack mode listed KB-NE or DWID, for example.  If aircraft are withheld from attacking, you'll instead see RESERVED, STRICT, or ESCORT. You will also see other helpful information, such as the aircraft's current position and speed relative to you, whether each aircraft is out of bombs or ammo,  and current <cplayer, <cdist, and <cfdist values.
 
 Again, detailed help at chat command <chelp.
 
@@ -837,7 +836,6 @@ brenthugh.com/twc - General Situation Map and links to Stats pages, TACVIEW file
 ATAG TWC Campaign forum - theairtacticalassaultgroup.com/forum/forumdisplay.php?f=150 - you can read the main forum without logging in, but to post or join the Red or Blue subforum, first make an account and then ask an admin to be added.
 
 DISCORD server - discord.gg/ESS9GNZnuG - Pilots on the server are invariably helpful in answering questions about piloting specific aircraft, using various features of the campaign server, etc.
-
 [Army Red]
 <Name>
 TWC Campaign Server - Genghis Khan
@@ -1021,7 +1019,7 @@ What you need before you join the server (and have a good time):
 
  The advantage of making these settings offline is the settings are saved permanently in file confUser.ini.  You can make the same changes while logged into a multiplayer server - just click "loadout" while choosing your aircraft, before spawning in.  But (for whatever reason known only to the CLoD gods!) these changes are just temporary and will revert to your saved settings as soon as you exit the server.
 
- Note that you can also edit the file confUser.ini with a text editor (after exiting CLoD - if you edit while CLoD is running it may overwrite any changes you make).  That file is typically found in a location like C:\Users\[MYUSERNAME]\Documents\1C SoftClub\il-2 sturmovik cliffs of dover\confUser.ini That file format is quite complex, so be sure to save a backup copy of the file first!
+ Note that you can also edit the file confUser.ini with a text editor (after exiting CLoD - if you edit while CLoD is running it may overwrite any changes you make).  That file is typically found in a location like C:\Users\MYUSERNAME\Documents\1C SoftClub\il-2 sturmovik cliffs of dover\confUser.ini That file format is quite complex, so be sure to save a backup copy of the file first!
 
  - For ammo belts, most pilots find some combination of armor piercing and incidendiary ammunition (AP/deWilde for UK, Spitzgeschoss mit kern/phosphoor for DE) best for machine guns and explosive rounds of some kind for cannons, perhaps with some incendiaries mixed in (HE for UK, Minengeschoss/M-geschoss or Brand/phosphor for DE).  "Ball" is strictly kinetic and generally to be avoided, especially for smaller-caliber guns.  Tracer rounds ("Leuchtspur") are typically for visibility/aiming only and usually mixed in one every 6 or 8 rounds - just so you can easily see where you are aiming (though some are armor piercing or incendiary in addition). Different color choices are strictly for visibility purposes - you might choose a low vis option to avoid being blinded at night, for example. Observer or practice ammunition ("Übungs" or "Beobachtung" for DE) is literally inexpensive/non-lethal ammo for practice and training. It is never used in combat.
 
@@ -1089,7 +1087,7 @@ The Campaign has many advanced features such as:
   - Knickebein radio beam navigation system, also used to guide Cover Bombers to target
  - Command a bomber or sturmovik squadron--with cover bombers and fighters, players can assemble large, protected bomber groups to attack the enemy, or smaller ground-attack squadrons to take out a convoy or patrol.  Attack shipping with bombs OR torpedo bombers.
  - Enemy fighter pilots have the fun of dealing with many large, well defended bomber groups organized and led by a real person 
- - Set up to facilitate [b]real, successful large-formation high-altitude formation bomb attacks[/b] by bomber squadron commanders on both sides--like those that actually took place during the Battle of Britain.
+ - Set up to facilitate real, successful large-formation high-altitude formation bomb attacks by bomber squadron commanders on both sides--like those that actually took place during the Battle of Britain.
  - In-game radar system and General Situation Map (online)
  - Detailed scoring and stats for individuals and teams
  - <rr rearm & reload system
@@ -1185,7 +1183,7 @@ Ground Attack modes for <cover aircrasft are selected via Tab-4-4-4-4-6. Attack 
   
 Remember that you can hold any airgroup back from ground attacking via the <creserve, <cstrict, or <cescort commands.  After bombing, most aircraft types will try to circle and strafe the target point repeatedly.  <creserve or <cstrict stops that and returns them to formation with you.
 
-In the <cpos position updates for your <cover aircraft that appear regularly in the chat window, you will see their current ground attack mode listed [[[KB-NE]]] or [[[DWID]]], for example.  If aircraft are withheld from attacking, you'll instead see [[[RESERVED]]], [[[STRICT]]], or [[[ESCORT]]]. You will also see other helpful information, such as the aircraft's current position and speed relative to you, whether each aircraft is out of bombs or ammo,  and current <cplayer, <cdist, and <cfdist values.
+In the <cpos position updates for your <cover aircraft that appear regularly in the chat window, you will see their current ground attack mode listed KB-NE or DWID, for example.  If aircraft are withheld from attacking, you'll instead see RESERVED, STRICT, or ESCORT. You will also see other helpful information, such as the aircraft's current position and speed relative to you, whether each aircraft is out of bombs or ammo,  and current <cplayer, <cdist, and <cfdist values.
 
 Again, detailed help at chat command <chelp.
 
@@ -1257,7 +1255,6 @@ brenthugh.com/twc - General Situation Map and links to Stats pages, TACVIEW file
 ATAG TWC Campaign forum - theairtacticalassaultgroup.com/forum/forumdisplay.php?f=150 - you can read the main forum without logging in, but to post or join the Red or Blue subforum, first make an account and then ask an admin to be added.
 
 DISCORD server - discord.gg/ESS9GNZnuG - Pilots on the server are invariably helpful in answering questions about piloting specific aircraft, using various features of the campaign server, etc.
-
 [Army Blue]
 <Name>
 TWC Campaign Server - Genghis Khan
@@ -1441,7 +1438,7 @@ What you need before you join the server (and have a good time):
 
  The advantage of making these settings offline is the settings are saved permanently in file confUser.ini.  You can make the same changes while logged into a multiplayer server - just click "loadout" while choosing your aircraft, before spawning in.  But (for whatever reason known only to the CLoD gods!) these changes are just temporary and will revert to your saved settings as soon as you exit the server.
 
- Note that you can also edit the file confUser.ini with a text editor (after exiting CLoD - if you edit while CLoD is running it may overwrite any changes you make).  That file is typically found in a location like C:\Users\[MYUSERNAME]\Documents\1C SoftClub\il-2 sturmovik cliffs of dover\confUser.ini That file format is quite complex, so be sure to save a backup copy of the file first!
+ Note that you can also edit the file confUser.ini with a text editor (after exiting CLoD - if you edit while CLoD is running it may overwrite any changes you make).  That file is typically found in a location like C:\Users\MYUSERNAME\Documents\1C SoftClub\il-2 sturmovik cliffs of dover\confUser.ini That file format is quite complex, so be sure to save a backup copy of the file first!
 
  - For ammo belts, most pilots find some combination of armor piercing and incidendiary ammunition (AP/deWilde for UK, Spitzgeschoss mit kern/phosphoor for DE) best for machine guns and explosive rounds of some kind for cannons, perhaps with some incendiaries mixed in (HE for UK, Minengeschoss/M-geschoss or Brand/phosphor for DE).  "Ball" is strictly kinetic and generally to be avoided, especially for smaller-caliber guns.  Tracer rounds ("Leuchtspur") are typically for visibility/aiming only and usually mixed in one every 6 or 8 rounds - just so you can easily see where you are aiming (though some are armor piercing or incendiary in addition). Different color choices are strictly for visibility purposes - you might choose a low vis option to avoid being blinded at night, for example. Observer or practice ammunition ("Übungs" or "Beobachtung" for DE) is literally inexpensive/non-lethal ammo for practice and training. It is never used in combat.
 
@@ -1509,7 +1506,7 @@ The Campaign has many advanced features such as:
   - Knickebein radio beam navigation system, also used to guide Cover Bombers to target
  - Command a bomber or sturmovik squadron--with cover bombers and fighters, players can assemble large, protected bomber groups to attack the enemy, or smaller ground-attack squadrons to take out a convoy or patrol.  Attack shipping with bombs OR torpedo bombers.
  - Enemy fighter pilots have the fun of dealing with many large, well defended bomber groups organized and led by a real person 
- - Set up to facilitate [b]real, successful large-formation high-altitude formation bomb attacks[/b] by bomber squadron commanders on both sides--like those that actually took place during the Battle of Britain.
+ - Set up to facilitate real, successful large-formation high-altitude formation bomb attacks by bomber squadron commanders on both sides--like those that actually took place during the Battle of Britain.
  - In-game radar system and General Situation Map (online)
  - Detailed scoring and stats for individuals and teams
  - <rr rearm & reload system
@@ -1605,7 +1602,7 @@ Ground Attack modes for <cover aircrasft are selected via Tab-4-4-4-4-6. Attack 
   
 Remember that you can hold any airgroup back from ground attacking via the <creserve, <cstrict, or <cescort commands.  After bombing, most aircraft types will try to circle and strafe the target point repeatedly.  <creserve or <cstrict stops that and returns them to formation with you.
 
-In the <cpos position updates for your <cover aircraft that appear regularly in the chat window, you will see their current ground attack mode listed [[[KB-NE]]] or [[[DWID]]], for example.  If aircraft are withheld from attacking, you'll instead see [[[RESERVED]]], [[[STRICT]]], or [[[ESCORT]]]. You will also see other helpful information, such as the aircraft's current position and speed relative to you, whether each aircraft is out of bombs or ammo,  and current <cplayer, <cdist, and <cfdist values.
+In the <cpos position updates for your <cover aircraft that appear regularly in the chat window, you will see their current ground attack mode listed KB-NE or DWID, for example.  If aircraft are withheld from attacking, you'll instead see RESERVED, STRICT, or ESCORT. You will also see other helpful information, such as the aircraft's current position and speed relative to you, whether each aircraft is out of bombs or ammo,  and current <cplayer, <cdist, and <cfdist values.
 
 Again, detailed help at chat command <chelp.
 
@@ -1677,7 +1674,6 @@ brenthugh.com/twc - General Situation Map and links to Stats pages, TACVIEW file
 ATAG TWC Campaign forum - theairtacticalassaultgroup.com/forum/forumdisplay.php?f=150 - you can read the main forum without logging in, but to post or join the Red or Blue subforum, first make an account and then ask an admin to be added.
 
 DISCORD server - discord.gg/ESS9GNZnuG - Pilots on the server are invariably helpful in answering questions about piloting specific aircraft, using various features of the campaign server, etc.
-
 [Info]
 <Name>
 Info
@@ -1689,30 +1685,3 @@ Server
 
 <Caption>
 TWC Campaign Server. Visit us at www.TWCPilots.com
-
-
-
-
-
-
-
- 
-  
- 
-   
-
-  
-
-
-
-
-
-
-
-
- 
-  
- 
-   
-
-  

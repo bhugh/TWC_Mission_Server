@@ -13,6 +13,7 @@
 //$include "$user\missions\Multi\Fatal\Genghis\Fresh Input File\Genghis-Class-MoveBombTarget.cs"
 //$include "$user\missions\Multi\Fatal\Genghis\Fresh Input File\Genghis-Class-MakeLandingGround.cs"
 //$include "$user\missions\Multi\Fatal\Genghis\Fresh Input File\Genghis-Class-TacviewImplMission.cs"
+//$include "$user\missions\Multi\Fatal\Genghis\Fresh Input File\Genghis-Class-StationaryMarkers.cs"
 
 
 //TODO: Check what happens when map turned just before end of mission, or even after last 30 seconds.
@@ -8724,6 +8725,41 @@ public class Mission : AMission, IMainMission
 					
 					removeGroundActorsAndStationariesInEnemyTerritory(fast:true);
 			});
+// NEW: Scan for and virtualize physical marker objects from the main mission
+        Timeout(1.0, () => 
+        {
+            try 
+            {
+                Console.WriteLine("[StationaryMarkerManager] Scanning for physical markers to virtualize...");
+                
+                GroundStationary[] allStatics = GamePlay.gpGroundStationarys(250000, 252000, 500000);
+                
+                int removed = 0;
+                foreach (GroundStationary sta in allStatics)
+                {
+                    if (sta == null) continue;
+                    
+                    string title = sta.Title;
+                    if (title.Contains("JerryCan_GER1_1") || title.Contains("JerryCan_GER1_2") || 
+                        title.Contains("JerryCan_GER1_3") || title.Contains("JerryCan_GER1_5") ||
+                        title.Contains("AEC_Regent_II") || title.Contains("MG_TA"))
+                    {
+                        string shortType = StationaryMarkerManager.ExtractShortTypeName(title);
+                        StationaryMarkerManager.AddMarker(shortType, sta.pos.x, sta.pos.y, "MainMission.mis");
+                        
+                        sta.Destroy();
+                        removed++;
+                    }
+                }
+                
+                Console.WriteLine("[StationaryMarkerManager] Virtualized " + removed + " physical markers from main mission");
+                StationaryMarkerManager.DebugPrintAll();
+            }
+            catch (System.Exception ex)
+            {
+                Console.WriteLine("[StationaryMarkerManager] Error during main mission scan: " + ex.Message);
+            }
+        });
 			
 
 			
@@ -9093,6 +9129,78 @@ public class Mission : AMission, IMainMission
      * 
      * **************************************/
 
+
+    // Process a section file to extract stationary markers and remove them from the file
+    // This prevents physical stationary objects from being loaded into the game (saving network slots)
+    private ISectionFile ProcessSectionFileForMarkers(ISectionFile f, string sourceFile)
+    {
+        try
+        {
+            string tempPath = System.IO.Path.GetTempFileName();
+            f.save(tempPath);
+            
+            string content = System.IO.File.ReadAllText(tempPath);
+            System.IO.File.Delete(tempPath);
+            
+            string[] lines = content.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None);
+            System.Collections.Generic.List<string> outputLines = new System.Collections.Generic.List<string>();
+            bool inStationarySection = false;
+            
+            foreach (string line in lines)
+            {
+                string trimmed = line.Trim();
+                
+                if (trimmed.StartsWith("["))
+                {
+                    inStationarySection = trimmed.Equals("[Stationary]", StringComparison.OrdinalIgnoreCase);
+                }
+                
+                bool isMarker = false;
+                if (inStationarySection && trimmed.StartsWith("Static"))
+                {
+                    if (trimmed.Contains("JerryCan_GER1_1") || trimmed.Contains("JerryCan_GER1_2") || 
+                        trimmed.Contains("JerryCan_GER1_3") || trimmed.Contains("JerryCan_GER1_5") ||
+                        trimmed.Contains("AEC_Regent_II") || trimmed.Contains("MG_TA"))
+                    {
+                        string[] parts = trimmed.Split(new char[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+                        if (parts.Length >= 5)
+                        {
+                            string typeName = parts[1];
+                            string shortType = StationaryMarkerManager.ExtractShortTypeName(typeName);
+                            
+                            double x = 0, y = 0;
+                            if (double.TryParse(parts[3], System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out x) &&
+                                double.TryParse(parts[4], System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out y))
+                            {
+                                StationaryMarkerManager.AddMarker(shortType, x, y, sourceFile);
+                                isMarker = true;
+                            }
+                        }
+                    }
+                }
+                
+                if (!isMarker)
+                {
+                    outputLines.Add(line);
+                }
+            }
+            
+            string processedContent = string.Join("\r\n", outputLines);
+            string processedPath = System.IO.Path.GetTempFileName();
+            System.IO.File.WriteAllText(processedPath, processedContent);
+            
+            ISectionFile processedFile = GamePlay.gpLoadSectionFile(processedPath);
+            System.IO.File.Delete(processedPath);
+            
+            return processedFile;
+        }
+        catch (System.Exception ex)
+        {
+            Console.WriteLine("[ProcessSectionFileForMarkers] Error: " + ex.Message);
+            return f;
+        }
+    }
+
     public int ReadInitialSubmissions(string filenameID = "", int timespread = 60, double wait = 0, string subdir = "", string fileName = "")
     {
         List<string> InitSubMissions = null;
@@ -9114,11 +9222,12 @@ public class Mission : AMission, IMainMission
             {
                 ISectionFile f = GamePlay.gpLoadSectionFile(s);
 				//f.save(CLOD_PATH + FILE_PATH + "/sectionfiles/" + "BEFOREchangeArmyToTerritorySectionFile-" + subdir + "-" + filenameID + random.Next(10, 99).ToString() + ".mis"); //testing                				
+                f = ProcessSectionFileForMarkers(f, s); // Extract markers before processing
                 f = Calcs.changeArmyToTerritory_SectionFile(f, GamePlay, this); //change army of any stationaries to match which territory they are on, based on current frontlines
                 Console.WriteLine("PostmissionLoad: changeArmyToTerritorySectionFile/Initsubmissions: " + s);
                 GamePlay.gpPostMissionLoad(f);
 				string saveFilename=CLOD_PATH + FILE_PATH + "/sectionfiles/" + "changeArmyToTerritorySectionFile-" + subdir + "-" + filenameID + fileName + random.Next(10, 99).ToString() + ".mis";
-                f.save(saveFilename); //testing                
+                f.save(saveFilename); //testing
 
                 //GamePlay.gpPostMissionLoad(s);
                 DebugAndLog(s.Replace(CLOD_PATH + FILE_PATH, "") + " file loaded instantly as " + saveFilename);
@@ -9134,6 +9243,7 @@ public class Mission : AMission, IMainMission
 
 						//GamePlay.gpPostMissionLoad(s);
 						ISectionFile f = GamePlay.gpLoadSectionFile(s);
+                    f = ProcessSectionFileForMarkers(f, s); // Extract markers before processing
 						f = Calcs.changeArmyToTerritory_SectionFile(f, GamePlay, this); //change army of any stationaries to match which territory they are on, based on current frontlines
 						if (ON_TESTSERVER) Console.WriteLine("PostmissionLoad: changeArmyToTerritorySectionFile/InitSubmissions");
 						GamePlay.gpPostMissionLoad(f);
@@ -20150,7 +20260,7 @@ added Rouen Flak
             bool resetCount = true;
 
             //Jerrycan here makes bomb strikes here count as +1 even if in civilian area etc.
-            f = Calcs.makeStatic(f, GamePlay, this, newPos.x + random.Next(4), newPos.y + random.Next(3), 0, type: "Stationary.Environment.JerryCan_GER1_1", heading: random.Next(360), side: "nn");
+            StationaryMarkerManager.AddMarker("JerryCan_GER1_1", newPos.x + random.Next(4), newPos.y + random.Next(3), "HQPlacement");
             resetCount = false;
 
             Calcs.Shuffle(items);
@@ -21610,7 +21720,7 @@ added Rouen Flak
             else if (names.Contains("truck")) typ = "Stationary.Ford_G917";
             else if (random.Next(5) < 1) typ = "Stationary.Environment.CamoNetPlane";
 
-            if (sectFile!= null) sectFile = Calcs.makeStatic(sectFile, GamePlay, this, rpos.x, rpos.y, 0, typ, 0, "nn", staticprefix: "remove_destroyed_MO_");
+            if (typ == "Stationary.Environment.JerryCan_GER1_1" || typ == "Stationary.Environment.JerryCan_GER1_2" || typ == "Stationary.Environment.JerryCan_GER1_3" || typ == "Stationary.Environment.JerryCan_GER1_5" || typ == "Stationary.AEC_Regent_II" || typ == "Stationary.MG_TA") { StationaryMarkerManager.AddMarker(StationaryMarkerManager.ExtractShortTypeName(typ), rpos.x, rpos.y, "GroundThingRemoval"); } else if (sectFile!= null) { sectFile = Calcs.makeStatic(sectFile, GamePlay, this, rpos.x, rpos.y, 0, typ, 0, "nn", staticprefix: "remove_destroyed_MO_"); }
 
             //We wait, then try once to disapparate when no one is looking, but then just do it
             //Waith 120s because likely a pilot is near; gives them time to fly off
@@ -21771,7 +21881,7 @@ added Rouen Flak
                     if (mo.OwnerArmy == 2) armyside = "de";
                     string side = "nn";
                     if (random.Next(0, 9) == 0) side = armyside;
-                    f = Calcs.makeStatic(f, GamePlay, this, x, y, 0, sname, 0, side, staticprefix: "trigger_refresh_" + mo.IDtoCleanChiefName() + "_");
+                    if (sname == "Stationary.Environment.JerryCan_GER1_1" || sname == "Stationary.Environment.JerryCan_GER1_2" || sname == "Stationary.Environment.JerryCan_GER1_3" || sname == "Stationary.Environment.JerryCan_GER1_5" || sname == "Stationary.AEC_Regent_II" || sname == "Stationary.MG_TA") { StationaryMarkerManager.AddMarker(StationaryMarkerManager.ExtractShortTypeName(sname), x, y, "TriggerObjectiveRefresh"); } else { f = Calcs.makeStatic(f, GamePlay, this, x, y, 0, sname, 0, side, staticprefix: "trigger_refresh_" + mo.IDtoCleanChiefName() + "_"); }
 
                     count++;
                     if (count > num_needed) break;
@@ -25535,7 +25645,7 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
 
 						ISectionFile f = GamePlay.gpCreateSectionFile();
 						f = Calcs.makeStatic(f, GamePlay, this, x, y, 0, "Stationary.Radar.Wotan_II", side: "de", resetCount: true);
-						f = Calcs.makeStatic(f, GamePlay, this, x + 0.5, y + 0.2, 0, "Stationary.Environment.JerryCan_GER1_1", side: "de");//Give them a couple small black dots to find
+                    StationaryMarkerManager.AddMarker("JerryCan_GER1_1", x + 0.5, y + 0.2, "BlueRadarInit");
 
 						//so it actually seems more interesting to just leave them be with, if you hit the two radars you knock it out & otherwise, not.  The extra "objects" don't really seem to add that much.
 						//Also if they can' get both items they can still get the objective by piling enough KG near the target.
@@ -33183,7 +33293,7 @@ GroundStationary[] gs = GamePlay.gpGroundStationarys(250000, 252000, 1000); //Fi
                             else if (names.Contains("truck")) typ = "Stationary.Ford_G917";
                             else if (clc_random.Next(5) < 1) typ = "Stationary.Environment.CamoNetPlane";
 
-                            f = Calcs.makeStatic(f, GamePlay, msn, gg.pos.x, gg.pos.y, 0, typ, 0, "nn", staticprefix: "remove_enemy_neutral");
+                            if (typ == "Stationary.Environment.JerryCan_GER1_1" || typ == "Stationary.Environment.JerryCan_GER1_2" || typ == "Stationary.Environment.JerryCan_GER1_3" || typ == "Stationary.Environment.JerryCan_GER1_5" || typ == "Stationary.AEC_Regent_II" || typ == "Stationary.MG_TA") { StationaryMarkerManager.AddMarker(StationaryMarkerManager.ExtractShortTypeName(typ), gg.pos.x, gg.pos.y, "RemoveEnemyNeutral"); } else { f = Calcs.makeStatic(f, GamePlay, msn, gg.pos.x, gg.pos.y, 0, typ, 0, "nn", staticprefix: "remove_enemy_neutral"); }
                         }
 						
 						

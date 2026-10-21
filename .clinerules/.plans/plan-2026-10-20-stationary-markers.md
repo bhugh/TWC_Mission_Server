@@ -20,9 +20,9 @@ Replace physical stationary objects (JerryCan_GER1_1 through _5, AEC_Regent_II, 
 
 ## Step-by-Step Implementation
 
-### Phase 1: Create StationaryMarkerManager Class
+### Phase 1: Create StationaryMarkerManager Class  **[COMPLETED - 2026-10-20]**
 
-**File: Genghis/Genghis-Class-StationaryMarkers.cs** (NEW FILE)
+**File: Genghis/Genghis-Class-StationaryMarkers.cs** (NEW FILE) - Created and compiles successfully
 
 Create a new class file with the following structure:
 
@@ -199,11 +199,9 @@ public static class StationaryMarkerManager
 
 ---
 
-### Phase 2: Modify Genghis.cs - Intercept .mis File Loading
+### Phase 2: Modify Genghis.cs - Intercept .mis File Loading  **[COMPLETED - 2026-10-20]**
 
-**File: Genghis/Genghis.cs**
-
-**Location: ReadInitialSubmissions method (around line 9096-9143)**
+**File: Genghis/Genghis.cs** - Added ProcessSectionFileForMarkers method and integrated into ReadInitialSubmissions (both instant and delayed branches)
 
 Modify the `ReadInitialSubmissions` method to intercept and process .mis files before loading them. The method currently:
 1. Loads the .mis file as an `ISectionFile`
@@ -299,11 +297,9 @@ Then in `ReadInitialSubmissions`, change BOTH branches (instant and delayed):
 ```csharp
 ---
 
-### Phase 3: Modify Genghis.cs - OnBattleStarted Cleanup
+### Phase 3: Modify Genghis.cs - OnBattleStarted Cleanup  **[COMPLETED - 2026-10-20]**
 
-**File: Genghis/Genghis.cs**
-
-**Location: OnBattleStarted method (around line 8609-8775)**
+**File: Genghis/Genghis.cs** - Added Timeout(1.0) after DrawFrontLinesPerMapState to scan for physical markers in main mission and virtualize them
 
 After the initial front line drawing and before loading initial submissions, add a scan to find and remove any markers that were in the MAIN .mis file (which loads before OnBattleStarted).
 
@@ -349,11 +345,9 @@ Timeout(1.0, () =>
 ISectionFile f = GamePlay.gpLoadSectionFile(s);
 ---
 
-### Phase 4: Modify Genghis-Class-StatsMission.cs - Bomb Explosion Handling
+### Phase 4: Modify Genghis-Class-StatsMission.cs - Bomb Explosion Handling  **[COMPLETED - 2026-10-20]**
 
-**File: Genghis/Genghis-Class-StatsMission.cs**
-
-**Location: Around line 7164-7210**
+**File: Genghis/Genghis-Class-StatsMission.cs** - Replaced gpGroundStationarys bomb handling with virtual marker lookup using StationaryMarkerManager.FindNearbyMarkers
 
 The current code searches for ground stationaries and checks their titles. Replace with virtual marker lookup.
 
@@ -419,11 +413,16 @@ f = Calcs.changeArmyToTerritory_SectionFile(f, GamePlay, this);
 ```
 ---
 
-### Phase 5: Modify Dynamic JerryCan Placement
+### Phase 5: Modify Dynamic JerryCan Placement  **[COMPLETED - 2026-10-20]**
 
-**File: Genghis/Genghis.cs**
+**File: Genghis/Genghis.cs** - Replaced all dynamic Calcs.makeStatic calls for JerryCan markers with StationaryMarkerManager.AddMarker:
+- Line 20262: HQ placement JerryCan_GER1_1
+- Line 21722: GroundThingRemoval with marker type check
+- Line 21883: TriggerObjectiveRefresh with marker type check
+- Line 25647: BlueRadarInit JerryCan_GER1_1
+- Line 33295: RemoveEnemyNeutral with marker type check
 
-Search for all `Calcs.makeStatic` calls that create JerryCan or AEC_Regent_II or MG_TA stationaries and replace with `StationaryMarkerManager.AddMarker`.
+All other types (CamoNetPlaneBig, TentTroopLarge_GER1, etc.) remain as physical objects.
 
 **Locations to find and replace:**
 
@@ -495,11 +494,9 @@ Where SHORT_TYPE_NAME is one of: `JerryCan_GER1_1`, `JerryCan_GER1_2`, `JerryCan
 3. **New file: Genghis/Genghis-Class-StationaryMarkers.cs** - New marker manager class
 ---
 
-### Phase 6: Include the New Class in Genghis.cs
+### Phase 6: Include the New Class in Genghis.cs  **[COMPLETED - 2026-10-20]**
 
-**File: Genghis/Genghis.cs**
-
-**Location: Top of file (around line 1-15)**
+**File: Genghis/Genghis.cs** - Added include for Genghis-Class-StationaryMarkers.cs at line 15 (after TacviewImplMission include)
 
 Add the include for the new class after the existing includes (after line 15):
 ```csharp

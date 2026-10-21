@@ -4494,6 +4494,36 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 
             string[] words = msg_orig.Split(' ');
 
+            //<lactors [x] [y] [radius] - admin override of centre point & search radius.
+            //words[0] == "<lactors", words[1] == x, words[2] == y, words[3] == radius.
+            //Only move the centre point when BOTH x and y are supplied, so a partial
+            //"<lactors 241444" never produces a bogus (x, 0) point. Unparseable values
+            //fall back silently to the defaults (player position / 9000 m).
+            double x_m = p.x;
+            double y_m = p.y;
+            bool haveCustomPoint = false;
+            if (words.Length > 2 && words[1].Length > 0 && words[2].Length > 0)
+            {
+                double xv = 0;
+                double yv = 0;
+                try { xv = Convert.ToDouble(words[1]); } catch (Exception ex) { }
+                try { yv = Convert.ToDouble(words[2]); } catch (Exception ex) { }
+                x_m = xv;
+                y_m = yv;
+                haveCustomPoint = true;
+            }
+            if (haveCustomPoint) p = new Point3d(x_m, y_m, 0);
+
+            if (words.Length > 3 && words[3].Length > 0)
+            {
+                try { r = Convert.ToDouble(words[3]); } catch (Exception ex) { }
+            }
+
+            if (haveCustomPoint || (words.Length > 3 && words[3].Length > 0))
+            {
+                Console.WriteLine("<lactors override: p=({0:N0},{1:N0}) r={2:N0}", p.x, p.y, r);
+            }
+
             List<AiActor> closeStaticActors = new List<AiActor>();
             //Calcs.listStatics(GamePlay, new List<string>() { "smoke", "fire", "crater", "jerry" });
             lock (allStaticActors_lock)

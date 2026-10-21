@@ -13160,7 +13160,7 @@ public class Mission : AMission, IMainMission
             twcLogServer(new Player[] { player }, "<testmakelg - make an lg at the ap you are at; <smload xx.mis - load file submission file from sectionfiles; <testexception - CRASH it", new object[] { });
             twcLogServer(new Player[] { player }, "<flakpilots 25 - simulates tempflak with 25 pilots online; <dudefense OBJ - launch the DU defense; <duadd OBJ - add 11 DUs to the OBJ; <setneg OBJ - subtract 50% from destroyed%", new object[] { });
             twcLogServer(new Player[] { player }, "Server test commands: <aptest ID bomb an ap <testturnred <testturnblue <triggerobjectivetest ID (with artillery) <setmapstate 120", new object[] { });
-			twcLogServer(new Player[] { player }, "<lactors - list all ground actors, <lground - stationaries <10km to file, <lgroundall, <galist, <glist - groundact lists Clod/TWC, <gslist - stationary list, <gnear - gactors near", new object[] { });
+			twcLogServer(new Player[] { player }, "<lactors - list ground actors nearby, or specify point/rad: <lactors 242321 122000 10000, <lactorsall, <lground - stationaries <10km to file, <lgroundall, <galist, <glist - groundact lists Clod/TWC, <gslist - stationary list, <gnear - gactors near", new object[] { });
 
         }
         else if ((msg.StartsWith("Ta") || msg.StartsWith("<")) &&

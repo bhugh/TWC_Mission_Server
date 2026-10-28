@@ -1527,6 +1527,8 @@ public class Mission : AMission, IMainMission
                         string title = sta.Title;
                         if (title.Contains("JerryCan_GER1_1") || title.Contains("JerryCan_GER1_2") || 
                             title.Contains("JerryCan_GER1_3") || title.Contains("JerryCan_GER1_5") ||
+                            title.Contains("JerryCan_UK1_2-Gallon_1") ||
+                            title.Contains("JerryCan_GER1_18") ||
                             title.Contains("AEC_Regent_II") || title.Contains("MG_TA"))
                         {
                             string shortType = StationaryMarkerManager.ExtractShortTypeName(title);
@@ -9192,20 +9194,33 @@ public class Mission : AMission, IMainMission
         {
             if (f == null) return null;
 
-            // Ensure the sectionfiles directory exists before saving into it.
-            string sectionDir = CLOD_PATH + FILE_PATH + "/sectionfiles";
+            // Validate that path components are set before using them
+            if (string.IsNullOrEmpty(CLOD_PATH))
+            {
+                Console.WriteLine("[ProcessSectionFileForMarkers] CLOD_PATH is null or empty - skipping marker extraction");
+                return f;
+            }
+            if (string.IsNullOrEmpty(FILE_PATH))
+            {
+                Console.WriteLine("[ProcessSectionFileForMarkers] FILE_PATH is null or empty - skipping marker extraction");
+                return f;
+            }
+
+            // Build section directory path safely using Path.Combine
+            string sectionDir = System.IO.Path.Combine(CLOD_PATH, FILE_PATH, "sectionfiles");
+            
             try
             {
                 System.IO.Directory.CreateDirectory(sectionDir);
             }
             catch (Exception dirEx)
             {
-                Console.WriteLine("[ProcessSectionFileForMarkers] Cannot create sectionfiles dir: " + dirEx.Message);
+                Console.WriteLine("[ProcessSectionFileForMarkers] Cannot create sectionfiles dir '" + sectionDir + "': " + dirEx.Message);
                 return f;
             }
 
-            //string tempPath = System.IO.Path.GetTempFileName();
-            string tempPath = sectionDir + "/markers_temp_file_" + random.Next(10, 999).ToString();
+            string tempPath = System.IO.Path.Combine(sectionDir, "markers_temp_file_" + random.Next(10, 999).ToString());
+            
             f.save(tempPath);
             
             string content = System.IO.File.ReadAllText(tempPath);
@@ -9229,6 +9244,8 @@ public class Mission : AMission, IMainMission
                 {
                     if (trimmed.Contains("JerryCan_GER1_1") || trimmed.Contains("JerryCan_GER1_2") || 
                         trimmed.Contains("JerryCan_GER1_3") || trimmed.Contains("JerryCan_GER1_5") ||
+                        trimmed.Contains("JerryCan_UK1_2-Gallon_1") ||
+                        trimmed.Contains("JerryCan_GER1_18") ||
                         trimmed.Contains("AEC_Regent_II") || trimmed.Contains("MG_TA"))
                     {
                         string[] parts = trimmed.Split(new char[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
@@ -9266,6 +9283,8 @@ public class Mission : AMission, IMainMission
         catch (System.Exception ex)
         {
             Console.WriteLine("[ProcessSectionFileForMarkers] Error: " + ex.Message);
+            if (ex.StackTrace != null)
+                Console.WriteLine("[ProcessSectionFileForMarkers] StackTrace: " + ex.StackTrace);
             return f;
         }
     }

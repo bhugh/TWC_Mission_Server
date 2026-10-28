@@ -14964,7 +14964,7 @@ public class StbStatRecorder : IStbStatRecorder
 
 public bool StbSr_UploadSSL(string ftpServer, string username, string password, string filename = null, bool isText = true)
 {
-    Console.WriteLine("StbSr_UploadSSL starting: {0} {1} {2} {3} {4}", ftpServer, username, password, filename, isText);
+    //Console.WriteLine("StbSr_UploadSSL starting: {0} {1} {2} {3} {4}", ftpServer, username, password, filename, isText);
     // 1. Move validation to the top
     if (string.IsNullOrWhiteSpace(filename))
     {

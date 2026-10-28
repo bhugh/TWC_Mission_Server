@@ -43,9 +43,11 @@ public static class StationaryMarkerManager
     private static readonly Dictionary<string, double> _markerRadii = new Dictionary<string, double>
     {
         { "JerryCan_GER1_1", 71 },
+        { "JerryCan_UK1_2-Gallon_1", 71 },
         { "JerryCan_GER1_2", 141 },
         { "JerryCan_GER1_3", 282 },
         { "JerryCan_GER1_5", 1410 },
+        { "JerryCan_GER1_18", 1410 },
         { "AEC_Regent_II", 500 },
         { "MG_TA", 250 }
     };

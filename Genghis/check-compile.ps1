@@ -116,6 +116,9 @@ foreach ($n in @('maddox', 'part', 'GameWorld', 'gamePlay', 'gamePages', 'CloDMi
 $tv = Join-Path $PSScriptRoot 'TacviewRecorder.dll'
 if (Test-Path $tv) { $cscArgs += "/r:$tv" }
 
+$sshDll = Join-Path $PSScriptRoot 'Renci.SshNet.dll'
+if (Test-Path $sshDll) { $cscArgs += "/r:$sshDll" }
+
 $cscArgs += '/nologo'
 $cscArgs += '/target:library'
 $cscArgs += '/nostdlib+'      # csc is run bare, so there are no implicit framework references

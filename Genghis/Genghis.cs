@@ -9088,6 +9088,41 @@ public class Mission : AMission, IMainMission
         //we do the "ban" system loading in BurnBabyBurn.cs instead of here.  
 
 
+// NEW: Virtualize physical stationary markers from the main mission
+        // This scans for physical marker objects and replaces them with virtual markers.
+        Timeout(10.0, () =>
+        {
+            try
+            {
+                Console.WriteLine("[StationaryMarkerManager] Scanning for physical markers to virtualize...");
+                GroundStationary[] allStatics = GamePlay.gpGroundStationarys(250000, 252000, 500000);
+                if (allStatics != null)
+                {
+                    int removed = 0;
+                    foreach (GroundStationary sta in allStatics)
+                    {
+                        if (sta == null) continue;
+                        string title = sta.Title;
+                        if (title == null) continue;
+                        if (title.Contains("JerryCan_GER1_1") || title.Contains("JerryCan_GER1_2") ||
+                            title.Contains("JerryCan_GER1_3") || title.Contains("JerryCan_GER1_5") ||
+                            title.Contains("AEC_Regent_II") || title.Contains("MG_TA"))
+                        {
+                            string shortType = StationaryMarkerManager.ExtractShortTypeName(title);
+                            StationaryMarkerManager.AddMarker(shortType, sta.pos.x, sta.pos.y, "MainMission.mis");
+                            // Note: GroundStationary is a read-only view; physical cleanup happens via removeGroundActorsAndStationariesInEnemyTerritory
+                            removed++;
+                        }
+                    }
+                    Console.WriteLine("[StationaryMarkerManager] Virtualized " + removed + " physical markers from main mission");
+                    StationaryMarkerManager.DebugPrintAll();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("[StationaryMarkerManager] Error during main mission scan: " + ex.Message);
+            }
+        });
     }
 
     public override void OnBattleStoped()
@@ -9155,8 +9190,22 @@ public class Mission : AMission, IMainMission
     {
         try
         {
+            if (f == null) return null;
+
+            // Ensure the sectionfiles directory exists before saving into it.
+            string sectionDir = CLOD_PATH + FILE_PATH + "/sectionfiles";
+            try
+            {
+                System.IO.Directory.CreateDirectory(sectionDir);
+            }
+            catch (Exception dirEx)
+            {
+                Console.WriteLine("[ProcessSectionFileForMarkers] Cannot create sectionfiles dir: " + dirEx.Message);
+                return f;
+            }
+
             //string tempPath = System.IO.Path.GetTempFileName();
-            string tempPath = CLOD_PATH + FILE_PATH + "/sectionfiles" + "/markers_temp_file_"+ random.Next(10,999).ToString();
+            string tempPath = sectionDir + "/markers_temp_file_" + random.Next(10, 999).ToString();
             f.save(tempPath);
             
             string content = System.IO.File.ReadAllText(tempPath);

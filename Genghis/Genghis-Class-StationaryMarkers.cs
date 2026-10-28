@@ -61,10 +61,13 @@ public static class StationaryMarkerManager
     public static void AddMarker(string type, double x, double y, string sourceFile)
     {
         double radius = -1;
+        string matchedKey = null;
         foreach (KeyValuePair<string, double> kvp in _markerRadii) {
-            if (! kvp.Key.ToLower().Contains(type.ToLower())) continue;
-            radius = kvp.Value;
-            break;
+            if (kvp.Key.Equals(type, StringComparison.OrdinalIgnoreCase)) {
+                radius = kvp.Value;
+                matchedKey = kvp.Key;
+                break;
+            }
         }
         
         if (radius == -1)
@@ -74,9 +77,12 @@ public static class StationaryMarkerManager
         }
 
         StationaryMarker marker = new StationaryMarker(x, y, type, radius, sourceFile);
-        _markers.AddOrUpdate(type, 
-            new List<StationaryMarker> { marker },
-            (key, existing) => { existing.Add(marker); return existing; });
+        List<StationaryMarker> list = null;
+        if (!_markers.TryGetValue(matchedKey, out list)) {
+            list = new List<StationaryMarker>();
+            _markers[matchedKey] = list;
+        }
+        list.Add(marker);
     }
 
     public static List<StationaryMarker> FindNearbyMarkers(double x, double y, double searchRadius)
@@ -168,11 +174,23 @@ public static class StationaryMarkerManager
 
     public static string ExtractShortTypeName(string fullTypeName)
     {
-        int lastDot = fullTypeName.LastIndexOf('.');
-        if (lastDot >= 0 && lastDot < fullTypeName.Length - 1)
+        if (fullTypeName == null) return "";
+        string s = fullTypeName.Trim();
+        char[] separators = new char[] { '.', ' ', '\t', '\u00A0' };
+        int lastSep = -1;
+        for (int i = s.Length - 1; i >= 0; i--)
         {
-            return fullTypeName.Substring(lastDot + 1);
+            bool isSep = false;
+            for (int si = 0; si < separators.Length; si++)
+            {
+                if (s[i] == separators[si]) { isSep = true; break; }
+            }
+            if (isSep) { lastSep = i; break; }
         }
-        return fullTypeName;
+        if (lastSep >= 0 && lastSep < s.Length - 1)
+        {
+            return s.Substring(lastSep + 1);
+        }
+        return s;
     }
 }

@@ -111,6 +111,7 @@
 //The two $references below + the [rts] scriptAppDomain=0 references on conf.ini & confs.ini are (perhaps!?) necessary for some of the code below to work, esp. intercepting chat messages etc.
 
 //$reference parts/core/CloDMissionCommunicator.dll
+//$reference parts/core/Renci.SshNet.dll
 ////$reference parts/core/CLOD_Extensions.dll
 //$reference parts/core/Strategy.dll
 //$reference parts/core/gamePlay.dll
@@ -138,6 +139,7 @@ using System.ComponentModel;
 //using System.Data;
 //using System.Core;
 using System.Linq;
+using Renci.SshNet;
 using maddox.GP;
 using maddox.game;
 using maddox.game.world;
@@ -480,6 +482,8 @@ public class StatsMission : AMission, IStatsMission
         stb_LogStatsUploadBasenameLow = ini.IniReadValue("NAMES", "stb_LogStatsUploadBasenameLow", stb_LogStatsUploadBasenameLow);
         stb_StatsWebPageTagLine = ini.IniReadValue("NAMES", "stb_StatsWebPageTagLine", stb_StatsWebPageTagLine);
         stb_StatsWebPageLinksLine = ini.IniReadValue("NAMES", "stb_StatsWebPageLinksLine", stb_StatsWebPageLinksLine);
+        //with SFTP port 22 this needs to be like /home/mobikefed/brenthugh.com/twc etc etc 
+        //2026-10
         stb_LogStatsUploadFtpBaseDirectory = ini.IniReadValue("NAMES", "stb_LogStatsUploadFtpBaseDirectory", stb_LogStatsUploadFtpBaseDirectory);
         stb_LogStatsUploadUserName = ini.IniReadValue("NAMES", "stb_LogStatsUploadUserName", stb_LogStatsUploadUserName);
         stb_LogStatsUploadPassword = ini.IniReadValue("NAMES", "stb_LogStatsUploadPassword", stb_LogStatsUploadPassword);
@@ -14960,6 +14964,7 @@ public class StbStatRecorder : IStbStatRecorder
 
 public bool StbSr_UploadSSL(string ftpServer, string username, string password, string filename = null, bool isText = true)
 {
+    Console.WriteLine("StbSr_UploadSSL starting: {0} {1} {2} {3} {4}", ftpServer, username, password, filename, isText);
     // 1. Move validation to the top
     if (string.IsNullOrWhiteSpace(filename))
     {
@@ -14975,46 +14980,72 @@ public bool StbSr_UploadSSL(string ftpServer, string username, string password, 
 
     try
     {
-        FtpWebRequest request = CreateFtpRequest(ftpServer, WebRequestMethods.Ftp.UploadFile, username, password);
-        if (request == null)
+        // Parse the ftpServer URI to get host, port, and remote path.
+        // The stats.ini still stores ftp:// URIs, but we connect via SFTP (SSH.NET).
+        Uri serverUri = new Uri(ftpServer);
+        if (serverUri.Scheme != Uri.UriSchemeFtp)
         {
-            Console.WriteLine("StbSr_UploadSSL CreateFtpRequest ERROR: ftp filename/URI was incorrect (must start with 'ftp')");
+            Console.WriteLine("StbSr_UploadSSL ERROR: ftpServer URI must start with 'ftp'");
             return false;
         }
 
-        Console.WriteLine("FTP UPLOAD: text? {0} {1}", isText, filename);
-        request.UseBinary = !isText;
-
-        // Read file payload safely, as we said before
-        byte[] fileContents = isText 
-            ? Encoding.UTF8.GetBytes(File.ReadAllText(filename)) 
-            : File.ReadAllBytes(filename);
-        
-        request.ContentLength = fileContents.Length;
-
-        // 2. 'using' blocks guarantee stream closure during any crash or disconnect
-        using (Stream requestStream = request.GetRequestStream())
+        string host = serverUri.Host;
+        int port = 22; // SFTP default port
+        if (!serverUri.IsDefaultPort)
         {
-            requestStream.Write(fileContents, 0, fileContents.Length);
-        } // requestStream is guaranteed closed here
-
-        // 3. Wrap response in 'using' to prevent hanging connections 
-        using (FtpWebResponse response = (FtpWebResponse)request.GetResponse())
+            port = serverUri.Port;
+        }
+        string remotePath = serverUri.AbsolutePath;
+        if (string.IsNullOrEmpty(remotePath))
         {
-            StbSr_WriteLine("Response status: {0} - {1}", response.StatusCode, response.StatusDescription);
-        } // response is guaranteed closed here
+            remotePath = "/";
+        }
 
-        return true;
+        Console.WriteLine("SFTP UPLOAD: host={0} port={1} remotePath={2} localFile={3}", host, port, remotePath, filename);
+
+        SftpClient sftp = null;
+        try
+        {
+            sftp = new SftpClient(host, port, username, password);
+            sftp.Connect();
+
+            // Read file payload into memory
+            byte[] fileContents = null;
+            if (isText)
+            {
+                fileContents = Encoding.UTF8.GetBytes(File.ReadAllText(filename));
+            }
+            else
+            {
+                fileContents = File.ReadAllBytes(filename);
+            }
+
+            // Upload the stream to the remote path (canOverride = true)
+            using (MemoryStream inputStream = new MemoryStream(fileContents))
+            {
+                sftp.UploadFile(inputStream, remotePath, true);
+            }
+
+            Console.WriteLine("SFTP UPLOAD: success {0}", filename);
+            return true;
+        }
+        finally
+        {
+            if (sftp != null)
+            {
+                if (sftp.IsConnected)
+                {
+                    sftp.Disconnect();
+                }
+                sftp.Dispose();
+            }
+        }
     }
-    catch (WebException e)
+    catch (Exception ex)
     {
-        Console.WriteLine("StbSr_UploadSSL WebException ERROR: " + e.ToString());
+        Console.WriteLine("StbSr_UploadSSL WebException ERROR: {0}", ex.ToString());
+        StbSr_PrepareErrorMessage(ex, "uploadSSL");
         return false;
-    }
-    catch (Exception ex) 
-    { 
-        StbSr_PrepareErrorMessage(ex, "uploadSSL"); 
-        return false; 
     }
 }
 

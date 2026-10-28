@@ -295,23 +295,35 @@ public class CoverMission : AMission, ICoverMission
 
                 Console.WriteLine("renewAllStaticActors running . . . ");
                 //OK, we were missing some actors since our custom gpGetGroundActors only gets actors named "static1002" and similar.
-                HashSet<AiActor> asa = new HashSet<AiActor>(CoverCalcs.gpGetAllGroundActors(this, stb_lastMissionLoaded));
-                HashSet<AiActor> gga = new HashSet<AiActor>(CoverCalcs.gpGetGroundActors(this, army: 0));
-                if (asa == null) asa = gga;
-                if (gga!= null) asa.UnionWith(gga);
-                if (asa == null & gga == null) return;//nothing to do...
-                lock (allStaticActors_lock)
+                // Marshal CLoD engine reads back to the main mission thread via Timeout(0, ...) to avoid background-thread engine calls.
+                Timeout(0.05, () =>
                 {
-                    allStaticActors = asa.ToArray();
-                }
+                    try
+                    {
+                        AiActor[] arrayAsa = CoverCalcs.gpGetAllGroundActors(this, stb_lastMissionLoaded);
+                        AiActor[] arrayGga = CoverCalcs.gpGetGroundActors(this, army: 0);
+                        HashSet<AiActor> asa = null;
+                        HashSet<AiActor> gga = null;
+                        if (arrayAsa != null) asa = new HashSet<AiActor>(arrayAsa);
+                        if (arrayGga != null) gga = new HashSet<AiActor>(arrayGga);
+                        if (asa == null) asa = gga;
+                        if (gga != null && asa != null) asa.UnionWith(gga);
+                        if (asa == null && gga == null) return;//nothing to do...
+                        lock (allStaticActors_lock)
+                        {
+                            allStaticActors = asa.ToArray();
+                        }
 
-                Console.WriteLine("renewAllStaticActors running: {0:n0} found (asa: {1}, gga: {2})", allStaticActors.Length, asa.Count, gga.Count);
-                //gpGetGroundActors(CoverMission msn, int army)
-                //allStaticActors = CoverCalcs.gpGetAllGroundActors(this, stb_lastMissionLoaded);
-                SMissionObjectivesList = TWCMainMission.SMissionObjectivesList();
+                        Console.WriteLine("renewAllStaticActors running: {0:n0} found (asa: {1}, gga: {2})", allStaticActors.Length, (asa != null ? asa.Count : 0), (gga != null ? gga.Count : 0));
+                        //gpGetGroundActors(CoverMission msn, int army)
+                        //allStaticActors = CoverCalcs.gpGetAllGroundActors(this, stb_lastMissionLoaded);
+                        SMissionObjectivesList = TWCMainMission.SMissionObjectivesList();
 
-                Console.WriteLine("renewAllStaticActors complete . . . ");
-                //if (TWCComms.Communicator.Instance.WARP_CHECK || mainmission.ON_TESTSERVER) Console.WriteLine("CVSAXX1-2 " + DateTime.UtcNow.ToString("mm:ss.fffffff")); //Testing for potential causes of warping
+                        Console.WriteLine("renewAllStaticActors complete . . . ");
+                        //if (TWCComms.Communicator.Instance.WARP_CHECK || mainmission.ON_TESTSERVER) Console.WriteLine("CVSAXX1-2 " + DateTime.UtcNow.ToString("mm:ss.fffffff")); //Testing for potential causes of warping
+                    }
+                    catch (Exception ex2) { Console.WriteLine("cover: renewAllStaticActors marshal ERROR: " + ex2.ToString()); }
+                });
             }
             catch (Exception ex) { Console.WriteLine("cover: renewAllStaticActors ERROR: " + ex.ToString()); }
         });

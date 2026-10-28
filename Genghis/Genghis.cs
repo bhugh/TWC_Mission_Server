@@ -9220,6 +9220,8 @@ public class Mission : AMission, IMainMission
             }
 
             string tempPath = System.IO.Path.Combine(sectionDir, "markers_temp_file_" + random.Next(10, 999).ToString());
+
+            Console.WriteLine("[ProcessSectionFileForMarkers] tempPath: " + tempPath);
             
             f.save(tempPath);
             
@@ -9272,7 +9274,7 @@ public class Mission : AMission, IMainMission
             }
             
             string processedContent = string.Join("\r\n", outputLines);
-            string processedPath = System.IO.Path.GetTempFileName();
+            string processedPath = System.IO.Path.Combine(sectionDir, "markers_processed_file_" + random.Next(10, 999).ToString() + ".mis");
             System.IO.File.WriteAllText(processedPath, processedContent);
             
             ISectionFile processedFile = GamePlay.gpLoadSectionFile(processedPath);

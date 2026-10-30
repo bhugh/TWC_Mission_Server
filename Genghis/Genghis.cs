@@ -1176,6 +1176,15 @@ public class Mission : AMission, IMainMission
 			removeGroundActorsAndStationariesInEnemyTerritory(fast:true);
 		}
 
+        if ((tickSinceStarted) % 10000 == 0  && tickSinceStarted > 10000) //ca. 5 minutes
+        {
+            Console.WriteLine("virtualizePHysicalMarkerObjects - once every 10000 ticks: {0}",tickSinceStarted);
+            virtualizePhysicalMarkerObjects();
+			//Final run, just in case there are more things loaded, after giving previous removegroundactors etc time to settle
+			//Console.WriteLine("removeGroundActorsAndStationariesInEnemyTerritory(fast:true); - final run: {0}",tickSinceStarted);
+			//removeGroundActorsAndStationariesInEnemyTerritory(fast:true);
+		}
+
 
         //periodically remove a/c that have gone off the map
         if ((tickSinceStarted) % 2100 == 0 && tickSinceStarted > 0)
@@ -1545,7 +1554,7 @@ public class Mission : AMission, IMainMission
                 }
                 
                 Console.WriteLine("[StationaryMarkerManager] Virtualized " + removed + " physical markers from main mission");
-                StationaryMarkerManager.DebugPrintAll();
+                if (ON_TESTSERVER) StationaryMarkerManager.DebugPrintAll();
             }
             catch (System.Exception ex)
             {
@@ -3106,7 +3115,10 @@ public class Mission : AMission, IMainMission
         {
             string RandomMission = RandomMissions[random.Next(RandomMissions.Count)];
             if (ON_TESTSERVER) Console.WriteLine("PostmissionLoad: LoadRandomSubmissions");
-            GamePlay.gpPostMissionLoad(RandomMission);
+            ISectionFile f = GamePlay.gpLoadSectionFile(RandomMission);
+            f = ProcessSectionFileForMarkers_section(f, "LoadRandomSubmission_"+RandomMission);
+            f = Calcs.changeArmyToTerritory_SectionFile(f, GamePlay, this); //change army of any stationaries to match which territory they are on, based on current frontlines
+            GamePlay.gpPostMissionLoad(f);
             ret = true;
 
             //if (DEBUG) 
@@ -9117,7 +9129,7 @@ public class Mission : AMission, IMainMission
                         }
                     }
                     Console.WriteLine("[StationaryMarkerManager] Virtualized " + removed + " physical markers from main mission");
-                    StationaryMarkerManager.DebugPrintAll();
+                    if (ON_TESTSERVER) StationaryMarkerManager.DebugPrintAll();
                 }
             }
             catch (Exception ex)
@@ -9188,7 +9200,8 @@ public class Mission : AMission, IMainMission
 
     // Process a section file to extract stationary markers and remove them from the file
     // This prevents physical stationary objects from being loaded into the game (saving network slots)
-    private ISectionFile ProcessSectionFileForMarkers(ISectionFile f, string sourceFile)
+    /*
+    public ISectionFile ProcessSectionFileForMarkers(ISectionFile f, string sourceFile)
     {
         try
         {
@@ -9290,6 +9303,119 @@ public class Mission : AMission, IMainMission
             return f;
         }
     }
+    */
+
+    // Process a section file to extract stationary markers and remove them from the file
+    // This prevents physical stationary objects from being loaded into the game (saving network slots)
+    public ISectionFile ProcessSectionFileForMarkers_section(ISectionFile f, string sourceFile)
+    {
+        try
+        {
+            if (f == null) return null;         
+            
+            string key = "";
+            string value = "";
+
+            
+
+
+            // Build section directory path safely using Path.Combine
+            string sectionDir = System.IO.Path.Combine(CLOD_PATH, FILE_PATH, "sectionfiles");
+            
+
+            string tempPath = System.IO.Path.Combine(sectionDir, "ProcessSectionFileForMarkers_" + random.Next(10, 999).ToString());
+
+            Console.WriteLine("[ProcessSectionFileForMarkers] Starting with: St: {0} to {1}", f.lines("Stationary"), tempPath);
+
+            f.save(tempPath+"_before.txt");
+
+
+            List<string> sections = new List<string>() { "Stationary" }; //could do the same with Birthplaces & maybe some other .mis file sections
+            //List<string> chiefs = new List<string>();
+
+            foreach (string section in sections)
+            {
+                if (f.exist(section))
+                {
+                    List<int> linesToRemove = new List<int>();
+
+                    int num = f.lines(section);
+                    Console.WriteLine("{0}: {1} lines", section, num);
+                    for (int i = num-1; i >= 0; i--)
+                    {
+
+                        f.get(section, i, out key, out value);
+						
+						//if (mission.ON_TESTSERVER) 
+								//Console.WriteLine("section, #, key, value: {3} {0:n0} {1} {2} ", i, key, value, section);
+                        //if (section == "Chiefs") chiefs.Add(key);
+                        //Console.WriteLine("Old: {0:n0} {1} {2} ", i, key, value);
+
+                        /* Example lines
+                         * [Stationary]
+                              Static9 Stationary.Environment.JerryCan_GER1_1 nn 264829.47 166242.72 659.10 
+                              Static6 Stationary.Environment.JerryCan_GER1_1 nn 264819.81 166258.67 659.10 
+                              Static5 Stationary.Radar.Wotan_II de 264833.13 166251.84 659.10 
+
+                          Static9 is KEY and the remainder is VALUE.  dur.
+
+                        */
+
+                        string[] values = value.Trim().Split(null); //null splits on whitespace
+
+                        double x = 0;
+                        double y = 0;
+
+                        if (!double.TryParse(values[2], out x)) continue;
+                        if (!double.TryParse(values[3], out y)) continue;
+                        if (x == 0 && y == 0) continue;
+
+                        string trimmed = values[0];
+
+                        if (trimmed.Contains("JerryCan_GER1_1") || trimmed.Contains("JerryCan_GER1_2") || 
+                        trimmed.Contains("JerryCan_GER1_3") || trimmed.Contains("JerryCan_GER1_5") ||
+                        trimmed.Contains("JerryCan_UK1_2-Gallon_1") ||
+                        trimmed.Contains("JerryCan_GER1_18") ||
+                        trimmed.Contains("AEC_Regent_II") || trimmed.Contains("MG_TA"))
+                        {
+                            //string[] parts = trimmed.Split(new char[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+
+                            Console.WriteLine("[ProcessSectionFileForMarkers] Found: {0} {1:N0} {2:N0}", trimmed, x, y);                            
+
+                            
+                            string shortType = StationaryMarkerManager.ExtractShortTypeName(trimmed);
+                            
+                            StationaryMarkerManager.AddMarker(shortType, x, y, sourceFile);
+                            if (ON_TESTSERVER) Console.WriteLine("[ProcessSectionFileForMarkers] Added marker: {0} {1} {2:N0} {3:N0}", trimmed, shortType, x, y);                            
+                            f.delete(section,i);
+                            //linesToRemove.Add(i);
+                                
+                            
+                        }
+                    }
+                    /*
+                    foreach (int i in linesToRemove){
+                        f.delete(section,i);
+                    }
+                    */
+                }
+            }
+            
+            Console.WriteLine("[ProcessSectionFileForMarkers] Returning: St: {0}", f.lines("Stationary"));
+            f.save(tempPath+"_after.txt");
+
+            return f;
+            
+            //return processedFile;
+        }
+        catch (System.Exception ex)
+        {
+            Console.WriteLine("[ProcessSectionFileForMarkers] Error: " + ex.Message);
+            if (ex.StackTrace != null)
+                Console.WriteLine("[ProcessSectionFileForMarkers] StackTrace: " + ex.StackTrace);
+            return f;
+        }
+    }
 
     public int ReadInitialSubmissions(string filenameID = "", int timespread = 60, double wait = 0, string subdir = "", string fileName = "")
     {
@@ -9312,7 +9438,7 @@ public class Mission : AMission, IMainMission
             {
                 ISectionFile f = GamePlay.gpLoadSectionFile(s);
 				//f.save(CLOD_PATH + FILE_PATH + "/sectionfiles/" + "BEFOREchangeArmyToTerritorySectionFile-" + subdir + "-" + filenameID + random.Next(10, 99).ToString() + ".mis"); //testing                				
-                f = ProcessSectionFileForMarkers(f, s); // Extract markers before processing
+                f = ProcessSectionFileForMarkers_section(f, s); // Extract markers before processing
                 f = Calcs.changeArmyToTerritory_SectionFile(f, GamePlay, this); //change army of any stationaries to match which territory they are on, based on current frontlines
                 Console.WriteLine("PostmissionLoad: changeArmyToTerritorySectionFile/Initsubmissions: " + s);
                 GamePlay.gpPostMissionLoad(f);
@@ -9333,7 +9459,7 @@ public class Mission : AMission, IMainMission
 
 						//GamePlay.gpPostMissionLoad(s);
 						ISectionFile f = GamePlay.gpLoadSectionFile(s);
-                    f = ProcessSectionFileForMarkers(f, s); // Extract markers before processing
+                        f = ProcessSectionFileForMarkers_section(f, s); // Extract markers before processing
 						f = Calcs.changeArmyToTerritory_SectionFile(f, GamePlay, this); //change army of any stationaries to match which territory they are on, based on current frontlines
 						if (ON_TESTSERVER) Console.WriteLine("PostmissionLoad: changeArmyToTerritorySectionFile/InitSubmissions");
 						GamePlay.gpPostMissionLoad(f);
@@ -16463,6 +16589,7 @@ public class Mission : AMission, IMainMission
                     {
                         //ISectionFile printSectionFile(ISectionFile f, maddox.game.IGamePlay GamePlay, AMission mission, int army)
                         ISectionFile f = msn.GamePlay.gpLoadSectionFile(s);
+                        f = msn.ProcessSectionFileForMarkers_section(f, "InitSubmission_" + InitSubmissionName);
                         f = Calcs.changeArmy_Waypoints_SectionFile(f, msn.GamePlay, msn, changeToArmy: OwnerArmy, maxWaypoints_remove: 15, maxPercentWaypoints_remove: 30);
                         if (msn.ON_TESTSERVER) Console.WriteLine("PostmissionLoad: Objective init submission ");
                         msn.GamePlay.gpPostMissionLoad(f);
@@ -16502,6 +16629,7 @@ public class Mission : AMission, IMainMission
                     {
                         //ISectionFile printSectionFile(ISectionFile f, maddox.game.IGamePlay GamePlay, AMission mission, int army)
                         ISectionFile f = msn.GamePlay.gpLoadSectionFile(s);
+                        f = msn.ProcessSectionFileForMarkers_section(f, "DestroyedSubmission_" + DestroyedSubmissionName);
                         f = Calcs.changeArmy_Waypoints_SectionFile(f, msn.GamePlay, msn, changeToArmy: OwnerArmy, maxWaypoints_remove: 15, maxPercentWaypoints_remove: 30);
                         if (msn.ON_TESTSERVER) Console.WriteLine("PostmissionLoad: Objective Destroyed submission ");
                         msn.GamePlay.gpPostMissionLoad(f);
@@ -17020,7 +17148,7 @@ public class Mission : AMission, IMainMission
             return numAC;
         }
         //If the objective has an associated Chief then we can use that to find it's actual position for scouting/recon purposes. Cache the position for 5mins to avoid CPU overload.
-        DateTime chief_cachetime_dt = new DateTime();
+        DateTime chief_cachetime_dt = DateTime.UtcNow.AddMinutes(-10);
         Point3d chief_loc_cache = new Point3d();
         public Point3d returnCurrentPosWithChief()
         {
@@ -17028,7 +17156,7 @@ public class Mission : AMission, IMainMission
             {
                 DateTime currTime = DateTime.UtcNow;
                 //cache this for up to 3 mins so we don't have to do the actor search so often
-                if (currTime.Subtract(chief_cachetime_dt).TotalSeconds < 300) return chief_loc_cache;
+                if (currTime.Subtract(chief_cachetime_dt).TotalSeconds < 300 && chief_loc_cache.x > 0 && chief_loc_cache.y > 0) return chief_loc_cache;
                 Point3d pos = Pos; //Some objectives move now, possibly every time the mission restarts, so this records & savesthe current position/sector at the time scouted.  It will report this until re-scouted
 
                 //Now see if it is a _chief type (mobile) objective and if so, update recon position according to that.
@@ -20427,6 +20555,7 @@ added Rouen Flak
                 //});
             }
             if (ON_TESTSERVER) Console.WriteLine("PostmissionLoad: GeneralStaffPlacement");
+            f = ProcessSectionFileForMarkers_section(f, "GeneralStaffPlacement");
             GamePlay.gpPostMissionLoad(f);
             //f.save(CLOD_PATH + FILE_PATH + "/sectionfiles/" + "generals-ISectionFile"+random.Next(0,9)); //testing
 
@@ -20758,7 +20887,7 @@ added Rouen Flak
     public static List<string> MO_AntiAirMisc = new List<string> { 
 
         "Stationary.Environment.Maschinensatz_8_KW_GER1",
-        "Stationary.Environment.Zwillingssockel36_Base_GER1",
+        //"Stationary.Environment.Zwillingssockel36_Base_GER1",
         "Stationary.Environment.Predictor",
         "Stationary.Environment.RRH_GER1",
         "Stationary.Environment.Em_4m_R(H)34_GER1",
@@ -20801,7 +20930,7 @@ added Rouen Flak
         public static List<string> MO_AntiAirAmmo_Misc = new List<string> { 
 
         "Stationary.Environment.Maschinensatz_8_KW_GER1",
-        "Stationary.Environment.Zwillingssockel36_Base_GER1",
+        //"Stationary.Environment.Zwillingssockel36_Base_GER1",
         "Stationary.Environment.Predictor",
         "Stationary.Environment.RRH_GER1",
         "Stationary.Environment.Em_4m_R(H)34_GER1",
@@ -20915,13 +21044,13 @@ added Rouen Flak
          { MO_MobileObjectiveType.SecretAirbaseGB,
             new Dictionary<MO_MobileObjectiveThings, MO_ThingsTypeNumberRadius>() {
 
-                { MO_MobileObjectiveThings.Humans, new MO_ThingsTypeNumberRadius( MO_Humans, 1, 55, 50) },
+                //{ MO_MobileObjectiveThings.Humans, new MO_ThingsTypeNumberRadius( MO_Humans, 1, 55, 50) },
                 { MO_MobileObjectiveThings.Buildings, new MO_ThingsTypeNumberRadius( MO_Buildings, 2, 20, 17 ) },
                 { MO_MobileObjectiveThings.GBFighters, new MO_ThingsTypeNumberRadius( MO_GBFighters, 2, 62, 20 ) },
                 { MO_MobileObjectiveThings.GBBombers, new MO_ThingsTypeNumberRadius( MO_GBBombers, 3, 102, 20) },
-                { MO_MobileObjectiveThings.Sentry, new MO_ThingsTypeNumberRadius(MO_Sentry, 7, 150, 1) },
-                { MO_MobileObjectiveThings.Trenches, new MO_ThingsTypeNumberRadius(MO_Sandbags, 10, 175, 0.25) },
-                { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 5, 180, 0.2, 0.75) },
+                { MO_MobileObjectiveThings.Sentry, new MO_ThingsTypeNumberRadius(MO_Sentry, 5, 150, 1) },
+                { MO_MobileObjectiveThings.Trenches, new MO_ThingsTypeNumberRadius(MO_Sandbags, 6, 175, 0.25) },
+                { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 4, 180, 0.2, 0.75) },
                 { MO_MobileObjectiveThings.Small_Radar, new MO_ThingsTypeNumberRadius(MO_Small_Radar, 2, 200, 20) },
 
 
@@ -20931,11 +21060,11 @@ added Rouen Flak
         { MO_MobileObjectiveType.SecretAirbaseDE,
             new Dictionary<MO_MobileObjectiveThings, MO_ThingsTypeNumberRadius>() {
 
-                { MO_MobileObjectiveThings.Humans, new MO_ThingsTypeNumberRadius( MO_Humans, 1, 30,30) },
+                //{ MO_MobileObjectiveThings.Humans, new MO_ThingsTypeNumberRadius( MO_Humans, 1, 30,30) },
                 { MO_MobileObjectiveThings.Buildings, new MO_ThingsTypeNumberRadius( MO_Buildings, 2, 20, 20) },
                 { MO_MobileObjectiveThings.DEFighters, new MO_ThingsTypeNumberRadius( MO_DEFighters, 3, 65, 20) },
                 { MO_MobileObjectiveThings.DEBombers, new MO_ThingsTypeNumberRadius( MO_DEBombers, 3, 95, 20) },
-                { MO_MobileObjectiveThings.Sentry, new MO_ThingsTypeNumberRadius(MO_Sentry, 7, 150, 1) },
+                { MO_MobileObjectiveThings.Sentry, new MO_ThingsTypeNumberRadius(MO_Sentry, 5, 150, 1) },
                 { MO_MobileObjectiveThings.Sandbags, new MO_ThingsTypeNumberRadius(MO_Sandbags, 5, 175, 0.25) },
                 { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 5, 179, 0.2, 0.75) },
                 { MO_MobileObjectiveThings.Small_Radar, new MO_ThingsTypeNumberRadius(MO_Small_Radar, 2, 200, 20) },
@@ -20947,7 +21076,7 @@ added Rouen Flak
          { MO_MobileObjectiveType.SecretAircraftResearchGB,
             new Dictionary<MO_MobileObjectiveThings, MO_ThingsTypeNumberRadius>() {
 
-                { MO_MobileObjectiveThings.Humans, new MO_ThingsTypeNumberRadius( MO_Humans, 1, 15, 12) },
+                //{ MO_MobileObjectiveThings.Humans, new MO_ThingsTypeNumberRadius( MO_Humans, 1, 15, 12) },
                 { MO_MobileObjectiveThings.Tables, new MO_ThingsTypeNumberRadius( MO_Buildings, 3, 40, 20) },
                 { MO_MobileObjectiveThings.DEFighters, new MO_ThingsTypeNumberRadius( MO_DEFighters, 3, 65, 20) },
                 { MO_MobileObjectiveThings.DEBombers, new MO_ThingsTypeNumberRadius( MO_DEBombers, 4, 85, 20) },
@@ -20962,7 +21091,7 @@ added Rouen Flak
          { MO_MobileObjectiveType.SecretAircraftResearchDE,
             new Dictionary<MO_MobileObjectiveThings, MO_ThingsTypeNumberRadius>() {
 
-                { MO_MobileObjectiveThings.Humans, new MO_ThingsTypeNumberRadius( MO_Humans, 1, 15, 12) },
+                //{ MO_MobileObjectiveThings.Humans, new MO_ThingsTypeNumberRadius( MO_Humans, 1, 15, 12) },
                 { MO_MobileObjectiveThings.Tables, new MO_ThingsTypeNumberRadius( MO_Buildings, 3, 40, 20) },
                 { MO_MobileObjectiveThings.GBFighters, new MO_ThingsTypeNumberRadius( MO_GBFighters, 3, 60, 20) },
                 { MO_MobileObjectiveThings.GBBombers, new MO_ThingsTypeNumberRadius( MO_GBBombers, 4, 80, 20) },
@@ -20977,12 +21106,12 @@ added Rouen Flak
         { MO_MobileObjectiveType.ArmyEncampment,
             new Dictionary<MO_MobileObjectiveThings, MO_ThingsTypeNumberRadius>() {
 
-                { MO_MobileObjectiveThings.Humans, new MO_ThingsTypeNumberRadius( MO_Humans, 1, 15, 12) },
-                { MO_MobileObjectiveThings.Tables, new MO_ThingsTypeNumberRadius( MO_Tables, 1, 10, 8) },
+                //{ MO_MobileObjectiveThings.Humans, new MO_ThingsTypeNumberRadius( MO_Humans, 1, 15, 12) },
+                //{ MO_MobileObjectiveThings.Tables, new MO_ThingsTypeNumberRadius( MO_Tables, 1, 10, 8) },
                 { MO_MobileObjectiveThings.Tents, new MO_ThingsTypeNumberRadius(MO_Tents, true, 2, 15, 25, 10, shps: tentShapes) },
-                { MO_MobileObjectiveThings.Trucks, new MO_ThingsTypeNumberRadius(MO_Trucks, 7, 35, 5, shps: truckShapes) },
-                { MO_MobileObjectiveThings.Sentry, new MO_ThingsTypeNumberRadius(MO_Sentry, 5, 50, 2) },
-                { MO_MobileObjectiveThings.Trenches, new MO_ThingsTypeNumberRadius(MO_Trenches, 5, 50, 0.2) },
+                { MO_MobileObjectiveThings.Trucks, new MO_ThingsTypeNumberRadius(MO_Trucks, 5, 35, 5, shps: truckShapes) },
+                { MO_MobileObjectiveThings.Sentry, new MO_ThingsTypeNumberRadius(MO_Sentry, 4, 50, 2) },
+                { MO_MobileObjectiveThings.Trenches, new MO_ThingsTypeNumberRadius(MO_Trenches, 3, 50, 0.2) },
                 { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, true, 3, 40, 53, 2) },
                 { MO_MobileObjectiveThings.Small_Radar, new MO_ThingsTypeNumberRadius(MO_Small_Radar, 2, 80, 20) },
 
@@ -20992,11 +21121,11 @@ added Rouen Flak
         { MO_MobileObjectiveType.SmallArmourGroup,
             new Dictionary<MO_MobileObjectiveThings, MO_ThingsTypeNumberRadius>() {
 
-                { MO_MobileObjectiveThings.Humans, new MO_ThingsTypeNumberRadius( MO_Humans, 1, 10, 8) },
+                //{ MO_MobileObjectiveThings.Humans, new MO_ThingsTypeNumberRadius( MO_Humans, 1, 10, 8) },
                 { MO_MobileObjectiveThings.Tents, new MO_ThingsTypeNumberRadius(MO_Tents, 1, 15, 10, shps: tentShapes) },
                 { MO_MobileObjectiveThings.Armor_Tanks, new MO_ThingsTypeNumberRadius(MO_Armor_Tanks, true, 5, 12, 30, 5, shps: truckShapes) },
                 { MO_MobileObjectiveThings.Camo, new MO_ThingsTypeNumberRadius(MO_Camo, 3, 30, 25) },
-                { MO_MobileObjectiveThings.Misc, new MO_ThingsTypeNumberRadius(MO_Misc, 1, 22, 18) },
+                //{ MO_MobileObjectiveThings.Misc, new MO_ThingsTypeNumberRadius(MO_Misc, 1, 22, 18) },
                 { MO_MobileObjectiveThings.Sandbags, new MO_ThingsTypeNumberRadius(MO_Sandbags, 4, 45, 0.5) },
                 { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 4, 53, 4) },
                 { MO_MobileObjectiveThings.Small_Radar, new MO_ThingsTypeNumberRadius(MO_Small_Radar, 2, 100, 30) },
@@ -21007,12 +21136,12 @@ added Rouen Flak
             { MO_MobileObjectiveType.LargeArmourGroup,
                 new Dictionary<MO_MobileObjectiveThings, MO_ThingsTypeNumberRadius>() {
 
-                    { MO_MobileObjectiveThings.Humans, new MO_ThingsTypeNumberRadius( MO_Humans, 1, 10, 8) },
+                    //{ MO_MobileObjectiveThings.Humans, new MO_ThingsTypeNumberRadius( MO_Humans, 1, 10, 8) },
                     { MO_MobileObjectiveThings.Tents, new MO_ThingsTypeNumberRadius(MO_Tents, 8, 20, 15, 0.6, shps: tentShapes) },
                     { MO_MobileObjectiveThings.Armor_Tanks, new MO_ThingsTypeNumberRadius(MO_Armor_Tanks, true, 12, 21, 40, 5, shps: truckShapes) },
-                    { MO_MobileObjectiveThings.Misc, new MO_ThingsTypeNumberRadius(MO_Misc, 1, 25, 20) },
+                    //{ MO_MobileObjectiveThings.Misc, new MO_ThingsTypeNumberRadius(MO_Misc, 1, 25, 20) },
                     { MO_MobileObjectiveThings.Sandbags, new MO_ThingsTypeNumberRadius(MO_Sandbags, 1, 60, 0.2) },
-                    { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 6, 67, 3 ) },
+                    { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 5, 67, 3 ) },
                     { MO_MobileObjectiveThings.Small_Radar, new MO_ThingsTypeNumberRadius(MO_Small_Radar, 2, 120, 30) },
                 }
             },
@@ -21040,10 +21169,10 @@ added Rouen Flak
             { MO_MobileObjectiveType.CamoGroup,
                 new Dictionary<MO_MobileObjectiveThings, MO_ThingsTypeNumberRadius>() {
 
-                    { MO_MobileObjectiveThings.Humans, new MO_ThingsTypeNumberRadius( MO_Humans, 1, 15, 12) },
+                    //{ MO_MobileObjectiveThings.Humans, new MO_ThingsTypeNumberRadius( MO_Humans, 1, 15, 12) },
                     { MO_MobileObjectiveThings.Tents, new MO_ThingsTypeNumberRadius(MO_Tents, 4, 17, 12, shps: tentShapes) },
-                    { MO_MobileObjectiveThings.Camo, new MO_ThingsTypeNumberRadius(MO_Camo, 8, 40, 25, shps: tentShapes) },
-                    { MO_MobileObjectiveThings.Misc, new MO_ThingsTypeNumberRadius(MO_Misc, 1, 40, 35) },
+                    { MO_MobileObjectiveThings.Camo, new MO_ThingsTypeNumberRadius(MO_Camo, 6, 40, 25, shps: tentShapes) },
+                    //{ MO_MobileObjectiveThings.Misc, new MO_ThingsTypeNumberRadius(MO_Misc, 1, 40, 35) },
                     { MO_MobileObjectiveThings.Sentry, new MO_ThingsTypeNumberRadius(MO_Sentry, 4, 70, 2) },
                     { MO_MobileObjectiveThings.Sandbags, new MO_ThingsTypeNumberRadius(MO_Sandbags, 4, 75, 0.1) },
                     { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 4, 83, 5) },
@@ -21053,11 +21182,11 @@ added Rouen Flak
             { MO_MobileObjectiveType.SmallCamoGroup,
                 new Dictionary<MO_MobileObjectiveThings, MO_ThingsTypeNumberRadius>() {
 
-                    { MO_MobileObjectiveThings.Humans, new MO_ThingsTypeNumberRadius( MO_Humans, 2, 12, 10) },
+                    //{ MO_MobileObjectiveThings.Humans, new MO_ThingsTypeNumberRadius( MO_Humans, 2, 12, 10) },
                     { MO_MobileObjectiveThings.Tents, new MO_ThingsTypeNumberRadius(MO_Tents, 2, 14, 10,shps: tentShapes) },
                     { MO_MobileObjectiveThings.Trucks, new MO_ThingsTypeNumberRadius(MO_Trucks, 3, 40, 5, shps: truckShapes) },
                     { MO_MobileObjectiveThings.Camo, new MO_ThingsTypeNumberRadius(MO_Camo, 4, 30, 17) },
-                    { MO_MobileObjectiveThings.Misc, new MO_ThingsTypeNumberRadius(MO_Misc, 1, 30, 17) },
+                    //{ MO_MobileObjectiveThings.Misc, new MO_ThingsTypeNumberRadius(MO_Misc, 1, 30, 17) },
                     { MO_MobileObjectiveThings.Sentry, new MO_ThingsTypeNumberRadius(MO_Sentry, 2, 50, 2) },
                     { MO_MobileObjectiveThings.Sandbags, new MO_ThingsTypeNumberRadius(MO_Sandbags, 4, 45, 0.1) },
                     { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 3, 60, 5) },
@@ -21084,12 +21213,12 @@ added Rouen Flak
             { MO_MobileObjectiveType.MobileRadar1,
                 new Dictionary<MO_MobileObjectiveThings, MO_ThingsTypeNumberRadius>(){
 
-                    { MO_MobileObjectiveThings.Humans, new MO_ThingsTypeNumberRadius(MO_Humans,5, 12, 7 )},
+                    //{ MO_MobileObjectiveThings.Humans, new MO_ThingsTypeNumberRadius(MO_Humans,5, 12, 7 )},
                     { MO_MobileObjectiveThings.Trucks, new MO_ThingsTypeNumberRadius(MO_Trucks, 5, 40, 10, shps: truckShapes )},
-                    { MO_MobileObjectiveThings.Tables, new MO_ThingsTypeNumberRadius(MO_Tables, 1, 15, 7 )},
+                    //{ MO_MobileObjectiveThings.Tables, new MO_ThingsTypeNumberRadius(MO_Tables, 1, 15, 7 )},
                     { MO_MobileObjectiveThings.Radar, new MO_ThingsTypeNumberRadius(MO_Radar, 2, 15, 10 )},
                     { MO_MobileObjectiveThings.Camo, new MO_ThingsTypeNumberRadius(MO_Camo, 2, 15, 13) },
-                    { MO_MobileObjectiveThings.Sandbags, new MO_ThingsTypeNumberRadius(MO_Sandbags, 6, 65, 0.3) },
+                    { MO_MobileObjectiveThings.Sandbags, new MO_ThingsTypeNumberRadius(MO_Sandbags, 4, 65, 0.3) },
                     { MO_MobileObjectiveThings.Hedgehogs, new MO_ThingsTypeNumberRadius(MO_Hedgehogs, 4, 71, 3) },
 
                 }
@@ -21125,8 +21254,8 @@ added Rouen Flak
 
                     { MO_MobileObjectiveThings.Trucks, new MO_ThingsTypeNumberRadius(MO_Trucks, 4, 40, 25, shps: truckShapes )},
                     { MO_MobileObjectiveThings.Radar, new MO_ThingsTypeNumberRadius(MO_Radar, 3, 17, 10 )},
-                    { MO_MobileObjectiveThings.Items, new MO_ThingsTypeNumberRadius(MO_Radar, 8, 30, 10, shps: tentShapes )},
-                    { MO_MobileObjectiveThings.Misc, new MO_ThingsTypeNumberRadius(MO_Radar, 5, 50, 15 )},
+                    { MO_MobileObjectiveThings.Items, new MO_ThingsTypeNumberRadius(MO_Radar, 6, 30, 10, shps: tentShapes )},
+                    { MO_MobileObjectiveThings.Misc, new MO_ThingsTypeNumberRadius(MO_Radar, 4, 50, 15 )},
                     { MO_MobileObjectiveThings.Camo, new MO_ThingsTypeNumberRadius(MO_Camo, 2, 15, 13) },
                     { MO_MobileObjectiveThings.Small_Radar, new MO_ThingsTypeNumberRadius(MO_Small_Radar, 1, 120, 30) },
                     { MO_MobileObjectiveThings.Sentry, new MO_ThingsTypeNumberRadius(MO_Radar, 2, 110, 20) },
@@ -21277,7 +21406,7 @@ added Rouen Flak
                     { MO_MobileObjectiveThings.MO_FuelStorage, new MO_ThingsTypeNumberRadius(MO_FuelDump, 12, 50, 20 )},
                     //MO_Jerrycan71
                     //{ MO_MobileObjectiveThings.Jerrycans, new MO_ThingsTypeNumberRadius(MO_Jerrycan71, 25, 30, 10 )},
-                    { MO_MobileObjectiveThings.ExplodeyThings, new MO_ThingsTypeNumberRadius(MO_ExplodeyThings, 5, 9, 7 )},
+                    { MO_MobileObjectiveThings.ExplodeyThings, new MO_ThingsTypeNumberRadius(MO_ExplodeyThings, 2, 9, 7 )},
                     //MO_Trucks
                     //{ MO_MobileObjectiveThings.Trucks, new MO_ThingsTypeNumberRadius(MO_Trucks, 5, 70, 50) },
 
@@ -21293,8 +21422,8 @@ added Rouen Flak
                     
                     { MO_MobileObjectiveThings.AntiAirGuns, new MO_ThingsTypeNumberRadius(MO_AntiAirGuns, 4, 20, 18 )},
                     { MO_MobileObjectiveThings.AntiAirNets, new MO_ThingsTypeNumberRadius(MO_AntiAirNets, 2, 20, 18 )},
-                    { MO_MobileObjectiveThings.AntiAirMisc, new MO_ThingsTypeNumberRadius(MO_AntiAirMisc, 1, 20, 18 )},
-                    { MO_MobileObjectiveThings.AntiAirVehicles, new MO_ThingsTypeNumberRadius(MO_AntiAirVehicles, 3, 30, 10 )},
+                    //{ MO_MobileObjectiveThings.AntiAirMisc, new MO_ThingsTypeNumberRadius(MO_AntiAirMisc, 1, 20, 18 )},
+                    { MO_MobileObjectiveThings.AntiAirVehicles, new MO_ThingsTypeNumberRadius(MO_AntiAirVehicles, 2, 30, 10 )},
                     { MO_MobileObjectiveThings.AntiAirAmmo, new MO_ThingsTypeNumberRadius(MO_AntiAirAmmo, 2, 20, 18 )},
                     
 
@@ -21305,10 +21434,11 @@ added Rouen Flak
             { MO_MobileObjectiveType.TempFlakSite,
                     new Dictionary<MO_MobileObjectiveThings, MO_ThingsTypeNumberRadius>(){
                     
-                    { MO_MobileObjectiveThings.AntiAirGuns, new MO_ThingsTypeNumberRadius(MO_AntiAirGuns, 2, 5, 4, randomizeHowMany: false )},
-                    { MO_MobileObjectiveThings.AntiAirNets, new MO_ThingsTypeNumberRadius(MO_AntiAirNets, 1, 5, 4, prob: .15, randomizeHowMany: false  )},
-                    { MO_MobileObjectiveThings.AntiAirMisc, new MO_ThingsTypeNumberRadius(MO_AntiAirAmmo_Misc, 1, 6, 5,prob: .35, randomizeHowMany: false  )},
-                    { MO_MobileObjectiveThings.AntiAirVehicles, new MO_ThingsTypeNumberRadius(MO_AntiAirVehicles, 1, 8, 3,prob: .65, randomizeHowMany: false  )},
+                    { MO_MobileObjectiveThings.AntiAirGuns, new MO_ThingsTypeNumberRadius(MO_AntiAirGuns, 1, 5, 4, randomizeHowMany: false )},
+                    //{ MO_MobileObjectiveThings.AntiAirNets, new MO_ThingsTypeNumberRadius(MO_AntiAirNets, 1, 5, 4, prob: .15, randomizeHowMany: false  )},
+                    //{ MO_MobileObjectiveThings.AntiAirMisc, new MO_ThingsTypeNumberRadius(MO_AntiAirAmmo_Misc, 1, 6, 5,prob: .35, randomizeHowMany: false  )},
+                    //{ MO_MobileObjectiveThings.AntiAirVehicles, new MO_ThingsTypeNumberRadius(MO_AntiAirVehicles, 1, 8, 3,prob: .65, randomizeHowMany: false  )},
+                    { MO_MobileObjectiveThings.AntiAirVehicles, new MO_ThingsTypeNumberRadius(MO_AntiAirVehicles, 1, 8, 3, randomizeHowMany: false  )},
                     //{ MO_MobileObjectiveThings.AntiAirAmmo, new MO_ThingsTypeNumberRadius(MO_AntiAirAmmo, 1, 8, 3, prob: .5 , randomizeHowMany: false )},
                     
 
@@ -21564,6 +21694,7 @@ added Rouen Flak
              if (!minimum)
              {
                  if (ON_TESTSERVER) Console.WriteLine("PostmissionLoad: PlaceDetritus");
+                 f = ProcessSectionFileForMarkers_section(f, "PlaceDetritus_" + mo.Name);
                  GamePlay.gpPostMissionLoad(f);
 
                  if (!panic()) f.save(CLOD_PATH + FILE_PATH + "/sectionfiles" + "/detritusobj_" + Calcs.GetSafeFileName(mo.ID)); //testing)
@@ -21639,6 +21770,7 @@ added Rouen Flak
             {
                 Timeout(random.Next(delay_s + 5, delay_s + 120), () =>
                 {
+                    f = ProcessSectionFileForMarkers_section(f, "RemoveObjective_" + mo.Name);
                     GamePlay.gpPostMissionLoad(f);
                     f.save(CLOD_PATH + FILE_PATH + "/sectionfiles" + "/destroy_MO_replaced_objects_" + Calcs.GetSafeFileName(mo.ID) +random.Next(1, 10).ToString());
 
@@ -21681,6 +21813,7 @@ added Rouen Flak
                     {
                         Timeout(random.Next(delay_s + 5, delay_s + 120), () =>
                         {
+                            f2 = ProcessSectionFileForMarkers_section(f2, "RemoveObjective_f2_" + mo.Name);
                             GamePlay.gpPostMissionLoad(f2);
                             f2.save(CLOD_PATH + FILE_PATH + "/sectionfiles" + "/destroy_MO_replaced_objects_"+Calcs.GetSafeFileName(mo.ID) + random.Next(1, 10).ToString());
 
@@ -21990,6 +22123,7 @@ added Rouen Flak
                 {
 
                     if (ON_TESTSERVER) Console.WriteLine("PostmissionLoad: TriggerObjectiveRefresh");
+                    f = ProcessSectionFileForMarkers_section(f, "TriggerObjectiveRefresh_" + mo.Name);
                     GamePlay.gpPostMissionLoad(f);
 
                     if (!panic()) f.save(CLOD_PATH + FILE_PATH + "/sectionfiles" + "/trigger_objective_refresh_" + Calcs.GetSafeFileName(mo.ID)); //testing)
@@ -22396,6 +22530,9 @@ added Rouen Flak
 
             //Timeout(random.Next(47, 100), () => { GamePlay.gpPostMissionLoad(f); });
             if (ON_TESTSERVER) Console.WriteLine("PostmissionLoad: TempFlakSitePlacement");
+            string nm = "(none)";
+            if (mo!=null) nm = mo.Name;
+            f = ProcessSectionFileForMarkers_section(f, "PlaceTheThings_" + nm);
             GamePlay.gpPostMissionLoad(f);
 
 
@@ -23462,7 +23599,7 @@ added Rouen Flak
                     "Artillery.Flak30_Shield","Artillery.Flak30_Shield","Artillery.Flak30_Shield",                  
                     "Artillery.Bofors_StandAlone", };    
 
-                var flakStands = new List<string> { "Stationary.Environment.Zwillingssockel36_Base_GER1",  };
+                //var flakStands = new List<string> { "Stationary.Environment.Zwillingssockel36_Base_GER1",  };
 
                 List<string> explodeyThings = new List<string> { "Stationary.Environment.FuelDrum_UK1_9", };
 
@@ -23518,7 +23655,7 @@ added Rouen Flak
                     if (ON_TESTSERVER) Console.WriteLine("Placing flak gun placed for {4} ({6}) at ({0:N0} {1:N0} {2:N0}) heading: {3:N0}, formation: {5}) {6}", Math.Round(newPoint.x), Math.Round(newPoint.y), Math.Round(mo.Pos.z), head, mo.Name, formation, side, tempFlak?"TempFlak":"AutoFlak");
                     //Update - radius_hide how far out the AA looks, so it won't fire until the enemy is closer than this distance
                     f = Calcs.makeStatic(f, GamePlay, this, Math.Round(newPoint.x), Math.Round(newPoint.y), 0, type: flak[flakType], heading: head, side: side, radiusHide: Convert.ToInt32(radiusHide), chiefNum: autoFlakChiefNum, resetCount: resetCount, staticprefix: staticprefix);
-                    f = Calcs.makeStatic(f, GamePlay, this, Math.Round(newPoint.x), Math.Round(newPoint.y), 0, type: flakStands[random.Next(flakStands.Count)], heading: head, side: side,  resetCount: false, staticprefix: staticprefix);
+                    //f = Calcs.makeStatic(f, GamePlay, this, Math.Round(newPoint.x), Math.Round(newPoint.y), 0, type: flakStands[random.Next(flakStands.Count)], heading: head, side: side,  resetCount: false, staticprefix: staticprefix);
                     resetCount = false;
                     f = Calcs.makeStatic(f, GamePlay, this, Math.Round(newPoint.x+0.5), Math.Round(newPoint.y+1.3), 0, type: explodeyThings[random.Next(explodeyThings.Count)], heading: head, side: side,  resetCount: false, staticprefix: staticprefix);
                     resetCount = false;
@@ -25365,12 +25502,13 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
                             string s = CLOD_PATH + FILE_PATH + "/" + flakMission;
 								if (File.Exists(s)) {
 								ISectionFile f = GamePlay.gpLoadSectionFile(s);
+                                f = ProcessSectionFileForMarkers_section(f, "LoadFlakFile_" + flakMission);
 								f = Calcs.changeArmy_Waypoints_SectionFile(f, GamePlay, this, changeToArmy: mo.OwnerArmy, maxWaypoints_remove: 0, maxPercentWaypoints_remove: 0);
 								if (ON_TESTSERVER) Console.WriteLine("PostmissionLoad: Load objective flak file");
 								GamePlay.gpPostMissionLoad(f);
 								f.save(CLOD_PATH + FILE_PATH + "/sectionfiles/" + "printSectionFile-" + Calcs.GetSafeFileName(flakMission) + ".mis"); //testing
 								
-																															  //msn.GamePlay.gpPostMissionLoad(s);
+																															                                //msn.GamePlay.gpPostMissionLoad(s);
 								//GamePlay.gpPostMissionLoad(CLOD_PATH + FILE_PATH + "/" + flakMission);
 								DebugAndLog(flakMission + " flak file loaded");
 								Console.WriteLine(flakMission + " flak file loaded");
@@ -25443,6 +25581,8 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
 
                 //f = MO_PlaceCameras(f, mo);
 
+                f = ProcessSectionFileForMarkers_section(f, "PlaceAppropriateJerrycan_" + mo.Name);
+
                 if (ON_TESTSERVER) Console.WriteLine("PostmissionLoad: Placeappropriate jerrycan");
                 GamePlay.gpPostMissionLoad(f);
 
@@ -25514,6 +25654,7 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
 				//asfor example happens with ships.  So setting army: 0
 				f = PlaceObjectsInCircles(f, things, jcPos, searchRadius_m, variance_m, numi, army: 0, percentSide: 0, subHeading_deg: -1, stretcherType: 1, stretcherAmt: stretchA, resetCount: false, shape: shape, staticprefix: staticprefix);
 				if (ON_TESTSERVER) Console.WriteLine("PostmissionLoad: Place some Jerrycans or other things at {0}", mo.Name);
+                f = ProcessSectionFileForMarkers_section(f, "PlaceSomeJerrycans_" + mo.Name);
 				GamePlay.gpPostMissionLoad(f);
 
 				if ( ON_TESTSERVER && !panic()) f.save(CLOD_PATH + FILE_PATH + "/sectionfiles" + "/jerrycanobj_"+numi.ToString() + "_" + Calcs.GetSafeFileName(mo.ID)); //testing)
@@ -25676,7 +25817,7 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
 					ISectionFile f2 = GamePlay.gpCreateSectionFile();
 					f2 = MO_HandleTriggerObjectiveRefresh(mo, f2); //make sure each trigger-type objective has a good number of jerrycans & explodey things around it
 					if (ON_TESTSERVER) Console.WriteLine("PostmissionLoad: MO_HandleTriggerObjectiveRefresh");
-
+                    f2 = ProcessSectionFileForMarkers_section(f2, "TriggerObjectiveRefresh_" + mo.Name);
 					GamePlay.gpPostMissionLoad(f2);
 					f2.save(CLOD_PATH + FILE_PATH + "/sectionfiles" + "/trigger_refresh_ALL_init.mis"); //testing
 				});
@@ -25733,7 +25874,7 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
 
 						ISectionFile f = GamePlay.gpCreateSectionFile();
 						f = Calcs.makeStatic(f, GamePlay, this, x, y, 0, "Stationary.Radar.Wotan_II", side: "de", resetCount: true);
-                    StationaryMarkerManager.AddMarker("JerryCan_GER1_1", x + 0.5, y + 0.2, "BlueRadarInit");
+                        StationaryMarkerManager.AddMarker("JerryCan_GER1_1", x + 0.5, y + 0.2, "BlueRadarInit");
 
 						//so it actually seems more interesting to just leave them be with, if you hit the two radars you knock it out & otherwise, not.  The extra "objects" don't really seem to add that much.
 						//Also if they can' get both items they can still get the objective by piling enough KG near the target.
@@ -25815,6 +25956,8 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
             if ((mo.AutoFlak || (mo.AutoFlakIfPrimary && mo.IsPrimaryTarget) || mo.numDefenseUnits()>4) && !mo.Destroyed) autoFlakF = MO_AutoOrTempFlakPlacement(mo, autoFlakF, flResetCount);
             flResetCount = false;
         }
+
+        autoFlakF = ProcessSectionFileForMarkers_section(autoFlakF, "AutoFlakPlacement");
 
         autoFlakF.save(CLOD_PATH + FILE_PATH + "/sectionfiles" + "/ObjectivesArtilleryChieffile" + random.Next(0, 20).ToString("F0") + ".txt"); //testing
 
@@ -33078,6 +33221,7 @@ GroundStationary[] gs = GamePlay.gpGroundStationarys(250000, 252000, 1000); //Fi
         //Console.WriteLine("Load Static: " + value);
         f.add(sect, key, value);
         if (mission.ON_TESTSERVER) Console.WriteLine("PostmissionLoad: LoadStatic");
+        f = mission.ProcessSectionFileForMarkers_section(f, "LoadStatic_" + staticprefix);
         GamePlay.gpPostMissionLoad(f);
         //f.save(CLOD_PATH + FILE_PATH + "/sectionfiles/" + "loadStatic" + random.Next(0, 9)); //testing
 
@@ -33399,6 +33543,7 @@ GroundStationary[] gs = GamePlay.gpGroundStationarys(250000, 252000, 1000); //Fi
 				if (replaceThem)
                 {
                     msn.Timeout(clc_random.Next(5, 120), () => {
+                        f = msn.ProcessSectionFileForMarkers_section(f, "RemoveStatics");
                         GamePlay.gpPostMissionLoad(f);
                         f.save(msn.CLOD_PATH + msn.FILE_PATH + "/sectionfiles" + "/removeStatics_replaced_enemy_objects_" + clc_random.Next(1,100).ToString());
                     
@@ -33722,8 +33867,10 @@ GroundStationary[] gs = GamePlay.gpGroundStationarys(250000, 252000, 1000); //Fi
                 
 				if (replaceThem)
 				{
+                    f = msn.ProcessSectionFileForMarkers_section(f, "RemoveStatics");
 					if (fast) {
 							msn.Timeout(0, () => {
+                            
 							GamePlay.gpPostMissionLoad(f);
 							f.save(msn.CLOD_PATH + msn.FILE_PATH + "/sectionfiles" + "/removeStaticsOnEnemyTerritory_replaced_enemy_objects_" + clc_random.Next(1,100).ToString());
 						

@@ -284,43 +284,103 @@ public class CoverMission : AMission, ICoverMission
     {
         if (!onetime) Timeout(3 * 60.3624, () => renewAllStaticActors_recurs());
         //OK, this is DEFINITELY one of the BIG causes of WARP.
-        //Hopefully doing it via Task.Run will help it a lot.
+        //Keep ALL CloD engine reads on a background thread so they never block the main mission tick.
+        //Process static name lookups in small batches with Thread.Sleep between batches so the
+        //background thread does not peg a CPU core at 100%.  Retry once on null returns.
+        //Only the final array swap touches the main thread (tiny Timeout callback, ~1 ms).
         Task.Run(() =>
         {
             try
             {
                 if (mainmission.panic() && ran.Next(2) == 0) return; //if in panic mode cut runs by 50%
 
-                //if (TWCComms.Communicator.Instance.WARP_CHECK || mainmission.ON_TESTSERVER) Console.WriteLine("CVSAXX1-1 " + DateTime.UtcNow.ToString("mm:ss.fffffff")); //Testing for potential causes of warping
-
                 Console.WriteLine("renewAllStaticActors running . . . ");
-                //OK, we were missing some actors since our custom gpGetGroundActors only gets actors named "static1002" and similar.
-                // Marshal CLoD engine reads back to the main mission thread via Timeout(0, ...) to avoid background-thread engine calls.
+
+                int lastMission = (stb_lastMissionLoaded == 0) ? mainmission.GamePlay.gpNextMissionNumber() : stb_lastMissionLoaded;
+                int missionCount = lastMission + 2;
+                int batchSize = 50; // static name lookups per batch before a Thread.Sleep
+
+                List<AiActor> collected = new List<AiActor>();
+                int s = 0;
+                int i = 0;
+
+                while (s < missionCount)
+                {
+                    int processed = 0;
+                    while (processed < batchSize && s < missionCount)
+                    {
+                        string subName = s.ToString() + ":" + "Static" + i.ToString();
+                        AiGroundActor subActor = null;
+                        bool gotActor = false;
+
+                        // Retry once on null or exception from gpActorByName (background thread, read-only)
+                        for (int retry = 0; retry < 2; retry++)
+                        {
+                            try
+                            {
+                                subActor = mainmission.GamePlay.gpActorByName(subName) as AiGroundActor;
+                                gotActor = true;
+                                break;
+                            }
+                            catch (Exception exRetry)
+                            {
+                                Console.WriteLine("cover: renewAllStaticActors gpActorByName retry {0} for {1}: " + exRetry.Message, retry, subName);
+                                Thread.Sleep(10);
+                            }
+                        }
+
+                        if (gotActor && subActor != null)
+                        {
+                            collected.Add(subActor);
+                        }
+
+                        i++;
+                        if (i >= CoverCalcs.maxStatics) { i = 0; s++; }
+                        processed++;
+                    }
+
+                    // Yield to avoid pegging the background thread at 100% CPU
+                    Thread.Sleep(1);
+                }
+
+                // All enumeration finished on background thread.  Now do ONLY the tiny swap on the main thread.
                 Timeout(0.05, () =>
                 {
                     try
                     {
-                        AiActor[] arrayAsa = CoverCalcs.gpGetAllGroundActors(this, stb_lastMissionLoaded);
-                        AiActor[] arrayGga = CoverCalcs.gpGetGroundActors(this, army: 0);
-                        HashSet<AiActor> asa = null;
+                        HashSet<AiActor> asa = new HashSet<AiActor>(collected);
+
+                        // include actors captured via OnActorCreated (mainmission.AllGroundDict)
+                        if (mainmission.AllGroundDict != null)
+                        {
+                            foreach (AiActor a in mainmission.AllGroundDict.Values)
+                            {
+                                if (a != null) asa.Add(a);
+                            }
+                        }
+
+                        // include ground groups from CloD engine (read-only, but do it on main thread to be safe)
+                        AiActor[] arrayGga = null;
+                        try
+                        {
+                            arrayGga = CoverCalcs.gpGetGroundActors(this, army: 0);
+                        }
+                        catch (Exception exGga) { Console.WriteLine("cover: renewAllStaticActors gpGetGroundActors ERROR: " + exGga.ToString()); }
                         HashSet<AiActor> gga = null;
-                        if (arrayAsa != null) asa = new HashSet<AiActor>(arrayAsa);
                         if (arrayGga != null) gga = new HashSet<AiActor>(arrayGga);
-                        if (asa == null) asa = gga;
-                        if (gga != null && asa != null) asa.UnionWith(gga);
-                        if (asa == null && gga == null) return;//nothing to do...
+                        if (gga != null) asa.UnionWith(gga);
+
+                        if (asa.Count == 0) return; // nothing to do
+
                         lock (allStaticActors_lock)
                         {
                             allStaticActors = asa.ToArray();
+                            // keep objectives list update inside the same lock (was previously unlocked -> data race)
+                            SMissionObjectivesList = TWCMainMission.SMissionObjectivesList();
                         }
 
-                        Console.WriteLine("renewAllStaticActors running: {0:n0} found (asa: {1}, gga: {2})", allStaticActors.Length, (asa != null ? asa.Count : 0), (gga != null ? gga.Count : 0));
-                        //gpGetGroundActors(CoverMission msn, int army)
-                        //allStaticActors = CoverCalcs.gpGetAllGroundActors(this, stb_lastMissionLoaded);
-                        SMissionObjectivesList = TWCMainMission.SMissionObjectivesList();
-
+                        Console.WriteLine("renewAllStaticActors running: {0:n0} found (asa: {1}, gga: {2})", allStaticActors.Length, asa.Count, (gga != null ? gga.Count : 0));
                         Console.WriteLine("renewAllStaticActors complete . . . ");
-                        //if (TWCComms.Communicator.Instance.WARP_CHECK || mainmission.ON_TESTSERVER) Console.WriteLine("CVSAXX1-2 " + DateTime.UtcNow.ToString("mm:ss.fffffff")); //Testing for potential causes of warping
                     }
                     catch (Exception ex2) { Console.WriteLine("cover: renewAllStaticActors marshal ERROR: " + ex2.ToString()); }
                 });
@@ -12687,7 +12747,7 @@ public static class CoverCalcs
     }
 	*/
 
-    private static int maxStatics = 10000; //so, these are guesses or somewhat reasonable maximums & might be wrong . . .
+    public static int maxStatics = 10000; //so, these are guesses or somewhat reasonable maximums & might be wrong . . .
     private static int maxSubmissions = 4000;
     //gets all ground actors.  Nothing in the CloD code can do this, it misses things like static ships
     //It gets them all without worrying about army or which side they're on.  We only care if they are close to a certain point, so army is irrelevant (& many are neutral etc, so it's complicated).

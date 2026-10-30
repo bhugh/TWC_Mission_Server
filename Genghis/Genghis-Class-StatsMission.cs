@@ -15000,6 +15000,11 @@ public bool StbSr_UploadSSL(string ftpServer, string username, string password, 
         {
             remotePath = "/";
         }
+        // SFTP sends the remote path to the server literally.  Uri.AbsolutePath preserves
+        // percent-encoding (e.g. %20), but the remote SFTP server expects the actual space
+        // character - matching the legacy FTP behavior where the FTP server decoded %20.
+        // Decode so %20 etc. become real characters in the stored filename.
+        remotePath = Uri.UnescapeDataString(remotePath);
 
         Console.WriteLine("SFTP UPLOAD: host={0} port={1} remotePath={2} localFile={3}", host, port, remotePath, filename);
 

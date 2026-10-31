@@ -26462,6 +26462,7 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
                 if (mo.DestroyedPercent > 1) add_amt += (mo.DestroyedPercent - 1) / 5; //little bonus for extra destruction of targets
             }
             else if (mo.DestroyedPercent > 0) add_amt = mo.DestroyedPercent/3;  //Doesn't count as much if only partially destroyed
+            if (add_amt>4) add_amt=4;
 
             bad += add_amt * level;
         }
@@ -27927,6 +27928,8 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
 
             if (tempDestroyedPercent > 1) tempDestroyedPercent = 1 + 0.4 * Math.Pow(tempDestroyedPercent - 1.0, 0.7);
 
+            if (tempDestroyedPercent > 10) tempDestroyedPercent = 10;
+
             double oldDestroyedPercent = mo.DestroyedPercent;
             mo.DestroyedPercent = tempDestroyedPercent;
             double addedPercent = tempDestroyedPercent - oldDestroyedPercent;
@@ -28380,8 +28383,10 @@ HashSet<Tuple<int, int, aPlayer>> photosRecorded = new HashSet<Tuple<int, int, a
 					
                     if (PointArea_types.Contains(mo.MOTriggerType))
                         mo.ObjectsDestroyed_num += damageCount;
-                    else if (mo.MOTriggerType == MO_TriggerType.Trigger)
+                    else if (mo.MOTriggerType == MO_TriggerType.Trigger) {
                         mo.ObjectsDestroyed_num ++;
+                        if (mo.ObjectsDestroyed_num > mo.ObjectsRequiredToTrigger_num * 5)  mo.ObjectsDestroyed_num = mo.ObjectsRequiredToTrigger_num * 5;
+                    }
 					
 
 

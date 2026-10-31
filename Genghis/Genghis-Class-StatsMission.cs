@@ -307,6 +307,15 @@ public class StatsMission : AMission, IStatsMission
     public string stb_LogStatsUploadFilenameTeamPrevLow;
     public string stb_MissionServer_LogStatsUploadFilenameLow;
     public string stb_iniFileErrorMessages;
+// --- SFTP connection reuse + backoff (Option 4) ---
+    private SftpClient stb_SftpClient = null;
+    private bool stb_SftpConnected = false;
+    private DateTime stb_SftpLastConnectAttempt = DateTime.MinValue;
+    private TimeSpan stb_SftpConnectBackoff = TimeSpan.FromSeconds(90);
+    private DateTime stb_SftpBackoffUntil = DateTime.MinValue;
+    private DateTime stb_SftpLastUpload = DateTime.MinValue;
+    private TimeSpan stb_SftpMinDelayBetweenUploads = TimeSpan.FromSeconds(5);
+    private object stb_SftpLock = new object();
 
     //There are three possible careers: Fighter pilot (no suffix), bomber pilot (bomber), and strike pilot/sturmovik/Zerstoerer (strike).  Suffix is added to the pilot's name in the dictionary of stats.
     public string stb_FighterSuffix = ""; //note that fightersuffix isn't really implement, it's just "nothing added" right now
@@ -11800,7 +11809,18 @@ public class StbStatRecorder : IStbStatRecorder
 	public Mission mainmission;
 	public SupplyMission supplymission;
 
-    public int stbSr_numStats; //# of fields recorded in the stats Dictionary/File etc      
+    public int stbSr_numStats; //# of fields recorded in the stats Dictionary/File etc     
+
+    // --- SFTP connection reuse + backoff (Option 4) ---
+    private SftpClient stb_SftpClient = null;
+    private bool stb_SftpConnected = false;
+    private DateTime stb_SftpLastConnectAttempt = DateTime.MinValue;
+    private TimeSpan stb_SftpConnectBackoff = TimeSpan.FromSeconds(30);
+    private DateTime stb_SftpBackoffUntil = DateTime.MinValue;
+    private DateTime stb_SftpLastUpload = DateTime.MinValue;
+    private TimeSpan stb_SftpMinDelayBetweenUploads = TimeSpan.FromSeconds(5);
+    private object stb_SftpLock = new object();
+
 
 
 
@@ -15008,43 +15028,126 @@ public bool StbSr_UploadSSL(string ftpServer, string username, string password, 
 
         Console.WriteLine("SFTP UPLOAD: host={0} port={1} remotePath={2} localFile={3}", host, port, remotePath, filename);
 
-        SftpClient sftp = null;
-        try
+        // ---- Everything below runs under one lock so a single SFTP connection is
+        //      reused, uploads are throttled, and failures back off. ----
+        lock (stb_SftpLock)
         {
-            sftp = new SftpClient(host, port, username, password);
-            sftp.Connect();
-
-            // Read file payload into memory
-            byte[] fileContents = null;
-            if (isText)
+            // Throttle: if another upload just happened, wait before this one.
+            if (stb_SftpLastUpload != DateTime.MinValue)
             {
-                fileContents = Encoding.UTF8.GetBytes(File.ReadAllText(filename));
+                TimeSpan sinceLast = DateTime.Now - stb_SftpLastUpload;
+                if (sinceLast < stb_SftpMinDelayBetweenUploads)
+                {
+                    int sleepMs = (int)(stb_SftpMinDelayBetweenUploads.TotalMilliseconds - sinceLast.TotalMilliseconds);
+                    if (sleepMs > 0)
+                    {
+                        Thread.Sleep(sleepMs);
+                    }
+                }
+            }
+            stb_SftpLastUpload = DateTime.Now;
+
+            // Backoff: if connect/login recently failed, do not retry yet.
+            if (DateTime.Now < stb_SftpBackoffUntil)
+            {
+                Console.WriteLine("SFTP UPLOAD: skipped - in backoff cooldown {0}", filename);
+                return false;
+            }
+
+            // Reuse existing connection if still open.
+            if (stb_SftpClient != null && stb_SftpClient.IsConnected)
+            {
+                stb_SftpConnected = true;
             }
             else
             {
-                fileContents = File.ReadAllBytes(filename);
-            }
-
-            // Upload the stream to the remote path (canOverride = true)
-            using (MemoryStream inputStream = new MemoryStream(fileContents))
-            {
-                sftp.UploadFile(inputStream, remotePath, true);
-            }
-
-            Console.WriteLine("SFTP UPLOAD: success {0}", filename);
-            return true;
-        }
-        finally
-        {
-            if (sftp != null)
-            {
-                if (sftp.IsConnected)
+                // Throttle reconnect attempts so we do not hammer the remote host.
+                if ((DateTime.Now - stb_SftpLastConnectAttempt).TotalSeconds < stb_SftpConnectBackoff.TotalSeconds)
                 {
-                    sftp.Disconnect();
+                    Console.WriteLine("SFTP UPLOAD: skipped - reconnect throttled {0}", filename);
+                    return false;
                 }
-                sftp.Dispose();
+
+                // Dispose any dead/disconnected client before creating a fresh one.
+                if (stb_SftpClient != null)
+                {
+                    try
+                    {
+                        if (stb_SftpClient.IsConnected)
+                        {
+                            stb_SftpClient.Disconnect();
+                        }
+                    }
+                    catch
+                    {
+                    }
+                    stb_SftpClient.Dispose();
+                    stb_SftpClient = null;
+                }
+
+                stb_SftpLastConnectAttempt = DateTime.Now;
+
+                try
+                {
+                    SftpClient sftp = new SftpClient(host, port, username, password);
+                    sftp.Connect();
+                    stb_SftpClient = sftp;
+                    stb_SftpConnected = true;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("StbSr_UploadSSL connect ERROR: {0}", ex.ToString());
+                    stb_SftpConnected = false;
+                    stb_SftpBackoffUntil = DateTime.Now + stb_SftpConnectBackoff;
+                    if (stb_SftpClient != null)
+                    {
+                        try { stb_SftpClient.Dispose(); } catch { }
+                        stb_SftpClient = null;
+                    }
+                    StbSr_PrepareErrorMessage(ex, "uploadSSL");
+                    return false;
+                }
             }
-        }
+
+            SftpClient sftpClient = stb_SftpClient;
+
+            try
+            {
+                // Read file payload into memory
+                byte[] fileContents = null;
+                if (isText)
+                {
+                    fileContents = Encoding.UTF8.GetBytes(File.ReadAllText(filename));
+                }
+                else
+                {
+                    fileContents = File.ReadAllBytes(filename);
+                }
+
+                // Upload the stream to the remote path (canOverride = true)
+                using (MemoryStream inputStream = new MemoryStream(fileContents))
+                {
+                    sftpClient.UploadFile(inputStream, remotePath, true);
+                }
+
+                Console.WriteLine("SFTP UPLOAD: success {0}", filename);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("StbSr_UploadSSL WebException ERROR: {0}", ex.ToString());
+                // Mark connection dead so next call creates a fresh one, and start backoff.
+                stb_SftpConnected = false;
+                stb_SftpBackoffUntil = DateTime.Now + stb_SftpConnectBackoff;
+                if (stb_SftpClient != null)
+                {
+                    try { stb_SftpClient.Dispose(); } catch { }
+                    stb_SftpClient = null;
+                }
+                StbSr_PrepareErrorMessage(ex, "uploadSSL");
+                return false;
+            }
+        } // end lock
     }
     catch (Exception ex)
     {

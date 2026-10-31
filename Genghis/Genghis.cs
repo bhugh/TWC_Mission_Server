@@ -607,8 +607,8 @@ public class Mission : AMission, IMainMission
     //public int END_MISSION_TICK = 1680000; //14 Hours
     //public int END_MISSION_TICK = 1980000; //16.5 Hours, starting at 4:45am and ending at 9:15pm.
     //public int END_MISSION_TICK = 960000; //8 Hours, starting at 7:50am and ending at 3:15pm.  Could possibly go even 15 mins earlier to 7:15?  And a little later?
-    public double MISSION_LENGTH_HRS = 8.0; //For SUMMER. 4.15-20.05 = 15.90 hrs.  So abt 2x8hr sessions. //2026-10-14 - cut it to 3.0 hrs due to problems, now back to 8.0 hrs to test "fixes"
-    //public double MISSION_LENGTH_HRS = 6.0; //6.0 is ideal for AUTUMN map - 6.15-17.25 gives two equal sessions about 5.6 hours each, but 6.0+5.1 worked fine/better
+    public double MISSION_LENGTH_HRS = 4.0; //For SUMMER. 4.15-20.05 = 15.90 hrs.  So abt 2x8hr sessions. //2026-10-14 - cut it to 3.0 hrs due to problems, now back to 8.0 hrs to test "fixes"
+    //public double MISSION_LENGTH_HRS = 6.0; //6.0 is ideal for AUTUMN map - 6.15-17.25 gives two equal sessions about 5.6 hours each, but 6.0+5.1 worked fine/better 
     // 8.0 makes 2X 8hr missions per day; 5.3333; makes 3X missions per day //720000; //6.4 //2021/07: was 10, trying shorter to see if it will fix long load times?
     //2026/10 - setting from 8.0 back to 3.0 to try to stop server borking as time gets longer
     //public int END_MISSION_TICK = 1200000; //10 Hours
@@ -15778,6 +15778,7 @@ public class Mission : AMission, IMainMission
         [DataMember] public string InitSubmissionName { get; set; } //.mis to load that displays the objective, has the objects etc
         [DataMember] public string DestroyedSubmissionName { get; set; } //.mis to load that displays the objective, has the objects etc
         [DataMember] public string ChiefName { get; set; } //(optional) Name of the "Chief" associated with this objective, like 1009_Chief. If provided it allows the detection of the actual location of the _Chief on recon flights.  So when reconned, it will tell the actual location of the ship or convoy at the time of recon, not just the starting point of the _Chief's route.
+        [DataMember] public string StaticIDName { get; set; } //Name/ID used in statics/stationaries (and groundactors) created for this OBJ
 
         [DataMember] public Dictionary <string, int> ThingsToSave { get; set; } //list of things (ie, stationaries, match by "contains"), and the number required, to BE SAVED AND NOT KILLED in order to achieve the OBJ
 
@@ -15911,6 +15912,7 @@ public class Mission : AMission, IMainMission
             //must make sure no additional/different replacements are used when the
             //chiefname is used to generate the stationary name in the .mis files
             ChiefName = IDtoCleanChiefName(chief_name); //Name of the chief used in teh mission or submission file, like 1009_Chief.  We can use this to find the exact location of that _Chief during recon flights etc.
+            StaticIDName = IDtoCleanChiefName(ID);
             FlakID = flak;
             InitSubmissionName = init_submission_filename;
             DestroyedSubmissionName = destroyed_submission_name;
@@ -16031,6 +16033,7 @@ public class Mission : AMission, IMainMission
             ThingsToSave_stillAlive = true;
 
             ChiefName = IDtoCleanChiefName(chief_name); //Name of the chief used in teh mission or submission file, like 1009_Chief.  We can use this to find the exact location of that _Chief during recon flights etc.
+            StaticIDName = IDtoCleanChiefName(ID);
             FlakID = ""; //no flak files for airports . . . yet
             AutoFlakIfPrimary = true;
             AutoFlak = false;
@@ -16121,6 +16124,7 @@ public class Mission : AMission, IMainMission
             if (BirthplaceACTypes is object) Console.WriteLine("Landingground: Making MissionObjective, adding planeset with {0} aircraft: {1}", BirthplaceACTypes.Count, string.Join("", BirthplaceACTypes) );
             else Console.WriteLine("Landingground: Making MissionObjective, planeset was NULL!!!");
             ChiefName = IDtoCleanChiefName(chief_name); //Name of the chief used in the mission or submission file, like 1009_Chief.  We can use this to find the exact location of that _Chief during recon flights etc.
+            StaticIDName = IDtoCleanChiefName(ID);
 
             ThingsToSave_stillAlive = true;
 
@@ -16214,6 +16218,7 @@ public class Mission : AMission, IMainMission
             InitSubmissionName = init_submission_filename;
             DestroyedSubmissionName = destroyed_submission_name;            
             ChiefName = IDtoCleanChiefName(chief_name); //Name of the chief used in teh mission or submission file, like 1009_Chief.  We can use this to find the exact location of that _Chief during recon flights etc.
+            StaticIDName = IDtoCleanChiefName(ID);
 
             ThingsToSave_stillAlive = true;
 
@@ -16336,6 +16341,7 @@ public class Mission : AMission, IMainMission
             NumFlakBatteries = num_flakbatteries;
             NumInFlakBattery = num_in_eachbattery;
             ChiefName = IDtoCleanChiefName(chief_name);
+            StaticIDName = IDtoCleanChiefName(ID);
             ThingsToSave = things_to_save;
             ThingsToSave_stillAlive = true;
 
@@ -16473,6 +16479,7 @@ public class Mission : AMission, IMainMission
             NumInFlakBattery = num_in_eachbattery;
 
             ChiefName = IDtoCleanChiefName(chief_name); //Name of the chief used in teh mission or submission file, like 1009_Chief.  We can use this to find the exact location of that _Chief during recon flights etc.
+            StaticIDName = IDtoCleanChiefName(ID);
 
             ThingsToSave = things_to_save;
             ThingsToSave_stillAlive = true;
@@ -17276,6 +17283,8 @@ public class Mission : AMission, IMainMission
 
             //TODO: Chief name matching is not thoroughly tested.  Like chiefname accidentally
             //entered "Cala" matched some actor or other for some reason
+            //2026-10-30: Using Chiefname as name/ID for static objects for the OBJ was a bad
+            //idea, now StaticIDName used instead
             try
             {
                 //Now see if it is a _chief type (mobile) objective and if so, update recon position according to that.
@@ -21428,7 +21437,7 @@ added Rouen Flak
                     
 
                 }
-            },
+            }, 
 
             //16 items total
             { MO_MobileObjectiveType.TempFlakSite,
@@ -22376,7 +22385,8 @@ added Rouen Flak
         newPos.z = twcLandscape.HQ(newPos.x, newPos.y); //saving altitude/elevation of the objective.
         if (mo.AttackingArmy == 1) newPos.z = Calcs.meters2feet(newPos.z); //(in feet for Red army)
         mo.Pos = newPos;
-        mo.ChiefName = mo.ID.Replace(' ', '_').Replace('.','_').Replace('\\','_'); //trying out using the ID as static name ...
+        //mo.ChiefName = mo.ID.Replace(' ', '_').Replace('.','_').Replace('\\','_'); //trying out using the ID as static name ...
+        mo.StaticIDName = mo.IDtoCleanChiefName();
 
 
         mo.Sector = Calcs.correctedSectorNameDoubleKeypad(this, newPos);
@@ -22398,7 +22408,7 @@ added Rouen Flak
 
         try {
             int army = (mo != null) ? mo.OwnerArmy : def_army;
-            string prefix = (mo != null) ? mo.ChiefName : def_prefix;
+            string prefix = (mo != null) ? mo.StaticIDName : def_prefix;
             bool mobileShipObjective = (mo != null) && MO_MobileObjectiveIsShipOrSubmarineObjective(mo);
 
             double masterHeading = random.Next(360);
@@ -23302,7 +23312,9 @@ added Rouen Flak
 
 
 				//was Substring(1), not sure why. 2026/08
-                autoFlakF = MO_AutoOrTempFlakPlacement(mo, autoFlakF, reset_count, tempFlak: true, nfb_temp: nfb, nib_temp: nib, total_flak_temp: num_aa_forobj, prefix_replace: tempFlakPrefix + "_" + mo.OwnerArmy.ToString() + "_" + mo.IDtoCleanChiefName().Substring(0) + "_");
+                //autoFlakF = MO_AutoOrTempFlakPlacement(mo, autoFlakF, reset_count, tempFlak: true, nfb_temp: nfb, nib_temp: nib, total_flak_temp: num_aa_forobj, prefix_replace: tempFlakPrefix + "_" + mo.OwnerArmy.ToString() + "_" + mo.IDtoCleanChiefName().Substring(0) + "_");
+
+                autoFlakF = MO_AutoOrTempFlakPlacement(mo, autoFlakF, reset_count, tempFlak: true, nfb_temp: nfb, nib_temp: nib, total_flak_temp: num_aa_forobj, prefix_replace: tempFlakPrefix + "_" + mo.OwnerArmy.ToString() + "_" + mo.StaticIDName + "_");
 
                 reset_count = false;
 

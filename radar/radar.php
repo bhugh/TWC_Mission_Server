@@ -55,6 +55,23 @@ html, body, #map {
 
 
 	} 
+ .frontline-div-icon {
+	background: #884;
+	border: 1px solid #442;
+  font-size: 16px;
+  display: flex;
+  align-items: flex-start;
+
+
+	} 
+ pre {
+            overflow-x: auto;
+            white-space: pre-wrap;
+            white-space: -moz-pre-wrap;
+            white-space: -pre-wrap;
+            white-space: -o-pre-wrap;
+            word-wrap: break-word;
+         }
 	</style>
 
 	<style>body { padding: 0; margin: 0; } #map { height: 100%; width: 100vw; }</style>
@@ -97,6 +114,7 @@ var plainIcon = L.divIcon({
 var intcptcount = 0; 
 var intcptlist = [];   
 intcptlist[0] = {pos:new L.LatLng(0,0), vel:new L.LatLng(0,1), spd:1, intcpt_latlng:new L.LatLng(0,0), intcpt_time: 0, intcpt_bearing:0, id:0 };    
+var metric = false;
 
 //start  = 0 selects interceptor, start = 1 selects target
 function addIntcpt (pos_latlng, spd_mph, hdg_deg, id, start){
@@ -133,7 +151,7 @@ var ready = false;
 
 var xmlhttp = new XMLHttpRequest();
 xmlhttp.onreadystatechange = function(){
-  if(xmlhttp.status==200 && xmlhttp.readyState==4){  
+  if(xmlhttp.readyState==4 && xmlhttp.status==200 ){       
      drawAircraft();
      ready=true;
      };
@@ -174,7 +192,9 @@ xmlhttp.onreadystatechange = function(){
      //var hash = md5("value"); // "2063c1608d6e0baf80249c42e2be5804"
      if (serverpass != md5(pass.toUpperCase())){
        if (showmess){
-          if (typeof(mymap) !== 'undefined') msg("Password or mission name is incorrect, or the mission hasn't started yet! You can <a href=\"index.php\">return to the radar entry page and re-enter the information</a>");
+          if (typeof(mymap) !== 'undefined') { 
+            msg("Password or mission name is incorrect, or the mission hasn't started yet! You can <a href=\"index.php\">return to the radar entry page and re-enter the information.</a><br><br>If the server is running and this message remains for more than 1 minute, the problem is usually an incorrect password.<br><br><b>In-sim check Tab-4-4-4-9 for your radar password.</b>");
+          }
           if (document.getElementById("playerlist") != null) document.getElementById("playerlist").innerHTML = "<br><br><table border=1 width=80% align=center><b>Password or mission name is incorrect, or the mission hasn't started yet!</b> You can <a href=\"index.php\">return to the radar entry page and re-enter the information</a></table><br><br>";
        }
            
@@ -188,7 +208,7 @@ xmlhttp.onreadystatechange = function(){
     var lines = xmlhttp.responseText.split('\n');
     lines.forEach(maplines);
     function maplines (item) {
-
+        if (!item.trim()) return; 
         var words = item.split(',');
         //alert(words[0].isNumber());//isNumber(words[1]));
         //alert(words[1].isNumber());//isNumber(words[1]));        
@@ -214,7 +234,8 @@ xmlhttp.onreadystatechange = function(){
          var typedescription_aircraft = words[11];
          var uniqueID = words[12];
          var player_name = "";         
-         if (words[13] != null && words[13].length > 0) player_name = " " + words[13];
+         var pn = words[13].trim();
+         if (pn != null && pn.length > 0) player_name = " " + pn;
          
          //if (Math.random()>0.9) window.markerlist[uniqueID]['color'] = "orange";
          
@@ -237,6 +258,11 @@ xmlhttp.onreadystatechange = function(){
          if (tshow.length == 0) tshow = typebrief_aircraft;
          
          var pop_hover = num_aircraft + "x" + tshow + player_name + " " + heading_deg + "&#176 " + vel_mph + "mph A" + alt_angels + " " + sector;
+         if (metric) {
+           var vel_kph = (parseInt(vel_mph,10)*1.6).toFixed(0);
+           var alt_km = (parseInt(alt_angels,10)/3.1).toFixed(1);
+           pop_hover = num_aircraft + "x" + tshow + player_name + " " + heading_deg + "&#176 " + vel_kph + "k/h " + alt_km + "km " + sector;
+         }
          
          var v = num_aircraft + typebrief_aircraft;
        
@@ -454,6 +480,59 @@ xmlhttp.onreadystatechange = function(){
     
   }
   
+  function readFrontLineFile() {
+    var xmlhttp = new XMLHttpRequest();
+    var serverId = "TWIN GRANDSONS OF KHAN";
+    var filename = serverId + "_FRONT_radar.txt";
+    var url = filename; // same directory as radar.php
+
+    xmlhttp.onreadystatechange = function() {
+      if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+        var lines = xmlhttp.responseText.split('\n');
+        var latlngs = [];
+        lines.forEach(function(item) {
+          if (!item.trim()) return;
+          var words = item.split(',');
+          if (words.length >= 2) {
+            var x = parseFloat(words[0]);
+            var y = parseFloat(words[1]);
+            if (!isNaN(x) && !isNaN(y)) {
+              // Leaflet LatLng expects (lat, lng) which maps to (y, x) on this map
+              latlngs.push(new L.LatLng(y, x));
+            }
+          }
+        });
+
+        if (latlngs.length > 0) {
+          if (frontLinePolyline !== null) {
+            frontLineLayerGroup.removeLayer(frontLinePolyline);
+          }
+          frontLinePolyline = L.polyline(latlngs, {
+            color: '#884',
+            weight: 3,
+            opacity: 0.7,
+            smoothFactor: 1
+          }).addTo(frontLineLayerGroup);
+          if (!frontLineVisible) {
+            frontLineLayerGroup.removeLayer(frontLinePolyline);
+          }
+        }
+      }
+    };
+    xmlhttp.open("GET", url, true);
+    xmlhttp.send();
+  }
+  
+  function toggleFrontLine() {
+    var cb = document.getElementById("frontlineToggle");
+    frontLineVisible = cb.checked;
+    if (frontLineVisible && frontLinePolyline !== null) {
+      frontLinePolyline.addTo(frontLineLayerGroup);
+    } else if (!frontLineVisible && frontLinePolyline !== null) {
+      frontLineLayerGroup.removeLayer(frontLinePolyline);
+    }
+  }
+  
 //Functions to either disable (onmouseover) or enable (onmouseout) the map's dragging
 //This allows us to use input text fiels & temporarily take over the mouse click from that
 function controlEnter(e) {
@@ -491,19 +570,35 @@ function changetitle () {
        if (document.getElementById("sess_title") != null) document.getElementById("sess_title").innerHTML = ms;
 
   } 
+  
+function readfile_timer () {
+ setTimeout(readfile_timer, refreshinterval_ms);
+ //alert("Reading1!");
+ readfile();
+}  
 
 function readfile () {
+         //alert("Reading!");
          server = urlParams['server'];
          if (server== "Other" && urlParams['serveroth'] != null && urlParams['serveroth'].length>0) server = urlParams['serveroth'];
          side = urlParams['side'];
          if ((!side || side== "Other") && urlParams['sideoth'] != null && urlParams['sideoth'].length>0) side = urlParams['sideoth'];
+         
+         metric = false;
+         if (side.toLowerCase().includes("blue")) metric = true;
+         
          pass = urlParams['pass'] 
          if (server != null && side && pass != null) { //todo - read password from file passed from server
+         //So . . . suddenly text files aren't being refreshed from the server
+         //It just keeps serving up the old text file even though a new one 
+         //has been uploaded.  So this is a cheap trick to force re-downloading
+         //the file, by adding ? plus a few random characters to the end of the filename
+         adder = "?" + Math.random().toString(36).substr(2, 5);
+         //alert (adder);
             
-            
-            xmlhttp.open("GET",server.toUpperCase() + "_" + side.toUpperCase() + "_radar.txt",true);
+            xmlhttp.open("GET",server.toUpperCase() + "_" + side.toUpperCase() + "_radar.txt" + adder,true);
             xmlhttp.send();
-            xmlhttp2.open("GET",server.toUpperCase() + "_" + side.toUpperCase() + "_players.txt",true);
+            xmlhttp2.open("GET",server.toUpperCase() + "_" + side.toUpperCase() + "_players.txt" + adder,true);
             xmlhttp2.send();
          }
          checkpassword(false);
@@ -512,7 +607,9 @@ function readfile () {
 
 loadingmessage ();
 readfile();
-setInterval(readfile, refreshinterval_ms);
+readFrontLineFile();
+//setInterval(readfile, refreshinterval_ms);
+setTimeout(readfile_timer, refreshinterval_ms);
 </script>
 	
 </head>
@@ -529,6 +626,14 @@ setInterval(readfile, refreshinterval_ms);
 <br>
 
 <div id="mapid" style="width: 100%; height: 800px;"></div>
+<div style="position: absolute; top: 10px; left: 10px; z-index: 1000; background: white; padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
+  <label>
+    <input type="checkbox" id="frontlineToggle" checked onchange="toggleFrontLine()">
+    Show Front Line
+  </label>
+</div>
+
+<br>
 
 
 <a href="#top" name="inf">Jump to Top</a>
@@ -809,7 +914,7 @@ setInterval(readfile, refreshinterval_ms);
     });
 
   var image = L.imageOverlay('res/CLOD_map_BIG.jpg', bounds, {
-      attribution: '<a href="http://store.steampowered.com/app/63950/IL2_Sturmovik_Cliffs_of_Dover/">IL2 Cliffs of Dover</a> game map, <a href="http://TWCClan.com">TWCClan mission</a>, Base Map by <a href="http://www.pumaszallas.hu/blog/vo101_tom.html">VO101_Tom</a>',
+      attribution: '<a href="http://store.steampowered.com/app/63950/IL2_Sturmovik_Cliffs_of_Dover/">IL2 Cliffs of Dover</a> game map, <a href="http://TWCPilots.com">TWCClan mission</a>, Base Map by <a href="http://www.pumaszallas.hu/blog/vo101_tom.html">VO101_Tom</a>',
   
   }).addTo(mymap);
   //var image = L.imageOverlay('res/ClodMap.jpg', bounds).addTo(mymap);
@@ -820,6 +925,9 @@ setInterval(readfile, refreshinterval_ms);
   var tracksLayerGroup;
   var ACBeaconsLayerGroup;
   var GroundBeaconsLayerGroup;
+  var frontLineLayerGroup = L.layerGroup().addTo(mymap);
+  var frontLinePolyline = null;
+  var frontLineVisible = true;
   
   createSubLayers();
 
@@ -827,7 +935,7 @@ setInterval(readfile, refreshinterval_ms);
 	//	maxZoom: 18,
 		
 	//		'<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
-	//		'Imagery © <a href="http://mapbox.com">Mapbox</a>',
+	//		'Imagery ï¿½ <a href="http://mapbox.com">Mapbox</a>',
 	//	id: 'mapbox.streets'
 //	}).addTo(mymap); */
 
@@ -837,7 +945,7 @@ setInterval(readfile, refreshinterval_ms);
 	function onMapClick(e) {
 		popup
 			.setLatLng(e.latlng)
-			.setContent( latlng2sector(e.latlng) +  " (" +e.latlng.lat.toFixed(0).toString() + ", " + e.latlng.lng.toFixed(0).toString(0) + ")" + "<br>"  
+			.setContent( latlng2sector(e.latlng) +  " (" +e.latlng.lng.toFixed(0).toString() + ", " + e.latlng.lat.toFixed(0).toString(0) + ")" + "<br>"  
          //'<button onclick = "groundBeacon ( new L.' + e.latlng.toString() + ',\'orange\')">Set Ground Beacon</button>'
          + colorbuttons ('groundBeacon ( new L.' + e.latlng.toString() + ',', ");mymap.closePopup()") + "<br>" 
          +  "<button onclick=\"var res=addIntcpt(new L." + e.latlng + ", 250,0,0,0);mymap.closePopup();\">Select Start Point</button>"
@@ -865,11 +973,11 @@ if ($_GET['pass'] == "twc" && $_GET['mission'] !==null ) {
 </div>
 
 <hr>
-<p>Go to: <a href="/twc/radar"> Server Radar Login</a> - <a href="/twc/mission-server-stats.htm">TWC Server Stats</a> </p>
+<p>Go to: <a href="/twc/radar"> Server Radar Login</a> - <a href="/twc/genghis-server-stats.htm">TWC Server Stats</a> </p>
 
 <p>Learn more about typical early WWII-era radar and how it worked--and its shortcomings, many of which are modeled or suggested here--at <a href="https://en.wikipedia.org/wiki/Chain_Home#Distance_and_bearing_measurement">Wikipedia.</a></p>
 
-<p>Visit <a href="TWCClan.com">TWCClan.com</a> for more information about TWC and the TWC Servers.</p>
+<p>Visit <a href="TWCPilots.com">TWCPilots.com</a> for more information about TWC and the TWC Servers.</p>
 
 </body>
 </html>

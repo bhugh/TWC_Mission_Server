@@ -608,6 +608,9 @@ public class Mission : AMission, IMainMission
     //public int END_MISSION_TICK = 1980000; //16.5 Hours, starting at 4:45am and ending at 9:15pm.
     //public int END_MISSION_TICK = 960000; //8 Hours, starting at 7:50am and ending at 3:15pm.  Could possibly go even 15 mins earlier to 7:15?  And a little later?
     public double MISSION_LENGTH_HRS = 4.0; //For SUMMER. 4.15-20.05 = 15.90 hrs.  So abt 2x8hr sessions. //2026-10-14 - cut it to 3.0 hrs due to problems, now back to 8.0 hrs to test "fixes"
+    //actually THIS IS OVERWRITTEN LATER ON IN setMissionLengthStartTimesMap  - CHANGE THIS VALUE THERE
+    //mission length needs to vary by season, is why it is there
+
     //public double MISSION_LENGTH_HRS = 6.0; //6.0 is ideal for AUTUMN map - 6.15-17.25 gives two equal sessions about 5.6 hours each, but 6.0+5.1 worked fine/better 
     // 8.0 makes 2X 8hr missions per day; 5.3333; makes 3X missions per day //720000; //6.4 //2021/07: was 10, trying shorter to see if it will fix long load times?
     //2026/10 - setting from 8.0 back to 3.0 to try to stop server borking as time gets longer
@@ -4643,6 +4646,7 @@ public class Mission : AMission, IMainMission
             string key;
             string value;
             int count = 0;
+            List<Point3d> frontLineRadarPoints = new List<Point3d>();
 
             double mapState = CampaignMapState;
             if (currMapState.HasValue) mapState = currMapState.Value;
@@ -4820,6 +4824,11 @@ public class Mission : AMission, IMainMission
                 Point3d redNeutPos = Calcs.addVectorwithScalarMultXY(Point2, bauv, neutral_width_m - 250);
                 Point3d neutPos = Point2;
 
+                if (!test)
+                {
+                    frontLineRadarPoints.Add(neutPos);
+                }
+
                 /*
                 double x = mult * points[1].x + (1 - mult) * points[0].x;  //linear interpolation between the two given points, based on how far we currently are between the min & max map state
                 double y = mult * points[1].y + (1 - mult) * points[0].y;
@@ -4891,6 +4900,28 @@ public class Mission : AMission, IMainMission
 
 
             if (saveName != null && !panic()) f.save(CLOD_PATH + FILE_PATH + "/sectionfiles" + "/" + saveName); //testing
+
+            if (!test && frontLineRadarPoints.Count > 0)
+            {
+                try
+                {
+                    string radarFileName = SERVER_ID_SHORT.ToUpper() + "_FRONT_radar.txt";
+                    string radarFilePath = STATSCS_FULL_PATH + radarFileName;
+                    using (System.IO.StreamWriter sw = new System.IO.StreamWriter(radarFilePath, false))
+                    {
+                        for (int i = 0; i < frontLineRadarPoints.Count; i++)
+                        {
+                            Point3d p = frontLineRadarPoints[i];
+                            sw.WriteLine(p.x.ToString("F0") + "," + p.y.ToString("F0"));
+                        }
+                    }
+                    Console.WriteLine("FrontLine radar file written: " + radarFilePath);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Error writing front line radar file: " + ex.Message);
+                }
+            }
 
             return f2;
         }
@@ -14301,7 +14332,8 @@ public class Mission : AMission, IMainMission
     public void setMissionLengthStartTimesMap (){
      string map = "summer";
             //SUMMER values
-            MISSION_LENGTH_HRS = 8.0;
+            //MISSION_LENGTH_HRS = 8.0;
+            MISSION_LENGTH_HRS = 4.0;
             END_MISSION_TIME_HRS = 20.05;
             EARLIEST_MISSION_START_TIME_HRS = 4.15;
 
@@ -14323,7 +14355,8 @@ public class Mission : AMission, IMainMission
                 if (map == "autumn")
                 {
                     Console.WriteLine("START TIME: Using AUTUMN map & start/end times.");
-                    MISSION_LENGTH_HRS = 6.0;
+                    //MISSION_LENGTH_HRS = 6.0;
+                    MISSION_LENGTH_HRS = 4.0;
                     END_MISSION_TIME_HRS = 17.25;
                     EARLIEST_MISSION_START_TIME_HRS = 6.15;
                 }
@@ -14332,7 +14365,8 @@ public class Mission : AMission, IMainMission
                     Console.WriteLine("START TIME: Using WINTER map & start/end times.");
 
                     //These are guesses - not yet tested. 2023/01
-                    MISSION_LENGTH_HRS = 8.5;
+                    MISSION_LENGTH_HRS = 4.25;
+                    //MISSION_LENGTH_HRS = 8.5;
                     END_MISSION_TIME_HRS = 16.08;
                     EARLIEST_MISSION_START_TIME_HRS = 7.75;
                 }
@@ -18033,42 +18067,42 @@ public class Mission : AMission, IMainMission
 			//The .mis files are all disabled by renaming the Flak areas/ directory to something else
 			//This way we can ADD Artillery_and_AA objectives anywhere we like, easily
 
-            addPointArea(MO_ObjectiveType.Artillery_and_AA, "Dover Radar AA #1", "", "Flak areas/DovRflak1.mis", 1, 5, "Dover_Radar_AA1", 245821, 236004, 900, 900, 1000, 4, 0, 150, 120, true, true, 2, 4, "", add, canBeDisabled: false);
+            addPointArea(MO_ObjectiveType.Artillery_and_AA, "Dover Radar AA #1", "", "Flak areas/DovRflak1.mis", 1, 5, "Dover_Radar_AA1", 245821, 236004, 300, 300, 1000, 4, 0, 150, 120, true, true, 2, 4, "", add, canBeDisabled: false);
 
-            addPointArea(MO_ObjectiveType.Artillery_and_AA, "Dover Radar AA #2", "", "Flak areas/DovRflak2.mis", 1, 5, "Dover_Radar_AA2", 246902, 236314, 550, 550, 1000, 4, 0, 150, 120, true, true, 2, 4, "", add, canBeDisabled: false); //was 246802, 236214 - changed a little to reduce conflict with location of Dover Radar, which is 246777, 235751.
+            addPointArea(MO_ObjectiveType.Artillery_and_AA, "Dover Radar AA #2", "", "Flak areas/DovRflak2.mis", 1, 5, "Dover_Radar_AA2", 246902, 236314, 250, 250, 1000, 4, 0, 150, 120, true, true, 2, 4, "", add, canBeDisabled: false); //was 246802, 236214 - changed a little to reduce conflict with location of Dover Radar, which is 246777, 235751.
 
-            addPointArea(MO_ObjectiveType.Artillery_and_AA, "Dover Radar AA #3", "", "Flak areas/DovRflak3.mis", 1, 5, "Dover_Radar_AA3", 247398, 235557, 800, 800, 1000, 4, 0, 150, 120, true, true, 2, 4, "", add, canBeDisabled: false);
+            addPointArea(MO_ObjectiveType.Artillery_and_AA, "Dover Radar AA #3", "", "Flak areas/DovRflak3.mis", 1, 5, "Dover_Radar_AA3", 247398, 235557, 300, 300, 1000, 4, 0, 150, 120, true, true, 2, 4, "", add, canBeDisabled: false);
 
 
             //Abt 28 total AA
-            addPointArea(MO_ObjectiveType.Artillery_and_AA, "Sandwich Radar AA #1", "", "Flak areas/SanRflak1.mis", 1, 5, "Sandwich_Radar_AA1", 247229, 251864, 1200, 1200, 1000, 4, 0, 150, 120, true, true, 2, 4, "", add, canBeDisabled: false);
+            addPointArea(MO_ObjectiveType.Artillery_and_AA, "Sandwich Radar AA #1", "", "Flak areas/SanRflak1.mis", 1, 5, "Sandwich_Radar_AA1", 247229, 251864, 300, 300, 1000, 4, 0, 150, 120, true, true, 2, 4, "", add, canBeDisabled: false);
 
-            addPointArea(MO_ObjectiveType.Artillery_and_AA, "Sandwich Radar AA #2", "", "Flak areas/SanRflak2.mis", 1, 5, "Sandwich_Radar_AA2", 249328, 252080, 1000, 1000, 1000, 4, 0, 150, 120, true, true, 2, 4, "", add, canBeDisabled: false);
+            addPointArea(MO_ObjectiveType.Artillery_and_AA, "Sandwich Radar AA #2", "", "Flak areas/SanRflak2.mis", 1, 5, "Sandwich_Radar_AA2", 249328, 252080, 300, 300, 1000, 4, 0, 150, 120, true, true, 2, 4, "", add, canBeDisabled: false);
 
-            addPointArea(MO_ObjectiveType.Artillery_and_AA, "Sandwich Radar AA #3", "", "Flak areas/SanRflak3.mis", 1, 5, "Sandwich_Radar_AA3", 249084, 251476, 1000, 1000, 1000, 4, 0, 150, 120, true, true, 2, 4, "", add, canBeDisabled: false);
+            addPointArea(MO_ObjectiveType.Artillery_and_AA, "Sandwich Radar AA #3", "", "Flak areas/SanRflak3.mis", 1, 5, "Sandwich_Radar_AA3", 249084, 251476, 300, 300, 1000, 4, 0, 150, 120, true, true, 2, 4, "", add, canBeDisabled: false);
 
             //Abt 31 total AA
             //addPointArea(MO_ObjectiveType.Artillery_and_AA, "Dungeness Radar AA", "", "Flak areas/DunRflak.mis", 1, 8, "Dungeness_Radar_AA", 221500, 214604, 750, 7500, 2000, 20, 150, 96, true, true, 2, 4, "", add, canBeDisabled: false);
 
             //we make the radius larger than just this AA group because we're hoping to catch any autoflak in the area
 
-            addPointArea(MO_ObjectiveType.Artillery_and_AA, "Dungeness Radar AA #1", "", "Flak areas/DunRflak1.mis", 1, 5, "Dungeness_Radar_AA1", 221234, 214067, 500, 500, 1000, 4, 0, 140, 120, true, true, 2, 4, "", add, canBeDisabled: false);
+            addPointArea(MO_ObjectiveType.Artillery_and_AA, "Dungeness Radar AA #1", "", "Flak areas/DunRflak1.mis", 1, 5, "Dungeness_Radar_AA1", 221234, 214067, 300, 300, 1000, 4, 0, 140, 120, true, true, 2, 4, "", add, canBeDisabled: false);
 
-            addPointArea(MO_ObjectiveType.Artillery_and_AA, "Dungeness Radar AA #2", "", "Flak areas/DunRflak2.mis", 1, 5, "Dungeness_Radar_AA2", 221902, 214280, 500, 500, 1000, 4, 0, 140, 120, true, true, 2, 4, "", add, canBeDisabled: false);
+            addPointArea(MO_ObjectiveType.Artillery_and_AA, "Dungeness Radar AA #2", "", "Flak areas/DunRflak2.mis", 1, 5, "Dungeness_Radar_AA2", 221902, 214280, 300, 300, 1000, 4, 0, 140, 120, true, true, 2, 4, "", add, canBeDisabled: false);
 
-            addPointArea(MO_ObjectiveType.Artillery_and_AA, "Dungeness Radar AA #3", "", "Flak areas/DunRflak3.mis", 1, 5, "Dungeness_Radar_AA3", 221448, 215209, 500, 500, 1000, 4, 0, 140, 120, true, true, 2, 4, "", add, canBeDisabled: false);
+            addPointArea(MO_ObjectiveType.Artillery_and_AA, "Dungeness Radar AA #3", "", "Flak areas/DunRflak3.mis", 1, 5, "Dungeness_Radar_AA3", 221448, 215209, 300, 300, 1000, 4, 0, 140, 120, true, true, 2, 4, "", add, canBeDisabled: false);
 
-            addPointArea(MO_ObjectiveType.Artillery_and_AA, "Boulogne Radar AA", "", "Flak areas/BlgRflak.mis", 2, 4, "Boulogne_Radar_AA", 264469, 188601, 500, 500, 1000, 5, 0, 140, 120, true, true, 2, 4, "", add, canBeDisabled: false);
+            addPointArea(MO_ObjectiveType.Artillery_and_AA, "Boulogne Radar AA", "", "Flak areas/BlgRflak.mis", 2, 4, "Boulogne_Radar_AA", 264469, 188601, 300, 300, 1000, 5, 0, 140, 120, true, true, 2, 4, "", add, canBeDisabled: false);
 
-            addPointArea(MO_ObjectiveType.Artillery_and_AA, "Ambeteuse Radar AA", "", "Flak areas/AmbRflak.mis", 2, 4, "Ambetuse_Radar_AA", 266865, 197854, 500, 500, 500, 5, 0, 140, 120, true, true, 2, 4, "", add, canBeDisabled: false);
+            addPointArea(MO_ObjectiveType.Artillery_and_AA, "Ambeteuse Radar AA", "", "Flak areas/AmbRflak.mis", 2, 4, "Ambetuse_Radar_AA", 266865, 197854, 300, 300, 500, 5, 0, 140, 120, true, true, 2, 4, "", add, canBeDisabled: false);
 
-            addPointArea(MO_ObjectiveType.Artillery_and_AA, "Oye Plage Radar AA #1", "", "Flak areas/OypRflak1.mis", 2, 4, "OyePlage_Radar_AA1", 293354, 219098, 550, 550, 1000, 5, 0, 140, 120, true, true, 2, 4, "", add, canBeDisabled: false);
+            addPointArea(MO_ObjectiveType.Artillery_and_AA, "Oye Plage Radar AA #1", "", "Flak areas/OypRflak1.mis", 2, 4, "OyePlage_Radar_AA1", 293354, 219098, 250, 250, 1000, 5, 0, 140, 120, true, true, 2, 4, "", add, canBeDisabled: false);
 
-            addPointArea(MO_ObjectiveType.Artillery_and_AA, "Oye Plage Radar AA #2", "", "Flak areas/OypRflak2.mis", 2, 4, "OyePlage_Radar_AA2", 295396, 219665, 600, 600, 1000, 5, 0, 140, 120, true, true, 2, 4, "", add, canBeDisabled: false);
+            addPointArea(MO_ObjectiveType.Artillery_and_AA, "Oye Plage Radar AA #2", "", "Flak areas/OypRflak2.mis", 2, 4, "OyePlage_Radar_AA2", 295396, 219665, 250, 250, 1000, 5, 0, 140, 120, true, true, 2, 4, "", add, canBeDisabled: false);
 
-            addPointArea(MO_ObjectiveType.Artillery_and_AA, "Coquelles Radar AA", "", "Flak areas/CoqRflak.mis", 2, 5, "Coquelles_Radar_AA", 276168, 214104, 750, 750, 1000, 7, 0, 140, 120, true, true, 2, 4, "", add, canBeDisabled: false);
+            addPointArea(MO_ObjectiveType.Artillery_and_AA, "Coquelles Radar AA", "", "Flak areas/CoqRflak.mis", 2, 5, "Coquelles_Radar_AA", 276168, 214104, 250, 250, 1000, 7, 0, 140, 120, true, true, 2, 4, "", add, canBeDisabled: false);
 
-            addPointArea(MO_ObjectiveType.Artillery_and_AA, "Luftwaffe Reserve Communications HQ Radar AA", "", "Flak areas/HQGRRflak.mis", 2, 5, "ReserveGHQ_AA", 304020, 42462, 300, 300, 10000, 10, 0, 5, 120, true, true, 2, 4, "", add, canBeDisabled: false);
+            addPointArea(MO_ObjectiveType.Artillery_and_AA, "Luftwaffe Reserve Communications HQ Radar AA", "", "Flak areas/HQGRRflak.mis", 2, 5, "ReserveGHQ_AA", 304020, 42462, 250, 250, 10000, 10, 0, 5, 120, true, true, 2, 4, "", add, canBeDisabled: false);
 
             addPointArea(MO_ObjectiveType.Artillery_and_AA, "Luftwaffe Reserve Communications HQ Radar AA2", "", "Flak areas/HQGRRflak2.mis", 2, 5, "ReserveGHQ_AA2", 301509, 40930, 125, 125, 1000, 4, 0, 5, 120, true, true, 2, 4, "", add, canBeDisabled: false);
 

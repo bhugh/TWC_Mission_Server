@@ -307,6 +307,7 @@ public class StatsMission : AMission, IStatsMission
     public string stb_LogStatsUploadFilenameTeamPrevLow;
     public string stb_MissionServer_LogStatsUploadFilenameLow;
     public string stb_iniFileErrorMessages;
+    /*
 // --- SFTP connection reuse + backoff (Option 4) ---
     private SftpClient stb_SftpClient = null;
     private bool stb_SftpConnected = false;
@@ -316,6 +317,7 @@ public class StatsMission : AMission, IStatsMission
     private DateTime stb_SftpLastUpload = DateTime.MinValue;
     private TimeSpan stb_SftpMinDelayBetweenUploads = TimeSpan.FromSeconds(5);
     private object stb_SftpLock = new object();
+    */
 
     //There are three possible careers: Fighter pilot (no suffix), bomber pilot (bomber), and strike pilot/sturmovik/Zerstoerer (strike).  Suffix is added to the pilot's name in the dictionary of stats.
     public string stb_FighterSuffix = ""; //note that fightersuffix isn't really implement, it's just "nothing added" right now
@@ -11812,14 +11814,15 @@ public class StbStatRecorder : IStbStatRecorder
     public int stbSr_numStats; //# of fields recorded in the stats Dictionary/File etc     
 
     // --- SFTP connection reuse + backoff (Option 4) ---
+    
     private SftpClient stb_SftpClient = null;
     private bool stb_SftpConnected = false;
     private DateTime stb_SftpLastConnectAttempt = DateTime.MinValue;
-    private TimeSpan stb_SftpConnectBackoff = TimeSpan.FromSeconds(30);
+    private TimeSpan stb_SftpConnectBackoff = TimeSpan.FromSeconds(90);    
     private DateTime stb_SftpBackoffUntil = DateTime.MinValue;
     private DateTime stb_SftpLastUpload = DateTime.MinValue;
     private TimeSpan stb_SftpMinDelayBetweenUploads = TimeSpan.FromSeconds(5);
-    private object stb_SftpLock = new object();
+    private object stb_SftpLock = new object();    
 
 
 
@@ -11836,6 +11839,7 @@ public class StbStatRecorder : IStbStatRecorder
                            )
 
     {
+        
         stbSr_AllPlayerStats = new Dictionary<string, int[]>();
         stbSr_DeadPlayers = new Dictionary<string, Tuple<string, DateTime>>();
         stbSr_random = new Random();

@@ -6531,8 +6531,8 @@ public class Mission : AMission, IMainMission
                 radar_messages_store[playername_index] = new Tuple<long, SortedDictionary<string, string>>(currtime_ms, radar_messages);
         });
 
-    }
-
+    } 
+    
     public System.IO.FileInfo fi;// = new System.IO.FileInfo(STATSCS_FULL_PATH + MISSION_ID + "_radar.txt"); //file to write to
     public System.IO.StreamWriter sw;
 

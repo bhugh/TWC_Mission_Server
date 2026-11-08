@@ -9180,22 +9180,37 @@ public class Mission : AMission, IMainMission
 
         /// REARM/REFUEL: CLEANUP ANY PENDING REQUESTS
         //   ManageRnr.cancelAll(GamePlay);
-        tempFlakTimer_dispose();        
+        if (!battleStoppedTimersDisposed)
+        {
+            battleStoppedTimersDisposed = true;
+
+            tempFlakTimer_dispose();
+
+            try
+            {
+                if (threadloadmission != null)
+                {
+                    threadloadmission.threadLoadTimer_dispose();
+                }
+            }
+            catch (Exception ex) { Console.WriteLine("ERROR OnBattleStoped_threadLoad! " + ex.ToString()); }
+
+            try
+            {
+                if (balanceAILoadTimer != null) balanceAILoadTimer.Dispose();
+            }
+            catch (Exception ex) { Console.WriteLine("ERROR OnBattleStoped1! " + ex.ToString()); }
+
+            try
+            {
+                if (MO_ObjectiveUndestroyTimer != null) MO_ObjectiveUndestroyTimer.Dispose();
+            }
+            catch (Exception ex) { Console.WriteLine("ERROR OnBattleStoped1! " + ex.ToString()); }
+        }
 
         try
         {
-            if (balanceAILoadTimer != null) balanceAILoadTimer.Dispose();
-        }
-        catch (Exception ex) { Console.WriteLine("ERROR OnBattleStoped1! " + ex.ToString()); }
-
-        try
-        {
-            if (MO_ObjectiveUndestroyTimer != null) MO_ObjectiveUndestroyTimer.Dispose();
-        }
-        catch (Exception ex) { Console.WriteLine("ERROR OnBattleStoped1! " + ex.ToString()); }
-
-        try {
-            if (!final_SaveMapState_completed && Time.tickCounter() > 15000) SaveMapState(""); //A call here just to be safe; we can get here if 'exit' is called etc, and the map state may not be saved yet . . . 
+            if (!final_SaveMapState_completed && Time.tickCounter() > 15000) SaveMapState(""); //A call here just to be safe; we can get here if 'exit' is called etc, and the map state may not be saved yet . . .
         }
         catch (Exception ex) { Console.WriteLine("ERROR OnBattleStoped2! " + ex.ToString()); }
 
@@ -22688,6 +22703,7 @@ added Rouen Flak
     int testTempFlakNumPilots = 0; 
     List<int> leftoverTempflak = new List<int>() { 0, 0, 0 }; //We keep track if any of the 80 is left over, if so the other army can use it in the next round
     public System.Threading.Timer tempFlakTimer;
+    private bool battleStoppedTimersDisposed = false;
 
 
     public void tempFlakTimer_recurs()
@@ -22706,7 +22722,12 @@ added Rouen Flak
     {
         try
         {
-            if (tempFlakTimer != null) tempFlakTimer.Dispose();
+            if (tempFlakTimer != null)
+            {
+                tempFlakTimer.Change(System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
+                tempFlakTimer.Dispose();
+                tempFlakTimer = null;
+            }
         }
         catch (Exception ex) { Console.WriteLine("ERROR TempFlakTimer_dispose! " + ex.ToString()); }
     }

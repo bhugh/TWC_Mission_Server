@@ -5310,11 +5310,31 @@ struct
 	
 	    try
         {
-            if (Stb_LogStatsTimer != null) Stb_LogStatsTimer.Dispose();
-            if (removeOffMapPlayersTimer != null) removeOffMapPlayersTimer.Dispose();
+            if (Stb_LogStatsTimer != null)
+            {
+                Stb_LogStatsTimer.Change(System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
+                Stb_LogStatsTimer.Dispose();
+                Stb_LogStatsTimer = null;
+            }
+            if (removeOffMapPlayersTimer != null)
+            {
+                removeOffMapPlayersTimer.Change(System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
+                removeOffMapPlayersTimer.Dispose();
+                removeOffMapPlayersTimer = null;
+            }
             stb_AircraftParamStack.disposeTimer();
-            if (Stb_changeTargetToDifferentNearbyAircraftTimer != null) Stb_changeTargetToDifferentNearbyAircraftTimer.Dispose();
-            if (Stb_trackPlayerFlyingTimeTimer != null) Stb_trackPlayerFlyingTimeTimer.Dispose();
+            if (Stb_changeTargetToDifferentNearbyAircraftTimer != null)
+            {
+                Stb_changeTargetToDifferentNearbyAircraftTimer.Change(System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
+                Stb_changeTargetToDifferentNearbyAircraftTimer.Dispose();
+                Stb_changeTargetToDifferentNearbyAircraftTimer = null;
+            }
+            if (Stb_trackPlayerFlyingTimeTimer != null)
+            {
+                Stb_trackPlayerFlyingTimeTimer.Change(System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
+                Stb_trackPlayerFlyingTimeTimer.Dispose();
+                Stb_trackPlayerFlyingTimeTimer = null;
+            }
         }
         catch (Exception ex) { Console.WriteLine("Stats-OnBattleStoped ERROR0: " + ex.ToString()); }
 

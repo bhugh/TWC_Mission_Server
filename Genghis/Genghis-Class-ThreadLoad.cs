@@ -79,6 +79,7 @@ public class ThreadLoadMission : AMission
 
     private System.Threading.Timer threadLoadTimer;
     public Stopwatch threadLoadStopWatch = new Stopwatch();
+    private bool threadLoadTimerDisposed = false;
 	public Stopwatch threadLoadTickStopWatch = new Stopwatch();
     private TimeSpan initCPUTime;
     private TimeSpan lastTime;
@@ -101,6 +102,7 @@ public class ThreadLoadMission : AMission
                 period: 10000); //periodically call the callback at this interval, every 4-6 minutes say
 
             initThreadLoad();
+            threadLoadTimerDisposed = false;
         }
         catch (Exception ex) { Console.WriteLine("threadLoad_recurs error: " + ex.Message); }
     }
@@ -109,9 +111,17 @@ public class ThreadLoadMission : AMission
     {
         try
         {
-            if (threadLoadTimer != null) threadLoadTimer.Dispose();
+            if (threadLoadTimerDisposed) return;
+            threadLoadTimerDisposed = true;
+
+            if (threadLoadTimer != null)
+            {
+                threadLoadTimer.Change(System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
+                threadLoadTimer.Dispose();
+                threadLoadTimer = null;
+            }
         }
-        catch (Exception ex) { }
+        catch (Exception ex) { Console.WriteLine("threadLoadTimer_dispose error: " + ex.Message); }
     }
 
     public void initThreadLoad()

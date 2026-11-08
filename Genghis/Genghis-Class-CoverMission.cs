@@ -485,18 +485,38 @@ public class CoverMission : AMission, ICoverMission
 
         try
         {
-            foreach (KeyValuePair<Player, System.Threading.Timer> kvTmr in COVER_ListPositionTimer) if (kvTmr.Value != null) kvTmr.Value.Dispose();
+            foreach (KeyValuePair<Player, System.Threading.Timer> kvTmr in COVER_ListPositionTimer)
+            {
+                if (kvTmr.Value != null)
+                {
+                    kvTmr.Value.Change(System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
+                    kvTmr.Value.Dispose();
+                }
+            }
+            COVER_ListPositionTimer.Clear();
         }
         catch (Exception ex) { Console.WriteLine("Cover OnBattleStoped2: " + ex.ToString()); }
 
         try
         {
-            foreach (KeyValuePair<Player, System.Threading.Timer> kvTmr in COVER_DropWatchTimer) if (kvTmr.Value != null) kvTmr.Value.Dispose();
+            foreach (KeyValuePair<Player, System.Threading.Timer> kvTmr in COVER_DropWatchTimer)
+            {
+                if (kvTmr.Value != null)
+                {
+                    kvTmr.Value.Change(System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
+                    kvTmr.Value.Dispose();
+                }
+            }
             COVER_DropWatchTimer.Clear();
         }
         catch (Exception ex) { Console.WriteLine("Cover OnBattleStoped3: " + ex.ToString()); }
 		
-		if (COVER_CheckSplits_Timer != null) COVER_CheckSplits_Timer.Dispose();
+		if (COVER_CheckSplits_Timer != null)
+            {
+                COVER_CheckSplits_Timer.Change(System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
+                COVER_CheckSplits_Timer.Dispose();
+                COVER_CheckSplits_Timer = null;
+            }
 
         if (GamePlay != null && GamePlay is GameDef)
         {

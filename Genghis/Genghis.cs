@@ -1483,7 +1483,7 @@ public class Mission : AMission, IMainMission
 							alt = p.z;
 							newarmy = army;
 							//or maybe we should just NOT transfer the high alt, they are really out of the map boundaries
-							p.y -= ((newarmy * 2) - 3 ) * (bpNeutralFrontDistance_m + covermission.minFrontDistance_km*1000 + 500);  //that distance keeps the <cover ac working from this spawn point, though it might be off the map...
+							p.y -= ((newarmy * 2) - 3 ) * (bpNeutralFrontDistance_m + covermission.minFrontDistance_km*1000 + 2500);  //that distance keeps the <cover ac working from this spawn point, though it might be off the map...
 							
 							level = 5;
 							
@@ -9151,6 +9151,8 @@ public class Mission : AMission, IMainMission
                         if (title == null) continue;
                         if (title.Contains("JerryCan_GER1_1") || title.Contains("JerryCan_GER1_2") ||
                             title.Contains("JerryCan_GER1_3") || title.Contains("JerryCan_GER1_5") ||
+                            title.Contains("JerryCan_UK1_2-Gallon_1") ||
+                            title.Contains("JerryCan_GER1_18") ||                                                
                             title.Contains("AEC_Regent_II") || title.Contains("MG_TA"))
                         {
                             string shortType = StationaryMarkerManager.ExtractShortTypeName(title);
@@ -9178,7 +9180,8 @@ public class Mission : AMission, IMainMission
 
         /// REARM/REFUEL: CLEANUP ANY PENDING REQUESTS
         //   ManageRnr.cancelAll(GamePlay);
-        tempFlakTimer_dispose();
+        tempFlakTimer_dispose();        
+
         try
         {
             if (balanceAILoadTimer != null) balanceAILoadTimer.Dispose();
@@ -13676,6 +13679,9 @@ public class Mission : AMission, IMainMission
             {
                 double hdg_deg = Calcs.CalculateGradientAngle(v3d, new Vector3d(0, 0, 0));
                 double vel_mps = Calcs.CalculatePointDistance(v3d);
+                //if (ON_TESTSERVER) 
+                Console.WriteLine("makeWindLayers: {0} {1:N0} {2:N0}", i, hdg_deg, vel_mps);
+
 
                 /*
                 newmsg2 = String.Format("{2:F0}ft: Wind from {0:F0} deg {1:F0} mph. Temperature: {3:f0}f. Visibility: {4:f1} miles", hdg_deg, Calcs.meterspsec2kmphour(vel_mps), Calcs.RoundInterval(Calcs.meters2feet(alt_m), 500), Calcs.Celsius2Fahrenheit(temp), Calcs.meters2miles(vis));
@@ -13920,10 +13926,11 @@ public class Mission : AMission, IMainMission
             for (int i = 1; i <= maxi; i++)
             {
                 double oldTopBound = topBound;
-                bottomBound = topBound - random.NextDouble() * 25 + 25; //you have to overlap the layers by a little -at least 1 meter or FMB makes it 50 meters always.  The next bottomBound is just a bit lower than the previous topBound
+                //bottomBound = topBound - random.NextDouble() * 15 + 5; //you have to overlap the layers by a little -at least 1 meter or FMB makes it 50 meters always.  The next bottomBound is just a bit lower than the previous topBound
                 //2026-10 - experiment, trying to overlap layers 100-150m instead of 0-50m, to make the transitions smoother - result, it didn't work at all, reverting.
 
-                if (topBound <300) bottomBound = topBound - 5; //try to avoid wind changes/windshear near the ground.
+                //if (topBound <300) bottomBound = topBound - 5; //try to avoid wind changes/windshear near the ground.
+                bottomBound = topBound - 5; //always needs to be just a little lower than the old topBound
                 
                 //double baseAlt_m = Math.Pow(powernum, i) * 100; //ranges up to about 20000-ish
                 //So this chart: https://www.quora.com/Does-the-wind-get-stronger-the-higher-the-altitude
@@ -13946,7 +13953,7 @@ public class Mission : AMission, IMainMission
                 if (topBound < bottomBound + 100) topBound = bottomBound + 200;
                 
                 double windbasis = (highlevel_wind_vel_mps - lowlevel_wind_vel_mps) * i / (double)maxi + lowlevel_wind_vel_mps;
-                double wind_vel_mps = windbasis + (1.15 - random.NextDouble() * 0.3); //+/-15%
+                double wind_vel_mps = windbasis * (1.15 - random.NextDouble() * 0.3); //+/-15%
 
                 //having a big wind shear near the surface is trouble (the 240m surface-level layer is 
                 //quite near the surface anywhere there is some high ground)
@@ -13960,7 +13967,7 @@ public class Mission : AMission, IMainMission
                 double dirbasis_deg = (windir_alt_hdg_deg - windir_gnd_hdg_deg) * i / (double)maxi + windir_gnd_hdg_deg;
 
                 //up to 20 deg in either direction, but decreasing as altitude grows
-                double dir_variability = 20 * Math.Pow((maxi - i) / (double)maxi, 1.3) * (random.Next(2)*2 -2);
+                double dir_variability = 15 * Math.Pow((maxi - i) / (double)maxi, 1.3) * (random.Next(2)*2 -2);
 
                 double windir_curralt_hdg_deg = dirbasis_deg + dir_variability*random.NextDouble(); //+/-15%
 
@@ -14333,7 +14340,7 @@ public class Mission : AMission, IMainMission
      string map = "summer";
             //SUMMER values
             //MISSION_LENGTH_HRS = 8.0;
-            MISSION_LENGTH_HRS = 4.0;
+            MISSION_LENGTH_HRS = 4.5;
             END_MISSION_TIME_HRS = 20.05;
             EARLIEST_MISSION_START_TIME_HRS = 4.15;
 
@@ -14356,7 +14363,7 @@ public class Mission : AMission, IMainMission
                 {
                     Console.WriteLine("START TIME: Using AUTUMN map & start/end times.");
                     //MISSION_LENGTH_HRS = 6.0;
-                    MISSION_LENGTH_HRS = 4.0;
+                    MISSION_LENGTH_HRS = 4.5;
                     END_MISSION_TIME_HRS = 17.25;
                     EARLIEST_MISSION_START_TIME_HRS = 6.15;
                 }
@@ -21984,7 +21991,7 @@ added Rouen Flak
             else if (names.Contains("truck")) typ = "Stationary.Ford_G917";
             else if (random.Next(5) < 1) typ = "Stationary.Environment.CamoNetPlane";
 
-            if (typ == "Stationary.Environment.JerryCan_GER1_1" || typ == "Stationary.Environment.JerryCan_GER1_2" || typ == "Stationary.Environment.JerryCan_GER1_3" || typ == "Stationary.Environment.JerryCan_GER1_5" || typ == "Stationary.AEC_Regent_II" || typ == "Stationary.MG_TA") { StationaryMarkerManager.AddMarker(StationaryMarkerManager.ExtractShortTypeName(typ), rpos.x, rpos.y, "GroundThingRemoval"); } else if (sectFile!= null) { sectFile = Calcs.makeStatic(sectFile, GamePlay, this, rpos.x, rpos.y, 0, typ, 0, "nn", staticprefix: "remove_destroyed_MO_"); }
+            if (typ == "Stationary.Environment.JerryCan_GER1_1" || typ == "Stationary.Environment.JerryCan_GER1_2" || typ == "Stationary.Environment.JerryCan_GER1_3" || typ == "Stationary.Environment.JerryCan_GER1_5" || typ == "Stationary.Environment.JerryCan_GER1_18" || typ == "Stationary.Environment.JerryCan_GER1_5" || typ == "Stationary.AEC_Regent_II" || typ == "Stationary.MG_TA") { StationaryMarkerManager.AddMarker(StationaryMarkerManager.ExtractShortTypeName(typ), rpos.x, rpos.y, "GroundThingRemoval"); } else if (sectFile!= null) { sectFile = Calcs.makeStatic(sectFile, GamePlay, this, rpos.x, rpos.y, 0, typ, 0, "nn", staticprefix: "remove_destroyed_MO_"); }
 
             //We wait, then try once to disapparate when no one is looking, but then just do it
             //Waith 120s because likely a pilot is near; gives them time to fly off
@@ -22145,7 +22152,7 @@ added Rouen Flak
                     if (mo.OwnerArmy == 2) armyside = "de";
                     string side = "nn";
                     if (random.Next(0, 9) == 0) side = armyside;
-                    if (sname == "Stationary.Environment.JerryCan_GER1_1" || sname == "Stationary.Environment.JerryCan_GER1_2" || sname == "Stationary.Environment.JerryCan_GER1_3" || sname == "Stationary.Environment.JerryCan_GER1_5" || sname == "Stationary.AEC_Regent_II" || sname == "Stationary.MG_TA") { StationaryMarkerManager.AddMarker(StationaryMarkerManager.ExtractShortTypeName(sname), x, y, "TriggerObjectiveRefresh"); } else { f = Calcs.makeStatic(f, GamePlay, this, x, y, 0, sname, 0, side, staticprefix: "trigger_refresh_" + mo.IDtoCleanChiefName() + "_"); }
+                    if (sname == "Stationary.Environment.JerryCan_GER1_1" || sname == "Stationary.Environment.JerryCan_GER1_2" || sname == "Stationary.Environment.JerryCan_GER1_3" || sname == "Stationary.Environment.JerryCan_GER1_5" || sname == "Stationary.Environment.JerryCan_GER1_18" || sname == "JerryCan_UK1_2-Gallon_1" || sname == "Stationary.AEC_Regent_II" || sname == "Stationary.MG_TA") { StationaryMarkerManager.AddMarker(StationaryMarkerManager.ExtractShortTypeName(sname), x, y, "TriggerObjectiveRefresh"); } else { f = Calcs.makeStatic(f, GamePlay, this, x, y, 0, sname, 0, side, staticprefix: "trigger_refresh_" + mo.IDtoCleanChiefName() + "_"); }
 
                     count++;
                     if (count > num_needed) break;
@@ -22700,7 +22707,8 @@ added Rouen Flak
         try
         {
             if (tempFlakTimer != null) tempFlakTimer.Dispose();
-        } catch (Exception ex) { }
+        
+        catch (Exception ex) { Console.WriteLine("ERROR TempFlakTimer_dispose! " + ex.ToString()); }
     }
 
     private int tempflakcounter = 0;

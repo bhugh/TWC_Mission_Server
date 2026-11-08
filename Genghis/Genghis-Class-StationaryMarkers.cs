@@ -109,6 +109,30 @@ public static class StationaryMarkerManager
         return results;
     }
 
+    public static bool civilianArea(double x, double y)
+    {
+         var nearbyMarkers = StationaryMarkerManager.FindNearbyMarkers(x, y, 500);
+                    
+        foreach (var marker in nearbyMarkers)
+        {
+            double dis_m = marker.DistanceTo(x, y);
+
+            if (marker.Type.StartsWith("JerryCan") && dis_m <= marker.Radius) return false;
+            
+        }
+            
+        foreach (var marker in nearbyMarkers)
+        {
+            double dis_m = marker.DistanceTo(x, y);
+                                
+            
+            if ( dis_m <= marker.Radius) return true;
+        }
+        
+        
+        return false;
+    }
+
     public static List<StationaryMarker> FindNearbyMarkersOfTypes(double x, double y, double searchRadius, params string[] types)
     {
         List<StationaryMarker> results = new List<StationaryMarker>();

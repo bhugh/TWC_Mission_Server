@@ -483,7 +483,10 @@ xmlhttp.onreadystatechange = function(){
   function readFrontLineFile() {
     var xmlhttp = new XMLHttpRequest();
     var serverId = "TWIN GRANDSONS OF KHAN";
-    var filename = serverId + "_FRONT_radar.txt";
+    var adder = "?" + Math.random().toString(36).substr(2, 5);
+        
+            
+    var filename = server.toUpperCase() + "_FRONT_radar.txt" + adder;
     var url = filename; // same directory as radar.php
 
     xmlhttp.onreadystatechange = function() {

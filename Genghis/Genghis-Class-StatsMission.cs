@@ -7186,13 +7186,19 @@ struct
                         double dis_m = marker.DistanceTo(pos.x, pos.y);
                         
                         // Check JerryCan markers (enemy bombable areas)
-                        if (marker.Type.StartsWith("JerryCan_GER1"))
+                        if (marker.Type.StartsWith("JerryCan"))
                         {
-                            if (marker.Type == "JerryCan_GER1_5" && dis_m <= 1410) { ot_HandleAreaBombings(title, mass_kg, pos, initiator, initiator.Player, isEnemy, "Ground Area", 1, aircraftCorrection); return; }
+                            if ((marker.Type == "JerryCan_GER1_5" || marker.Type == "JerryCan_GER1_18" ) && dis_m <= 1410) { ot_HandleAreaBombings(title, mass_kg, pos, initiator, initiator.Player, isEnemy, "Ground Area", 1, aircraftCorrection); return; }
                             if (marker.Type == "JerryCan_GER1_3" && dis_m <= 282) { ot_HandleAreaBombings(title, mass_kg, pos, initiator, initiator.Player, isEnemy, "Ground Area", 1, aircraftCorrection); return; }
                             if (marker.Type == "JerryCan_GER1_2" && dis_m <= 141) { ot_HandleAreaBombings(title, mass_kg, pos, initiator, initiator.Player, isEnemy, "Ground Area", 1, aircraftCorrection); return; }
-                            if (marker.Type == "JerryCan_GER1_1" && dis_m <= 71) { ot_HandleAreaBombings(title, mass_kg, pos, initiator, initiator.Player, isEnemy, "Ground Area", 1, aircraftCorrection); return; }
+                            if ((marker.Type == "JerryCan_GER1_1" || marker.Type == "JerryCan_UK1_2-Gallon_1") && dis_m <= 71) { ot_HandleAreaBombings(title, mass_kg, pos, initiator, initiator.Player, isEnemy, "Ground Area", 1, aircraftCorrection); return; }
                         }
+                    }
+
+                    foreach (var marker in nearbyMarkers)
+                    {
+                        double dis_m = marker.DistanceTo(pos.x, pos.y);
+                                            
                         
                         // Check civilian markers
                         if (landType != maddox.game.LandTypes.ROAD && landType != maddox.game.LandTypes.ROAD_MASK && landType != maddox.game.LandTypes.HIGHWAY && landType != maddox.game.LandTypes.RAIL)

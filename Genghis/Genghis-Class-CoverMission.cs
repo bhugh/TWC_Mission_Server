@@ -8593,7 +8593,8 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 
             if (weapons.Length == 0)
             {
-                weapons = "1 1 1 1 1 1 2"; //default
+                weapons = "1 1 1 1 1 1 1"; //default
+                //weapons = "1 1 1 1 1 1 2"; //This is SD-250 which is great for high-alt but has no low-alt mode, so if they drop low nothing happens.
                                            //weapons = "1 1 1 1 1 1 4"; //default  1... 4 is the 32x50KG bombs which would be a great configuration except they drop so so so so s-l-o-w-ly from the 111P and 111H.  Like one every 200 meters.  So it never drops all 50 bombs etc.   So the 1.. x configuration is 8X250kg bombs, which it still drops slowly just the same but at least it brackets the target with those bombs and drops all of them.
                 if (fighterbomber == "f") weapons = "1 1 1 1 1 1 0";
                 //no "h" option - the two options are 8X250 or 32X50, 32X50 doesn't really work
@@ -8614,7 +8615,8 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 
             if (weapons.Length == 0)
             {
-                weapons = "1 1 1 1 1 2"; //default
+                weapons = "1 1 1 1 1 1 1"; //default
+                //weapons = "1 1 1 1 1 1 2"; //This is SD-250 which is great for high-alt but has no low-alt mode, so if they drop low nothing happens.
                                          //weapons = "1 1 1 1 1 1 4"; //default  1... 4 is the 32x50KG bombs which would be a great configuration except they drop so so so so s-l-o-w-ly from the 111P and 111H.  Like one every 200 meters.  So it never drops all 50 bombs etc.   So the 1.. x configuration is 8X250kg bombs, which it still drops slowly just the same but at least it brackets the target with those bombs and drops all of them.
                 if (fighterbomber == "f") weapons = "1 1 1 1 1 0";
             }

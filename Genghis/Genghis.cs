@@ -3015,7 +3015,9 @@ public class Mission : AMission, IMainMission
 
                 //All players who are lucky enough to still be in a plane at this point have saved their plane/it's returned to their team's supply
 
+                checkWriteMissionEnd(winner);                
 
+                /*
                 //Save map state & data
                 double misResult = SaveMapState(winner); //here is where we save progress/winners towards moving the map & front one way or the other; also saves the Supply State
 
@@ -3023,6 +3025,7 @@ public class Mission : AMission, IMainMission
                 MO_WriteMissionObjects(wait: true);
                 final_SaveMapState_completed = true;
                 final_MO_WriteMissionObjects_completed = true;
+                */
             }
 
         });
@@ -3066,6 +3069,16 @@ public class Mission : AMission, IMainMission
             }
         });
 
+    }
+
+    public void checkWriteMissionEnd(string winner = ""){
+        
+                double misResult = SaveMapState(winner); //here is where we save progress/winners towards moving the map & front one way or the other; also saves the Supply State
+
+                CheckStatsData(winner); //Save campaign/map state just before final exit.  This is important because when we do (GamePlay as GameDef).gameInterface.CmdExec("exit"); to exit, the -stats.cs will read the CampaignSummary.txt file we write here as the final status for the mission in the team stats.
+                MO_WriteMissionObjects(wait: true);
+                final_SaveMapState_completed = true;
+                final_MO_WriteMissionObjects_completed = true;
     }
 
 
@@ -9235,6 +9248,7 @@ public class Mission : AMission, IMainMission
         }
 
         Thread.Sleep(1500); //just wait for all files to save etc. in milliseconds
+        Console.WriteLine("Main OnBattleStoped completed - exiting");
     }
 
     /****************************************

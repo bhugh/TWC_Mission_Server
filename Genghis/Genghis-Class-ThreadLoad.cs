@@ -80,6 +80,8 @@ public class ThreadLoadMission : AMission
     private System.Threading.Timer threadLoadTimer;
     public Stopwatch threadLoadStopWatch = new Stopwatch();
     private bool threadLoadTimerDisposed = false;
+    private int threadLoadFrozenCount = 0;
+    private const int threadLoadMaxFrozenConsecutiveTicks = 10; // exit after 5 consecutive frozen intervals
 	public Stopwatch threadLoadTickStopWatch = new Stopwatch();
     private TimeSpan initCPUTime;
     private TimeSpan lastTime;
@@ -103,6 +105,7 @@ public class ThreadLoadMission : AMission
 
             initThreadLoad();
             threadLoadTimerDisposed = false;
+            threadLoadFrozenCount = 0;
         }
         catch (Exception ex) { Console.WriteLine("threadLoad_recurs error: " + ex.Message); }
     }
@@ -205,6 +208,31 @@ public class ThreadLoadMission : AMission
 			Console.WriteLine("threadLoad: current tick {0:n0}ms; max tick {1:n0}ms; interval {2:n0}ms; rolling ave {3:n0}ms ; all time {4:n0}ms", currentTickLength.TotalMilliseconds, allTimeMaxTickLength.TotalMilliseconds, oneIntAveTick_ms, rollingAverageTickTime_ms, allTimeAveTick_ms );
 			
 			allTimeMaxTickLength = currentTickLength; //actually not all time but for this interval
+
+            // Watchdog: detect if the CLoD engine tick counter has frozen
+            // (this happens when OnBattleStoped is never called because the engine hung)
+            bool isFrozen = (deltaTicks == 0) || (recentCPUPercent == 0.0 && deltaTime.TotalMilliseconds > 5000.0);
+
+            if (isFrozen)
+            {
+                threadLoadFrozenCount++;
+                Console.WriteLine("threadLoad: ENGINE FROZEN tick counter (count: {0} of {1})", threadLoadFrozenCount, threadLoadMaxFrozenConsecutiveTicks);
+
+                if (threadLoadFrozenCount >= threadLoadMaxFrozenConsecutiveTicks)
+                {
+                    Console.WriteLine("threadLoad: ENGINE FROZEN too many consecutive intervals -- forcing process exit via Environment.Exit(1)");
+					try {
+						mainmission.checkWriteMissionEnd();                
+					}
+					catch (Exception ex) { Console.WriteLine("Threadload - thread frozen - checkWriteMissionEnd ERROR! " + ex.ToString()); }
+
+                    Environment.Exit(1);
+                }
+            }
+            else
+            {
+                threadLoadFrozenCount = 0;
+            }
 
             lastTime = thisTime;
             lastCPUTime = thisCPUTime;

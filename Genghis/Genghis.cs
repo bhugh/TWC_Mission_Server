@@ -5290,7 +5290,7 @@ public class Mission : AMission, IMainMission
 
             //Task.Run(() => //AHA, DON'T task.run here as it blows up the threads massively
 
-            double wait = stb_random.NextDouble() * 25;
+            double wait = stb_random.NextDouble() * 45;
             Timeout(wait, () =>
                 MO_HandlePointAreaObjectives(null, initiator, title, pos) //handle building killed within PointArea area
             );
@@ -22969,7 +22969,8 @@ added Rouen Flak
                 if (actor != null) (actor as AiCart).Destroy();
                   
                 //remove the base 
-                int count = Calcs.removeStatics(GamePlay, this, x, y, radius_m: 4, types_to_remove: new List<string> () { "Zwillingssockel36_Base_GER1", "Stationary.Environment.FuelDrum_UK1_9"}, percentToRemove: 100, replaceThem: false, maxWait_s: 60);
+                int count = Calcs.removeStatics(GamePlay, this, x, y, radius_m: 10, types_to_remove: new List<string> () { "Zwillingssockel36_Base_GER1", "Stationary.Environment.FuelDrum_UK1_9"},
+                names_to_remove: new List<string> () { tempFlakPrefix }, percentToRemove: 100, replaceThem: false, maxWait_s: 60);
 
                 if (ON_TESTSERVER) Console.WriteLine("handleTempflakSpawn for {0}, killed NOW, plus {1} statics removed", shortname, count);
                   
@@ -33520,7 +33521,7 @@ GroundStationary[] gs = GamePlay.gpGroundStationarys(250000, 252000, 1000); //Fi
     //gpGroundStationarys()
     //army, can specify 0=nn, 1=gb, 2=de which will remove the statics matching that country only
     //amry=-1 removes all
-    public static int removeStatics(maddox.game.IGamePlay GamePlay, Mission msn, double x, double y, double radius_m, List<string> types_to_remove = null, int percentToRemove = 100, int army = -1, List<string> types_to_retain = null, bool preserveOnWater = false, bool replaceThem = false, int maxWait_s = 355) //types is a SUBSTRING MATCH and CASE INSENSITIVE
+    public static int removeStatics(maddox.game.IGamePlay GamePlay, Mission msn, double x, double y, double radius_m, List<string> types_to_remove = null, List<string> names_to_remove = null, int percentToRemove = 100, int army = -1, List<string> types_to_retain = null, bool preserveOnWater = false, bool replaceThem = false, int maxWait_s = 355) //types is a SUBSTRING MATCH and CASE INSENSITIVE
     {
         //Task.Run(() => //Don't TASK RUN for anything that changes anything ==> server crashes!!!!
         {
@@ -33574,14 +33575,29 @@ GroundStationary[] gs = GamePlay.gpGroundStationarys(250000, 252000, 1000); //Fi
 
 
 
-                        if (types_to_remove == null) match = true;
-                        else foreach (string s in types_to_remove)
+                        if (types_to_remove == null && names_to_remove == null ) match = true;
+                        else
                             {
-                                if (types.ToLower().Contains(s.ToLower()))
-                                {
-                                    match = true;
-                                    break;
-                                }
+                                
+                                if (types_to_remove != null) 
+                                    foreach (string s in types_to_remove)
+                                    {
+                                        if (types.ToLower().Contains(s.ToLower()))
+                                        {
+                                            match = true;
+                                            break;
+                                        }
+                                    }
+
+                                if (names_to_remove != null && !match) 
+                                    foreach (string s in names_to_remove)
+                                    {
+                                        if (gg.Name.ToLower().Contains(s.ToLower()))
+                                        {
+                                            match = true;
+                                            break;
+                                        }
+                                    }                            
                             }
 
                         if (match && types_to_retain != null) foreach (string s in types_to_retain)

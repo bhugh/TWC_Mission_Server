@@ -1,0 +1,485 @@
+[PARTS]
+  core.100
+  bob.100
+  tobruk.100
+[MAIN]
+  fileversion 2
+  MAP Land$English_Channel_1940
+  DespawnAfterLandingTimeout 600
+  BattleArea 10000 10000 360000 310000 10000
+  TIME 9.79083357041236
+  WeatherIndex 2
+  CloudsHeight 888
+  BreezeActivity 0
+  ThermalActivity 0
+  player BoB_LW_KG27_Stab.000
+[FrontMarker]
+  FrontMarker0 17525.59 52435.01 1
+  FrontMarker1 17478.33 52189.52 0
+  FrontMarker2 16816.68 48752.62 0
+  FrontMarker3 16769.42 48507.13 2
+  FrontMarker4 21518.73 51620.78 1
+  FrontMarker5 21468.90 51375.80 0
+  FrontMarker6 20771.32 47946.02 0
+  FrontMarker7 20721.49 47701.03 2
+  FrontMarker8 25725.17 50748.11 1
+  FrontMarker9 25646.11 50510.94 0
+  FrontMarker10 24539.31 47190.55 0
+  FrontMarker11 24460.26 46953.38 2
+  FrontMarker12 29343.29 50021.17 1
+  FrontMarker13 29308.55 49773.60 0
+  FrontMarker14 28822.09 46307.57 0
+  FrontMarker15 28787.34 46059.99 2
+  FrontMarker16 33417.96 49193.98 1
+  FrontMarker17 33370.46 48948.53 0
+  FrontMarker18 32705.38 45512.30 0
+  FrontMarker19 32657.88 45266.86 2
+  FrontMarker20 37384.75 48384.93 1
+  FrontMarker21 37337.97 48139.35 0
+  FrontMarker22 36683.08 44701.16 0
+  FrontMarker23 36636.30 44455.58 2
+  FrontMarker24 41389.13 47568.45 1
+  FrontMarker25 41338.38 47323.66 0
+  FrontMarker26 40627.88 43896.53 0
+  FrontMarker27 40577.13 43651.74 2
+  FrontMarker28 45859.03 46649.37 1
+  FrontMarker29 45830.25 46401.03 0
+  FrontMarker30 45427.35 42924.30 0
+  FrontMarker31 45398.57 42675.96 2
+  FrontMarker32 49376.32 46552.74 1
+  FrontMarker33 49369.27 46302.83 0
+  FrontMarker34 49270.63 42804.23 0
+  FrontMarker35 49263.59 42554.32 2
+  FrontMarker36 53067.47 46443.60 1
+  FrontMarker37 53060.43 46193.70 0
+  FrontMarker38 52961.79 42695.09 0
+  FrontMarker39 52954.74 42445.19 2
+  FrontMarker40 56732.82 46335.02 1
+  FrontMarker41 56729.00 46085.05 0
+  FrontMarker42 56675.52 42585.46 0
+  FrontMarker43 56671.70 42335.49 2
+  FrontMarker44 62093.75 45940.17 1
+  FrontMarker45 61969.36 45723.31 0
+  FrontMarker46 60228.04 42687.23 0
+  FrontMarker47 60103.65 42470.36 2
+  FrontMarker48 65456.43 41007.71 1
+  FrontMarker49 65240.94 40880.95 0
+  FrontMarker50 62224.17 39106.38 0
+  FrontMarker51 62008.69 38979.63 2
+  FrontMarker52 68131.12 36723.25 1
+  FrontMarker53 67910.53 36605.60 0
+  FrontMarker54 64822.30 34958.54 0
+  FrontMarker55 64601.71 34840.89 2
+  FrontMarker56 70562.01 32819.86 1
+  FrontMarker57 70366.79 32663.69 0
+  FrontMarker58 67633.75 30477.26 0
+  FrontMarker59 67438.53 30321.08 2
+  FrontMarker60 73282.21 28491.93 1
+  FrontMarker61 73076.20 28350.30 0
+  FrontMarker62 70192.06 26367.45 0
+  FrontMarker63 69986.05 26225.82 2
+  FrontMarker64 77923.19 21048.80 1
+  FrontMarker65 77728.10 20892.46 0
+  FrontMarker66 74996.90 18703.74 0
+  FrontMarker67 74801.81 18547.40 2
+  FrontMarker68 81952.98 16256.73 1
+  FrontMarker69 81702.98 16256.73 0
+  FrontMarker70 78202.98 16256.73 0
+  FrontMarker71 77952.98 16256.73 2
+  FrontMarker72 84947.91 14139.27 1
+  FrontMarker73 84772.35 13961.28 0
+  FrontMarker74 82314.58 11469.42 0
+  FrontMarker75 82139.02 11291.43 2
+  FrontMarker76 88538.39 10597.89 1
+  FrontMarker77 88362.84 10419.90 0
+  FrontMarker78 85905.06 7928.05 0
+  FrontMarker79 85729.51 7750.06 2
+  FrontMarker80 92194.04 6989.16 1
+  FrontMarker81 92010.34 6819.59 0
+  FrontMarker82 89438.52 4445.61 0
+  FrontMarker83 89254.82 4276.04 2
+  FrontMarker84 95794.79 3436.57 1
+  FrontMarker85 95609.81 3268.40 0
+  FrontMarker86 93020.02 914.05 0
+  FrontMarker87 92835.03 745.88 2
+  FrontMarker88 102165.24 -3024.28 1
+  FrontMarker89 102064.01 -3252.87 0
+  FrontMarker90 100646.85 -6453.13 0
+  FrontMarker91 100545.63 -6681.72 2
+  FrontMarker92 106131.28 -3114.14 1
+  FrontMarker93 106114.44 -3363.57 0
+  FrontMarker94 105878.69 -6855.62 0
+  FrontMarker95 105861.85 -7105.05 2
+  FrontMarker96 110637.70 -3366.19 1
+  FrontMarker97 110637.70 -3616.19 0
+  FrontMarker98 110637.70 -7116.19 0
+  FrontMarker99 110637.70 -7366.19 2
+  FrontMarker100 115899.64 -3721.58 1
+  FrontMarker101 115822.04 -3959.23 0
+  FrontMarker102 114735.63 -7286.35 0
+  FrontMarker103 114658.03 -7524.00 2
+  FrontMarker104 120133.51 -3890.81 1
+  FrontMarker105 120106.81 -4139.38 0
+  FrontMarker106 119733.12 -7619.38 0
+  FrontMarker107 119706.43 -7867.95 2
+  FrontMarker108 124757.08 -4145.60 1
+  FrontMarker109 124732.58 -4394.40 0
+  FrontMarker110 124389.62 -7877.56 0
+  FrontMarker111 124365.13 -8126.35 2
+  FrontMarker112 130218.43 -4571.21 1
+  FrontMarker113 130292.46 -4809.99 0
+  FrontMarker114 131328.94 -8153.01 0
+  FrontMarker115 131402.97 -8391.79 2
+  FrontMarker116 133414.84 -1950.03 1
+  FrontMarker117 133567.43 -2148.06 0
+  FrontMarker118 135703.70 -4920.49 0
+  FrontMarker119 135856.29 -5118.52 2
+  FrontMarker120 137239.70 997.19 1
+  FrontMarker121 137392.29 799.16 0
+  FrontMarker122 139528.57 -1973.26 0
+  FrontMarker123 139681.16 -2171.29 2
+  FrontMarker124 141041.53 3926.40 1
+  FrontMarker125 141197.00 3730.62 0
+  FrontMarker126 143373.59 989.74 0
+  FrontMarker127 143529.06 793.96 2
+  FrontMarker128 144898.92 6898.92 1
+  FrontMarker129 145050.33 6699.98 0
+  FrontMarker130 147169.99 3914.83 0
+  FrontMarker131 147321.40 3715.90 2
+  FrontMarker132 148726.25 9848.01 1
+  FrontMarker133 148877.35 9648.84 0
+  FrontMarker134 150992.70 6860.42 0
+  FrontMarker135 151143.80 6661.25 2
+  FrontMarker136 152539.16 12786.10 1
+  FrontMarker137 152691.75 12588.07 0
+  FrontMarker138 154828.03 9815.65 0
+  FrontMarker139 154980.62 9617.62 2
+  FrontMarker140 156335.36 15710.82 1
+  FrontMarker141 156491.54 15515.60 0
+  FrontMarker142 158677.97 12782.56 0
+  FrontMarker143 158834.14 12587.35 2
+  FrontMarker144 161468.15 19501.38 1
+  FrontMarker145 161681.17 19370.52 0
+  FrontMarker146 164663.43 17538.54 0
+  FrontMarker147 164876.45 17407.69 2
+  FrontMarker148 162137.76 23732.01 1
+  FrontMarker149 162382.90 23682.98 0
+  FrontMarker150 165814.94 22996.57 0
+  FrontMarker151 166060.08 22947.54 2
+  FrontMarker152 163061.08 28600.39 1
+  FrontMarker153 163306.64 28553.47 0
+  FrontMarker154 166744.44 27896.57 0
+  FrontMarker155 166990.00 27849.65 2
+  FrontMarker156 165187.41 39044.72 1
+  FrontMarker157 165398.22 38910.33 0
+  FrontMarker158 168349.51 37028.87 0
+  FrontMarker159 168560.32 36894.48 2
+  FrontMarker160 169475.00 42302.01 1
+  FrontMarker161 169620.91 42099.00 0
+  FrontMarker162 171663.55 39256.89 0
+  FrontMarker163 171809.45 39053.88 2
+  FrontMarker164 173234.25 45003.76 1
+  FrontMarker165 173381.29 44801.58 0
+  FrontMarker166 175439.89 41971.00 0
+  FrontMarker167 175586.93 41768.82 2
+  FrontMarker168 177002.61 47712.10 1
+  FrontMarker169 177149.65 47509.92 0
+  FrontMarker170 179208.25 44679.34 0
+  FrontMarker171 179355.29 44477.16 2
+  FrontMarker172 180780.09 50427.04 1
+  FrontMarker173 180925.99 50224.03 0
+  FrontMarker174 182968.63 47381.92 0
+  FrontMarker175 183114.54 47178.91 2
+  FrontMarker176 184592.67 53166.27 1
+  FrontMarker177 184733.04 52959.40 0
+  FrontMarker178 186698.30 50063.24 0
+  FrontMarker179 186838.67 49856.37 2
+  FrontMarker180 188657.87 56088.85 1
+  FrontMarker181 188803.63 55885.74 0
+  FrontMarker182 190844.37 53042.26 0
+  FrontMarker183 190990.13 52839.15 2
+  FrontMarker184 192303.08 58701.24 1
+  FrontMarker185 192449.15 58498.36 0
+  FrontMarker186 194494.22 55657.99 0
+  FrontMarker187 194640.30 55455.11 2
+  FrontMarker188 198883.03 63395.48 1
+  FrontMarker189 199000.65 63174.88 0
+  FrontMarker190 200647.35 60086.45 0
+  FrontMarker191 200764.97 59865.85 2
+  FrontMarker192 203450.53 65121.90 1
+  FrontMarker193 203541.20 64888.92 0
+  FrontMarker194 204810.61 61627.23 0
+  FrontMarker195 204901.29 61394.26 2
+  FrontMarker196 207785.03 66742.44 1
+  FrontMarker197 207877.88 66510.32 0
+  FrontMarker198 209177.75 63260.65 0
+  FrontMarker199 209270.59 63028.53 2
+  FrontMarker200 215147.69 69493.04 1
+  FrontMarker201 215222.23 69254.41 0
+  FrontMarker202 216265.77 65913.59 0
+  FrontMarker203 216340.31 65674.96 2
+  FrontMarker204 219983.30 70718.69 1
+  FrontMarker205 220047.72 70477.13 0
+  FrontMarker206 220949.54 67095.30 0
+  FrontMarker207 221013.95 66853.75 2
+  FrontMarker208 224718.95 71915.74 1
+  FrontMarker209 224785.74 71674.83 0
+  FrontMarker210 225720.77 68302.04 0
+  FrontMarker211 225787.56 68061.12 2
+  FrontMarker212 229495.75 73123.96 1
+  FrontMarker213 229559.76 72882.30 0
+  FrontMarker214 230456.00 69498.99 0
+  FrontMarker215 230520.02 69257.33 2
+  FrontMarker216 232777.96 72144.79 1
+  FrontMarker217 233026.02 72175.80 0
+  FrontMarker218 236499.00 72609.92 0
+  FrontMarker219 236747.07 72640.93 2
+  FrontMarker220 239030.28 75534.91 1
+  FrontMarker221 239091.14 75292.43 0
+  FrontMarker222 239943.14 71897.72 0
+  FrontMarker223 240004.00 71655.24 2
+  FrontMarker224 247243.88 77563.10 1
+  FrontMarker225 247356.03 77339.67 0
+  FrontMarker226 248926.23 74211.66 0
+  FrontMarker227 249038.39 73988.23 2
+  FrontMarker228 250573.63 80331.86 1
+  FrontMarker229 250729.55 80136.44 0
+  FrontMarker230 252912.43 77400.56 0
+  FrontMarker231 253068.35 77205.14 2
+  FrontMarker232 254280.18 83345.62 1
+  FrontMarker233 254432.76 83147.59 0
+  FrontMarker234 256568.94 80375.09 0
+  FrontMarker235 256721.53 80177.06 2
+  FrontMarker236 257896.84 86287.69 1
+  FrontMarker237 258057.32 86096.00 0
+  FrontMarker238 260304.10 83412.35 0
+  FrontMarker239 260464.58 83220.66 2
+  FrontMarker240 261613.76 89310.81 1
+  FrontMarker241 261769.61 89115.34 0
+  FrontMarker242 263951.53 86378.69 0
+  FrontMarker243 264107.38 86183.22 2
+  FrontMarker244 267017.08 93622.26 1
+  FrontMarker245 267218.60 93474.32 0
+  FrontMarker246 270040.00 91403.15 0
+  FrontMarker247 270241.52 91255.21 2
+  FrontMarker248 268504.38 97537.02 1
+  FrontMarker249 268736.50 97444.17 0
+  FrontMarker250 271986.17 96144.30 0
+  FrontMarker251 272218.28 96051.45 2
+  FrontMarker252 270236.41 101892.52 1
+  FrontMarker253 270468.53 101799.67 0
+  FrontMarker254 273718.20 100499.81 0
+  FrontMarker255 273950.32 100406.96 2
+  FrontMarker256 271970.43 106252.98 1
+  FrontMarker257 272202.30 106159.51 0
+  FrontMarker258 275448.49 104850.97 0
+  FrontMarker259 275680.36 104757.51 2
+  FrontMarker260 275308.70 114600.98 1
+  FrontMarker261 275551.11 114539.86 0
+  FrontMarker262 278944.89 113684.14 0
+  FrontMarker263 279187.30 113623.02 2
+  FrontMarker264 275819.10 119136.40 1
+  FrontMarker265 276066.08 119097.66 0
+  FrontMarker266 279523.80 118555.27 0
+  FrontMarker267 279770.78 118516.53 2
+  FrontMarker268 276341.87 123540.93 1
+  FrontMarker269 276591.87 123540.93 0
+  FrontMarker270 280091.87 123540.93 0
+  FrontMarker271 280341.87 123540.93 2
+  FrontMarker272 276888.81 128255.39 1
+  FrontMarker273 277138.81 128255.39 0
+  FrontMarker274 280638.81 128255.39 0
+  FrontMarker275 280888.81 128255.39 2
+  FrontMarker276 277447.08 133182.45 1
+  FrontMarker277 277695.66 133155.88 0
+  FrontMarker278 281175.83 132783.83 0
+  FrontMarker279 281424.41 132757.26 2
+  FrontMarker280 277994.66 137902.93 1
+  FrontMarker281 278243.17 137875.60 0
+  FrontMarker282 281722.19 137493.03 0
+  FrontMarker283 281970.70 137465.70 2
+  FrontMarker284 278543.45 142633.60 1
+  FrontMarker285 278791.72 142604.24 0
+  FrontMarker286 282267.51 142193.31 0
+  FrontMarker287 282515.78 142163.96 2
+  FrontMarker288 279295.67 149088.16 1
+  FrontMarker289 279545.26 149073.87 0
+  FrontMarker290 283039.54 148873.73 0
+  FrontMarker291 283289.13 148859.44 2
+  FrontMarker292 279287.43 153615.15 1
+  FrontMarker293 279537.43 153615.15 0
+  FrontMarker294 283037.43 153615.15 0
+  FrontMarker295 283287.43 153615.15 2
+  FrontMarker296 279282.46 158256.51 1
+  FrontMarker297 279532.46 158256.51 0
+  FrontMarker298 283032.46 158256.51 0
+  FrontMarker299 283282.46 158256.51 2
+  FrontMarker300 279277.50 162897.86 1
+  FrontMarker301 279527.50 162897.86 0
+  FrontMarker302 283027.50 162897.86 0
+  FrontMarker303 283277.50 162897.86 2
+  FrontMarker304 279272.53 167539.22 1
+  FrontMarker305 279522.53 167539.22 0
+  FrontMarker306 283022.53 167539.22 0
+  FrontMarker307 283272.53 167539.22 2
+  FrontMarker308 279298.51 174154.21 1
+  FrontMarker309 279544.43 174109.20 0
+  FrontMarker310 282987.24 173479.06 0
+  FrontMarker311 283233.15 173434.05 2
+  FrontMarker312 281992.19 179821.71 1
+  FrontMarker313 282102.43 179597.32 0
+  FrontMarker314 283645.71 176455.94 0
+  FrontMarker315 283755.94 176231.56 2
+  FrontMarker316 287182.86 178720.22 1
+  FrontMarker317 287182.86 178470.22 0
+  FrontMarker318 287182.86 174970.22 0
+  FrontMarker319 287182.86 174720.22 2
+  FrontMarker320 295335.28 176336.48 1
+  FrontMarker321 295272.92 176094.38 0
+  FrontMarker322 294399.88 172705.02 0
+  FrontMarker323 294337.52 172462.92 2
+  FrontMarker324 299157.44 175523.45 1
+  FrontMarker325 299112.72 175277.48 0
+  FrontMarker326 298486.62 171833.94 0
+  FrontMarker327 298441.90 171587.97 2
+  FrontMarker328 305544.41 173490.95 1
+  FrontMarker329 305690.84 173288.32 0
+  FrontMarker330 307740.89 170451.55 0
+  FrontMarker331 307887.33 170248.92 2
+  FrontMarker332 305295.85 177258.34 1
+  FrontMarker333 305544.55 177232.91 0
+  FrontMarker334 309026.39 176876.81 0
+  FrontMarker335 309275.09 176851.37 2
+  FrontMarker336 305975.13 182577.13 1
+  FrontMarker337 306220.19 182626.59 0
+  FrontMarker338 309651.01 183319.01 0
+  FrontMarker339 309896.07 183368.47 2
+  FrontMarker340 301337.41 193663.89 1
+  FrontMarker341 301516.00 193488.95 0
+  FrontMarker342 304016.26 191039.72 0
+  FrontMarker343 304194.85 190864.78 2
+  FrontMarker344 304623.29 192429.27 1
+  FrontMarker345 304754.26 192216.32 0
+  FrontMarker346 306587.88 189235.08 0
+  FrontMarker347 306718.85 189022.13 2
+  FrontMarker348 303610.81 193857.14 1
+  FrontMarker349 303860.76 193861.96 0
+  FrontMarker350 307360.11 193929.42 0
+  FrontMarker351 307610.07 193934.24 2
+  FrontMarker352 303888.97 200547.78 1
+  FrontMarker353 304091.06 200400.62 0
+  FrontMarker354 306920.40 198340.32 0
+  FrontMarker355 307122.50 198193.15 2
+  FrontMarker356 308957.45 202499.89 1
+  FrontMarker357 309024.86 202259.15 0
+  FrontMarker358 309968.56 198888.77 0
+  FrontMarker359 310035.97 198648.03 2
+  FrontMarker360 315407.13 204418.52 1
+  FrontMarker361 315516.54 204193.73 0
+  FrontMarker362 317048.20 201046.67 0
+  FrontMarker363 317157.60 200821.88 2
+  FrontMarker364 317279.85 205767.07 1
+  FrontMarker365 317423.16 205562.22 0
+  FrontMarker366 319429.37 202694.27 0
+  FrontMarker367 319572.67 202489.42 2
+  FrontMarker368 320300.82 207859.40 1
+  FrontMarker369 320409.42 207634.22 0
+  FrontMarker370 321929.84 204481.71 0
+  FrontMarker371 322038.44 204256.53 2
+  FrontMarker372 324007.97 208976.34 1
+  FrontMarker373 324078.44 208736.48 0
+  FrontMarker374 325064.99 205378.40 0
+  FrontMarker375 325135.45 205138.53 2
+  FrontMarker376 327411.36 209976.20 1
+  FrontMarker377 327481.67 209736.29 0
+  FrontMarker378 328465.92 206377.53 0
+  FrontMarker379 328536.22 206137.62 2
+  FrontMarker380 330980.04 211006.45 1
+  FrontMarker381 331081.50 210777.96 0
+  FrontMarker382 332501.84 207579.11 0
+  FrontMarker383 332603.29 207350.62 2
+  FrontMarker384 334534.70 213205.91 1
+  FrontMarker385 334661.88 212990.68 0
+  FrontMarker386 336442.43 209977.43 0
+  FrontMarker387 336569.61 209762.20 2
+  FrontMarker388 338376.87 215557.16 1
+  FrontMarker389 338493.84 215336.21 0
+  FrontMarker390 340131.44 212242.95 0
+  FrontMarker391 340248.42 212022.00 2
+  FrontMarker392 343384.41 218627.19 1
+  FrontMarker393 343528.33 218422.77 0
+  FrontMarker394 345543.20 215560.90 0
+  FrontMarker395 345687.12 215356.48 2
+  FrontMarker396 346596.33 221209.05 1
+  FrontMarker397 346741.64 221005.61 0
+  FrontMarker398 348775.98 218157.55 0
+  FrontMarker399 348921.29 217954.11 2
+  FrontMarker400 351497.83 225100.98 1
+  FrontMarker401 351689.84 224940.88 0
+  FrontMarker402 354377.96 222699.45 0
+  FrontMarker403 354569.97 222539.35 2
+  FrontMarker404 354438.36 230593.68 1
+  FrontMarker405 354644.74 230452.60 0
+  FrontMarker406 357534.19 228477.47 0
+  FrontMarker407 357740.58 228336.39 2
+[Stationary]
+  Static_TWC0_frontmarker_setpoint_red_0_3060 Stationary.Environment.Ladder_UK1_DMG1 nn 10618.9 166919.1 0.0 /hstart -100.0/radius_hide 0
+  Static_TWC0_frontmarker_setpoint_blue0_3061 Stationary.Environment.Ladder_UK1_DMG1 nn 12535.9 80190.7 0.0 /hstart -100.0/radius_hide 0
+  Static_TWC0_frontmarker_setpoint_red_1_3062 Stationary.Environment.Ladder_UK1_DMG1 nn 43448.8 175135.6 0.0 /hstart -100.0/radius_hide 0
+  Static_TWC0_frontmarker_setpoint_blue1_3063 Stationary.Environment.Ladder_UK1_DMG1 nn 45083.8 77280.9 0.0 /hstart -100.0/radius_hide 0
+  Static_TWC0_frontmarker_setpoint_red_2_3064 Stationary.Environment.Ladder_UK1_DMG1 nn 63424.7 167041.0 0.0 /hstart -100.0/radius_hide 0
+  Static_TWC0_frontmarker_setpoint_blue2_3065 Stationary.Environment.Ladder_UK1_DMG1 nn 61680.2 74914.2 0.0 /hstart -100.0/radius_hide 0
+  Static_TWC0_frontmarker_setpoint_red_3_3066 Stationary.Environment.Ladder_UK1_DMG1 nn 83910.5 175416.5 0.0 /hstart -100.0/radius_hide 0
+  Static_TWC0_frontmarker_setpoint_blue3_3067 Stationary.Environment.Ladder_UK1_DMG1 nn 78249.5 58702.7 0.0 /hstart -100.0/radius_hide 0
+  Static_TWC0_frontmarker_setpoint_red_4_3068 Stationary.Environment.Ladder_UK1_DMG1 nn 99733.3 184877.4 0.0 /hstart -100.0/radius_hide 0
+  Static_TWC0_frontmarker_setpoint_blue4_3069 Stationary.Environment.Ladder_UK1_DMG1 nn 100949.9 42579.6 0.0 /hstart -100.0/radius_hide 0
+  Static_TWC0_frontmarker_setpoint_red_5_3070 Stationary.Environment.Ladder_UK1_DMG1 nn 112911.9 190132.5 0.0 /hstart -100.0/radius_hide 0
+  Static_TWC0_frontmarker_setpoint_blue5_3071 Stationary.Environment.Ladder_UK1_DMG1 nn 126336.0 42672.0 0.0 /hstart -100.0/radius_hide 0
+  Static_TWC0_frontmarker_setpoint_red_6_3072 Stationary.Environment.Ladder_UK1_DMG1 nn 127340.3 192076.0 0.0 /hstart -100.0/radius_hide 0
+  Static_TWC0_frontmarker_setpoint_blue6_3073 Stationary.Environment.Ladder_UK1_DMG1 nn 154214.3 61859.9 0.0 /hstart -100.0/radius_hide 0
+  Static_TWC0_frontmarker_setpoint_red_7_3074 Stationary.Environment.Ladder_UK1_DMG1 nn 138637.2 193391.6 0.0 /hstart -100.0/radius_hide 0
+  Static_TWC0_frontmarker_setpoint_blue7_3075 Stationary.Environment.Ladder_UK1_DMG1 nn 159814.7 76825.1 0.0 /hstart -100.0/radius_hide 0
+  Static_TWC0_frontmarker_setpoint_red_8_3076 Stationary.Environment.Ladder_UK1_DMG1 nn 153984.0 192960.0 0.0 /hstart -100.0/radius_hide 0
+  Static_TWC0_frontmarker_setpoint_blue8_3077 Stationary.Environment.Ladder_UK1_DMG1 nn 180864.0 89088.0 0.0 /hstart -100.0/radius_hide 0
+  Static_TWC0_frontmarker_setpoint_red_9_3078 Stationary.Environment.Ladder_UK1_DMG1 nn 163984.0 189460.0 0.0 /hstart -100.0/radius_hide 0
+  Static_TWC0_frontmarker_setpoint_blue9_3079 Stationary.Environment.Ladder_UK1_DMG1 nn 190864.0 93588.0 0.0 /hstart -100.0/radius_hide 0
+  Static_TWC0_frontmarker_setpoint_red_10_3080 Stationary.Environment.Ladder_UK1_DMG1 nn 172992.0 185856.0 0.0 /hstart -100.0/radius_hide 0
+  Static_TWC0_frontmarker_setpoint_blue10_3081 Stationary.Environment.Ladder_UK1_DMG1 nn 205056.0 97152.0 0.0 /hstart -100.0/radius_hide 0
+  Static_TWC0_frontmarker_setpoint_red_11_3082 Stationary.Environment.Ladder_UK1_DMG1 nn 179601.0 194613.4 0.0 /hstart -100.0/radius_hide 0
+  Static_TWC0_frontmarker_setpoint_blue11_3083 Stationary.Environment.Ladder_UK1_DMG1 nn 231006.1 105485.1 0.0 /hstart -100.0/radius_hide 0
+  Static_TWC0_frontmarker_setpoint_red_12_3084 Stationary.Environment.Ladder_UK1_DMG1 nn 188597.3 199130.6 0.0 /hstart -100.0/radius_hide 0
+  Static_TWC0_frontmarker_setpoint_blue12_3085 Stationary.Environment.Ladder_UK1_DMG1 nn 248621.3 119111.7 0.0 /hstart -100.0/radius_hide 0
+  Static_TWC0_frontmarker_setpoint_red_13_3086 Stationary.Environment.Ladder_UK1_DMG1 nn 202752.0 202944.0 0.0 /hstart -100.0/radius_hide 0
+  Static_TWC0_frontmarker_setpoint_blue13_3087 Stationary.Environment.Ladder_UK1_DMG1 nn 258624.0 136320.0 0.0 /hstart -100.0/radius_hide 0
+  Static_TWC0_frontmarker_setpoint_red_14_3088 Stationary.Environment.Ladder_UK1_DMG1 nn 204442.8 215862.6 0.0 /hstart -100.0/radius_hide 0
+  Static_TWC0_frontmarker_setpoint_blue14_3089 Stationary.Environment.Ladder_UK1_DMG1 nn 262080.0 165696.0 0.0 /hstart -100.0/radius_hide 0
+  Static_TWC0_frontmarker_setpoint_red_15_3090 Stationary.Environment.Ladder_UK1_DMG1 nn 207682.5 226905.6 0.0 /hstart -100.0/radius_hide 0
+  Static_TWC0_frontmarker_setpoint_blue15_3091 Stationary.Environment.Ladder_UK1_DMG1 nn 262870.0 187072.0 0.0 /hstart -100.0/radius_hide 0
+  Static_TWC0_frontmarker_setpoint_red_16_3092 Stationary.Environment.Ladder_UK1_DMG1 nn 212833.8 236430.9 0.0 /hstart -100.0/radius_hide 0
+  Static_TWC0_frontmarker_setpoint_blue16_3093 Stationary.Environment.Ladder_UK1_DMG1 nn 265364.0 192627.7 0.0 /hstart -100.0/radius_hide 0
+  Static_TWC0_frontmarker_setpoint_red_17_3094 Stationary.Environment.Ladder_UK1_DMG1 nn 221236.8 243913.7 0.0 /hstart -100.0/radius_hide 0
+  Static_TWC0_frontmarker_setpoint_blue17_3095 Stationary.Environment.Ladder_UK1_DMG1 nn 276436.5 191778.2 0.0 /hstart -100.0/radius_hide 0
+  Static_TWC0_frontmarker_setpoint_red_18_3096 Stationary.Environment.Ladder_UK1_DMG1 nn 233554.4 251040.2 0.0 /hstart -100.0/radius_hide 0
+  Static_TWC0_frontmarker_setpoint_blue18_3097 Stationary.Environment.Ladder_UK1_DMG1 nn 288425.5 191662.5 0.0 /hstart -100.0/radius_hide 0
+  Static_TWC0_frontmarker_setpoint_red_19_3098 Stationary.Environment.Ladder_UK1_DMG1 nn 241292.4 250042.4 0.0 /hstart -100.0/radius_hide 0
+  Static_TWC0_frontmarker_setpoint_blue19_3099 Stationary.Environment.Ladder_UK1_DMG1 nn 291274.8 199740.2 0.0 /hstart -100.0/radius_hide 0
+  Static_TWC0_frontmarker_setpoint_red_20_3100 Stationary.Environment.Ladder_UK1_DMG1 nn 251381.6 250029.4 0.0 /hstart -100.0/radius_hide 0
+  Static_TWC0_frontmarker_setpoint_blue20_3101 Stationary.Environment.Ladder_UK1_DMG1 nn 289920.0 206705.6 0.0 /hstart -100.0/radius_hide 0
+  Static_TWC0_frontmarker_setpoint_red_21_3102 Stationary.Environment.Ladder_UK1_DMG1 nn 259527.6 266599.7 0.0 /hstart -100.0/radius_hide 0
+  Static_TWC0_frontmarker_setpoint_blue21_3103 Stationary.Environment.Ladder_UK1_DMG1 nn 294135.2 209694.2 0.0 /hstart -100.0/radius_hide 0
+  Static_TWC0_frontmarker_setpoint_red_22_3104 Stationary.Environment.Ladder_UK1_DMG1 nn 261626.0 284269.0 0.0 /hstart -100.0/radius_hide 0
+  Static_TWC0_frontmarker_setpoint_blue22_3105 Stationary.Environment.Ladder_UK1_DMG1 nn 294535.8 220595.1 0.0 /hstart -100.0/radius_hide 0
+  Static_TWC0_frontmarker_setpoint_red_23_3106 Stationary.Environment.Ladder_UK1_DMG1 nn 269631.3 290000.6 0.0 /hstart -100.0/radius_hide 0
+  Static_TWC0_frontmarker_setpoint_blue23_3107 Stationary.Environment.Ladder_UK1_DMG1 nn 304619.6 224465.3 0.0 /hstart -100.0/radius_hide 0
+  Static_TWC0_frontmarker_setpoint_red_24_3108 Stationary.Environment.Ladder_UK1_DMG1 nn 289955.1 290000.1 0.0 /hstart -100.0/radius_hide 0
+  Static_TWC0_frontmarker_setpoint_blue24_3109 Stationary.Environment.Ladder_UK1_DMG1 nn 313366.0 227043.5 0.0 /hstart -100.0/radius_hide 0
+  Static_TWC0_frontmarker_setpoint_red_25_3110 Stationary.Environment.Ladder_UK1_DMG1 nn 307159.4 290000.4 0.0 /hstart -100.0/radius_hide 0
+  Static_TWC0_frontmarker_setpoint_blue25_3111 Stationary.Environment.Ladder_UK1_DMG1 nn 325633.6 229384.0 0.0 /hstart -100.0/radius_hide 0
+  Static_TWC0_frontmarker_setpoint_red_26_3112 Stationary.Environment.Ladder_UK1_DMG1 nn 317821.9 290000.9 0.0 /hstart -100.0/radius_hide 0
+  Static_TWC0_frontmarker_setpoint_blue26_3113 Stationary.Environment.Ladder_UK1_DMG1 nn 337857.3 235244.1 0.0 /hstart -100.0/radius_hide 0
+  Static_TWC0_frontmarker_setpoint_red_27_3114 Stationary.Environment.Ladder_UK1_DMG1 nn 329207.1 290000.7 0.0 /hstart -100.0/radius_hide 0
+  Static_TWC0_frontmarker_setpoint_blue27_3115 Stationary.Environment.Ladder_UK1_DMG1 nn 347077.2 240365.3 0.0 /hstart -100.0/radius_hide 0
+  Static_TWC0_frontmarker_setpoint_red_28_3116 Stationary.Environment.Ladder_UK1_DMG1 nn 342760.8 290000.9 0.0 /hstart -100.0/radius_hide 0
+  Static_TWC0_frontmarker_setpoint_blue28_3117 Stationary.Environment.Ladder_UK1_DMG1 nn 352757.3 244599.0 0.0 /hstart -100.0/radius_hide 0
+  Static_TWC0_frontmarker_setpoint_red_29_3118 Stationary.Environment.Ladder_UK1_DMG1 nn 354908.0 290000.9 0.0 /hstart -100.0/radius_hide 0
+  Static_TWC0_frontmarker_setpoint_blue29_3119 Stationary.Environment.Ladder_UK1_DMG1 nn 358080.0 247296.0 0.0 /hstart -100.0/radius_hide 0

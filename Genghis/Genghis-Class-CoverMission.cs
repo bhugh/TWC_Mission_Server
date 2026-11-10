@@ -7706,7 +7706,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             s = regiment_isec + "_Way";
             //if (velocity_mpos <= 0) k = "TAKEOFF";
             //else k = "NORMFLY";        
-            k = "ESCORT";
+            k = "FOLLOW";
             if (!fromCover) k = "HUNTING";
             v = locx + " " + locy + " " + locz + " " + vel;
             if (escortedGroup.Length > 0) v += " " + escortedGroup + " 0";  //Not sure what the final 0 does
@@ -7725,7 +7725,7 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
             //if main a/c isn't moving then we'll head these aircraft north.
             if (div == 0) deltaY_m = velocity_mps * 5 * 60; 
 
-            v = (loc.x + deltaX_m).ToString("n0") + " " + (loc.y + deltaY_m).ToString("n0") + " " + locz + " " + vel;
+            v = (loc.x + deltaX_m).ToString("F2") + " " + (loc.y + deltaY_m).ToString("F2") + " " + locz + " " + vel;
             if (loc2.HasValue) v = loc2x + " " + loc2y + " " + loc2z + " " + vel;
             if (escortedGroup.Length > 0) v += " " + escortedGroup + " 0";  //Not sure what the final 0 does
             f.add(s, k, v);

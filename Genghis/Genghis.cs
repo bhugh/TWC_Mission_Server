@@ -593,6 +593,7 @@ public class Mission : AMission, IMainMission
     public bool WAIT_FOR_PLAYERS_BEFORE_STARTING_MISSION_ENABLED = false;
     public double MAP_WIN_POINTS; //defined in Mission initializer bec we want a different value on Test Server vs real server
     public double MAP_FRONTLINE_OFFSET;
+    public string stb_FrontlinesMisFile = "fronts/genghis-frontlines-FrenchPoint.mis";
     public int MO_Objective_Percent_To_Disable = 3; //How many of the mission objectives on the list to randomly disable on a given day.
     //public int MO_Objective_Percent_To_Disable = 0; //for testing
     public int START_MISSION_TICK = -1;
@@ -4402,6 +4403,69 @@ public class Mission : AMission, IMainMission
   FrontMarker20 230005.07 198916.29 1
 
         */
+    public List<List<Point2d>> LoadFrontPointsFromMisFile(string misFilePath)
+    {
+        List<List<Point2d>> result = new List<List<Point2d>>();
+        try
+        {
+            if (string.IsNullOrEmpty(misFilePath)) return result;
+
+            string fullPath = CLOD_PATH + FILE_PATH + misFilePath;
+            ISectionFile f = GamePlay.gpLoadSectionFile(fullPath);
+            if (f == null) return result;
+            if (!f.exist("FrontMarker")) return result;
+
+            int num = f.lines("FrontMarker");
+            List<Point2d> redPoints = new List<Point2d>();
+            List<Point2d> bluePoints = new List<Point2d>();
+
+            string key = "";
+            string value = "";
+            for (int i = 0; i < num; i++)
+            {
+                f.get("FrontMarker", i, out key, out value);
+                string[] parts = value.Trim().Split(null);
+                if (parts.Length < 3) continue;
+
+                double x = 0;
+                double y = 0;
+                int army = 0;
+                if (!double.TryParse(parts[0], out x)) continue;
+                if (!double.TryParse(parts[1], out y)) continue;
+                if (!int.TryParse(parts[2], out army)) continue;
+
+                Point2d p = new Point2d(x, y);
+                if (army == 1)
+                {
+                    redPoints.Add(p);
+                }
+                else if (army == 2)
+                {
+                    bluePoints.Add(p);
+                }
+                // army == 0 (neutral) is skipped intentionally
+            }
+
+            // Pair RED[i] with BLUE[i] in encounter order.
+            // Index 0 = RED (army 1), index 1 = BLUE (army 2) — matches DrawFrontLinesPerMapState expectation.
+            int count = redPoints.Count;
+            if (bluePoints.Count < count) count = bluePoints.Count;
+            for (int i = 0; i < count; i++)
+            {
+                List<Point2d> pair = new List<Point2d>();
+                pair.Add(redPoints[i]);
+                pair.Add(bluePoints[i]);
+                result.Add(pair);
+            }
+        }
+        catch (System.Exception ex)
+        {
+            Console.WriteLine("LoadFrontPointsFromMisFile failed: " + ex.Message);
+            return new List<List<Point2d>>();
+        }
+        return result;
+    }
+
     public ISectionFile DrawFrontLinesPerMapState(double minMapState_ext = -25, double maxMapState_ext = 25, double? currMapState = null, string saveName = "frontfile.mis", bool loadSectionFile = true, ISectionFile f2 = null, bool test = false, double campaign_offset_ext=0, bool fast = false)
     {
         try
@@ -4419,38 +4483,44 @@ public class Mission : AMission, IMainMission
             //them up) and then put them into the format below.
 
 
-            List<List<Point2d>> frontPoints = new List<List<Point2d>>() {
-            new List<Point2d>() { new Point2d (10618.9, 166919.1), new Point2d (12535.9, 80190.7)},
-            new List<Point2d>() { new Point2d (43448.8, 175135.6), new Point2d (45083.8, 77280.9)},
-            new List<Point2d>() { new Point2d (63424.7, 167041), new Point2d (61680.2, 74914.2)},
-            new List<Point2d>() { new Point2d (83910.5, 175416.5), new Point2d (78249.5, 58702.7)},
-            new List<Point2d>() { new Point2d (99733.3, 184877.4), new Point2d (100949.9, 42579.6)},
-            new List<Point2d>() { new Point2d (112911.9, 190132.5), new Point2d (126336, 42672.0)},
-            new List<Point2d>() { new Point2d (127340.3, 192076), new Point2d (154214.3, 61859.9)},
-            new List<Point2d>() { new Point2d (138637.2, 193391.6), new Point2d (159814.7, 76825.1)},
-            new List<Point2d>() { new Point2d (153984, 192960), new Point2d (180864, 89088.0)},
-            new List<Point2d>() { new Point2d (163984, 189460), new Point2d (190864, 93588.0)},
-            new List<Point2d>() { new Point2d (172992, 185856), new Point2d (205056, 97152.0)},
-            new List<Point2d>() { new Point2d (179601, 194613.4), new Point2d (231006.1, 105485.1)},
-            new List<Point2d>() { new Point2d (188597.3, 199130.6), new Point2d (248621.3, 119111.7)},
-            new List<Point2d>() { new Point2d (202752, 202944), new Point2d (258624, 136320.0)},
-            new List<Point2d>() { new Point2d (204442.8, 215862.6), new Point2d (262080, 165696.0)},
-            new List<Point2d>() { new Point2d (207682.5, 226905.6), new Point2d (262870, 187072.0)},
-            new List<Point2d>() { new Point2d (212833.8, 236430.9), new Point2d (265364, 192627.7)},
-            new List<Point2d>() { new Point2d (221236.8, 243913.7), new Point2d (276436.5, 191778.2)},
-            new List<Point2d>() { new Point2d (233554.4, 251040.2), new Point2d (288425.5, 191662.5)},//canterbury
-            new List<Point2d>() { new Point2d (241292.4, 250042.4), new Point2d (291274.8, 199740.2)},
-            new List<Point2d>() { new Point2d (251381.6, 250029.4), new Point2d (289920, 206705.6)},
-            new List<Point2d>() { new Point2d (259527.6, 266599.7), new Point2d (294135.2, 209694.2)},
-            new List<Point2d>() { new Point2d (261626, 284269), new Point2d (294535.8, 220595.1)},
-            new List<Point2d>() { new Point2d (269631.3, 290000.6), new Point2d (304619.6, 224465.3)},
-            new List<Point2d>() { new Point2d (289955.1, 290000.1), new Point2d (313366, 227043.5)},
-            new List<Point2d>() { new Point2d (307159.4, 290000.4), new Point2d (325633.6, 229384.0)},
-            new List<Point2d>() { new Point2d (317821.9, 290000.9), new Point2d (337857.3, 235244.1)},
-            new List<Point2d>() { new Point2d (329207.1, 290000.7), new Point2d (347077.2, 240365.3)},
-            new List<Point2d>() { new Point2d (342760.8, 290000.9), new Point2d (352757.3, 244599.0)},
-            new List<Point2d>() { new Point2d (354908, 290000.9), new Point2d (358080, 247296.0)},
-             };
+            List<List<Point2d>> frontPoints = LoadFrontPointsFromMisFile(stb_FrontlinesMisFile);
+            if (frontPoints == null || frontPoints.Count == 0)
+            {
+                Console.WriteLine("DrawFrontLinesPerMapState: failed to load front points from mis file, using hardcoded fallback.");
+                frontPoints = new List<List<Point2d>>() {
+                new List<Point2d>() { new Point2d (10618.9, 166919.1), new Point2d (12535.9, 80190.7)},
+                new List<Point2d>() { new Point2d (43448.8, 175135.6), new Point2d (45083.8, 77280.9)},
+                new List<Point2d>() { new Point2d (63424.7, 167041), new Point2d (61680.2, 74914.2)},
+                new List<Point2d>() { new Point2d (83910.5, 175416.5), new Point2d (78249.5, 58702.7)},
+                new List<Point2d>() { new Point2d (99733.3, 184877.4), new Point2d (100949.9, 42579.6)},
+                new List<Point2d>() { new Point2d (112911.9, 190132.5), new Point2d (126336, 42672.0)},
+                new List<Point2d>() { new Point2d (127340.3, 192076), new Point2d (154214.3, 61859.9)},
+                new List<Point2d>() { new Point2d (138637.2, 193391.6), new Point2d (159814.7, 76825.1)},
+                new List<Point2d>() { new Point2d (153984, 192960), new Point2d (180864, 89088.0)},
+                new List<Point2d>() { new Point2d (163984, 189460), new Point2d (190864, 93588.0)},
+                new List<Point2d>() { new Point2d (172992, 185856), new Point2d (205056, 97152.0)},
+                new List<Point2d>() { new Point2d (179601, 194613.4), new Point2d (231006.1, 105485.1)},
+                new List<Point2d>() { new Point2d (188597.3, 199130.6), new Point2d (248621.3, 119111.7)},
+                new List<Point2d>() { new Point2d (202752, 202944), new Point2d (258624, 136320.0)},
+                new List<Point2d>() { new Point2d (204442.8, 215862.6), new Point2d (262080, 165696.0)},
+                new List<Point2d>() { new Point2d (207682.5, 226905.6), new Point2d (262870, 187072.0)},
+                new List<Point2d>() { new Point2d (212833.8, 236430.9), new Point2d (265364, 192627.7)},
+                new List<Point2d>() { new Point2d (221236.8, 243913.7), new Point2d (276436.5, 191778.2)},
+                new List<Point2d>() { new Point2d (233554.4, 251040.2), new Point2d (288425.5, 191662.5)},//canterbury
+                new List<Point2d>() { new Point2d (241292.4, 250042.4), new Point2d (291274.8, 199740.2)},
+                new List<Point2d>() { new Point2d (251381.6, 250029.4), new Point2d (289920, 206705.6)},
+                new List<Point2d>() { new Point2d (259527.6, 266599.7), new Point2d (294135.2, 209694.2)},
+                new List<Point2d>() { new Point2d (261626, 284269), new Point2d (294535.8, 220595.1)},
+                new List<Point2d>() { new Point2d (269631.3, 290000.6), new Point2d (304619.6, 224465.3)},
+                new List<Point2d>() { new Point2d (289955.1, 290000.1), new Point2d (313366, 227043.5)},
+                new List<Point2d>() { new Point2d (307159.4, 290000.4), new Point2d (325633.6, 229384.0)},
+                new List<Point2d>() { new Point2d (317821.9, 290000.9), new Point2d (337857.3, 235244.1)},
+                new List<Point2d>() { new Point2d (329207.1, 290000.7), new Point2d (347077.2, 240365.3)},
+                new List<Point2d>() { new Point2d (342760.8, 290000.9), new Point2d (352757.3, 244599.0)},
+                new List<Point2d>() { new Point2d (354908, 290000.9), new Point2d (358080, 247296.0)},
+                };
+
+            }
 
             //2022-07 What really needs to happen instead of mult1 & mult2, the
             //red/blue line separation point needs to be perpendicular to the

@@ -8465,6 +8465,7 @@ public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
 
         try
         {
+            if (mainmission.covermission.removedActors.Contains(actor)) return;
             if (shortName.Contains("tempflak")) return;
 
             Console.WriteLine("StatsOnDestroy: " + shortName + " was destroyed");
@@ -9427,6 +9428,7 @@ public override void OnPlaceEnter(Player player, AiActor actor, int placeIndex)
         //{
           if (actor == null) return; //nothing we can do here if the actor = null
           {
+              if (mainmission.covermission.removedActors.Contains(actor)) return;
               //if (stb_Debug) Console.WriteLine("OnActorDead: 1");
               // Console.WriteLine("OnActorDead: 1");
               //avoid recording death of any actor more than once, except for players of course

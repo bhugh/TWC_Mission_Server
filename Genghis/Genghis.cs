@@ -593,7 +593,11 @@ public class Mission : AMission, IMainMission
     public bool WAIT_FOR_PLAYERS_BEFORE_STARTING_MISSION_ENABLED = false;
     public double MAP_WIN_POINTS; //defined in Mission initializer bec we want a different value on Test Server vs real server
     public double MAP_FRONTLINE_OFFSET;
-    public string stb_FrontlinesMisFile = "fronts/genghis-frontlines-FrenchPoint.mis";
+    //public string stb_FrontlinesMisFile = "/fronts/genghis-frontlines-FrenchPoint.mis"; //initial / is necessary
+    //public string stb_FrontlinesMisFile = "/fronts/genghis-frontlines-FrenchPoint-SouthWest.mis"; //initial / is necessary
+    //public string stb_FrontlinesMisFile = "/fronts/genghis-frontlines-FrenchPoint-SouthWest2.mis"; //initial / is necessary
+    public string stb_FrontlinesMisFile = "/fronts/genghis-frontlines-FPContinue.mis"; //initial / is necessary
+    
     public int MO_Objective_Percent_To_Disable = 3; //How many of the mission objectives on the list to randomly disable on a given day.
     //public int MO_Objective_Percent_To_Disable = 0; //for testing
     public int START_MISSION_TICK = -1;
@@ -630,7 +634,7 @@ public class Mission : AMission, IMainMission
     //public double EARLIEST_MISSION_START_TIME_HRS = 7.5; //FOR TESTING
     public double SHORTEST_MISSION_LENGTH_ALLOWED_HRS = 3;  //if the mission restarts and there are less than this many hours remaining until END_MISSION_TIME_HRS , then it will just restart at the DESIRED_MISSION_START_TIME.  This has the effect of guarantteeing that missions will run at least this many hours, and also that missions won't start or run later than END_MISSION_TIME_HRS
 
-    public static readonly DateTime MODERN_CAMPAIGN_START_DATE = new DateTime(2026, 10, 21); //3 variables dealing with translating the current modern date to a relevant historical date: #1. Date on the current calendar that will count as day 0 of the campaign
+    public static readonly DateTime MODERN_CAMPAIGN_START_DATE = new DateTime(2026, 11, 12); //3 variables dealing with translating the current modern date to a relevant historical date: #1. Date on the current calendar that will count as day 0 of the campaign
     //10 July 1940 is usually considered start of BoB
     public static readonly DateTime HISTORIC_CAMPAIGN_START_DATE = new DateTime(1940, 7, 10); //#2. Date on the historic/1940s calendar that will register as day 0 of the campaign.
     public static int HISTORIC_CAMPAIGN_LENGTH_DAYS = 113; //#3. After this many days the historical dates will "roll over" and start again with HISTORIC_MISSION_START_DATE.
@@ -795,7 +799,7 @@ public class Mission : AMission, IMainMission
 			//50000/win30000 gets Red Theville, Querqueville, Crepon, Le Havre, Dieppe, Berck, Boulogne Alprecht, Colembert, Hermelinghen, Calais Marck, Oye Plage, Provisional Grand-Fort Phillipe
 			//6/2026: Red goals: all of Canterbury, Shoreham, Ford, Tangmere, Bembridge, Sandown
 			//Blue: all of Oye Plage, Colembert, Boulogne Alprecht, Berck, Dieppe, Le Havre
-            MAP_WIN_POINTS = 20000;  //was 30000 for TGS of K 2026-06->10. 
+            MAP_WIN_POINTS = 40000;  //was 30000 for TGS of K 2026-06->10. 
             if (ON_JUBILEE) MAP_WIN_POINTS = 14000;
             //MAP_FRONTLINE_OFFSET = 12000; //we can start the map off-centered from the center of the Channel, brent 2024/03/19
 			//MAP_FRONTLINE_OFFSET = 0; //we can start the map off-centered from the center of the Channel, brent 2024/03/19
@@ -3762,7 +3766,8 @@ public class Mission : AMission, IMainMission
         double military_strength_red = MO_AllMilitaryStrength_averaged(ArmiesE.Red);
         double military_strength_blue = MO_AllMilitaryStrength_averaged(ArmiesE.Blue);
 
-        string msg0 = "****Overall Campaign Objective - BLUE: Push the front line all the way past, and capture/claim these airfields simultaneously: Canterbury, Deal (north or south)";
+        //string msg0 = "****Overall Campaign Objective - BLUE: Push the front line all the way past, and capture/claim these airfields simultaneously: Canterbury, Deal (north or south)"; //10/2026
+        string msg0 = "****Overall Campaign Objective - BLUE: Push the front line all the way past, and capture/claim these airfields simultaneously: Lydd LG, Hastings LG, Rye LG (must ALL be behind Blue lines AND claimed/active)";
         outputmsg += msg0 + Environment.NewLine;
         if (output) Timeout(delay_s, () => { gpLogServerAndLog(recipients, msg0, null); });
         delay_s += 0.04;
@@ -3777,7 +3782,9 @@ public class Mission : AMission, IMainMission
 		//6/2026: Blue goals: all of Canterbury, Shoreham, Ford, Tangmere, Bembridge, Sandown
 			//Red: all of Oye Plage, Colembert, Boulogne Alprecht, Berck, Dieppe, Le Havre
 
-        string msg02 = "****RED: Push the front line all the way past, and capture/claim these airfields simultaneously: Colembert, Calais Marck";
+        //string msg02 = "****RED: Push the front line all the way past, and capture/claim these airfields simultaneously: Colembert, Calais Marck"; //10/2026
+        string msg02 = "****RED: Push the front line all the way past, and capture/claim these airfields simultaneously: Tramecourt, Wailly, St. Omer-Wizernes (must ALL be behind Blue lines AND claimed/active)"; //10/2026
+
         outputmsg += msg02 + Environment.NewLine + Environment.NewLine;
         //msg01 = "Use command <makelg - details at https://forums.twcpilots.com/showthread.php?tid=512&pid=1933";
         if (output) Timeout(delay_s, () => { gpLogServerAndLog(recipients, msg02, null); });
@@ -5037,6 +5044,11 @@ public class Mission : AMission, IMainMission
             {
                 try
                 {
+                    if (covermission.removedActors.Contains(actor)) {
+                         Console.WriteLine("OnActorDead: This actor REMOVED, exiting: {0}", shortName);
+                         return;
+                    }
+                    Console.WriteLine("OnActorDead: This actor not REMOVED, not exiting: {0}", shortName);
                     /*
                     try {
                         Console.WriteLine("OnActorDead OAD: Shortname {0} Name {1} Army {2} InternalTypeName {3}", shortName, actor.Name(), actor.Army(), (actor as AiCart).InternalTypeName());

@@ -56,7 +56,7 @@ html, body, #map {
 
 	} 
  .frontline-div-icon {
-	background: #884;
+	background: #f84;
 	border: 1px solid #442;
   font-size: 16px;
   display: flex;

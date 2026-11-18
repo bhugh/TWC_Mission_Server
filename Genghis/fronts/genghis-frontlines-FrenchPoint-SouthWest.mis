@@ -1,0 +1,86 @@
+﻿[PARTS]
+  core.100
+  bob.100
+  tobruk.100
+[MAIN]
+  fileversion 2
+  MAP Land$English_Channel_1940
+  DespawnAfterLandingTimeout 600
+  BattleArea 10000 10000 360000 310000 10000
+  TIME 9.79083357041236
+  WeatherIndex 2
+  CloudsHeight 888
+  BreezeActivity 0
+  ThermalActivity 0
+[GlobalWind_0]
+  Power 3.000 0.000 0.000
+  BottomBound 0.00
+  TopBound 1500.00
+  GustPower 0
+  GustAngle 45
+[splines]
+[CustomChiefs]
+[Stationary]
+[Buildings]
+[BuildingsLinks]
+[FrontMarker]
+  FrontMarker0 10618.90 166919.10 1
+  FrontMarker1 12535.90 80190.70 2
+  FrontMarker2 43448.80 175135.60 1
+  FrontMarker3 45083.80 77280.90 2
+  FrontMarker4 63424.70 167041.00 1
+  FrontMarker5 61680.20 74914.20 2
+  FrontMarker6 83910.50 175416.50 1
+  FrontMarker7 78249.50 58702.70 2
+  FrontMarker8 99733.30 184877.40 1
+  FrontMarker9 100949.90 42579.60 2
+  FrontMarker10 112911.90 190132.50 1
+  FrontMarker11 126336.00 42672.00 2
+  FrontMarker12 127340.30 192076.00 1
+  FrontMarker13 154214.30 61859.90 2
+  FrontMarker14 138637.20 193391.60 1
+  FrontMarker15 159814.70 76825.10 2
+  FrontMarker16 153984.00 192960.00 1
+  FrontMarker17 180864.00 89088.00 2
+  FrontMarker18 163984.00 189460.00 1
+  FrontMarker19 190864.00 93588.00 2
+  FrontMarker20 172992.00 185856.00 1
+  FrontMarker21 205056.00 97152.00 2
+  FrontMarker22 179601.00 194613.40 1
+  FrontMarker23 231006.10 105485.10 2
+  FrontMarker24 188597.30 199130.60 1
+  FrontMarker25 248621.30 119111.70 2
+  FrontMarker26 192797.48 205059.33 1
+  FrontMarker27 258624.00 136320.00 2
+  FrontMarker28 190158.21 220358.74 1
+  FrontMarker29 268475.73 143410.37 2
+  FrontMarker30 187972.27 234511.15 1
+  FrontMarker31 285510.83 146477.40 2
+  FrontMarker32 186560.76 243160.43 1
+  FrontMarker33 306365.69 145534.45 2
+  FrontMarker34 182932.08 254996.22 1
+  FrontMarker35 325969.79 146093.80 2
+  FrontMarker36 185374.39 264591.33 1
+  FrontMarker37 335326.57 155686.59 2
+  FrontMarker38 196454.68 269682.75 1
+  FrontMarker39 339831.61 166931.80 2
+  FrontMarker40 219322.15 270682.29 1
+  FrontMarker41 346272.02 179026.53 2
+  FrontMarker42 220654.66 253276.36 1
+  FrontMarker43 335402.06 183336.99 2
+  FrontMarker44 219381.26 238350.80 1
+  FrontMarker45 321692.59 184552.63 2
+  FrontMarker46 217054.81 220104.04 1
+  FrontMarker47 303568.65 185268.24 2
+  FrontMarker48 223098.21 200980.02 1
+  FrontMarker49 288494.07 178777.71 2
+  FrontMarker50 233322.94 203306.84 1
+  FrontMarker51 263181.38 177323.55 2
+  FrontMarker52 249862.97 231470.51 1
+  FrontMarker53 260948.96 194503.20 2
+  FrontMarker54 275207.30 257062.05 1
+  FrontMarker55 266834.99 213948.89 2
+  FrontMarker56 291577.32 291347.83 1
+  FrontMarker57 295037.70 225086.06 2
+  FrontMarker58 355152.90 290858.04 1
+  FrontMarker59 358597.55 249253.94 2

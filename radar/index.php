@@ -1,55 +1,98 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-<title>TWC Radar Plotting Table & Map</title>
+<title>TWC General Situation Map</title>
 <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 
+<link rel="shortcut icon" href="https://twcpilots.com/assets/images/twc-logo-cigar-140x148.png" type="image/x-icon">
 
 
 
-<link rel="stylesheet" href="res/css/stats-style.css" type="text/css" />
+<link rel="stylesheet" href="../res/css/stats-style.css" type="text/css" />
 </head>
 <body>
-<img style=" max-height: 10em;"src="http://twcclan.com/wp-content/uploads/2013/12/cropped-flying_tigers___col__edward_rector_by_roen911-d4msc2k.jpg" align=right width=50%>
-<h1>TWC Radar Control</h1>
+<img style=" max-height: 10em;" src="https://twcpilots.com/assets/images/twc-logo-cigar-140x148.png" align=right>
+<h1>TWC General Situation Map</h1>
 
-<p><i><b>Go to:</b> <a href="http://brenthugh.com/twc/mission-server-stats.htm">Mission Server Stats</a> - <a href="http://brenthugh.com/twc/training-server-stats.htm">Tactical Server Stats</a> - <a href="http://brenthugh.com/twc/practice-server-stats.htm">Practice Server Stats</a> - <a href="http://brenthugh.com/twc/stats-archive.htm">Older Stats Archive</a></i></p>
+<p><i><b>Go to:</b> <a href="https://brenthugh.com/twc/genghis-gs3-campaign-stats.htm">Twin Grandsons of Khan Campaign Stats (CURRENT campaign)</a> - <a href="https://brenthugh.com/twc/genghis-gs2-campaign-stats.htm">Twin Grandsons of Khan Campaign Stats (PREVIOUS campaign)</a> - <a href="https://brenthugh.com/twc/genghis-gs-campaign-stats.htm">Twin Grandsons of Khan Campaign Stats (OLDER campaign)</a> - <a href="http://brenthugh.com/twc/genghis-campaign-stats.htm">Son of Khan Server Stats (YET OLDER PREVIOUS campaign)</a> - <a href="http://brenthugh.com/twc/tacview">Tacview recordings from recent missions</a></i></p>
+
+<!-- <p><i>Visit <a href="http://twcpilots.com">TWCPilots.com</a> for more information about TWC and the TWC servers.</i></p> --> 
+
+<p><i>Visit <a href="https://theairtacticalassaultgroup.com/forum/forumdisplay.php?f=150">The TWC Campaign Forum on the  ATAG web site</a> or <a href="https://discord.gg/ESS9GNZnuG">TWC's Discord Server</a> for more information about TWC and the TWC servers.</i></p>
+
+<p><i><b><a href="/twc/radar/radar-tobruk-plotonly.php">Tobruk Route Plotting Map (plotting/planning only)</a>
+ - <a href="/twc/radar/radar-channel-plotonly.php">English Channel Route Plotting Map (plotting/planning only)</a></b></i>
+</p>
 
 <br><br>
 <center>
 <div style="clear:both;">
 <br><br>
 <div style="clear:both; width:80%; background-color:#aaaabb">
-<h2>Enter the TWC Server Contact Plotting Table</h2>
+
+<h2>Enter the TWC Server General Situation Map - ENGLISH CHANNEL</h2>
 <form action="/twc/radar/radar.php">
+<div style="background-color:#FF9999; font-size:1.5em"><strong>NOTE NEW NAME/PASSWORDS FOR <i>TWIN GRANDSONS OF KHAN</i> CAMPAIGN!!!!!!!!! Check Tab-4-4-4-9 menu in the sim for your password!</strong></div><br><br>
   <b>Your Steam Username:</b><br>
   <input type="text" name="user" value="" required>
   <br><br>
   <b>Password:</b><br>
   <input type="password" name="pass" value="" required>
-  <br><i>Password is <b>TWC</b>. For special events, the password may be different - check with TWC or event leaders.</i><br><br>
+  <br><br><i>Default password for open servers is <b>TWC</b>. For special events & campaigns, the password may be different - in game, check Tab-4-4-4-9 or ask on the <a href="https://forums.twcpilots.com">TWC Forums</a>, <a href="https://theairtacticalassaultgroup.com/forum/forumdisplay.php?f=150">ATAG private forum</a>, <a href="https://twcpilots.com">Discord</a>.</i><br><br>
   <b>Server:</b><br>
-  <input type="radio" name="server" value="Mission" checked required>Mission Server 
-  <input type="radio" name="server" value="Tactical">Tactical Server
+  <input type="radio" name="server" value="Twin Grandsons of Khan" checked required>Twin Grandsons of Khan Server
+  <input type="radio" name="server" value="Operation Jubilee">Operation Jubilee Server
+  <input type="radio" name="server" value="Mission">Mission Server 
   <input type="radio" name="server" value="Other">Other:<input type="text" name="serveroth" value=""><br><br>
   
   <b>Side:</b><br>
   <input type="radio" name="side" value="Red" required>Red
   <input type="radio" name="side" value="Blue">Blue
   <input type="radio" name="side" value="Other">Other:<input type="text" name="sideoth" value=""><br>
-  <i>Please use the Radar Control <b>only for the side you are actually flying or participating on</b></i>
+  <i>Please use the General Situation Map <b>only for the side you are actually flying or participating on</b></i>
   <br><br>
   
-  <button type="submit" value="Enter the Contact Plotting Table">Click to enter the Radar Plotting Table & Map!</button>
+  <button type="submit" value="Enter the General Situation Map">Click to enter the General Situation Map!</button>
   <br><br>
 </form> 
+
+
+</div>
+
+<div style="clear:both; width:80%; background-color:#aaaabb">
+
+<h2>Enter the TWC Server General Situation Map - TOBRUK</h2>
+
+<form action="/twc/radar/radar-tobruk.php">
+  <b>Your Steam Username:</b><br>
+  <input type="text" name="user" value="" required>
+  <br><br>
+  <b>Password:</b><br>
+  <input type="password" name="pass" value="" required>
+  <br><i>Default password for open servers is <b>TWC</b>. For special events & campaigns, the password may be different - in game, check Tab-4-4-4-9 or ask on the <a href="https://forums.twcpilots.com">TWC Forums</a>, <a href="https://theairtacticalassaultgroup.com/forum/forumdisplay.php?f=150">ATAG private forum</a>, <a href="https://twcpilots.com">Discord</a>.</i><br><br>
+  <b>Server:</b><br>
+  <input type="radio" name="server" value="Tobruk" checked required>Tobruk Server 
+  <input type="radio" name="server" value="Other">Other:<input type="text" name="serveroth" value=""><br><br>
+  
+  <b>Side:</b><br>
+  <input type="radio" name="side" value="Red" required>Red
+  <input type="radio" name="side" value="Blue">Blue
+  <input type="radio" name="side" value="Other">Other:<input type="text" name="sideoth" value=""><br>
+  <i>Please use the General Situation Map <b>only for the side you are actually flying or participating on</b></i>
+  <br><br>
+  
+  <button type="submit" value="Enter the General Situation Map">Click to enter the General Situation Map!</button>
+  <br><br>
+</form> 
+
+
 </div>
 </div>
 </center>
   <br><br>
-  <h2>About the Contact Plotting Table & Map</h2>
-<p>The radar plotting table is designed to duplicate much of the functionality--and also many of the disadvantages and blind spots--of an early WWII-era contact plotting table based on radar returns and observer reports.<p>
+  <h2>About the General Situation Map</h2>
+<p>The General Situation Map is designed to duplicate much of the functionality--and also many of the disadvantages and blind spots--of an early WWII-era General Situation Map based on radar returns and observer reports.<p>
 <p style ="text-align:center; width:100%"><img align=center width=100% alt="WWII-era radar operator" src="graphics/early-wwii-radar-operator-and-station.jpg" caption="Chain Home: WAAF radar operator Denise Miley plotting aircraft on 
 the CRT (cathode ray tube) of an RF7 Receiver in the Receiver Room at Bawdsey CH. Her right hand has selected the direction or height finding and her left hand is ready to register the goniometer setting to the calculator. RAF Bawdsey was originally an experimental system set up at Bawdsey Manor, home of Robert Watson-Watt's radar development team. When the team was moved away from Bawdsey, the radar station became a part of the operational Chain Home (CH) network. The main display is a large CRT, partially masked off by a metal box so only the lower half of the CRT remains visible. In earlier versions a scale running 
 across the top of the opening allowed the range to the target to be measured. In this later version, a knob is used to move a cursor line across the screen to lie over a selected return. The cursor is driven by the same timing electronics as the rest of the radar, ensuring it is properly calibrated at all times. The large knob on the left of the image is the goniometer control. Unlike later 
@@ -62,9 +105,11 @@ cause the yellow layer to begin glowing in that location. When encountering jamm
 are co-located. In later setups, the display was removed from the receiver and placed beside the plotting boards. This provided a much more compact layout and allowed the plotters to see the display directly. Although it cannot be seen in this photo, the shaft from the goniometer runs out the bottom of the display 
 cabinet and into the receiver chassis, and can be seen to be at a slightly different angle than the display itself. The later systems combined this into a single cabinet."></p>
 
-<p>Radar operators went through a complex, time-consuming, and somewhat error-prone process to determine the bearing, altitude, distance, and possible makeup of each individual radar contact.  This information was collected and collated by a large team onto a local radar plot table, and then transmitted via telephone to a central location, where another large team worked to assemble information collected from various outlying radar facilities, combined with observer reports, to create a unified overall view of the battlespace.</p>  
+<p>Radar operators went through a complex, time-consuming, and somewhat error-prone process to determine the bearing, altitude, distance, and possible makeup of each individual radar contact. Then a somewhat complex calculation was required to determine the contact's actual grid coordinates, altitude, and bearing.  This information was collected and collated by a large team and plotted onto a local radar plot table, and then transmitted via telephone to a central location.  At the central location, where another even larger team worked to assemble information collected from various outlying radar facilities, combine that information with observer reports, and resolve descrepancies between various radar & observer reports to create a unified overall view of the battlespace.</p>  
 
-<p>This is the view that the TWC Contact Plotting Table & Map is designed to replicate.</p>
+<p>All this was done with amazing speed and accuracy.  But even at best, each step took many seconds to a few minutes--a far cry from the computerized response time we are used to in the modern world, where communications speed is measured in gigabits and milliseconds, not individual contacts and minutes.</p>  
+
+<p>This is the view that the TWC General Situation Map is designed to replicate.</p>
 
 <p style ="text-align:center"><img align=center width=100% alt="Radar installation contact plotting table" src="graphics/Royal_Air_Force_Radar_Installation_Plotting_Table,_1939-145._CH15331.jpg"></p>
 
@@ -74,13 +119,13 @@ cabinet and into the receiver chassis, and can be seen to be at a slightly diffe
 
 <p>Nevertheless, by today's standards the system was very, very slow.  Response time from plot detection to combat pilot update was measured more in minutes than in milliseconds.</p>  
 
-<p>So you will find that the TWC Contact Plotting Table transmits and updates data much, much slower than other modern 'radar screen' type game applications you may be familiar with.  It is simulating the pace of information updates in a WWII environment--and, if anything, is far, far faster and more responsive than such systems were in real life.</p> 
+<p>So you will find that the TWC General Situation Map transmits and updates data much, much slower than other modern 'radar screen' type game applications you may be familiar with.  It is simulating the pace of information updates in a WWII environment--and, if anything, is far, far faster and more responsive than such systems were in real life.</p> 
 
-<p><a href="https://www.raf.mod.uk/campaign/battle-of-britain-75th/the-battle/battle-of-britain-in-detail-part-4/">The RAF history</a> estimates the time from radar contact to information at local command headquarters at about four minutes, which is astonishingly fast--and was probably more-or-less a best case scenario. The TWC Contact Plotting Table generally has updates to the operator in about two minutes--so about twice the best speed of the actual Chain Home system.</p>
+<p><a href="https://www.raf.mod.uk/campaign/battle-of-britain-75th/the-battle/battle-of-britain-in-detail-part-4/">The RAF history</a> estimates the time from radar contact to information at local command headquarters at about four minutes, which is astonishingly fast--and was probably more-or-less a best case scenario. The TWC General Situation Map generally has updates to the operator in about two minutes--so about twice the best speed of the actual Chain Home system.</p>
 <p style ="text-align:center"><img align=center width=100% alt="Central Plotting Table at RAF Bentley Priory, WWII" src="graphics/raf-bentley-priory-filter-room-map-table-early-wwii.jpg"></p>
 
 
-           <p>According to the RAF history, the type of order commanders would give based on contact plotting map data was “Scramble 92 and 72, Patrol Canterbury, Angels 25", which meant that those squadrons were to climb to 25,000 feet and form a patrol line over the city of Canterbury.</p>
+           <p>According to the RAF history, the type of order commanders would give based on contact plotting map data was â€œScramble 92 and 72, Patrol Canterbury, Angels 25", which meant that those squadrons were to climb to 25,000 feet and form a patrol line over the city of Canterbury.</p>
            <p>With today's modern radar, we might expect to be able to radio a pilot "You've got an enemy on your six. Turn hard right NOW!"  With the WWII-era plotting table system, commanders simply did not have information that specific or timely.  Rather, they would be able to provide pilots in the field with a best estimate of the general location enemy aircraft might be 5-20 minutes in the future, based on radar and observer information that was collected 4-20 minutes previously.</p>
            
            
@@ -98,8 +143,10 @@ The source of each image (links below) has much more information about each imag
 <li><a href="https://www.raf.mod.uk/campaign/battle-of-britain-75th/the-battle/battle-of-britain-in-detail-part-4/">Central Contact Plotting Table at RAF Bentley Priory, RAF</a>                                                <br></li><br>
 </ul>
 
-<p><i><b>Go to:</b> <a href="http://brenthugh.com/twc/mission-server-stats.htm">Mission Server Stats</a> - <a href="http://brenthugh.com/twc/training-server-stats.htm">Tactical Server Stats</a> - <a href="http://brenthugh.com/twc/practice-server-stats.htm">Practice Server Stats</a> - <a href="http://brenthugh.com/twc/stats-archive.htm">Older Stats Archive</a></i></p>
+<p><i><b>Go to:</b> <a href="https://brenthugh.com/twc/genghis-gs3-campaign-stats.htm">Twin Grandsons of Khan Campaign Stats (CURRENT campaign)</a> - <a href="https://brenthugh.com/twc/genghis-gs2-campaign-stats.htm">Twin Grandsons of Khan Campaign Stats (PREVIOUS campaign)</a> - <a href="https://brenthugh.com/twc/genghis-gs-campaign-stats.htm">Twin Grandsons of Khan Campaign Stats (OLDER campaign)</a> - <a href="http://brenthugh.com/twc/genghis-campaign-stats.htm">Son of Khan Server Stats (YET OLDER PREVIOUS campaign)</a> - <a href="http://brenthugh.com/twc/tacview">Tacview recordings from recent missions</a></i></p>
 
-<p><i>Visit <a href="http://twcclan.com">TWCClan.com</a> for more information about TWC and the TWC servers.</i></p>
+<!-- <p><i>Visit <a href="http://twcpilots.com">TWCPilots.com</a> for more information about TWC and the TWC servers.</i></p> --> 
+
+<p><i>Visit <a href="https://theairtacticalassaultgroup.com/forum/forumdisplay.php?f=150">The TWC Campaign Forum on the  ATAG web site</a> or <a href="https://discord.gg/ESS9GNZnuG">TWC's Discord Server</a> for more information about TWC and the TWC servers.</i></p>
 
 </body></html>

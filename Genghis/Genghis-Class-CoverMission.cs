@@ -5174,6 +5174,9 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
         catch (Exception ex) { Console.WriteLine("getAllGroundActorsNear_clean ERROR: " + ex.ToString()); return new List<AiActor>(); }
     }
     //removes those matching this army, or if -1, ignores the army
+
+    public HashSet<AiActor> removedActors = new HashSet<AiActor>();
+
    
     public void removeAllGroundActorsNear_clean(Point3d pos, double radius_m, int percentToRemove = 100, int armyToRemove = -1, List<string> types_to_remove = null, List<string> types_to_retain = null, bool preserveOnWater = false, int callCount = 0, bool fast = false)
     {
@@ -5254,7 +5257,8 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 
                         if (ran.Next(100) > percentToRemove) continue; //remove only a certain percent, if requested
 						
-						mainmission.statsmission.Stb_killActor((aa as AiActor), 0, "cover.Removing Enemy Ground Actors Near _clean");
+                        removedActors.Add(aa as AiActor);
+						//mainmission.statsmission.Stb_killActor((aa as AiActor), 0, "cover.Removing Enemy Ground Actors Near _clean");
                         Timeout((ran.NextDouble() * (wait2-wait1) + wait1), () => { (aa as AiCart).Destroy(); });  //somewhat cheap way to avoid deleting items in ggList while looping through it, but also spreads the removal of stationaries over 5 mins or so instead of just zapping them all at once, which usually looks fake.
                         count++;
                     }
@@ -5376,14 +5380,16 @@ public string acSimultaneousCheckoutsAvailableToPlayer_msg(Player player)
 					//it must be replaced with the same object but correct army 
 					if (retain && aa.Army() != 0) {
 						
-						f = Calcs.makeStatic(f, GamePlay, mainmission, aa.Pos().x, aa.Pos().y, 0, groundActorName, 0, ArmiesSection[aa.Army()], staticprefix: "replace_enemy_actor");
-						continue;
+						f = Calcs.makeStatic(f, GamePlay, mainmission, aa.Pos().x+10, aa.Pos().y+10, 0, groundActorName, 0, ArmiesSection[aa.Army()], staticprefix: "replace_enemy_actor");
+						//continue;
 					}
 
                     //if (groundActorTypes.ToLower().Contains("tank")) 
-                    Console.WriteLine("RemoveGroundActor - this matched and will be removed! {0} ", groundActorTypes);
+                    Console.WriteLine("RemoveGroundActor - this matched and will be removed! {1} {0} ", groundActorTypes, aa.Name());
 
-					mainmission.statsmission.Stb_killActor((aa as AiActor), 0, "cover.Removing Enemy Ground Actors _clean");
+                    removedActors.Add(aa as AiActor);
+
+					//mainmission.statsmission.Stb_killActor((aa as AiActor), 0, "cover.Removing Enemy Ground Actors _clean"); //OK, this is the thing you CANNOT DO if you just want to remove the item without 'killing' it - killing it means, stats will be credited, objectives destroyed/credited, etc etc etc just as though it were shot/bombed
                     Timeout((ran.NextDouble() * (wait2-wait1) + wait1), () => { 
 						//Console.WriteLine("Cover removeEnemyGroundActors: Destroyed {0} {1}");
 						Console.WriteLine("RemoveGroundActor - destroying now: {0} {1} {2} {3}", aa.Name(), groundActorName, groundActorTypes, aa.Army());

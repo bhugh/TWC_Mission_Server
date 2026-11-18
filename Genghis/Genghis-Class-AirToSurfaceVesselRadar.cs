@@ -598,7 +598,13 @@ public class ASVRadarTargetArray : IDisposable
         // - medium ship, 40 miles
         // - Small ship, presumably less, say 30 miles
         // - Large ship more, say 60 
-        string types = (actor as AiGroundActor).Type().ToString().ToLower() + " " + (actor as AiCart).InternalTypeName().ToString().ToLower();
+        AiGroundActor ga = actor as AiGroundActor;
+        AiCart ac = actor as AiCart;
+        string gaType = "";
+        string acType = "";
+        if (ga != null) { gaType = ga.Type().ToString().ToLower(); }
+        if (ac != null) { acType = ac.InternalTypeName().ToString().ToLower(); }
+        string types = gaType + " " + acType;
 
         if (types.Contains("submarine") && targetDistance_m > 20000) return null;
         if (types.Contains("small") && targetDistance_m > 30000) return null;
@@ -661,9 +667,16 @@ public class ASVRadarTargetArray : IDisposable
         //if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("AIRXX1 " + DateTime.UtcNow.ToString("T")); //Testing for potential causes of warping
         Task.Run(() =>
         {
-            //if (this.playerPlace == null || Calcs.Point3dEqual(this.playerVwld,nullV3d)) turnOff();            
-            calculateGrid();
-            displayGrid();
+            try
+            {
+                //if (this.playerPlace == null || Calcs.Point3dEqual(this.playerVwld,nullV3d)) turnOff();            
+                calculateGrid();
+                displayGrid();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("ASVRadar: display_recurs ERROR: {0}", ex.ToString());
+            }
         });     
     }
 
@@ -830,8 +843,8 @@ public class ASVRadarAuthenticArray : ASVRadarTargetArray, IDisposable
 
     //These chars all have VERY similar width (same as _) in the NON-fixed width
     //font in CloD.  IN the Fixed with of course they are all the same.
-    //was ·+oO0 but the unicode chars should work better.  Middle dot, esp, was thinner than the others. O & 0 are very different widths in the non-fixed width font on CloD windows.
-    //List<char> zinds = new List<char>() { '·','+', 'o','0','8' };
+    //was ï¿½+oO0 but the unicode chars should work better.  Middle dot, esp, was thinner than the others. O & 0 are very different widths in the non-fixed width font on CloD windows.
+    //List<char> zinds = new List<char>() { 'ï¿½','+', 'o','0','8' };
     public static List<char> zinds = new List<char>() { '\u25CB', 'o', '\u25CF', '\u25D9', '\u25A0' };
 
     public override void placeItemInGrid(Point3d p, double size = 1)
@@ -865,7 +878,7 @@ public class ASVRadarAuthenticArray : ASVRadarTargetArray, IDisposable
                 //TODO: Keep a total of sum of all sizes/objects in a given position in a different grid,
                 //then translate that into this ASCII grid when done.
                 //But this will at least partly/slightly duplicate that:
-                if (Grid[XPos, YPos] == zinds[0]) charSize += 0.1; //was ·+oO0 but the unicode chars should work better
+                if (Grid[XPos, YPos] == zinds[0]) charSize += 0.1; //was ï¿½+oO0 but the unicode chars should work better
                 if (Grid[XPos, YPos] == zinds[1]) charSize += 0.2; 
                 if (Grid[XPos, YPos] == zinds[2]) charSize += 0.5; 
                 if (Grid[XPos, YPos] == zinds[3]) charSize += 0.8; 
@@ -937,11 +950,20 @@ public override void calculateGrid()
         getShipList();
         foreach (AiActor actor in shipList)
         {
+            if (actor == null) continue;
             Point3d? p = calcActor_AircraftRelativePosition(actor as AiActor);
             if (p.HasValue)
             {
-                string types = (actor as AiGroundActor).Type().ToString().ToLower() + " " + (actor as AiCart).InternalTypeName().ToString().ToLower();
-                string typesProper = (actor as AiGroundActor).Type().ToString() + " " + (actor as AiCart).InternalTypeName().ToString();
+                AiGroundActor ga = actor as AiGroundActor;
+                AiCart ac = actor as AiCart;
+                string gaType = "";
+                string acType = "";
+                string gaTypeProper = "";
+                string acTypeProper = "";
+                if (ga != null) { gaType = ga.Type().ToString().ToLower(); gaTypeProper = ga.Type().ToString(); }
+                if (ac != null) { acType = ac.InternalTypeName().ToString().ToLower(); acTypeProper = ac.InternalTypeName().ToString(); }
+                string types = gaType + " " + acType;
+                string typesProper = gaTypeProper + " " + acTypeProper;
                 double size = 1;
 
                 //generic guesses
@@ -977,9 +999,16 @@ public override void calculateGrid()
         //if (TWCComms.Communicator.Instance.WARP_CHECK) Console.WriteLine("AIRXX1 " + DateTime.UtcNow.ToString("T")); //Testing for potential causes of warping
         Task.Run(() =>
         {
-            //Console.WriteLine("AIR playerplace {0} {1} {2}", (this.playerPlace as AiAircraft).Pos().x, (this.playerPlace as AiAircraft).Pos().y, (this.playerPlace as AiAircraft).Pos().z);
-            calculateGrid();
-            displayGrid();
+            try
+            {
+                //Console.WriteLine("AIR playerplace {0} {1} {2}", (this.playerPlace as AiAircraft).Pos().x, (this.playerPlace as AiAircraft).Pos().y, (this.playerPlace as AiAircraft).Pos().z);
+                calculateGrid();
+                displayGrid();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("ASVRadar: display_recurs ERROR: {0}", ex.ToString());
+            }
         });
     }
 

@@ -1554,7 +1554,9 @@ public class ASVRadarMission : AMission
     {
 
         if ( mainmission.covermission == null) return new List<AiActor>();
-        return new List<AiActor>(mainmission.covermission.getAllGroundActorsNear_clean(pos, radius_m));
+        var result = mainmission.covermission.getAllGroundActorsNear_clean(pos, radius_m);
+        if (result == null) return new List<AiActor>();
+        return new List<AiActor>(result);
 
     }
 
